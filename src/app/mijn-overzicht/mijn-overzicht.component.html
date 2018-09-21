@@ -1,0 +1,172 @@
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th>Datum</th>
+      <th>Tijd</th>
+      <th>Teams</th>
+      <th>Scheidsrechter</th>
+      <th>Tellers</th>
+    </tr>
+  </thead>
+  <tbody>
+    <ng-container *ngFor="let ding of dingen">
+      <tr>
+        <td>
+          {{ding.datum}}
+        </td>
+        <td>
+          {{ding.tijd}}
+        </td>
+        <td>
+          <span [ngClass]="{'badge big-span': ding.isTeam1 || ding.isCoachTeam1, 'badge-success': ding.isTeam1, 'badge-info': ding.isCoachTeam1}">{{ding.team1}}</span>
+          -
+          <span [ngClass]="{'badge big-span': ding.isTeam2 || ding.isCoachTeam2, 'badge-success': ding.isTeam2, 'badge-info': ding.isCoachTeam2}">{{ding.team2}}</span>
+        </td>
+        <td>
+          <h6><span [ngClass]="{'badge big-span badge-success': ding.isScheidsrechter}">{{ding.scheidsrechter}}</span></h6>
+        </td>
+        <td>
+          <h6><span [ngClass]="{'badge big-span badge-success': ding.isTellers}">{{ding.tellers}}</span></h6>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="5">
+          <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" [(ngModel)]="model">
+            <label ngbButtonLabel class="btn-primary">
+              <input ngbButton type="radio" [value]="1"> Ja
+            </label>
+            <label ngbButtonLabel class="btn-primary">
+              <input ngbButton type="radio" value="middle"> Onbekend
+            </label>
+            <label ngbButtonLabel class="btn-primary">
+              <input ngbButton type="radio" [value]="false"> Nee
+            </label>
+          </div>
+        </td>
+      </tr>
+    </ng-container>
+  </tbody>
+</table>
+<div class="jumbotron">
+  <div *ngFor="let ding of dingen">
+    <ng-container *ngIf="ding.type === 'wedstrijd'">
+      <div class="card " style="max-width: 30rem;">
+        <div class="card-body">
+          <h5 class="card-title">
+            <span [ngClass]="{'badge': ding.isTeam1 || ding.isCoachTeam1, 'badge-success': ding.isTeam1, 'badge-info': ding.isCoachTeam1}">{{ding.team1}}</span>
+            -
+            <span [ngClass]="{'badge': ding.isTeam2 || ding.isCoachTeam2, 'badge-success': ding.isTeam2, 'badge-info': ding.isCoachTeam2}">{{ding.team2}}</span>
+          </h5>
+          <h6 class="card-subtitle mb-2 text-muted">{{ding.datum}}, {{ding.tijd}}</h6>
+          <h6 class="card-subtitle mb-2 text-muted">{{ding.locatie}}</h6>
+          <div class="card-text">
+            Scheidsrechter: <span [ngClass]="{'badge badge-success': ding.isScheidsrechter}">{{ding.scheidsrechter}}</span>
+            Tellers: <span [ngClass]="{'badge badge-success': ding.isTellers}">{{ding.tellers}}</span>
+          </div>
+          <div>
+            <a href="#" class="card-link">Link naar wedstrijd</a>
+          </div>
+
+          <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" [(ngModel)]="model">
+            <label ngbButtonLabel class="btn-primary">
+              <input ngbButton type="radio" [value]="1"> Left (pre-checked)
+            </label>
+            <label ngbButtonLabel class="btn-primary">
+              <input ngbButton type="radio" value="middle"> Middle
+            </label>
+            <label ngbButtonLabel class="btn-primary">
+              <input ngbButton type="radio" [value]="false"> Right
+            </label>
+          </div>
+        </div>
+
+      </div>
+    </ng-container>
+  </div>
+</div>
+
+<div *ngFor="let speeldag of speeldagen">
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th scope="col"></th>
+        <th scope="col">Datum</th>
+        <th scope="col">Tijd</th>
+        <th scope="col"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let ding of dingen">
+        <ng-container *ngIf="ding.type === 'wedstrijd'">
+          <td *ngIf="ding.isTeam1 || ding.isTeam2">
+            Wedstrijd Spelen
+          </td>
+          <td *ngIf="ding.isCoachTeam1 || ding.isCoachTeam2">
+            Wedstrijd Coachen
+          </td>
+          <td>
+            {{ding.datum}}
+          </td>
+          <td>
+            {{ding.tijd}}
+          </td>
+          <td>
+            <span [ngClass]="{'badge': ding.isTeam1 || ding.isCoachTeam1, 'badge-success': ding.isTeam1, 'badge-info': ding.isCoachTeam1}">{{ding.team1}}</span>
+            -
+            <span [ngClass]="{'badge': ding.isTeam2 || ding.isCoachTeam2, 'badge-success': ding.isTeam2, 'badge-info': ding.isCoachTeam2}">{{ding.team2}}</span>
+          </td>
+          <td>
+            <h6><span [ngClass]="{'badge badge-success': ding.isScheidsrechter}">{{ding.scheidsrechter}}</span></h6>
+          </td>
+          <td>
+            <h6><span [ngClass]="{'badge badge-success': ding.isTellers}">{{ding.tellers}}</span></h6>
+          </td>
+        </ng-container>
+        <ng-container *ngIf="ding.type === 'zaalwacht'">
+          <td></td>
+          <td>{{ding.datum}}</td>
+          <td></td>
+          <td colspan="4">
+            <h6>Zaalwacht: <span class="badge badge-success">{{ding.zaalwachtTeam}}</span></h6>
+          </td>
+        </ng-container>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<div *ngFor="let speeldag of speeldagen">
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th colspan="4">
+          {{speeldag.datum}} <span [ngClass]="{'badge badge-success big-span': speeldag.isZaalwacht}">Zaalwacht
+            {{speeldag.zaalwacht}}</span>
+        </th>
+      </tr>
+      <tr>
+        <th scope="col">Tijd</th>
+        <th scope="col">Wedstrijd</th>
+        <th scope="col">Scheidsrechter</th>
+        <th scope="col">Tellers</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let wedstrijd of speeldag.wedstrijden">
+        <td>
+          {{wedstrijd.tijd}}
+        </td>
+        <td>
+          <span [ngClass]="{'badge': wedstrijd.isTeam1 || wedstrijd.isCoachTeam1, 'badge-success': wedstrijd.isTeam1, 'badge-info': wedstrijd.isCoachTeam1}">{{wedstrijd.team1}}</span>
+          -
+          <span [ngClass]="{'badge': wedstrijd.isTeam2 || wedstrijd.isCoachTeam2, 'badge-success': wedstrijd.isTeam2, 'badge-info': wedstrijd.isCoachTeam2}">{{wedstrijd.team2}}</span>
+        </td>
+        <td>
+          <h6><span [ngClass]="{'badge badge-success': wedstrijd.isScheidsrechter}">{{wedstrijd.scheidsrechter}}</span></h6>
+        </td>
+        <td>
+          <h6><span [ngClass]="{'badge badge-success': wedstrijd.isTellers}">{{wedstrijd.tellers}}</span></h6>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
