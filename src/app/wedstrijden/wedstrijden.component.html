@@ -1,0 +1,40 @@
+<table class="table table-sm">
+  <thead>
+    <tr>
+      <th scope="col">Date</th>
+      <th scope="col">Wedstrijd</th>
+      <th scope="col"></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let wedstrijd of wedstrijden">
+      <td>
+        <div>
+          {{wedstrijd.datum}}
+        </div>
+        <div>
+          {{wedstrijd.tijd}}
+        </div>
+      </td>
+      <td>
+        {{wedstrijd.team1 + " - " + wedstrijd.team2}}
+      </td>
+      <td>
+        <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" [(ngModel)]="model1">
+          <label ngbButtonLabel [ngClass]="{'btn-success': model1 === 'ja', 'btn-light': model1 !== 'ja'}">
+            <fa-icon [icon]="jaIcon"></fa-icon>
+            <input ngbButton type="radio" value="ja">
+          </label>
+          <label ngbButtonLabel [ngClass]="{'btn-warning': model1 === 'misschien', 'btn-light': model1 !== 'misschien'}">
+            <fa-icon [icon]="misschienIcon"></fa-icon>
+            <input ngbButton type="radio" value="misschien">
+          </label>
+          <label ngbButtonLabel [ngClass]="{'btn-danger': model1 === 'nee', 'btn-light': model1 !== 'nee'}">
+            <fa-icon [icon]="neeIcon"></fa-icon>
+            <input ngbButton type="radio" value="nee">
+          </label>
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>

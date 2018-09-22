@@ -1,3 +1,43 @@
+<table class="table table-sm" *ngFor="let dag of dagen">
+  <thead>
+    <tr>
+      <th scope="col" colspan="4">{{dag.datum}}</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let item of dag.items">
+      <ng-container *ngIf="item.type === 'zaalwacht'">
+        <td>
+          {{item.tijd}}
+        </td>
+        <td colspan="3">
+          Zaalwacht: <span class="badge big-badge badge-success">{{item.zaalwachtTeam}}</span>
+        </td>
+      </ng-container>
+      <ng-container *ngIf="item.type === 'wedstrijd'">
+        <td>
+          {{item.tijd}}
+        </td>
+        <td>
+          <span [ngClass]="{'badge big-badge': item.isTeam1 || item.isCoachTeam1, 'badge-success': item.isTeam1, 'badge-info': item.isCoachTeam1}">{{item.team1}}</span>
+          -
+          <span [ngClass]="{'badge big-badge': item.isTeam2 || item.isCoachTeam2, 'badge-success': item.isTeam2, 'badge-info': item.isCoachTeam2}">{{item.team2}}</span>
+        </td>
+        <td>
+          <span [ngClass]="{'badge big-badge badge-success': item.isScheidsrechter}" style="white-space: pre-wrap">
+            <fa-icon [icon]="scheidsrechterIcon"></fa-icon> {{item.scheidsrechter}}
+          </span>
+        </td>
+        <td>
+          <span [ngClass]="{'badge big-badge badge-success': item.isTellers}">
+            <fa-icon [icon]="tellersIcon"> </fa-icon>{{item.tellers}}
+          </span>
+        </td>
+      </ng-container>
+    </tr>
+  </tbody>
+</table>
+<!-- 
 <table class="table table-hover">
   <thead>
     <tr>
@@ -169,4 +209,4 @@
       </tr>
     </tbody>
   </table>
-</div>
+</div> -->

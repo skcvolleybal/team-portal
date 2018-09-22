@@ -1,3 +1,39 @@
-<p>
-  scheidsco works!
-</p>
+<table class="table" *ngFor="let speeldag of speeldagen">
+  <thead>
+    <tr>
+      <th scope="col" colspan="2">{{speeldag.datum}}, Zaalwacht: {{speeldag.zaalwacht}}</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let speeltijd of speeldag.speeltijden">
+      <td>
+        {{speeltijd.tijd}}
+      </td>
+      <td>
+        <div *ngFor="let wedstrijd of speeltijd.wedstrijden" style="display: flex; flex-wrap: nowrap">
+          <div>{{wedstrijd.teams}}</div>
+
+          <div class="d-inline-block" ngbDropdown #myDrop="ngbDropdown">
+            <button class="btn btn-outline-primary mr-2" id="dropdownManual" ngbDropdownAnchor (focus)="myDrop.open()">
+              {{wedstrijd.scheidsrechter}}
+            </button>
+            <div ngbDropdownMenu aria-labelledby="dropdownManual">
+              <button class="dropdown-item" *ngFor="let scheidsrechter of scheidsrechters">{{scheidsrechter.name}}</button>
+            </div>
+          </div>
+          <div>
+            <div class="d-inline-block" ngbDropdown #myDrop1="ngbDropdown">
+              <button class="btn btn-outline-primary mr-2" id="dropdownManual" ngbDropdownAnchor (focus)="myDrop1.open()">
+                {{wedstrijd.tellers}}
+              </button>
+              <div ngbDropdownMenu aria-labelledby="dropdownManual">
+                <button class="dropdown-item" *ngFor="let teller of tellers">{{teller.name}}</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>

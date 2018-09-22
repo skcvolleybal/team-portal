@@ -1,0 +1,45 @@
+<table class="table table-sm">
+  <thead>
+    <tr>
+      <th scope="col">Tijd</th>
+      <th scope="col">Wedstrijd</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <ng-container *ngFor="let wedstrijd of wedstrijden">
+      <tr>
+        <th scope="row">{{wedstrijd.tijd}}</th>
+        <td>
+          <span [ngClass]="{'badge big-badge': wedstrijd.isTeam1 || wedstrijd.isCoachTeam1, 'badge-success': wedstrijd.isTeam1, 'badge-info': wedstrijd.isCoachTeam1}">{{wedstrijd.team1}}</span>
+          -
+          <span [ngClass]="{'badge big-badge': wedstrijd.isTeam2 || wedstrijd.isCoachTeam2, 'badge-success': wedstrijd.isTeam2, 'badge-info': wedstrijd.isCoachTeam2}">{{wedstrijd.team2}}</span>
+        </td>
+        <td [attr.rowspan]="wedstrijd.eigenWedstrijden.length == 0 ? 1 : wedstrijd.eigenWedstrijden.length">
+          <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" [(ngModel)]="model1">
+            <label ngbButtonLabel [ngClass]="{'btn-success': model1 === 'ja', 'btn-light': model1 !== 'ja'}">
+              <fa-icon [icon]="jaIcon"></fa-icon>
+              <input ngbButton type="radio" value="ja">
+            </label>
+            <label ngbButtonLabel [ngClass]="{'btn-warning': model1 === 'misschien', 'btn-light': model1 !== 'misschien'}">
+              <fa-icon [icon]="misschienIcon"></fa-icon>
+              <input ngbButton type="radio" value="misschien">
+            </label>
+            <label ngbButtonLabel [ngClass]="{'btn-danger': model1 === 'nee', 'btn-light': model1 !== 'nee'}">
+              <fa-icon [icon]="neeIcon"></fa-icon>
+              <input ngbButton type="radio" value="nee">
+            </label>
+          </div>
+        </td>
+      </tr>
+      <tr *ngFor="let eigenWedstrijd of wedstrijd.eigenWedstrijden" class="eigen-wedstrijd">
+        <td></td>
+        <td>
+          <span [ngClass]="{'badge big-badge': wedstrijd.isTeam1 || wedstrijd.isCoachTeam1, 'badge-success': wedstrijd.isTeam1, 'badge-info': wedstrijd.isCoachTeam1}">{{wedstrijd.team1}}</span>
+          -
+          <span [ngClass]="{'badge big-badge': wedstrijd.isTeam2 || wedstrijd.isCoachTeam2, 'badge-success': wedstrijd.isTeam2, 'badge-info': wedstrijd.isCoachTeam2}">{{wedstrijd.team2}}</span>
+        </td>
+      </tr>
+    </ng-container>
+  </tbody>
+</table>
