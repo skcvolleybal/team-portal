@@ -33,37 +33,19 @@
         </td>
       </tr>
       <tr *ngFor="let eigenWedstrijd of wedstrijd.eigenWedstrijden" class="eigen-wedstrijd">
-        <td></td>
-        <td>
-          <div class="form-row">
-            <div class="col col-form-label">
-              <span [ngClass]="{'badge big-badge': eigenWedstrijd.isTeam1 || eigenWedstrijd.isCoachTeam1, 'badge-success': eigenWedstrijd.isTeam1, 'badge-info': eigenWedstrijd.isCoachTeam1}">{{eigenWedstrijd.team1}}</span>
-              -
-              <span [ngClass]="{'badge big-badge': eigenWedstrijd.isTeam2 || eigenWedstrijd.isCoachTeam2, 'badge-success': eigenWedstrijd.isTeam2, 'badge-info': eigenWedstrijd.isCoachTeam2}">{{eigenWedstrijd.team2}}</span>
-            </div>
-            <div class="col">
-              <div class="input-group">
-                <div class="input-group-prepend">
-                  <div class="input-group-text">
-                    <fa-icon [icon]="scheidsrechterIcon"></fa-icon>
-                  </div>
-                </div>
-                <div class="form-control" [ngClass]="{'btn-success': eigenWedstrijd.isScheidsrechter}">
-                  {{eigenWedstrijd.scheidsrechter}}
-                </div>
-              </div>
-            </div>
-            <div class="col">
-              <div class="input-group">
-                <div class="input-group-prepend">
-                  <div class="input-group-text">
-                    <fa-icon [icon]="teamIcon"> </fa-icon>
-                  </div>
-                </div>
-                <div class="form-control" [ngClass]="{'btn-success': eigenWedstrijd.isTellers}">
-                  {{eigenWedstrijd.tellers}}
-                </div>
-              </div>
+        <td colspan="3">
+          <div class="card" style="width: 18rem;">
+            <div class="card-body">
+              <h5 class="card-title">
+                <app-wedstrijd [wedstrijd]="eigenWedstrijd"></app-wedstrijd>
+              </h5>
+              <h6 class="card-subtitle mb-2 text-muted">
+                {{wedstrijd.tijd}}, {{wedstrijd.locatie}}
+              </h6>
+              <p class="card-text">
+                <app-scheidsrechter [isScheidsrechter]="eigenWedstrijd.isScheidsrechter" [scheidsrechter]="eigenWedstrijd.scheidsrechter"></app-scheidsrechter>
+                <app-tellers [isTellers]="eigenWedstrijd.isTellers" [tellers]="eigenWedstrijd.tellers"></app-tellers>
+              </p>
             </div>
           </div>
         </td>

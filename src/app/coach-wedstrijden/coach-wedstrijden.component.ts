@@ -56,7 +56,7 @@ export class CoachWedstrijdenComponent implements OnInit {
           team1: 'SKC HS 2',
           isTeam1: false,
           isCoachTeam1: false,
-          team2: 'Kalinko HS 2',
+          team2: 'Kalinko HS 3',
           isTeam: false,
           isCoachTeam2: false,
           scheidsrechter: 'Jonathan',
@@ -68,16 +68,16 @@ export class CoachWedstrijdenComponent implements OnInit {
         {
           datum: '21 okt',
           tijd: '19:30',
-          team1: 'SKC HS 2',
-          isTeam1: true,
+          team1: 'SKC HS 4',
+          isTeam1: false,
           isCoachTeam1: false,
           team2: 'Kalinko HS 2',
           isTeam: false,
           isCoachTeam2: false,
           scheidsrechter: 'Kevin Fung',
           isScheidsrechter: false,
-          tellers: 'Heren 1',
-          isTellers: false,
+          tellers: 'SKC HS 2',
+          isTellers: true,
           locatie: 'Universitair Sport Centrum, Sportweg 6 2333 AS Leiden'
         }
       ]

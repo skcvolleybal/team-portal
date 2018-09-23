@@ -1,0 +1,5 @@
+<div  class="form-group">
+  <span [ngClass]="{'badge big-badge': wedstrijd.isTeam1 || wedstrijd.isCoachTeam1, 'badge-success': wedstrijd.isTeam1, 'badge-info': wedstrijd.isCoachTeam1}">{{wedstrijd.team1}}</span>
+  -
+  <span [ngClass]="{'badge big-badge': wedstrijd.isTeam2 || wedstrijd.isCoachTeam2, 'badge-success': wedstrijd.isTeam2, 'badge-info': wedstrijd.isCoachTeam2}">{{wedstrijd.team2}}</span>
+</div>

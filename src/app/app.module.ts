@@ -13,6 +13,9 @@ import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { WedstrijdenComponent } from './wedstrijden/wedstrijden.component';
 import { CoachWedstrijdenComponent } from './coach-wedstrijden/coach-wedstrijden.component';
+import { TellersComponent } from './tellers/tellers.component';
+import { ScheidsrechterComponent } from './scheidsrechter/scheidsrechter.component';
+import { WedstrijdComponent } from './wedstrijd/wedstrijd.component';
 
 const appRoutes: Routes = [
   { path: '', redirectTo: 'mijn-overzicht', pathMatch: 'full' },
@@ -30,7 +33,10 @@ const appRoutes: Routes = [
     MijnOverzichtComponent,
     WedstrijdenComponent,
     StatistiekenComponent,
-    CoachWedstrijdenComponent
+    CoachWedstrijdenComponent,
+    TellersComponent,
+    ScheidsrechterComponent,
+    WedstrijdComponent
   ],
   imports: [
     FormsModule,

@@ -1,0 +1,15 @@
+<!-- <div class="input-group">
+  <div class="input-group-prepend">
+    <div class="input-group-text">
+      <fa-icon [icon]="scheidsrechterIcon"> </fa-icon>
+    </div>
+  </div>
+  <div class="form-control" [ngClass]="{'btn-success': isScheidsrechter}">
+    {{scheidsrechter}}
+  </div>
+</div> -->
+<div>
+  <span class="badge" [ngClass]="{'badge-success': isScheidsrechter, 'badge-secondary': !isScheidsrechter}" style="white-space: pre-wrap">
+    <fa-icon [icon]="scheidsrechterIcon"></fa-icon> {{scheidsrechter}}
+  </span>
+</div>
