@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import {
-  faTimes,
-  faQuestion,
+  faCalendarCheck,
   faCheck,
-  faUser,
-  faUsers
+  faQuestion,
+  faTimes,
+  faUser
 } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
@@ -17,7 +17,7 @@ export class CoachWedstrijdenComponent implements OnInit {
   misschienIcon = faQuestion;
   jaIcon = faCheck;
   scheidsrechterIcon = faUser;
-  teamIcon = faUsers;
+  teamIcon = faCalendarCheck;
 
   wedstrijden = [
     {
@@ -34,6 +34,7 @@ export class CoachWedstrijdenComponent implements OnInit {
       tellers: 'Heren 1',
       isTellers: false,
       locatie: 'Universitair Sport Centrum, Sportweg 6 2333 AS Leiden',
+      beschikbaarheid: 'ja',
       eigenWedstrijden: [
         {
           datum: '20 okt',
@@ -97,6 +98,7 @@ export class CoachWedstrijdenComponent implements OnInit {
       isTellers: false,
       locatie: 'Universitair Sport Centrum, Sportweg 6 2333 AS Leiden',
       isCollapsed: false,
+      beschikbaarheid: 'ja',
       eigenWedstrijden: []
     },
     {

@@ -17,23 +17,10 @@
         </div>
       </td>
       <td>
-        {{wedstrijd.team1 + " - " + wedstrijd.team2}}
+        <app-wedstrijd [wedstrijd]="wedstrijd"></app-wedstrijd>
       </td>
       <td>
-        <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" [(ngModel)]="model1">
-          <label ngbButtonLabel [ngClass]="{'btn-success': model1 === 'ja', 'btn-light': model1 !== 'ja'}">
-            <fa-icon [icon]="jaIcon"></fa-icon>
-            <input ngbButton type="radio" value="ja">
-          </label>
-          <label ngbButtonLabel [ngClass]="{'btn-warning': model1 === 'misschien', 'btn-light': model1 !== 'misschien'}">
-            <fa-icon [icon]="misschienIcon"></fa-icon>
-            <input ngbButton type="radio" value="misschien">
-          </label>
-          <label ngbButtonLabel [ngClass]="{'btn-danger': model1 === 'nee', 'btn-light': model1 !== 'nee'}">
-            <fa-icon [icon]="neeIcon"></fa-icon>
-            <input ngbButton type="radio" value="nee">
-          </label>
-        </div>
+        <app-beschikbaarheid [beschikbaarheid]="wedstrijd.beschikbaarheid"></app-beschikbaarheid>
       </td>
     </tr>
   </tbody>

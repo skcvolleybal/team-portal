@@ -19,19 +19,13 @@
           {{item.tijd}}
         </td>
         <td>
-          <span [ngClass]="{'badge big-badge': item.isTeam1 || item.isCoachTeam1, 'badge-success': item.isTeam1, 'badge-info': item.isCoachTeam1}">{{item.team1}}</span>
-          -
-          <span [ngClass]="{'badge big-badge': item.isTeam2 || item.isCoachTeam2, 'badge-success': item.isTeam2, 'badge-info': item.isCoachTeam2}">{{item.team2}}</span>
+          <app-wedstrijd [wedstrijd]="item"></app-wedstrijd>
         </td>
         <td>
-          <span [ngClass]="{'badge big-badge badge-success': item.isScheidsrechter}" style="white-space: pre-wrap">
-            <fa-icon [icon]="scheidsrechterIcon"></fa-icon> {{item.scheidsrechter}}
-          </span>
+          <app-scheidsrechter [scheidsrechter]="item.scheidsrechter" [isScheidsrechter]="item.isScheidsrechter"></app-scheidsrechter>
         </td>
         <td>
-          <span [ngClass]="{'badge big-badge badge-success': item.isTellers}">
-            <fa-icon [icon]="tellersIcon"> </fa-icon>{{item.tellers}}
-          </span>
+          <app-tellers [tellers]="item.tellers" [isTellers]="item.isTellers"> </app-tellers>
         </td>
       </ng-container>
     </tr>

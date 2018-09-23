@@ -27,8 +27,9 @@
                 Zaalwacht
               </label>
             </div>
-            <select class="custom-select" [(ngModel)]="speeldag.zaalwacht">
-              <option *ngFor="let team of teams">{{team}}</option>
+            <select class="custom-select" [(ngModel)]="speeldag.zaalwacht" [ngClass]="{'is-invalid': !speeldag.zaalwacht, 'is-valid': speeldag.zaalwacht}">
+              <option></option>
+              <option *ngFor="let team of teams" [value]="team.naam">{{team.naam + " (" + team.geteld + ")"}}</option>
             </select>
           </div>
         </div>
@@ -38,35 +39,48 @@
   <tbody>
     <tr *ngFor="let speeltijd of speeldag.speeltijden">
       <td>
-        <div class="form-row col-form-label">{{speeltijd.tijd}}</div>
+        <div class="col-form-label">{{speeltijd.tijd}}</div>
       </td>
       <td>
         <div *ngFor="let wedstrijd of speeltijd.wedstrijden" class="form-row">
-          <div class="col col-form-label">{{wedstrijd.teams}}</div>
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">{{wedstrijd.teams}}</h5>
+              <div class="form-row">
+                <div class="col">
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <label class="input-group-text">
+                        <fa-icon [icon]="scheidsrechterIcon"></fa-icon>
+                      </label>
+                    </div>
+                    <select [(ngModel)]="wedstrijd.scheidsrechter" class="form-control" [ngClass]="{'is-invalid': !wedstrijd.scheidsrechter, 'is-valid': wedstrijd.scheidsrechter}">
+                      <option></option>
+                      <optgroup *ngFor="let group of scheidsrechtersGroepen" [label]="group.name">
+                        <option *ngFor="let scheidsrechter of group.scheidsrechters" [value]="scheidsrechter.naam">
+                          {{scheidsrechter.naam + " (" + scheidsrechter.gefloten + ")"}}
+                        </option>
+                      </optgroup>
+                    </select>
+                  </div>
+                </div>
 
-          <div class="input-group col">
-            <div class="input-group-prepend">
-              <label class="input-group-text" for="inputGroupSelect01">
-                <fa-icon [icon]="scheidsrechterIcon"></fa-icon>
-              </label>
-            </div>
-            <select [ngModel]="wedstrijd.scheidsrechter" class="form-control">
-              <optgroup *ngFor="let group of scheidsrechtersGroepen" [label]="group.name">
-                <option *ngFor="let scheidsrechter of group.scheidsrechters" value="{{scheidsrechter}}">{{scheidsrechter}}</option>
-              </optgroup>
-            </select>
-          </div>
-
-          <div class="col">
-            <div class="input-group">
-              <div class="input-group-prepend">
-                <label class="input-group-text" for="inputGroupSelect01">
-                  <fa-icon [icon]="teamIcon"></fa-icon>
-                </label>
+                <div class="col">
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <label class="input-group-text">
+                        <fa-icon [icon]="teamIcon"></fa-icon>
+                      </label>
+                    </div>
+                    <select [(ngModel)]="wedstrijd.tellers" class="form-control" [ngClass]="{'is-invalid': !wedstrijd.tellers, 'is-valid': wedstrijd.tellers}">
+                      <option></option>
+                      <option *ngFor="let team of teams" [value]="team.naam">
+                        {{team.naam + " (" + team.geteld + ")"}}
+                      </option>
+                    </select>
+                  </div>
+                </div>
               </div>
-              <select [ngModel]="wedstrijd.tellers" class="form-control">
-                <option *ngFor="let team of teams">{{team}}</option>
-              </select>
             </div>
           </div>
         </div>

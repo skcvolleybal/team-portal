@@ -1,5 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { faUser, faUsers, faPlusSquare, faMinusSquare } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCalendarCheck,
+  faMinusSquare,
+  faPlusSquare,
+  faUser
+} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-mijn-overzicht',
@@ -8,7 +13,7 @@ import { faUser, faUsers, faPlusSquare, faMinusSquare } from '@fortawesome/free-
 })
 export class MijnOverzichtComponent implements OnInit {
   scheidsrechterIcon = faUser;
-  tellersIcon = faUsers;
+  tellersIcon = faCalendarCheck;
   collapseIcon = faMinusSquare;
   openIcon = faPlusSquare;
   dagen = [
@@ -234,9 +239,7 @@ export class MijnOverzichtComponent implements OnInit {
     }
   ];
 
-  constructor() { }
+  constructor() {}
 
-  ngOnInit() {
-  }
-
+  ngOnInit() {}
 }

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { faCalendarCheck, faUser } from '@fortawesome/free-solid-svg-icons';
 import * as Enumerable from 'linq';
-import { faUser, faUsers } from '@fortawesome/free-solid-svg-icons';
 @Component({
   selector: 'app-scheidsco',
   templateUrl: './scheidsco.component.html',
@@ -8,23 +8,23 @@ import { faUser, faUsers } from '@fortawesome/free-solid-svg-icons';
 })
 export class ScheidscoComponent implements OnInit {
   scheidsrechterIcon = faUser;
-  teamIcon = faUsers;
+  teamIcon = faCalendarCheck;
   scheidsrechterType = 'niveau';
   teams = [
-    'SKC HS 1',
-    'SKC HS 2',
-    'SKC HS 3',
-    'SKC HS 4',
-    'SKC HS 5',
-    'SKC HS 6',
-    'SKC HS 7',
-    'SKC HS 8'
+    { naam: 'SKC HS 1', geteld: 1 },
+    { naam: 'SKC HS 2', geteld: 2 },
+    { naam: 'SKC HS 3', geteld: 1 },
+    { naam: 'SKC HS 4', geteld: 3 },
+    { naam: 'SKC HS 5', geteld: 1 },
+    { naam: 'SKC HS 6', geteld: 5 },
+    { naam: 'SKC HS 7', geteld: 1 },
+    { naam: 'SKC HS 8', geteld: 2 }
   ];
   scheidsrechtersGroepen;
   scheidsrechterData = [
-    { naam: 'Jonathan Neuteboom', niveau: 'V4', team: 'SKC HS 2' },
-    { naam: 'Kevin Fung', niveau: 'V5', team: 'Geen Team' },
-    { naam: 'Tanita de Graaf', niveau: 'V4', team: 'SKC DS 2' }
+    { naam: 'Jonathan Neuteboom', niveau: 'V5', team: 'SKC HS 2', gefloten: 4 },
+    { naam: 'Kevin Fung', niveau: 'V4', team: 'Geen Team', gefloten: 2 },
+    { naam: 'Tanita de Graaf', niveau: 'V5', team: 'SKC DS 2', gefloten: 0 }
   ];
   speeldagen = [
     {
@@ -56,17 +56,17 @@ export class ScheidscoComponent implements OnInit {
             {
               teams: 'SKC HS 2 - Kalinko HS 2',
               scheidsrechter: 'Kevin Fung',
-              tellers: 'Heren 1'
+              tellers: 'SKC HS 3'
             },
             {
               teams: 'SKC HS 2 - Kalinko HS 2',
               scheidsrechter: 'Kevin Fung',
-              tellers: 'Heren 1'
+              tellers: 'SKC HS 3'
             },
             {
               teams: 'SKC HS 2 - Kalinko HS 2',
               scheidsrechter: 'Kevin Fung',
-              tellers: 'Heren 1'
+              tellers: 'SKC HS 3'
             }
           ]
         }
@@ -82,17 +82,17 @@ export class ScheidscoComponent implements OnInit {
             {
               teams: 'SKC HS 2 - Kalinko HS 2',
               scheidsrechter: 'Kevin Fung',
-              tellers: 'Heren 1'
+              tellers: 'SKC HS 3'
             },
             {
               teams: 'SKC HS 2 - Kalinko HS 2',
               scheidsrechter: 'Kevin Fung',
-              tellers: 'Heren 1'
+              tellers: 'SKC HS 3'
             },
             {
               teams: 'SKC HS 2 - Kalinko HS 2',
               scheidsrechter: 'Kevin Fung',
-              tellers: 'Heren 1'
+              tellers: 'SKC HS 3'
             }
           ]
         },
@@ -102,22 +102,22 @@ export class ScheidscoComponent implements OnInit {
             {
               teams: 'SKC HS 2 - Kalinko HS 2',
               scheidsrechter: 'Kevin Fung',
-              tellers: 'Heren 1'
+              tellers: 'SKC HS 3'
             },
             {
               teams: 'SKC HS 2 - Kalinko HS 2',
               scheidsrechter: 'Kevin Fung',
-              tellers: 'Heren 1'
+              tellers: 'SKC HS 3'
             },
             {
               teams: 'SKC HS 2 - Kalinko HS 2',
               scheidsrechter: 'Kevin Fung',
-              tellers: 'Heren 1'
+              tellers: 'SKC HS 3'
             }
           ]
         }
       ],
-      zaalwacht: 'SKC HS 2'
+      zaalwacht: 'SKC HS 3'
     }
   ];
 
@@ -126,7 +126,7 @@ export class ScheidscoComponent implements OnInit {
   }
 
   setScheidsrechters() {
-    let result = [];
+    const result = [];
     this.scheidsrechterData.forEach(scheidsrechter => {
       let binName;
       switch (this.scheidsrechterType) {
@@ -140,24 +140,33 @@ export class ScheidscoComponent implements OnInit {
           binName = 'naam';
           break;
       }
-      const scheidsrechterType = this.scheidsrechterType;
+
       const bin = Enumerable.from(result).firstOrDefault(
-        bin => bin.name.toLowerCase() === scheidsrechterType
+        binItem => binItem.name.toUpperCase() === binName.toUpperCase()
       );
 
       if (!bin) {
         const newBin = {
           name: binName.charAt(0).toUpperCase() + binName.substr(1),
-          scheidsrechters: [scheidsrechter.naam]
+          scheidsrechters: [scheidsrechter]
         };
         result.push(newBin);
       } else {
-        bin.scheidsrechters.push(scheidsrechter.naam);
+        bin.scheidsrechters.push(scheidsrechter);
       }
     });
 
-    this.scheidsrechtersGroepen = result;
-    console.log(this.scheidsrechtersGroepen);
+    Enumerable.from(result).forEach(bin => {
+      bin.scheidsrechters = Enumerable.from(bin.scheidsrechters)
+        .orderByDescending(scheidsrechter => {
+          return scheidsrechter['gefloten'];
+        })
+        .toArray();
+    });
+
+    this.scheidsrechtersGroepen = Enumerable.from(result)
+      .orderBy(bin => bin['name'])
+      .toArray();
   }
 
   constructor() {}

@@ -1,5 +1,5 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { faUsers } from '@fortawesome/free-solid-svg-icons';
+import { Component, Input, OnInit } from '@angular/core';
+import { faUser } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-scheidsrechter',
@@ -12,7 +12,7 @@ export class ScheidsrechterComponent implements OnInit {
   @Input()
   scheidsrechter;
 
-  scheidsrechterIcon = faUsers;
+  scheidsrechterIcon = faUser;
 
   constructor() {}
 

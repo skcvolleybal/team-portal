@@ -1,5 +1,5 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { faUsers } from '@fortawesome/free-solid-svg-icons';
+import { Component, Input, OnInit } from '@angular/core';
+import { faCalendarCheck } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-tellers',
@@ -12,7 +12,7 @@ export class TellersComponent implements OnInit {
   @Input()
   tellers;
 
-  teamIcon = faUsers;
+  teamIcon = faCalendarCheck;
 
   constructor() {}
 

@@ -1,21 +1,21 @@
-import { BrowserModule } from '@angular/platform-browser';
-
 import { NgModule } from '@angular/core';
-import { NgbModule, NgbRadioGroup } from '@ng-bootstrap/ng-bootstrap';
+import { FormsModule } from '@angular/forms';
+import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule, Routes } from '@angular/router';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { AppComponent } from './app.component';
-import { MijnOverzichtComponent } from './mijn-overzicht/mijn-overzicht.component';
-
-import { ScheidscoComponent } from './scheidsco/scheidsco.component';
-import { StatistiekenComponent } from './statistieken/statistieken.component';
-import { FormsModule } from '@angular/forms';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { WedstrijdenComponent } from './wedstrijden/wedstrijden.component';
+import { BeschikbaarheidComponent } from './beschikbaarheid/beschikbaarheid.component';
 import { CoachWedstrijdenComponent } from './coach-wedstrijden/coach-wedstrijden.component';
-import { TellersComponent } from './tellers/tellers.component';
+import { FluitAanwezigheidComponent } from './fluit-aanwezigheid/fluit-aanwezigheid.component';
+import { MijnOverzichtComponent } from './mijn-overzicht/mijn-overzicht.component';
+import { ScheidscoComponent } from './scheidsco/scheidsco.component';
 import { ScheidsrechterComponent } from './scheidsrechter/scheidsrechter.component';
+import { StatistiekenComponent } from './statistieken/statistieken.component';
+import { TellersComponent } from './tellers/tellers.component';
 import { WedstrijdComponent } from './wedstrijd/wedstrijd.component';
+import { WedstrijdenComponent } from './wedstrijden/wedstrijden.component';
 
 const appRoutes: Routes = [
   { path: '', redirectTo: 'mijn-overzicht', pathMatch: 'full' },
@@ -43,6 +43,11 @@ const appRoutes: Routes = [
     path: 'coach-wedstrijden',
     component: CoachWedstrijdenComponent,
     data: { title: 'Coach Wedstrijden' }
+  },
+  {
+    path: 'fluit-aanwezigheid',
+    component: FluitAanwezigheidComponent,
+    data: { title: 'Fluit Aanwezigheid' }
   }
 ];
 
@@ -56,7 +61,9 @@ const appRoutes: Routes = [
     CoachWedstrijdenComponent,
     TellersComponent,
     ScheidsrechterComponent,
-    WedstrijdComponent
+    WedstrijdComponent,
+    BeschikbaarheidComponent,
+    FluitAanwezigheidComponent
   ],
   imports: [
     FormsModule,

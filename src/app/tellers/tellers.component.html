@@ -1,15 +1,5 @@
-<!-- <div class="input-group">
-  <div class="input-group-prepend">
-    <div class="input-group-text">
-      <fa-icon [icon]="teamIcon"> </fa-icon>
-    </div>
-  </div>
-  <div class="form-control" [ngClass]="{'btn-success': isTellers}">
-    {{tellers}}
-  </div>
-</div> -->
 <div>
-  <span class="badge" [ngClass]="{'badge-success': isTellers, 'badge-secondary': !isTellers}" style="white-space: pre-wrap">
+  <span class="badge" [ngClass]="{'badge-success': isTellers, 'badge-light': !isTellers}">
     <fa-icon [icon]="teamIcon"></fa-icon> {{tellers}}
   </span>
 </div>
