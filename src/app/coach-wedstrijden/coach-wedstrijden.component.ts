@@ -21,7 +21,7 @@ export class CoachWedstrijdenComponent implements OnInit {
 
   wedstrijden = [
     {
-      datum: '21 okt',
+      datum: '21 oktober 2018',
       tijd: '19:30',
       team1: 'SKC HS 2',
       isTeam1: true,
@@ -49,22 +49,26 @@ export class CoachWedstrijdenComponent implements OnInit {
           isScheidsrechter: false,
           tellers: 'SKC HS 1',
           isTellers: false,
-          locatie: 'Universitair Sport Centrum, Sportweg 6 2333 AS Leiden'
+          locatie: 'Universitair Sport Centrum, Sportweg 6 2333 AS Leiden',
+          isThuis: true,
+          isMogelijk: true
         },
         {
           datum: '21 okt',
           tijd: '19:30',
-          team1: 'SKC HS 2',
+          team1: 'SKC HS 4',
           isTeam1: false,
           isCoachTeam1: false,
           team2: 'Kalinko HS 3',
           isTeam: false,
-          isCoachTeam2: false,
+          isCoachTeam2: true,
           scheidsrechter: 'Jonathan',
-          isScheidsrechter: true,
+          isScheidsrechter: false,
           tellers: 'SKC HS 1',
           isTellers: false,
-          locatie: 'Universitair Sport Centrum, Sportweg 6 2333 AS Leiden'
+          locatie: 'Universitair Sport Centrum, Sportweg 6 2333 AS Leiden',
+          isThuis: true,
+          isMogelijk: false
         },
         {
           datum: '21 okt',
@@ -75,8 +79,8 @@ export class CoachWedstrijdenComponent implements OnInit {
           team2: 'Kalinko HS 2',
           isTeam: false,
           isCoachTeam2: false,
-          scheidsrechter: 'Kevin Fung',
-          isScheidsrechter: false,
+          scheidsrechter: 'Jonathan Neuteboom',
+          isScheidsrechter: true,
           tellers: 'SKC HS 2',
           isTellers: true,
           locatie: 'Universitair Sport Centrum, Sportweg 6 2333 AS Leiden'
@@ -84,7 +88,7 @@ export class CoachWedstrijdenComponent implements OnInit {
       ]
     },
     {
-      datum: '21 okt',
+      datum: '28 oktober 2018',
       tijd: '19:30',
       team1: 'SKC HS 3',
       isTeam1: true,
@@ -102,7 +106,7 @@ export class CoachWedstrijdenComponent implements OnInit {
       eigenWedstrijden: []
     },
     {
-      datum: '21 okt',
+      datum: '10 november 2018',
       tijd: '19:30',
       team1: 'SKC HS 2',
       isTeam1: true,

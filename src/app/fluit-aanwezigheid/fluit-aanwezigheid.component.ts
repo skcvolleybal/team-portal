@@ -61,6 +61,78 @@ export class FluitAanwezigheidComponent implements OnInit {
       ],
       eigenWedstrijden: [
         {
+          datum: '21 okt',
+          tijd: '19:30',
+          team1: 'SKC HS 2',
+          isTeam1: false,
+          isCoachTeam1: false,
+          team2: 'Kalinko HS 3',
+          isTeam: false,
+          isCoachTeam2: true,
+          scheidsrechter: 'Jonathan',
+          isScheidsrechter: true,
+          tellers: 'SKC HS 1',
+          isTellers: false,
+          locatie: 'De Does, Amaliaplein 40, 2351PV LEIDERDORP',
+          isThuis: false,
+          isMogelijk: true
+        }
+      ]
+    },
+    {
+      datum: '28 oktober 2018',
+      speeltijden: [
+        {
+          tijd: '19:30',
+          wedstrijden: [
+            {
+              team1: 'SKC HS 1',
+              isTeam1: false,
+              team2: 'Kalinko HS 2',
+              isTeam: false
+            },
+            {
+              team1: 'SKC HS 2',
+              isTeam1: false,
+              team2: 'Delta HS 2',
+              isTeam: false
+            },
+            {
+              team1: 'SKC HS 3',
+              isTeam1: false,
+              team2: 'VCO HS 2',
+              isTeam: false
+            }
+          ],
+          beschikbaarheid: 'ja'
+        },
+        {
+          tijd: '21:30',
+          wedstrijden: [
+            {
+              team1: 'SKC HS 4',
+              isTeam1: false,
+              team2: 'Kalinko HS 2',
+              isTeam: false
+            },
+            {
+              team1: 'SKC HS 5',
+              isTeam1: false,
+              team2: 'Delta HS 2',
+              isTeam: false
+            },
+            {
+              team1: 'SKC HS 6',
+              isTeam1: false,
+              team2: 'VCO HS 2',
+              isTeam: false
+            }
+          ],
+          beschikbaarheid: null
+        }
+      ],
+      eigenWedstrijden: [
+        {
           datum: '20 okt',
           tijd: '19:30',
           team1: 'Kalinko HS 2',
@@ -73,8 +145,9 @@ export class FluitAanwezigheidComponent implements OnInit {
           isScheidsrechter: false,
           tellers: 'SKC HS 1',
           isTellers: false,
-          locatie: "Steenwijklaan, Steenwijklaan 16, 2541RL 'S-GRAVENHAGE",
-          isThuis: false
+          locatie: 'Steenwijklaan, Steenwijklaan 16, 2541RL S-GRAVENHAGE',
+          isThuis: false,
+          isMogelijk: false
         },
         {
           datum: '21 okt',
@@ -90,7 +163,8 @@ export class FluitAanwezigheidComponent implements OnInit {
           tellers: 'SKC HS 1',
           isTellers: false,
           locatie: 'De Does, Amaliaplein 40, 2351PV LEIDERDORP',
-          isThuis: false
+          isThuis: false,
+          isMogelijk: true
         }
       ]
     }

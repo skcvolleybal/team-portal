@@ -1,5 +1,5 @@
 <table class="table table-sm" *ngFor="let speeldag of speeldagen">
-  <thead>
+  <thead class="thead-dark">
     <tr>
       <th scope="col" colspan="3">{{speeldag.datum}}</th>
     </tr>
@@ -7,19 +7,18 @@
   <tbody>
     <tr>
       <td colspan="3">
-        <div class="card" style="max-width: 24rem; margin:5px;" *ngFor="let wedstrijd of speeldag.eigenWedstrijden">
-          <div class="card-body">
-            <h5 class="card-title">
-              <app-wedstrijd [wedstrijd]="wedstrijd"></app-wedstrijd>
-            </h5>
-            <h6 class="card-subtitle mb-2 text-muted">
+        <ul class="list-group">
+          <li class="list-group-item" [ngClass]="{'list-group-item-warning': wedstrijd.isMogelijk, 'list-group-item-danger': !wedstrijd.isMogelijk}"
+            *ngFor="let wedstrijd of speeldag.eigenWedstrijden">
+            <app-wedstrijd [wedstrijd]="wedstrijd"></app-wedstrijd>
+            <div style="font-size: 12px;" class="card-subtitle mb-2 text-muted">
               {{wedstrijd.tijd}}, {{wedstrijd.locatie}}
-            </h6>
+            </div>
             <p class="card-text" *ngIf="wedstrijd.isThuis">
               <app-scheidsrechter [isScheidsrechter]="wedstrijd.isScheidsrechter" [scheidsrechter]="wedstrijd.scheidsrechter"></app-scheidsrechter>
             </p>
-          </div>
-        </div>
+          </li>
+        </ul>
       </td>
     </tr>
     <tr *ngFor="let speeltijd of speeldag.speeltijden">
