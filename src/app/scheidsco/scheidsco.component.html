@@ -1,36 +1,74 @@
+<div class="mx-auto" style="width: 200px; padding: 10px;">
+  <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" [(ngModel)]="scheidsrechterType" (change)="onChange()">
+    <label ngbButtonLabel class="btn-primary">
+      <input ngbButton type="radio" value="naam"> Naam
+    </label>
+    <label ngbButtonLabel class="btn-primary">
+      <input ngbButton type="radio" value="niveau"> Niveau
+    </label>
+    <label ngbButtonLabel class="btn-primary">
+      <input ngbButton type="radio" value="team"> Team
+    </label>
+  </div>
+</div>
+
 <table class="table" *ngFor="let speeldag of speeldagen">
   <thead>
     <tr>
-      <th scope="col" colspan="2">{{speeldag.datum}}, Zaalwacht: {{speeldag.zaalwacht}}</th>
+      <th scope="col" colspan="2">
+        <div class="form-row">
+          <div class="col col-form-label">
+            {{speeldag.datum}}
+          </div>
+
+          <div class="input-group col">
+            <div class="input-group-prepend">
+              <label class="input-group-text">
+                Zaalwacht
+              </label>
+            </div>
+            <select class="custom-select" [(ngModel)]="speeldag.zaalwacht">
+              <option *ngFor="let team of teams">{{team}}</option>
+            </select>
+          </div>
+        </div>
+
+      </th>
     </tr>
   </thead>
   <tbody>
     <tr *ngFor="let speeltijd of speeldag.speeltijden">
       <td>
-        {{speeltijd.tijd}}
+        <div class="form-row col-form-label">{{speeltijd.tijd}}</div>
       </td>
       <td>
-        <div *ngFor="let wedstrijd of speeltijd.wedstrijden" style="display: flex; flex-wrap: nowrap">
-          <div>{{wedstrijd.teams}}</div>
+        <div *ngFor="let wedstrijd of speeltijd.wedstrijden" class="form-row">
+          <div class="col col-form-label">{{wedstrijd.teams}}</div>
 
-          <div class="d-inline-block" ngbDropdown #myDrop="ngbDropdown">
-            <button class="btn btn-outline-primary mr-2" id="dropdownManual" ngbDropdownAnchor (focus)="myDrop.open()">
-              {{wedstrijd.scheidsrechter}}
-            </button>
-            <div ngbDropdownMenu aria-labelledby="dropdownManual">
-              <button class="dropdown-item" *ngFor="let scheidsrechter of scheidsrechters">{{scheidsrechter.name}}</button>
+          <div class="input-group col">
+            <div class="input-group-prepend">
+              <label class="input-group-text" for="inputGroupSelect01">
+                <fa-icon [icon]="scheidsrechterIcon"></fa-icon>
+              </label>
             </div>
+            <select [ngModel]="wedstrijd.scheidsrechter" class="form-control">
+              <optgroup *ngFor="let group of scheidsrechtersGroepen" [label]="group.name">
+                <option *ngFor="let scheidsrechter of group.scheidsrechters" value="{{scheidsrechter}}">{{scheidsrechter}}</option>
+              </optgroup>
+            </select>
           </div>
-          <div>
-            <div class="d-inline-block" ngbDropdown #myDrop1="ngbDropdown">
-              <button class="btn btn-outline-primary mr-2" id="dropdownManual" ngbDropdownAnchor (focus)="myDrop1.open()">
-                {{wedstrijd.tellers}}
-              </button>
-              <div ngbDropdownMenu aria-labelledby="dropdownManual">
-                <button class="dropdown-item" *ngFor="let teller of tellers">{{teller.name}}</button>
-              </div>
-            </div>
 
+          <div class="col">
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <label class="input-group-text" for="inputGroupSelect01">
+                  <fa-icon [icon]="teamIcon"></fa-icon>
+                </label>
+              </div>
+              <select [ngModel]="wedstrijd.tellers" class="form-control">
+                <option *ngFor="let team of teams">{{team}}</option>
+              </select>
+            </div>
           </div>
         </div>
       </td>
