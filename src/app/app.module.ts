@@ -14,6 +14,7 @@ import { ScheidscoComponent } from './scheidsco/scheidsco.component';
 import { ScheidsrechterComponent } from './scheidsrechter/scheidsrechter.component';
 import { StatistiekenComponent } from './statistieken/statistieken.component';
 import { TellersComponent } from './tellers/tellers.component';
+import { WedstrijdOverzichtComponent } from './wedstrijd-overzicht/wedstrijd-overzicht.component';
 import { WedstrijdComponent } from './wedstrijd/wedstrijd.component';
 import { WedstrijdenComponent } from './wedstrijden/wedstrijden.component';
 
@@ -28,6 +29,11 @@ const appRoutes: Routes = [
     path: 'wedstrijden',
     component: WedstrijdenComponent,
     data: { title: 'Wedstrijden' }
+  },
+  {
+    path: 'wedstrijd-overzicht',
+    component: WedstrijdOverzichtComponent,
+    data: { title: 'Wedstrijd Overzicht' }
   },
   {
     path: 'scheidsco',
@@ -63,7 +69,8 @@ const appRoutes: Routes = [
     ScheidsrechterComponent,
     WedstrijdComponent,
     BeschikbaarheidComponent,
-    FluitAanwezigheidComponent
+    FluitAanwezigheidComponent,
+    WedstrijdOverzichtComponent
   ],
   imports: [
     FormsModule,
