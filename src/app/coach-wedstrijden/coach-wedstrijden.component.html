@@ -15,7 +15,7 @@
           -
           <span [ngClass]="{'badge big-badge': wedstrijd.isTeam2 || wedstrijd.isCoachTeam2, 'badge-success': wedstrijd.isTeam2, 'badge-info': wedstrijd.isCoachTeam2}">{{wedstrijd.team2}}</span>
         </td>
-        <td [attr.rowspan]="wedstrijd.eigenWedstrijden.length == 0 ? 1 : wedstrijd.eigenWedstrijden.length">
+        <td [attr.rowspan]="wedstrijd.eigenWedstrijden.length == 0 ? 1 : wedstrijd.eigenWedstrijden.length + 1">
           <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" [(ngModel)]="model1">
             <label ngbButtonLabel [ngClass]="{'btn-success': model1 === 'ja', 'btn-light': model1 !== 'ja'}">
               <fa-icon [icon]="jaIcon"></fa-icon>
@@ -35,9 +35,37 @@
       <tr *ngFor="let eigenWedstrijd of wedstrijd.eigenWedstrijden" class="eigen-wedstrijd">
         <td></td>
         <td>
-          <span [ngClass]="{'badge big-badge': wedstrijd.isTeam1 || wedstrijd.isCoachTeam1, 'badge-success': wedstrijd.isTeam1, 'badge-info': wedstrijd.isCoachTeam1}">{{wedstrijd.team1}}</span>
-          -
-          <span [ngClass]="{'badge big-badge': wedstrijd.isTeam2 || wedstrijd.isCoachTeam2, 'badge-success': wedstrijd.isTeam2, 'badge-info': wedstrijd.isCoachTeam2}">{{wedstrijd.team2}}</span>
+          <div class="form-row">
+            <div class="col col-form-label">
+              <span [ngClass]="{'badge big-badge': eigenWedstrijd.isTeam1 || eigenWedstrijd.isCoachTeam1, 'badge-success': eigenWedstrijd.isTeam1, 'badge-info': eigenWedstrijd.isCoachTeam1}">{{eigenWedstrijd.team1}}</span>
+              -
+              <span [ngClass]="{'badge big-badge': eigenWedstrijd.isTeam2 || eigenWedstrijd.isCoachTeam2, 'badge-success': eigenWedstrijd.isTeam2, 'badge-info': eigenWedstrijd.isCoachTeam2}">{{eigenWedstrijd.team2}}</span>
+            </div>
+            <div class="col">
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <div class="input-group-text">
+                    <fa-icon [icon]="scheidsrechterIcon"></fa-icon>
+                  </div>
+                </div>
+                <div class="form-control" [ngClass]="{'btn-success': eigenWedstrijd.isScheidsrechter}">
+                  {{eigenWedstrijd.scheidsrechter}}
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <div class="input-group-text">
+                    <fa-icon [icon]="teamIcon"> </fa-icon>
+                  </div>
+                </div>
+                <div class="form-control" [ngClass]="{'btn-success': eigenWedstrijd.isTellers}">
+                  {{eigenWedstrijd.tellers}}
+                </div>
+              </div>
+            </div>
+          </div>
         </td>
       </tr>
     </ng-container>

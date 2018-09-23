@@ -2,7 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import {
   faTimes,
   faQuestion,
-  faCheck
+  faCheck,
+  faUser,
+  faUsers
 } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
@@ -14,6 +16,9 @@ export class CoachWedstrijdenComponent implements OnInit {
   neeIcon = faTimes;
   misschienIcon = faQuestion;
   jaIcon = faCheck;
+  scheidsrechterIcon = faUser;
+  teamIcon = faUsers;
+
   wedstrijden = [
     {
       datum: '21 okt',
