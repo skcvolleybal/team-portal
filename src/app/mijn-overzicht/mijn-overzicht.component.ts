@@ -35,7 +35,7 @@ export class MijnOverzichtComponent implements OnInit {
           isCoachTeam2: false,
           scheidsrechter: 'Kevin Fung',
           isScheidsrechter: false,
-          tellers: 'Heren 1',
+          tellers: 'SKC HS 1',
           isTellers: false,
           locatie: 'Universitair Sport Centrum, Sportweg 6 2333 AS Leiden',
           isCollapsed: false
@@ -51,7 +51,7 @@ export class MijnOverzichtComponent implements OnInit {
           isCoachTeam2: true,
           scheidsrechter: 'Kevin Fung',
           isScheidsrechter: false,
-          tellers: 'Heren 1',
+          tellers: 'SKC HS 1',
           isTellers: false,
           locatie: 'Universitair Sport Centrum, Sportweg 6 2333 AS Leiden',
           isCollapsed: false
@@ -68,7 +68,7 @@ export class MijnOverzichtComponent implements OnInit {
           isCoachTeam2: false,
           scheidsrechter: 'Kevin Fung',
           isScheidsrechter: false,
-          tellers: 'Heren 2',
+          tellers: 'SKC HS 2',
           isTellers: true,
           locatie: 'Universitair Sport Centrum, Sportweg 6 2333 AS Leiden',
           isCollapsed: false
@@ -85,7 +85,7 @@ export class MijnOverzichtComponent implements OnInit {
           isCoachTeam2: false,
           scheidsrechter: 'Jonathan Neuteboom',
           isScheidsrechter: true,
-          tellers: 'Heren 1',
+          tellers: 'SKC HS 1',
           isTellers: false,
           locatie: 'Universitair Sport Centrum, Sportweg 6 2333 AS Leiden',
           isCollapsed: false
@@ -112,7 +112,7 @@ export class MijnOverzichtComponent implements OnInit {
       isCoachTeam2: false,
       scheidsrechter: 'Kevin Fung',
       isScheidsrechter: false,
-      tellers: 'Heren 1',
+      tellers: 'SKC HS 1',
       isTellers: false,
       locatie: 'Universitair Sport Centrum, Sportweg 6 2333 AS Leiden'
     },
@@ -128,7 +128,7 @@ export class MijnOverzichtComponent implements OnInit {
       isCoachTeam2: true,
       scheidsrechter: 'Kevin Fung',
       isScheidsrechter: false,
-      tellers: 'Heren 1',
+      tellers: 'SKC HS 1',
       isTellers: false,
       locatie: 'Universitair Sport Centrum, Sportweg 6 2333 AS Leiden'
     },
@@ -144,7 +144,7 @@ export class MijnOverzichtComponent implements OnInit {
       isCoachTeam2: false,
       scheidsrechter: 'Kevin Fung',
       isScheidsrechter: false,
-      tellers: 'Heren 1',
+      tellers: 'SKC HS 1',
       isTellers: true,
       locatie: 'Universitair Sport Centrum, Sportweg 6 2333 AS Leiden'
     }
@@ -153,7 +153,7 @@ export class MijnOverzichtComponent implements OnInit {
   speeldagen = [
     {
       datum: '29 september 2018',
-      zaalwacht: 'Heren 1',
+      zaalwacht: 'SKC HS 1',
       isZaalwacht: false,
       wedstrijden: [
         {
@@ -166,7 +166,7 @@ export class MijnOverzichtComponent implements OnInit {
           isScheidsrechter: false,
           isCoachTeam1: false,
           isCoachTeam2: false,
-          tellers: 'Heren 1',
+          tellers: 'SKC HS 1',
           isTellers: false
         },
         {
@@ -179,7 +179,7 @@ export class MijnOverzichtComponent implements OnInit {
           isScheidsrechter: false,
           isCoachTeam1: true,
           isCoachTeam2: false,
-          tellers: 'Heren 2',
+          tellers: 'SKC HS 2',
           isTellers: true
         },
         {
@@ -192,14 +192,14 @@ export class MijnOverzichtComponent implements OnInit {
           isScheidsrechter: true,
           isCoachTeam1: false,
           isCoachTeam2: true,
-          tellers: 'Heren 1',
+          tellers: 'SKC HS 1',
           isTellers: false
         }
       ]
     },
     {
       datum: '7 oktober 2018',
-      zaalwacht: 'Heren 2',
+      zaalwacht: 'SKC HS 2',
       isZaalwacht: true,
       wedstrijden: [
         {
@@ -210,7 +210,7 @@ export class MijnOverzichtComponent implements OnInit {
           isTeam: false,
           scheidsrechter: 'Kevin Fung',
           isScheidsrechter: false,
-          tellers: 'Heren 1',
+          tellers: 'SKC HS 1',
           isTellers: false
         },
         {
@@ -221,7 +221,7 @@ export class MijnOverzichtComponent implements OnInit {
           isTeam: false,
           scheidsrechter: 'Jurrian Meijerhof',
           isScheidsrechter: false,
-          tellers: 'Heren 2',
+          tellers: 'SKC HS 2',
           isTellers: true
         },
         {
@@ -232,7 +232,7 @@ export class MijnOverzichtComponent implements OnInit {
           isTeam: false,
           scheidsrechter: 'Jonathan Neuteboom',
           isScheidsrechter: true,
-          tellers: 'Heren 1',
+          tellers: 'SKC HS 1',
           isTellers: false
         }
       ]

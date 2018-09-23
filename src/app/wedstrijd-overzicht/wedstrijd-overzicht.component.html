@@ -33,27 +33,30 @@
       <td colspan="3">
         <div class="card" style="max-width: 24rem; margin:5px;" *ngFor="let backupteam of wedstrijd.backupTeams">
           <div class="card-body">
-            <div *ngFor="let backupTeamWedstrijd of backupteam.wedstrijden">
-              <h5 class="card-title">
-                <app-wedstrijd [wedstrijd]="backupTeamWedstrijd"></app-wedstrijd>
+            <div (click)="toggle(backupteam)">
+              <div *ngFor="let backupTeamWedstrijd of backupteam.wedstrijden">
+                <h5 class="card-title">
+                  <app-wedstrijd [wedstrijd]="backupTeamWedstrijd"></app-wedstrijd>
+                </h5>
+                <h6 class="card-subtitle mb-2 text-muted">
+                  {{backupTeamWedstrijd.tijd}}, {{backupTeamWedstrijd.locatie}}
+                </h6>
+              </div>
+
+              <h5 class="card-title" *ngIf="backupteam.wedstrijden.length === 0">
+                {{backupteam.naam}} heeft geen Wedstrijd
               </h5>
-              <h6 class="card-subtitle mb-2 text-muted">
-                {{backupTeamWedstrijd.tijd}}, {{backupTeamWedstrijd.locatie}}
-              </h6>
             </div>
 
-            <h5 class="card-title" *ngIf="backupteam.wedstrijden.length === 0">
-              {{backupteam.naam}} heeft geen Wedstrijd
-            </h5>
-
-            <div class="mx-auto" style="width: 40px;" *ngIf="backupteam.isCollapsed" (click)="backupteam.isCollapsed = !backupteam.isCollapsed">
+            <div class="mx-auto" style="width: 40px;" *ngIf="backupteam.isCollapsed" (click)="toggle(backupteam)">
               <fa-icon [icon]="uitklappen"></fa-icon>
             </div>
 
             <div [ngbCollapse]="backupteam.isCollapsed">
               <div class="input-group" *ngFor="let speler of backupteam.spelers">
                 <div class="input-group-prepend">
-                  <button class="btn btn-outline-success" type="button" [disabled]="speler.meegespeeldDezeMaand >= 2 || speler.meegespeeldDitJaar >= 11">
+                  <button class="btn" type="button" [disabled]="speler.meegespeeldDezeMaand >= 2 || speler.meegespeeldDitJaar >= 11"
+                    [ngClass]="{'btn-outline-secondary': speler.meegespeeldDezeMaand >= 2 || speler.meegespeeldDitJaar >= 11, 'btn-outline-success': speler.meegespeeldDezeMaand < 2 && speler.meegespeeldDitJaar < 11}">
                     <fa-icon [icon]="spelerToevoegen"></fa-icon>
                   </button>
                 </div>

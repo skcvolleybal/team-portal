@@ -5,16 +5,6 @@
     </tr>
   </thead>
   <tbody>
-
-    <tr *ngFor="let speeltijd of speeldag.speeltijden">
-      <th scope="row">{{speeltijd.tijd}}</th>
-      <td>
-        <app-wedstrijd *ngFor="let wedstrijd of speeltijd.wedstrijden" [wedstrijd]="wedstrijd"></app-wedstrijd>
-      </td>
-      <td>
-        <app-beschikbaarheid [beschikbaarheid]="speeltijd.beschikbaarheid"></app-beschikbaarheid>
-      </td>
-    </tr>
     <tr>
       <td colspan="3">
         <div class="card" style="max-width: 24rem; margin:5px;" *ngFor="let wedstrijd of speeldag.eigenWedstrijden">
@@ -27,10 +17,18 @@
             </h6>
             <p class="card-text" *ngIf="wedstrijd.isThuis">
               <app-scheidsrechter [isScheidsrechter]="wedstrijd.isScheidsrechter" [scheidsrechter]="wedstrijd.scheidsrechter"></app-scheidsrechter>
-              <app-tellers [isTellers]="wedstrijd.isTellers" [tellers]="wedstrijd.tellers"></app-tellers>
             </p>
           </div>
         </div>
+      </td>
+    </tr>
+    <tr *ngFor="let speeltijd of speeldag.speeltijden">
+      <th scope="row">{{speeltijd.tijd}}</th>
+      <td>
+        <app-wedstrijd *ngFor="let wedstrijd of speeltijd.wedstrijden" [wedstrijd]="wedstrijd"></app-wedstrijd>
+      </td>
+      <td>
+        <app-beschikbaarheid [beschikbaarheid]="speeltijd.beschikbaarheid"></app-beschikbaarheid>
       </td>
     </tr>
   </tbody>

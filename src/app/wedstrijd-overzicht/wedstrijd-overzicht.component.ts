@@ -224,6 +224,11 @@ export class WedstrijdOverzichtComponent implements OnInit {
       ]
     }
   ];
+
+  toggle(team) {
+    team.isCollapsed = !team.isCollapsed;
+  }
+
   constructor() {}
 
   ngOnInit() {}
