@@ -19,11 +19,31 @@ import { WedstrijdComponent } from './wedstrijd/wedstrijd.component';
 
 const appRoutes: Routes = [
   { path: '', redirectTo: 'mijn-overzicht', pathMatch: 'full' },
-  { path: 'mijn-overzicht', component: MijnOverzichtComponent, data: { 'title': 'Mijn Overzicht' } },
-  { path: 'wedstrijden', component: WedstrijdenComponent, data: { 'title': 'Wedstrijden' } },
-  { path: 'scheidsco', component: ScheidscoComponent, data: { 'title': 'Scheidsco' } },
-  { path: 'statistieken', component: StatistiekenComponent, data: { 'title': 'Statistieken' } },
-  { path: 'coach-wedstrijden', component: CoachWedstrijdenComponent, data: { 'title': 'Coach Wedstrijden' } }
+  {
+    path: 'mijn-overzicht',
+    component: MijnOverzichtComponent,
+    data: { title: 'Mijn Overzicht' }
+  },
+  {
+    path: 'wedstrijden',
+    component: WedstrijdenComponent,
+    data: { title: 'Wedstrijden' }
+  },
+  {
+    path: 'scheidsco',
+    component: ScheidscoComponent,
+    data: { title: 'Scheidsco' }
+  },
+  {
+    path: 'statistieken',
+    component: StatistiekenComponent,
+    data: { title: 'Statistieken' }
+  },
+  {
+    path: 'coach-wedstrijden',
+    component: CoachWedstrijdenComponent,
+    data: { title: 'Coach Wedstrijden' }
+  }
 ];
 
 @NgModule({
@@ -41,14 +61,14 @@ const appRoutes: Routes = [
   imports: [
     FormsModule,
     FontAwesomeModule,
-    RouterModule.forRoot(appRoutes),
+    RouterModule.forRoot(appRoutes, {
+      useHash: true
+    }),
     NgbModule,
     BrowserModule
   ],
-  exports: [
-
-  ],
+  exports: [],
   providers: [],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}
