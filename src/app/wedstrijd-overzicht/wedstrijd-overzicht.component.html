@@ -7,71 +7,19 @@
   <tbody>
     <tr>
       <td>
-        <div class="alert alert-success">
-          Aanwezigen ({{wedstrijd.aanwezigen.length}})
-          <div *ngFor="let speler of wedstrijd.aanwezigen">
-            - {{speler.naam}} <fa-icon *ngIf="speler.speeltMee" [icon]="verwijderen"></fa-icon>
-          </div>
-        </div>
-      </td>
-      <td>
-        <div class="alert alert-warning">
-          Onbekend ({{wedstrijd.onbekend.length}})
-          <div *ngFor="let speler of wedstrijd.onbekend">
-            - {{speler}}
-          </div>
-        </div>
-        <div class="alert alert-danger">
-          Afwezigen ({{wedstrijd.afwezigen.length}})
-          <div *ngFor="let speler of wedstrijd.afwezigen">
-            - {{speler}}
-          </div>
+        <app-wedstrijd [wedstrijd]="wedstrijd"></app-wedstrijd>
+        <div>
+          <app-spelers-lijst [spelers]="wedstrijd.aanwezigen" title="Aanwezigen" class="alert-success"></app-spelers-lijst>
+
+          <app-spelers-lijst [spelers]="wedstrijd.onbekend" title="Onbekend" class="alert-warning"></app-spelers-lijst>
+
+          <app-spelers-lijst [spelers]="wedstrijd.afwezigen" title="Afwezigen" class="alert-danger"></app-spelers-lijst>
         </div>
       </td>
     </tr>
-    <tr>
+    <tr class="gray-background">
       <td colspan="3">
-        <div class="card" style="max-width: 24rem; margin:5px;" *ngFor="let backupteam of wedstrijd.backupTeams">
-          <div class="card-body">
-            <div (click)="toggle(backupteam)">
-              <div *ngFor="let backupTeamWedstrijd of backupteam.wedstrijden">
-                <h5 class="card-title">
-                  <app-wedstrijd [wedstrijd]="backupTeamWedstrijd"></app-wedstrijd>
-                </h5>
-                <h6 class="card-subtitle mb-2 text-muted">
-                  {{backupTeamWedstrijd.tijd}}, {{backupTeamWedstrijd.locatie}}
-                </h6>
-              </div>
-
-              <h5 class="card-title" *ngIf="backupteam.wedstrijden.length === 0">
-                {{backupteam.naam}} heeft geen Wedstrijd
-              </h5>
-            </div>
-
-            <div class="mx-auto" style="width: 40px;" *ngIf="backupteam.isCollapsed" (click)="toggle(backupteam)">
-              <fa-icon [icon]="uitklappen"></fa-icon>
-            </div>
-
-            <div [ngbCollapse]="backupteam.isCollapsed">
-              <div class="input-group" *ngFor="let speler of backupteam.spelers">
-                <div class="input-group-prepend">
-                  <button class="btn" type="button" [disabled]="speler.meegespeeldDezeMaand >= 2 || speler.meegespeeldDitJaar >= 11"
-                    [ngClass]="{'btn-outline-secondary': speler.meegespeeldDezeMaand >= 2 || speler.meegespeeldDitJaar >= 11, 'btn-outline-success': speler.meegespeeldDezeMaand < 2 && speler.meegespeeldDitJaar < 11}">
-                    <fa-icon [icon]="spelerToevoegen"></fa-icon>
-                  </button>
-                </div>
-                <div class="input-group-append">
-                  <label class="input-group-text" for="inputGroupSelect02">
-                    {{speler.naam + " (" + speler.meegespeeldDezeMaand + "/" + speler.meegespeeldDitJaar + ")"}}</label>
-                </div>
-              </div>
-              <div class="mx-auto" style="width: 40px;" *ngIf="!backupteam.isCollapsed" (click)="backupteam.isCollapsed = !backupteam.isCollapsed">
-                <fa-icon [icon]="inklappen"></fa-icon>
-              </div>
-            </div>
-
-          </div>
-        </div>
+        <app-meespeel-teams [teams]="wedstrijd.meespeelTeams"></app-meespeel-teams>
       </td>
     </tr>
   </tbody>

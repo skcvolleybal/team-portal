@@ -5,29 +5,33 @@
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let item of dag.items">
+    <ng-container *ngFor="let item of dag.items">
       <ng-container *ngIf="item.type === 'zaalwacht'">
-        <td>
-          {{item.tijd}}
-        </td>
-        <td colspan="3">
-          Zaalwacht: <span class="badge big-badge badge-success">{{item.zaalwachtTeam}}</span>
-        </td>
+        <tr class="gray-background">
+          <td>
+            {{item.tijd}}
+          </td>
+          <td colspan="3">
+            Zaalwacht: <span class="badge big-badge badge-success">{{item.zaalwachtTeam}}</span>
+          </td>
+        </tr>
       </ng-container>
       <ng-container *ngIf="item.type === 'wedstrijd'">
-        <td>
-          {{item.tijd}}
-        </td>
-        <td>
-          <app-wedstrijd [wedstrijd]="item"></app-wedstrijd>
-        </td>
-        <td>
-          <app-scheidsrechter [scheidsrechter]="item.scheidsrechter" [isScheidsrechter]="item.isScheidsrechter"></app-scheidsrechter>
-        </td>
-        <td>
-          <app-tellers [tellers]="item.tellers" [isTellers]="item.isTellers"> </app-tellers>
-        </td>
+        <tr>
+          <td>
+            {{item.tijd}}
+          </td>
+          <td>
+            <app-wedstrijd [wedstrijd]="item"></app-wedstrijd>
+          </td>
+          <td>
+            <app-scheidsrechter [scheidsrechter]="item.scheidsrechter" [isScheidsrechter]="item.isScheidsrechter"></app-scheidsrechter>
+          </td>
+          <td>
+            <app-tellers [tellers]="item.tellers" [isTellers]="item.isTellers"> </app-tellers>
+          </td>
+        </tr>
       </ng-container>
-    </tr>
+    </ng-container>
   </tbody>
 </table>

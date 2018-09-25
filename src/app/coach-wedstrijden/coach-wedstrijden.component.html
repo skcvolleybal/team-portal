@@ -1,28 +1,17 @@
 <table class="table table-sm" *ngFor="let wedstrijd of wedstrijden">
   <thead>
     <tr>
-      <th colspan="3" scope="col">
+      <th colspan="2" scope="col">
         {{wedstrijd.datum}}, {{wedstrijd.tijd}}
       </th>
     </tr>
-    <tr *ngIf="wedstrijd.eigenWedstrijden.length > 0">
-      <td colspan="3">
-        <ul class="list-group">
-          <li class="list-group-item" [ngClass]="{'list-group-item-warning': wedstrijd.isMogelijk, 'list-group-item-danger': !wedstrijd.isMogelijk}"
-            *ngFor="let wedstrijd of wedstrijd.eigenWedstrijden">
-            <app-wedstrijd [wedstrijd]="wedstrijd"></app-wedstrijd>
-            <div style="font-size: 12px;" class="card-subtitle mb-2 text-muted">
-              {{wedstrijd.tijd}}, {{wedstrijd.locatie}}
-            </div>
-            <p class="card-text" *ngIf="wedstrijd.isScheidsrechter">
-              <app-scheidsrechter [isScheidsrechter]="wedstrijd.isScheidsrechter" [scheidsrechter]="wedstrijd.scheidsrechter"></app-scheidsrechter>
-            </p>
-          </li>
-        </ul>
-      </td>
-    </tr>
   </thead>
   <tbody>
+    <tr *ngIf="wedstrijd.eigenWedstrijden.length > 0" class="gray-background">
+      <td colspan="2">
+        <app-wedstrijden-card [wedstrijden]="wedstrijd.eigenWedstrijden"></app-wedstrijden-card>
+      </td>
+    </tr>
     <tr>
       <td>
         <app-wedstrijd [wedstrijd]="wedstrijd"></app-wedstrijd>
@@ -31,8 +20,8 @@
         <app-beschikbaarheid [beschikbaarheid]="wedstrijd.beschikbaarheid"></app-beschikbaarheid>
       </td>
     </tr>
-    <tr style="background-color: #80808021;">
-      <td colspan="3"></td>
+    <tr class="gray-background">
+      <td colspan="2"></td>
     </tr>
   </tbody>
 </table>

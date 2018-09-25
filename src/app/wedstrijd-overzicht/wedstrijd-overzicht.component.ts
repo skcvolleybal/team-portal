@@ -2,7 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import {
   faAngleDoubleDown,
   faAngleDoubleUp,
+  faMinusSquare,
   faPlus,
+  faPlusSquare,
   faTimesCircle
 } from '@fortawesome/free-solid-svg-icons';
 
@@ -12,28 +14,42 @@ import {
   styleUrls: ['./wedstrijd-overzicht.component.scss']
 })
 export class WedstrijdOverzichtComponent implements OnInit {
-  spelerToevoegen = faPlus;
-  uitklappen = faAngleDoubleDown;
-  inklappen = faAngleDoubleUp;
-  verwijderen = faTimesCircle;
   wedstrijden = [
     {
       datum: '21 oktober 2018',
       tijd: '19:30',
+
+      team1: 'SKC HS 2',
+      isTeam1: true,
+      isCoachTeam1: false,
+      team2: 'Kalinko HS 2',
+      isTeam: false,
+      isCoachTeam2: false,
+      scheidsrechter: 'Kevin Fung',
+      isScheidsrechter: false,
+      tellers: 'SKC HS 1',
+      isTellers: false,
+      locatie: 'Universitair Sport Centrum, Sportweg 6 2333 AS Leiden',
+      isThuis: true,
+      isMogelijk: 'Ja',
+
       aanwezigen: [
         { naam: 'Jonathan Neuteboom', speeltMee: false },
         { naam: 'Friso van Bokhorst', speeltMee: false },
         { naam: 'Jurrian Hofmeijer', speeltMee: false },
         { naam: 'Martijn Klinkenberg', speeltMee: true }
       ],
-      afwezigen: ['Remco Krijgsman', 'Coen van der Sluis'],
-      onbekend: [
-        'Sjoerd Verbeek',
-        'Pjotr Hurkmans',
-        'Lars Wennekes',
-        'Sietse Luk'
+      afwezigen: [
+        { naam: 'Remco Krijgsman', speeltMee: false },
+        { naam: 'Coen van der Sluis', speeltMee: false }
       ],
-      backupTeams: [
+      onbekend: [
+        { naam: 'Sjoerd Verbeek', speeltMee: false },
+        { naam: 'Pjotr Hurkmans', speeltMee: false },
+        { naam: 'Lars Wennekes', speeltMee: false },
+        { naam: 'Sietse Luk', speeltMee: false }
+      ],
+      meespeelTeams: [
         {
           naam: 'SKC HS 4',
           wedstrijden: [
@@ -225,8 +241,8 @@ export class WedstrijdOverzichtComponent implements OnInit {
     }
   ];
 
-  toggle(team) {
-    team.isCollapsed = !team.isCollapsed;
+  toggle(collapsable) {
+    collapsable = !collapsable;
   }
 
   constructor() {}

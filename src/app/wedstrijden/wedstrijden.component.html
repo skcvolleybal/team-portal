@@ -1,27 +1,22 @@
-<table class="table table-sm">
+<table class="table table-sm" *ngFor="let wedstrijd of wedstrijden">
   <thead>
     <tr>
-      <th scope="col">Date</th>
-      <th scope="col">Wedstrijd</th>
-      <th scope="col"></th>
+      <th colspan="3" scope="col">
+        {{wedstrijd.datum}}, {{wedstrijd.tijd}}
+      </th>
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let wedstrijd of wedstrijden">
-      <td>
-        <div>
-          {{wedstrijd.datum}}
-        </div>
-        <div>
-          {{wedstrijd.tijd}}
-        </div>
-      </td>
+    <tr>
       <td>
         <app-wedstrijd [wedstrijd]="wedstrijd"></app-wedstrijd>
       </td>
       <td>
         <app-beschikbaarheid [beschikbaarheid]="wedstrijd.beschikbaarheid"></app-beschikbaarheid>
       </td>
+    </tr>
+    <tr class="gray-background">
+      <td colspan="2"></td>
     </tr>
   </tbody>
 </table>

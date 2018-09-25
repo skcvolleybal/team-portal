@@ -34,7 +34,7 @@ export class WedstrijdenComponent implements OnInit {
       beschikbaarheid: 'ja'
     },
     {
-      datum: '21 okt',
+      datum: '28 okt',
       tijd: '19:30',
       team1: 'SKC HS 3',
       isTeam1: true,
@@ -51,7 +51,7 @@ export class WedstrijdenComponent implements OnInit {
       beschikbaarheid: null
     },
     {
-      datum: '21 okt',
+      datum: '5 nov',
       tijd: '19:30',
       team1: 'SKC HS 2',
       isTeam1: true,

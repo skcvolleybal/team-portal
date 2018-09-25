@@ -16,7 +16,10 @@ import { StatistiekenComponent } from './statistieken/statistieken.component';
 import { TellersComponent } from './tellers/tellers.component';
 import { WedstrijdOverzichtComponent } from './wedstrijd-overzicht/wedstrijd-overzicht.component';
 import { WedstrijdComponent } from './wedstrijd/wedstrijd.component';
+import { WedstrijdenCardComponent } from './wedstrijden-card/wedstrijden-card.component';
 import { WedstrijdenComponent } from './wedstrijden/wedstrijden.component';
+import { SpelersLijstComponent } from './spelers-lijst/spelers-lijst.component';
+import { MeespeelTeamsComponent } from './meespeel-teams/meespeel-teams.component';
 
 const appRoutes: Routes = [
   { path: '', redirectTo: 'mijn-overzicht', pathMatch: 'full' },
@@ -70,7 +73,10 @@ const appRoutes: Routes = [
     WedstrijdComponent,
     BeschikbaarheidComponent,
     FluitAanwezigheidComponent,
-    WedstrijdOverzichtComponent
+    WedstrijdOverzichtComponent,
+    WedstrijdenCardComponent,
+    SpelersLijstComponent,
+    MeespeelTeamsComponent
   ],
   imports: [
     FormsModule,

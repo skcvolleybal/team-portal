@@ -73,9 +73,9 @@ export class FluitAanwezigheidComponent implements OnInit {
           isScheidsrechter: true,
           tellers: 'SKC HS 1',
           isTellers: false,
-          locatie: 'De Does, Amaliaplein 40, 2351PV LEIDERDORP',
+          locatie: 'De Does, Leiderdorp',
           isThuis: false,
-          isMogelijk: true
+          isMogelijk: 'Ja'
         }
       ]
     },
@@ -147,7 +147,7 @@ export class FluitAanwezigheidComponent implements OnInit {
           isTellers: false,
           locatie: 'Steenwijklaan, Steenwijklaan 16, 2541RL S-GRAVENHAGE',
           isThuis: false,
-          isMogelijk: false
+          isMogelijk: 'Nee'
         },
         {
           datum: '21 okt',
@@ -164,7 +164,7 @@ export class FluitAanwezigheidComponent implements OnInit {
           isTellers: false,
           locatie: 'De Does, Amaliaplein 40, 2351PV LEIDERDORP',
           isThuis: false,
-          isMogelijk: true
+          isMogelijk: 'Misschien'
         }
       ]
     }

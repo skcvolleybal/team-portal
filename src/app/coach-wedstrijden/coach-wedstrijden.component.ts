@@ -51,7 +51,7 @@ export class CoachWedstrijdenComponent implements OnInit {
           isTellers: false,
           locatie: 'Universitair Sport Centrum, Sportweg 6 2333 AS Leiden',
           isThuis: true,
-          isMogelijk: true
+          isMogelijk: 'Ja'
         },
         {
           datum: '21 okt',
@@ -68,7 +68,7 @@ export class CoachWedstrijdenComponent implements OnInit {
           isTellers: false,
           locatie: 'Universitair Sport Centrum, Sportweg 6 2333 AS Leiden',
           isThuis: true,
-          isMogelijk: false
+          isMogelijk: 'Nee'
         },
         {
           datum: '21 okt',
@@ -83,7 +83,8 @@ export class CoachWedstrijdenComponent implements OnInit {
           isScheidsrechter: true,
           tellers: 'SKC HS 2',
           isTellers: true,
-          locatie: 'Universitair Sport Centrum, Sportweg 6 2333 AS Leiden'
+          locatie: 'Universitair Sport Centrum, Sportweg 6 2333 AS Leiden',
+          isMogelijk: 'Misschien'
         }
       ]
     },

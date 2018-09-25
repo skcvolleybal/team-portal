@@ -1,0 +1,35 @@
+<div class="card" style="max-width: 24rem; margin:5px;" *ngFor="let team of teams">
+  <div class="card-body">
+    <div (click)="team.isCollapsed = !team.isCollapsed">
+      <div *ngFor="let wedstrijd of team.wedstrijden">
+        <h5 class="card-title">
+          <fa-icon class="float-right" [icon]="isCollapsed ? uitklappen: inklappen" (click)="isCollapsed = !isCollapsed"></fa-icon>
+          <app-wedstrijd [wedstrijd]="wedstrijd"></app-wedstrijd>
+        </h5>
+        <h6 class="card-subtitle mb-2 text-muted">
+          {{wedstrijd.tijd}}, {{wedstrijd.locatie}}
+        </h6>
+      </div>
+
+      <h5 class="card-title" *ngIf="team.wedstrijden.length === 0">
+        {{team.naam}} heeft geen Wedstrijd <fa-icon class="float-right" [icon]="isCollapsed ? uitklappen: inklappen"
+          (click)="isCollapsed = !isCollapsed"></fa-icon>
+      </h5>
+    </div>
+
+    <div [ngbCollapse]="team.isCollapsed">
+      <div class="input-group" *ngFor="let speler of team.spelers">
+        <div class="input-group-prepend">
+          <button class="btn" type="button" [disabled]="speler.meegespeeldDezeMaand >= 2 || speler.meegespeeldDitJaar >= 11"
+            [ngClass]="{'btn-outline-secondary': speler.meegespeeldDezeMaand >= 2 || speler.meegespeeldDitJaar >= 11, 'btn-outline-success': speler.meegespeeldDezeMaand < 2 && speler.meegespeeldDitJaar < 11}">
+            <fa-icon [icon]="spelerToevoegen"></fa-icon>
+          </button>
+        </div>
+        <div class="input-group-append">
+          <label class="input-group-text" for="inputGroupSelect02">
+            {{speler.naam + " (" + speler.meegespeeldDezeMaand + "/" + speler.meegespeeldDitJaar + ")"}}</label>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
