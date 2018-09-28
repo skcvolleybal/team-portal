@@ -13,7 +13,10 @@
     <tr *ngFor="let speeltijd of speeldag.speeltijden">
       <th scope="row">{{speeltijd.tijd}}</th>
       <td>
-        <app-wedstrijd *ngFor="let wedstrijd of speeltijd.wedstrijden" [wedstrijd]="wedstrijd"></app-wedstrijd>
+        <div class="border border-secondary rounded m-1" *ngFor="let wedstrijd of speeltijd.wedstrijden">
+          <app-wedstrijd [wedstrijd]="wedstrijd"></app-wedstrijd>
+        </div>
+
       </td>
       <td>
         <app-beschikbaarheid [beschikbaarheid]="speeltijd.beschikbaarheid"></app-beschikbaarheid>
