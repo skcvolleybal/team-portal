@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Injector } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
 
@@ -8,10 +8,18 @@ import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  constructor(private activatedRoute: ActivatedRoute) {}
   isNavbarHidden = true;
-
   rightIcon = faAngleRight;
+  appRoutes;
+
+  constructor(
+    private activatedRoute: ActivatedRoute,
+    private injector: Injector
+  ) {
+    this.appRoutes = this.injector
+      .get('appRoutes')
+      .filter(appRoute => appRoute.path !== '');
+  }
 
   onLinkClick() {
     this.isNavbarHidden = true;

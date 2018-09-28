@@ -17,6 +17,7 @@
   <div class="right">
     <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarColor02"
       aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation" (click)="toggleNavbar()">
+
       <span class="navbar-toggler-icon"></span>
     </button>
   </div>
@@ -24,26 +25,8 @@
 
   <div [ngbCollapse]="isNavbarHidden" class="navbar-collapse collapse" id="navbarColor02">
     <ul class="navbar-nav mr-auto">
-      <li class="nav-item" routerLinkActive="active" (click)="onLinkClick()">
-        <a class="nav-link" routerLink="/mijn-overzicht">Mijn Overzicht</a>
-      </li>
-      <li class="nav-item" routerLinkActive="active" (click)="onLinkClick()">
-        <a class="nav-link" routerLink="/wedstrijden">Wedstrijden</a>
-      </li>
-      <li class="nav-item" routerLinkActive="active" (click)="onLinkClick()">
-        <a class="nav-link" routerLink="/wedstrijd-overzicht">Wedstrijd Overzicht</a>
-      </li>
-      <li class="nav-item" routerLinkActive="active" (click)="onLinkClick()">
-        <a class="nav-link" routerLink="/fluit-aanwezigheid">Fluit Aanwezigheid</a>
-      </li>
-      <li class="nav-item" routerLinkActive="active" (click)="onLinkClick()">
-        <a class="nav-link" routerLink="/coach-wedstrijden">Coach Wedstrijden</a>
-      </li>
-      <li class="nav-item" routerLinkActive="active" (click)="onLinkClick()">
-        <a class="nav-link" routerLink="/scheidsco">Scheidsco</a>
-      </li>
-      <li class="nav-item" routerLinkActive="active" (click)="onLinkClick()">
-        <a class="nav-link" routerLink="/statistieken">Statistieken</a>
+      <li class="nav-item" routerLinkActive="active" *ngFor="let appRoute of appRoutes" (click)="onLinkClick()">
+        <a class="nav-link" [routerLink]="appRoute.path">{{appRoute.data.title}}</a>
       </li>
     </ul>
   </div>

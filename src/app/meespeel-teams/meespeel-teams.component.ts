@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import {
+  faInfoCircle,
   faMinusSquare,
   faPlus,
   faPlusSquare
@@ -17,6 +18,7 @@ export class MeespeelTeamsComponent implements OnInit {
   uitklappen = faPlusSquare;
   inklappen = faMinusSquare;
   spelerToevoegen = faPlus;
+  info = faInfoCircle;
   isCollapsed = true;
   isTeamCollapsed: boolean[];
   constructor() {}

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import {
   faMinusSquare,
   faPlusSquare,
@@ -10,7 +10,7 @@ import {
   templateUrl: './spelers-lijst.component.html',
   styleUrls: ['./spelers-lijst.component.scss']
 })
-export class SpelersLijstComponent implements OnInit {
+export class SpelersLijstComponent {
   @Input()
   spelers;
   @Input()
@@ -24,8 +24,4 @@ export class SpelersLijstComponent implements OnInit {
   isCollapsed = true;
 
   constructor() {}
-
-  ngOnInit() {
-    console.log(this.spelers);
-  }
 }

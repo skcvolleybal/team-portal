@@ -9,19 +9,20 @@ import { AppComponent } from './app.component';
 import { BeschikbaarheidComponent } from './beschikbaarheid/beschikbaarheid.component';
 import { CoachWedstrijdenComponent } from './coach-wedstrijden/coach-wedstrijden.component';
 import { FluitAanwezigheidComponent } from './fluit-aanwezigheid/fluit-aanwezigheid.component';
+
+import { MeespeelTeamsComponent } from './meespeel-teams/meespeel-teams.component';
 import { MijnOverzichtComponent } from './mijn-overzicht/mijn-overzicht.component';
 import { ScheidscoComponent } from './scheidsco/scheidsco.component';
 import { ScheidsrechterComponent } from './scheidsrechter/scheidsrechter.component';
+import { SpelersLijstComponent } from './spelers-lijst/spelers-lijst.component';
 import { StatistiekenComponent } from './statistieken/statistieken.component';
 import { TellersComponent } from './tellers/tellers.component';
 import { WedstrijdOverzichtComponent } from './wedstrijd-overzicht/wedstrijd-overzicht.component';
 import { WedstrijdComponent } from './wedstrijd/wedstrijd.component';
 import { WedstrijdenCardComponent } from './wedstrijden-card/wedstrijden-card.component';
 import { WedstrijdenComponent } from './wedstrijden/wedstrijden.component';
-import { SpelersLijstComponent } from './spelers-lijst/spelers-lijst.component';
-import { MeespeelTeamsComponent } from './meespeel-teams/meespeel-teams.component';
 
-const appRoutes: Routes = [
+export const appRoutes: Routes = [
   { path: '', redirectTo: 'mijn-overzicht', pathMatch: 'full' },
   {
     path: 'mijn-overzicht',
@@ -29,14 +30,24 @@ const appRoutes: Routes = [
     data: { title: 'Mijn Overzicht' }
   },
   {
-    path: 'wedstrijden',
+    path: 'wedstrijd-aanwezigheid',
     component: WedstrijdenComponent,
-    data: { title: 'Wedstrijden' }
+    data: { title: 'Wedstrijd Aanwezigheid' }
   },
   {
     path: 'wedstrijd-overzicht',
     component: WedstrijdOverzichtComponent,
     data: { title: 'Wedstrijd Overzicht' }
+  },
+  {
+    path: 'coach-aanwezigheid',
+    component: CoachWedstrijdenComponent,
+    data: { title: 'Coach Aanwezigheid' }
+  },
+  {
+    path: 'fluit-aanwezigheid',
+    component: FluitAanwezigheidComponent,
+    data: { title: 'Fluit Aanwezigheid' }
   },
   {
     path: 'scheidsco',
@@ -47,16 +58,6 @@ const appRoutes: Routes = [
     path: 'statistieken',
     component: StatistiekenComponent,
     data: { title: 'Statistieken' }
-  },
-  {
-    path: 'coach-wedstrijden',
-    component: CoachWedstrijdenComponent,
-    data: { title: 'Coach Wedstrijden' }
-  },
-  {
-    path: 'fluit-aanwezigheid',
-    component: FluitAanwezigheidComponent,
-    data: { title: 'Fluit Aanwezigheid' }
   }
 ];
 
@@ -88,7 +89,7 @@ const appRoutes: Routes = [
     BrowserModule
   ],
   exports: [],
-  providers: [],
+  providers: [{ provide: 'appRoutes', useValue: appRoutes }],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

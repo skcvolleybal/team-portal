@@ -43,6 +43,17 @@
     "no-misused-new": true,
     "no-non-null-assertion": true,
     "no-redundant-jsdoc": true,
+    "no-submodule-imports": [
+      true,
+      "rxjs",
+      "@angular/platform-browser",
+      "@angular/core/testing",
+      "zone.js/dist/zone-testing",
+      "@angular/platform-browser-dynamic/testing",
+      "zone.js/dist/zone",
+      "core-js/es7/reflect",
+      "protractor"
+    ],
     "no-shadowed-variable": true,
     "no-string-literal": false,
     "no-string-throw": true,
