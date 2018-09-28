@@ -18,7 +18,10 @@ export class MeespeelTeamsComponent implements OnInit {
   inklappen = faMinusSquare;
   spelerToevoegen = faPlus;
   isCollapsed = true;
+  isTeamCollapsed: boolean[];
   constructor() {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.isTeamCollapsed = new Array(this.teams.length).fill(true);
+  }
 }

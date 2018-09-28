@@ -31,7 +31,6 @@ export class WedstrijdOverzichtComponent implements OnInit {
       isTellers: false,
       locatie: 'Universitair Sport Centrum, Sportweg 6 2333 AS Leiden',
       isThuis: true,
-      isMogelijk: 'Ja',
 
       aanwezigen: [
         { naam: 'Jonathan Neuteboom', speeltMee: false },
@@ -52,15 +51,15 @@ export class WedstrijdOverzichtComponent implements OnInit {
       meespeelTeams: [
         {
           naam: 'SKC HS 4',
-          wedstrijden: [
-            {
-              tijd: '21:30',
-              team1: 'SKC HS 3',
-              team2: 'VCO HS 4',
-              locatie: 'de Wasbeek, Leiderdorp, 2312 AS',
-              isThuis: false
-            }
-          ],
+          wedstrijd: {
+            tijd: '21:30',
+            isTeam2: true,
+            team1: 'SKC HS 3',
+            team2: 'VCO HS 4',
+            locatie: 'de Wasbeek, Leiderdorp',
+            isThuis: false
+          },
+          isMogelijk: false,
           isCollapsed: true,
           spelers: [
             {
@@ -170,20 +169,19 @@ export class WedstrijdOverzichtComponent implements OnInit {
               meegespeeldDitJaar: 0
             }
           ],
-          wedstrijden: [
-            {
-              tijd: '21:30',
-              team1: 'SKC HS 4',
-              team2: 'Delta HS 2',
-              locatie: 'de Wasbeek, Leiderdorp, 2312 AS',
-              isThuis: true
-            }
-          ]
+          wedstrijd: {
+            tijd: '21:30',
+            team1: 'SKC HS 4',
+            isTeam1: true,
+            team2: 'Delta HS 2',
+            locatie: 'de Wasbeek, Leiderdorp',
+            isThuis: true
+          }
         },
         {
           naam: 'SKC HS 6',
+          isMogelijk: true,
           isCollapsed: true,
-          wedstrijden: [],
           spelers: [
             {
               naam: 'Jeroen van Kleinwee',

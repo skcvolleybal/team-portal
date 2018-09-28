@@ -1,15 +1,26 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-  <a class="navbar-brand" href="#">
-    TeamPortal
-    <span class="show-title" (click)="isNavbarHidden = false">
-      <fa-icon [icon]="rightIcon"></fa-icon> {{GetNavigationTitle()}}
-    </span>
-  </a>
 
-  <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarColor02"
-    aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation" (click)="isNavbarHidden = !isNavbarHidden">
-    <span class="navbar-toggler-icon"></span>
-  </button>
+  <div class="left">
+    <a class="navbar-brand" (click)="toggleNavbar()" style="color: white;">
+      <div style="display: flex;">
+        TeamPortal
+        <div style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">
+          <span class="show-title">
+            <fa-icon [icon]="rightIcon"></fa-icon> {{GetNavigationTitle()}}
+          </span>
+        </div>
+
+      </div>
+    </a>
+  </div>
+
+  <div class="right">
+    <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarColor02"
+      aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation" (click)="toggleNavbar()">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+  </div>
+
 
   <div [ngbCollapse]="isNavbarHidden" class="navbar-collapse collapse" id="navbarColor02">
     <ul class="navbar-nav mr-auto">

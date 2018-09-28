@@ -17,6 +17,10 @@ export class AppComponent {
     this.isNavbarHidden = true;
   }
 
+  toggleNavbar() {
+    this.isNavbarHidden = !this.isNavbarHidden;
+  }
+
   GetNavigationTitle() {
     if (this.activatedRoute.firstChild) {
       return this.activatedRoute.firstChild.snapshot.data['title'];
