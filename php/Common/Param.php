@@ -1,7 +1,8 @@
-<?
+<?php
+
 class Param
 {
-    public function Param($name, $value, $type)
+    public function __construct($name, $value, $type)
     {
         $this->name = $name;
         $this->value = $value;

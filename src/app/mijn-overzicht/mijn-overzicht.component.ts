@@ -5,6 +5,8 @@ import {
   faPlusSquare,
   faUser
 } from '@fortawesome/free-solid-svg-icons';
+import { Observable } from 'rxjs/internal/Observable';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-mijn-overzicht',
@@ -22,7 +24,7 @@ export class MijnOverzichtComponent implements OnInit {
       items: [
         {
           type: 'zaalwacht',
-          zaalwachtTeam: 'SKC HS 2'
+          team: 'SKC HS 2'
         },
         {
           type: 'wedstrijd',
@@ -93,7 +95,6 @@ export class MijnOverzichtComponent implements OnInit {
       ]
     }
   ];
-
   model = {
     left: true,
     middle: false,
@@ -239,7 +240,17 @@ export class MijnOverzichtComponent implements OnInit {
     }
   ];
 
-  constructor() {}
+  constructor(private http: HttpClient) {}
 
-  ngOnInit() {}
+  getMijnOverzicht(): Observable<any[]> {
+    return this.http.get<any[]>(
+      'http://localhost/php/interface.php?action=GetMijnOverzicht'
+    );
+  }
+
+  ngOnInit() {
+    this.getMijnOverzicht().subscribe(overzichtItem => {
+      this.dagen = overzichtItem;
+    });
+  }
 }
