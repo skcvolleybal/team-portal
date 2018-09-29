@@ -18,7 +18,7 @@ class TeamPortal
 
     public function GetMijnOverzicht()
     {
-        include 'UseCases\MijnOverzicht\GetMijnOverzicht.php';
+        include 'UseCases/MijnOverzicht/GetMijnOverzicht.php';
         $interactor = new GetMijnOverzichtInteractor();
         $interactor->Execute();
     }
