@@ -16,7 +16,6 @@ import { Observable } from 'rxjs/internal/Observable';
 export class MijnOverzichtComponent implements OnInit {
   scheidsrechterIcon = faUser;
   tellersIcon = faCalendarCheck;
-  collapseIcon = faMinusSquare;
   openIcon = faPlusSquare;
   dagen: any[];
 
