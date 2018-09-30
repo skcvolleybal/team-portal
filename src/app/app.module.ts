@@ -1,4 +1,5 @@
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+// tslint:disable-next-line:no-submodule-imports
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
@@ -6,16 +7,19 @@ import { RouterModule, Routes } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
-import { AppComponent } from './app.component';
 import { AanwezigheidComponent } from './aanwezigheid/aanwezigheid.component';
+import { AppComponent } from './app.component';
 import { CoachWedstrijdenComponent } from './coach-wedstrijden/coach-wedstrijden.component';
 import { FluitAanwezigheidComponent } from './fluit-aanwezigheid/fluit-aanwezigheid.component';
 
 import { CustomInterceptor } from './interceptors/add-credentials.interceptor';
+import { HTTPListener } from './interceptors/is-authorized.interceptor';
+import { LoginModalComponent } from './login-modal/login-modal.component';
 import { MeespeelTeamsComponent } from './meespeel-teams/meespeel-teams.component';
 import { MijnOverzichtComponent } from './mijn-overzicht/mijn-overzicht.component';
 import { ScheidscoComponent } from './scheidsco/scheidsco.component';
 import { ScheidsrechterComponent } from './scheidsrechter/scheidsrechter.component';
+import { AuthenticationService } from './services/authentication.service';
 import { SpelersLijstComponent } from './spelers-lijst/spelers-lijst.component';
 import { StatistiekenComponent } from './statistieken/statistieken.component';
 import { TellersComponent } from './tellers/tellers.component';
@@ -64,6 +68,7 @@ export const appRoutes: Routes = [
 ];
 
 @NgModule({
+  entryComponents: [LoginModalComponent],
   declarations: [
     AppComponent,
     ScheidscoComponent,
@@ -79,7 +84,8 @@ export const appRoutes: Routes = [
     WedstrijdOverzichtComponent,
     WedstrijdenCardComponent,
     SpelersLijstComponent,
-    MeespeelTeamsComponent
+    MeespeelTeamsComponent,
+    LoginModalComponent
   ],
   imports: [
     FormsModule,
@@ -93,10 +99,16 @@ export const appRoutes: Routes = [
   ],
   exports: [],
   providers: [
+    AuthenticationService,
     { provide: 'appRoutes', useValue: appRoutes },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: CustomInterceptor,
+      multi: true
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: HTTPListener,
       multi: true
     }
   ],
