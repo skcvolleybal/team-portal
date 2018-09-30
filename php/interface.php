@@ -1,7 +1,9 @@
 <?php
 
-error_reporting(E_ALL);
-ini_set("display_errors", 1);
+if (DIRECTORY_SEPARATOR != '/') {
+    error_reporting(E_ALL);
+    ini_set("display_errors", 1);
+}
 
 set_include_path(get_include_path() . PATH_SEPARATOR . '.' . DIRECTORY_SEPARATOR . 'UseCases');
 set_include_path(get_include_path() . PATH_SEPARATOR . '.' . DIRECTORY_SEPARATOR . 'Common');
