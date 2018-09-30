@@ -12,11 +12,9 @@ set_include_path(get_include_path() . PATH_SEPARATOR . '.' . DIRECTORY_SEPARATOR
 set_include_path(get_include_path() . PATH_SEPARATOR . '.' . DIRECTORY_SEPARATOR . 'libs');
 
 $http_origin = $_SERVER['HTTP_HOST'];
-exit($http_origin);
 if ($http_origin == "localhost") {
     header("Access-Control-Allow-Origin: http://localhost:4200");
-}
-else {
+} else {
     header("Access-Control-Allow-Origin: https://www.skcvolleybal.nl");
 }
 
