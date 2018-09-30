@@ -44,12 +44,13 @@ class GetWedstrijdAanwezigheid implements IInteractor
     private function MapFromNevoboMatch($wedstrijd, $aanwezigheid, $team)
     {
         return [
+            "id" => $wedstrijd['id'],
             "datum" => $wedstrijd["timestamp"]->format("j F Y"),
             "tijd" => $wedstrijd["timestamp"]->format('G:i'),
             "team1" => $wedstrijd["team1"],
             "isTeam1" => $wedstrijd["team1"] == $team,
             "team2" => $wedstrijd["team2"],
-            "isTeam" => $wedstrijd["team2"] == $team,
+            "isTeam2" => $wedstrijd["team2"] == $team,
             "aanwezig" => $aanwezigheid,
         ];
     }

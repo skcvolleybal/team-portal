@@ -1,7 +1,5 @@
 <?php
 
-include_once 'Param.php';
-
 class AanwezigheidGateway
 {
     private $database;

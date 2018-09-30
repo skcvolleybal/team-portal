@@ -1,5 +1,7 @@
 <?php
 
+include_once 'Param.php';
+
 class Database
 {
     private $dbc;

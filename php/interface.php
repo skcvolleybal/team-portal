@@ -11,7 +11,7 @@ set_include_path(get_include_path() . PATH_SEPARATOR . '.' . DIRECTORY_SEPARATOR
 set_include_path(get_include_path() . PATH_SEPARATOR . '.' . DIRECTORY_SEPARATOR . 'Gateways');
 set_include_path(get_include_path() . PATH_SEPARATOR . '.' . DIRECTORY_SEPARATOR . 'libs');
 
-$http_referer = $_SERVER['HTTP_REFERER'];
+$http_referer = $_SERVER['HTTP_REFERER'] ?? "";
 if ($http_referer == "http://localhost:4200/") {
     header("Access-Control-Allow-Origin: http://localhost:4200");
 } else {
