@@ -52,7 +52,7 @@ class AanwezigheidGateway
 
     private function Update($userId, $matchId, $aanwezigheid)
     {
-        $query = "UPDATE teamportal_wedstrijdaanwezigheden
+        $query = "UPDATE TeamPortal_wedstrijdaanwezigheden
                   set aanwezigheid = :aanwezigheid
                   WHERE user_id = :userId and match_id = :matchId";
         $params = [
@@ -66,7 +66,7 @@ class AanwezigheidGateway
 
     private function Insert($userId, $matchId, $aanwezigheid)
     {
-        $query = "INSERT INTO teamportal_wedstrijdaanwezigheden(user_id, match_id, aanwezigheid)
+        $query = "INSERT INTO TeamPortal_wedstrijdaanwezigheden (user_id, match_id, aanwezigheid)
                   VALUES (:userId, :matchId, :aanwezigheid)";
         $params = [
             new Param(":userId", $userId, PDO::PARAM_INT),
