@@ -48,18 +48,6 @@ export class AppComponent implements OnInit {
     }
   }
 
-  login(username, password) {
-    this.http
-      .post<any>(
-        'https://www.skcvolleybal.nl/scripts/team-portal/php/interface.php?action=Login',
-        {
-          username,
-          password
-        }
-      )
-      .subscribe();
-  }
-
   open() {
     if (!this.loginModal) {
       this.loginModal = true;

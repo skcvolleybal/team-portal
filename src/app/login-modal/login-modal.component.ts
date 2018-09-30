@@ -20,13 +20,10 @@ export class LoginModalComponent implements OnInit {
 
     this.httpClient
       .post<any>(
-        'http://localhost/php/interface.php?action=Login',
+        'https://www.skcvolleybal.nl/scripts/team-portal/php/interface.php?action=Login',
         {
           username: this.username,
           password: this.password
-        },
-        {
-          withCredentials: true
         }
       )
       .subscribe(
