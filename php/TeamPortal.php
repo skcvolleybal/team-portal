@@ -1,5 +1,7 @@
 <?php
 
+include 'Database.php';
+
 class TeamPortal
 {
     public function NoAction()
@@ -19,7 +21,16 @@ class TeamPortal
     public function GetMijnOverzicht()
     {
         include 'UseCases' . DIRECTORY_SEPARATOR . 'MijnOverzicht' . DIRECTORY_SEPARATOR . 'GetMijnOverzicht.php';
-        $interactor = new GetMijnOverzichtInteractor();
+        $database = new Database();
+        $interactor = new GetMijnOverzichtInteractor($database);
+        $interactor->Execute();
+    }
+
+    public function GetWedstrijdAanwezigheid()
+    {
+        include 'UseCases' . DIRECTORY_SEPARATOR . 'WedstrijdAanwezigheid' . DIRECTORY_SEPARATOR . 'GetWedstrijdAanwezigheid.php';
+        $database = new Database();
+        $interactor = new GetWedstrijdAanwezigheid($database);
         $interactor->Execute();
     }
 }

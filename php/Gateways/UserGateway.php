@@ -1,15 +1,14 @@
 <?php
 
-include 'Param.php';
-include 'Database.php';
+include_once 'Param.php';
 
 class UserGateway
 {
     private $database;
 
-    public function __construct()
+    public function __construct($database)
     {
-        $this->database = new Database();
+        $this->database = $database;
     }
 
     public function GetUserId()

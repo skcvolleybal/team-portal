@@ -6,9 +6,9 @@ include 'NevoboGateway.php';
 
 class GetMijnOverzichtInteractor implements IInteractor
 {
-    public function __construct()
+    public function __construct($database)
     {
-        $this->userGateway = new UserGateway();
+        $this->userGateway = new UserGateway($database);
         $this->nevoboGateway = new NevoboGateway();
     }
 
