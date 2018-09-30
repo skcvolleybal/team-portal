@@ -18,7 +18,6 @@ if ($http_referer == "http://localhost:4200/") {
     $origin = "https://www.skcvolleybal.nl";
 }
 
-header("Access-Control-Allow-Origin: $origin");
 
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     $allowedHeaders = "Content-Type";
@@ -28,6 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     exit;
 }
 
+header("Access-Control-Allow-Origin: $origin");
 header('Access-Control-Allow-Credentials: true');
 
 require_once "TeamPortal.php";

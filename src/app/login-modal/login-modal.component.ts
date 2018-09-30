@@ -14,7 +14,7 @@ export class LoginModalComponent implements OnInit {
    password: string;
 
    login() {
-      this.httpClient.post<any>('https://www.skcvolleybal.nl/script/team-portal/php/interface/php?action=Login', {
+      this.httpClient.post<any>('https://www.skcvolleybal.nl/script/team-portal/php/interface.php?action=Login', {
          username: this.username,
          password: this.password
       }, {
