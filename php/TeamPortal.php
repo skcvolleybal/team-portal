@@ -46,6 +46,13 @@ class TeamPortal
         $interactor->Execute($postData);
     }
 
+    public function Login(){
+      include 'UseCases' . DIRECTORY_SEPARATOR . 'Inloggen' . DIRECTORY_SEPARATOR . 'Inloggen.php';
+      $interactor = new Inloggen($this->database);
+      $postData = $this->GetPostValues();
+      $interactor->Execute($postData);
+    }
+
     private function GetPostValues()
     {
         $postData = file_get_contents("php://input");
