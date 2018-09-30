@@ -34,7 +34,6 @@ class Database
 
         if (!$stmt->execute()) {
             $message = "query:\n" . print_r($query, true) . "\n\nparams:\n" . print_r($params, true);
-            exit(print_r($this->getDbConnection()->errorInfo(), 1));
             // $this->returnError("Fout bij het uitvoeren van query (" . $message . ") " . print_r($stmt->errorInfo(), true) . "  om " . date('H:i:s:(u) d-m-Y'));
         }
 
