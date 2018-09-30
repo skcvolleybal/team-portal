@@ -11,10 +11,13 @@ set_include_path(get_include_path() . PATH_SEPARATOR . '.' . DIRECTORY_SEPARATOR
 set_include_path(get_include_path() . PATH_SEPARATOR . '.' . DIRECTORY_SEPARATOR . 'Gateways');
 set_include_path(get_include_path() . PATH_SEPARATOR . '.' . DIRECTORY_SEPARATOR . 'libs');
 
-if (DIRECTORY_SEPARATOR == '/') {
-    header('Access-Control-Allow-Origin: https://www.skcvolleybal.nl');
-} else {
-    header('Access-Control-Allow-Origin: http://localhost:4200');
+$http_origin = $_SERVER['HTTP_HOST'];
+exit($http_origin);
+if ($http_origin == "localhost") {
+    header("Access-Control-Allow-Origin: http://localhost:4200");
+}
+else {
+    header("Access-Control-Allow-Origin: https://www.skcvolleybal.nl");
 }
 
 header('Access-Control-Allow-Credentials: true');
