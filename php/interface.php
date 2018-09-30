@@ -3,13 +3,19 @@
 error_reporting(E_ALL);
 ini_set("display_errors", 1);
 
-set_include_path(get_include_path() . PATH_SEPARATOR . './UseCases');
-set_include_path(get_include_path() . PATH_SEPARATOR . './Common');
-set_include_path(get_include_path() . PATH_SEPARATOR . './DomainEntities');
-set_include_path(get_include_path() . PATH_SEPARATOR . './Gateways');
-set_include_path(get_include_path() . PATH_SEPARATOR . './libs');
-set_include_path(get_include_path() . PATH_SEPARATOR . '/public_html');
-set_include_path(get_include_path() . PATH_SEPARATOR . './Joomla');
+set_include_path(get_include_path() . PATH_SEPARATOR . '.' . DIRECTORY_SEPARATOR . 'UseCases');
+set_include_path(get_include_path() . PATH_SEPARATOR . '.' . DIRECTORY_SEPARATOR . 'Common');
+set_include_path(get_include_path() . PATH_SEPARATOR . '.' . DIRECTORY_SEPARATOR . 'DomainEntities');
+set_include_path(get_include_path() . PATH_SEPARATOR . '.' . DIRECTORY_SEPARATOR . 'Gateways');
+set_include_path(get_include_path() . PATH_SEPARATOR . '.' . DIRECTORY_SEPARATOR . 'libs');
+
+if (DIRECTORY_SEPARATOR == '/') {
+    header('Access-Control-Allow-Origin: https://www.skcvolleybal.nl');
+} else {
+    header('Access-Control-Allow-Origin: http://localhost:4200');
+}
+
+header('Access-Control-Allow-Credentials: true');
 
 require_once "TeamPortal.php";
 

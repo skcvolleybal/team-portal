@@ -1,4 +1,4 @@
-<div>
+<div *ngIf="scheidsrechter">
   <span class="badge" [ngClass]="{'badge-success': isScheidsrechter, 'badge-light': !isScheidsrechter}" style="white-space: pre-wrap">
     <fa-icon [icon]="scheidsrechterIcon"></fa-icon> {{scheidsrechter}}
   </span>

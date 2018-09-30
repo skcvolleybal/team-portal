@@ -227,13 +227,13 @@ class NevoboGateway
             }
 
             preg_match("/(.*): (.*) - (.*)/", $title, $titleMatches);
-            $team1 = $titleMatches[2];
-            $team2 = $titleMatches[3];
+            $team1 = stripslashes($titleMatches[2]);
+            $team2 = stripslashes($titleMatches[3]);
 
             preg_match("/Wedstrijd: (.*), Datum: (.*), Speellocatie: (.*)/", $description, $descriptionMatches);
             $matchId = str_replace("   ", " ", $descriptionMatches[1]);
             $date = $descriptionMatches[2];
-            $location = $descriptionMatches[3];
+            $location = stripslashes($descriptionMatches[3]);
 
             $programma[] = [
                 'team1' => $team1,
@@ -297,11 +297,10 @@ class NevoboGateway
         $feed = new SimplePie();
         $feed->set_feed_url($url);
         $feed->enable_order_by_date(false);
-        $feed->init();
         $feed->handle_content_type();
         $feed->set_cache_duration($this->cacheDuration);
         $feed->set_cache_location($this->cacheLocation);
-
+        $feed->init();
         return $feed;
     }
 

@@ -17,6 +17,8 @@ export class TellersComponent implements OnInit {
   constructor() {}
 
   ngOnInit() {
-    this.tellers = this.tellers.replace('SKC ', '');
+    if (this.tellers) {
+      this.tellers = this.tellers.replace('SKC ', '');
+    }
   }
 }

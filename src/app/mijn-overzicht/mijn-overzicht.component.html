@@ -1,37 +1,40 @@
-<table class="table table-sm" *ngFor="let dag of dagen">
+<table class="table table-sm mb-0" *ngFor="let dag of dagen">
   <thead>
     <tr>
       <th scope="col" colspan="4">{{dag.datum}}</th>
     </tr>
   </thead>
   <tbody>
-    <ng-container *ngFor="let item of dag.items">
-      <ng-container *ngIf="item.type === 'zaalwacht'">
+    <ng-container *ngFor="let tijdslot of dag.tijdsloten">
+      <ng-container *ngIf="tijdslot.type === 'zaalwacht'">
         <tr class="gray-background">
           <td>
-            {{item.tijd}}
+            {{tijdslot.tijd}}
           </td>
           <td colspan="3">
-            Zaalwacht: <span class="badge big-badge badge-success">{{item.team}}</span>
+            Zaalwacht: <span class="badge big-badge badge-success">{{tijdslot.team}}</span>
           </td>
         </tr>
       </ng-container>
-      <ng-container *ngIf="item.type === 'wedstrijd'">
+      <ng-container *ngIf="tijdslot.type === 'wedstrijd'">
         <tr>
           <td>
-            {{item.tijd}}
+            {{tijdslot.tijd}}
           </td>
           <td>
-            <app-wedstrijd [wedstrijd]="item"></app-wedstrijd>
+            <app-wedstrijd [wedstrijd]="tijdslot"></app-wedstrijd>
           </td>
           <td>
-            <app-scheidsrechter [scheidsrechter]="item.scheidsrechter" [isScheidsrechter]="item.isScheidsrechter"></app-scheidsrechter>
+            <app-scheidsrechter [scheidsrechter]="tijdslot.scheidsrechter" [isScheidsrechter]="tijdslot.isScheidsrechter"></app-scheidsrechter>
           </td>
           <td>
-            <app-tellers [tellers]="item.tellers" [isTellers]="item.isTellers"> </app-tellers>
+            <app-tellers [tellers]="tijdslot.tellers" [isTellers]="tijdslot.isTellers"> </app-tellers>
           </td>
         </tr>
       </ng-container>
     </ng-container>
+    <tr class="gray-background">
+      <td colspan="4"></td>
+    </tr>
   </tbody>
 </table>

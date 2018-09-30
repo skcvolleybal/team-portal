@@ -29,32 +29,40 @@ class UserGateway
         $query = "SELECT Z.*
                   FROM scheidsapp_zaalwacht Z
                   INNER JOIN J3_user_usergroup_map M on Z.team_id = M.group_id
-                  WHERE M.user_id = :userId";
+                  WHERE M.user_id = :userId and Z.date >= CURRENT_DATE()";
         $params = [new Param(":userId", $userId, PDO::PARAM_INT)];
         return $this->database->Execute($query, $params);
     }
 
     public function GetTelbeurten($userId)
     {
-        $query = "SELECT Matches.*, G.title as telteam, U.name as scheidsrechter
+        $query = "SELECT Matches.*, G.title as tellers, U.name as scheidsrechter
                   FROM scheidsapp_matches Matches
                   LEFT JOIN J3_usergroups G on Matches.telteam_id = G.id
                   INNER JOIN J3_user_usergroup_map M on Matches.telteam_id = M.group_id
                   LEFT JOIN J3_users U on U.id = Matches.user_id
-                  WHERE M.user_id = :userId";
+                  WHERE M.user_id = :userId and Matches.date >= CURRENT_DATE()";
         $params = [new Param(":userId", $userId, PDO::PARAM_INT)];
-        return $this->database->Execute($query, $params);
+        $result = $this->database->Execute($query, $params);
+        foreach ($result as &$row) {
+            $row['tellers'] = $this->ConvertToNevoboName($row['tellers']);
+        }
+        return $result;
     }
 
     public function GetFluitbeurten($userId)
     {
-        $query = "SELECT Matches.*, G.title as telteam, U.name as scheidsrechter
+        $query = "SELECT Matches.*, G.title as tellers, U.name as scheidsrechter
                   FROM scheidsapp_matches Matches
                   LEFT JOIN J3_usergroups G on Matches.telteam_id = G.id
                   LEFT JOIN J3_users U on U.id = Matches.user_id
-                  WHERE Matches.user_id = :userId";
+                  WHERE Matches.user_id = :userId and Matches.date >= CURRENT_DATE()";
         $params = [new Param(":userId", $userId, PDO::PARAM_INT)];
-        return $this->database->Execute($query, $params);
+        $result = $this->database->Execute($query, $params);
+        foreach ($result as &$row) {
+            $row['tellers'] = $this->ConvertToNevoboName($row['tellers']);
+        }
+        return $result;
     }
 
     public function GetTeam($userId)
@@ -107,8 +115,11 @@ class UserGateway
         if (!defined('_JEXEC')) {
             define('_JEXEC', 1);
 
-            define('JPATH_BASE', realpath(dirname(__DIR__) . '/../joomla/'));
-            //define('JPATH_BASE', realpath(dirname(__DIR__) . '/../../'));
+            if (DIRECTORY_SEPARATOR == '/') {
+                define('JPATH_BASE', realpath(dirname(__DIR__) . '/../../'));
+            } else {
+                define('JPATH_BASE', realpath(dirname(__DIR__) . '/../joomla/'));
+            }
 
             require_once JPATH_BASE . '/includes/defines.php';
             require_once JPATH_BASE . '/includes/framework.php';

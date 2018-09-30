@@ -60,8 +60,6 @@ class GetMijnOverzichtInteractor implements IInteractor
             $this->AddToOverzicht($overzicht, $overzichtItem);
         }
 
-        print_r($overzicht);exit;
-
         echo json_encode($overzicht);
         exit;
     }
@@ -75,14 +73,14 @@ class GetMijnOverzichtInteractor implements IInteractor
             "tijd" => $uscMatch['timestamp']->format('G:i'),
             "team1" => $uscMatch['team1'],
             "isTeam1" => $uscMatch['team1'] == $team,
-            "isCoachTeam1" => $uscMatch['team1'] == $team,
+            "isCoachTeam1" => $uscMatch['team1'] == $coachTeam,
             "team2" => $uscMatch['team2'],
-            "isTeam" => $uscMatch['team1'] == $team,
-            "isCoachTeam2" => $uscMatch['team1'] == $team,
+            "isTeam2" => $uscMatch['team2'] == $team,
+            "isCoachTeam2" => $uscMatch['team2'] == $coachTeam,
             "scheidsrechter" => $match['scheidsrechter'],
             "isScheidsrechter" => $match['user_id'] == $userId,
-            "tellers" => $match['tellers'] == $userId,
-            "isTellers" => $match['telteam'] == $team,
+            "tellers" => $match['tellers'],
+            "isTellers" => $match['tellers'] == $team,
             "locatie" => $uscMatch['location'],
         ];
     }
@@ -95,10 +93,10 @@ class GetMijnOverzichtInteractor implements IInteractor
             "tijd" => $match['timestamp']->format('G:i'),
             "team1" => $match['team1'],
             "isTeam1" => $match['team1'] == $team,
-            "isCoachTeam1" => $match['team1'] == $team,
+            "isCoachTeam1" => $match['team1'] == $coachTeam,
             "team2" => $match['team2'],
-            "isTeam" => $match['team1'] == $team,
-            "isCoachTeam2" => $match['team1'] == $team,
+            "isTeam2" => $match['team2'] == $team,
+            "isCoachTeam2" => $match['team2'] == $coachTeam,
             "locatie" => $match['location'],
         ];
     }
