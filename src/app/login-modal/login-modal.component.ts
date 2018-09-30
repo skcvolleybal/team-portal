@@ -7,7 +7,8 @@ import { Component, OnInit } from '@angular/core';
 })
 export class LoginModalComponent implements OnInit {
 
-  constructor() { }
+  constructor(private httpClient: HttpClient) { }
+
 
   ngOnInit() {
   }
