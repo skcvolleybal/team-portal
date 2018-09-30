@@ -1,16 +1,11 @@
-import {
-  HttpClient,
-  HttpEvent,
-  HttpHandler,
-  HttpRequest
-  // tslint:disable-next-line:no-submodule-imports
-} from '@angular/common/http';
+// tslint:disable-next-line:no-submodule-imports
+import { HttpClient } from '@angular/common/http';
 import { Component, Injectable, Injector, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { AuthenticationService } from './services/authentication.service';
+import { NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
 import { LoginModalComponent } from './login-modal/login-modal.component';
+import { AuthenticationService } from './services/authentication.service';
 
 @Component({
   selector: 'app-root',
@@ -28,8 +23,12 @@ export class AppComponent implements OnInit {
     private injector: Injector,
     private modalService: NgbModal,
     private http: HttpClient,
-    private authenticationService: AuthenticationService
+    private authenticationService: AuthenticationService,
+    config: NgbModalConfig
   ) {
+    config.backdrop = 'static';
+    config.keyboard = false;
+
     this.appRoutes = this.injector
       .get('appRoutes')
       .filter(appRoute => appRoute.path !== '');
@@ -56,9 +55,6 @@ export class AppComponent implements OnInit {
         {
           username,
           password
-        },
-        {
-          withCredentials: true
         }
       )
       .subscribe();

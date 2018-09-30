@@ -129,8 +129,10 @@ class UserGateway
 
     public function Login($username, $password)
     {
+        $this->InitJoomla();
+
         $credentials = [
-            'username' => $usernam,
+            'username' => $username,
             'password' => $password,
         ];
 

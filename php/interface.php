@@ -18,7 +18,6 @@ if ($http_referer == "http://localhost:4200/") {
     $origin = "https://www.skcvolleybal.nl";
 }
 
-
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     $allowedHeaders = "Content-Type";
     header("Access-Control-Allow-Origin: $origin");
