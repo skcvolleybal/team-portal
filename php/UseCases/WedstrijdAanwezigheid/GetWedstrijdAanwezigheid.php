@@ -37,7 +37,6 @@ class GetWedstrijdAanwezigheid implements IInteractor
             $overzicht[] = $this->MapFromNevoboMatch($wedstrijd, $aanwezigheid, $team);
         }
 
-        print_r($overzicht);exit;
         echo json_encode($overzicht);
         exit;
     }
