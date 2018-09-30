@@ -15,7 +15,7 @@ $http_referer = $_SERVER['HTTP_REFERER'] ?? "http://localhost:4200/";
 if ($http_referer == "http://localhost:4200/") {
     $origin = "http://localhost:4200";
 } else {
-    $orogin = "https://www.skcvolleybal.nl";
+    $origin = "https://www.skcvolleybal.nl";
 }
 
 header("Access-Control-Allow-Origin: $origin");

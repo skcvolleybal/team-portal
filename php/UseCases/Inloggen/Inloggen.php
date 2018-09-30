@@ -18,7 +18,7 @@ class GetMijnOverzichtInteractor implements IInteractorWithData
       $username = $data->username;
       $password = $data->password;
       if ($this->userGateway->Login($username, $password)){
-         exit;   
+         exit("asdqwe");   
       }
       else {
          header("HTTP/1.1 500 Internal Server Error");

@@ -17,7 +17,9 @@ export class LoginModalComponent implements OnInit {
       this.httpClient.post<any>('https://www.skcvolleybal.nl/script/team-portal/php/interface/php?action=Login', {
          username: this.username,
          password: this.password
-      }).subscribe();
+      }, {
+         withCredentials: true
+      }).subscribe(x => console.log(x));
    }
 
    ngOnInit() {
