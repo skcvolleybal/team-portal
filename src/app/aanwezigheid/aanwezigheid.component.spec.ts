@@ -1,18 +1,18 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { BeschikbaarheidComponent } from './beschikbaarheid.component';
+import { AanwezigheidComponent } from './aanwezigheid.component';
 
-describe('BeschikbaarheidComponent', () => {
-  let component: BeschikbaarheidComponent;
-  let fixture: ComponentFixture<BeschikbaarheidComponent>;
+describe('AanwezigheidComponent', () => {
+  let component: AanwezigheidComponent;
+  let fixture: ComponentFixture<AanwezigheidComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [BeschikbaarheidComponent]
+      declarations: [AanwezigheidComponent]
     }).compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(BeschikbaarheidComponent);
+    fixture = TestBed.createComponent(AanwezigheidComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

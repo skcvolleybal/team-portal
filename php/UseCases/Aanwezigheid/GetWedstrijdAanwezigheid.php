@@ -28,7 +28,7 @@ class GetWedstrijdAanwezigheid implements IInteractor
         }
 
         $team = $this->userGateway->GetTeam($userId);
-        $aanwezigheden = $this->aanwezigheidGateway->GetWedstrijdAanwezigheden($userId);
+        $aanwezigheden = $this->aanwezigheidGateway->GetAanwezigheden($userId);
         $wedstrijden = $this->nevoboGateway->GetProgrammaForTeam($team);
 
         $overzicht = [];
@@ -51,7 +51,7 @@ class GetWedstrijdAanwezigheid implements IInteractor
             "isTeam1" => $wedstrijd["team1"] == $team,
             "team2" => $wedstrijd["team2"],
             "isTeam2" => $wedstrijd["team2"] == $team,
-            "aanwezig" => $aanwezigheid,
+            "aanwezigheid" => $aanwezigheid['aanwezigheid'] ?? null,
         ];
     }
 

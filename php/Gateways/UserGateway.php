@@ -71,7 +71,7 @@ class UserGateway
                   LEFT JOIN J3_user_usergroup_map M on U.id = M.user_id
                   LEFT JOIN J3_usergroups G on G.id = M.group_id
                   WHERE M.user_id = :userId and G.parent_id in (select id from J3_usergroups where title = 'Teams')";
-        $params = [new Param(":userId", 542, PDO::PARAM_INT)];
+        $params = [new Param(":userId", $userId, PDO::PARAM_INT)];
 
         $team = $this->database->Execute($query, $params);
         if (count($team) == 0) {

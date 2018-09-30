@@ -1,20 +1,21 @@
 <?php
 
-include 'IInteractor.php';
+include 'IInteractorWithData.php';
 include 'UserGateway.php';
 include 'NevoboGateway.php';
+include 'AanwezigheidGateway.php';
 
-class UpdateWedstrijdAanwezigheid implements IInteractor
+class UpdateAanwezigheid implements IInteractorWithData
 {
-    public function __construct()
+    public function __construct($database)
     {
-        $this->userGateway = new UserGateway();
-        $this->aanwezigheidGateway = new AanwezigheidGateway();
+        $this->userGateway = new UserGateway($database);
+        $this->aanwezigheidGateway = new AanwezigheidGateway($database);
     }
 
     private $nevoboGateway;
 
-    public function Execute()
+    public function Execute($data)
     {
         $userId = $this->userGateway->GetUserId();
 
@@ -23,17 +24,11 @@ class UpdateWedstrijdAanwezigheid implements IInteractor
             exit;
         }
 
-        $team = $this->userGateway->GetTeam($userId);
-        $aanwezigheden = $this->aanwezigheidGateway->GetWedstrijdAanwezigheden($userId);
+        $matchId = $data->matchId;
+        $aanwezigheid = $data->aanwezigheid;
 
-        $overzicht = [];
-        foreach ($wedstrijden as $wedstrijd) {
-            $aanwezigheid = $this->GetAanwezigheid($aanwezigheden, $wedstrijd);
-            $overzicht[] = $this->MapFromNevoboMatch($wedstrijd, $aanwezigheid, $team);
-        }
+        $this->aanwezigheidGateway->UpdateAanwezigheid($userId, $matchId, $aanwezigheid);
 
-        print_r($overzicht);exit;
-        echo json_encode($overzicht);
         exit;
     }
 

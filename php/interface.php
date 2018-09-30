@@ -11,11 +11,21 @@ set_include_path(get_include_path() . PATH_SEPARATOR . '.' . DIRECTORY_SEPARATOR
 set_include_path(get_include_path() . PATH_SEPARATOR . '.' . DIRECTORY_SEPARATOR . 'Gateways');
 set_include_path(get_include_path() . PATH_SEPARATOR . '.' . DIRECTORY_SEPARATOR . 'libs');
 
-$http_referer = $_SERVER['HTTP_REFERER'] ?? "";
+$http_referer = $_SERVER['HTTP_REFERER'] ?? "http://localhost:4200/";
 if ($http_referer == "http://localhost:4200/") {
-    header("Access-Control-Allow-Origin: http://localhost:4200");
+    $origin = "http://localhost:4200";
 } else {
-    header("Access-Control-Allow-Origin: https://www.skcvolleybal.nl");
+    $orogin = "https://www.skcvolleybal.nl";
+}
+
+header("Access-Control-Allow-Origin: $origin");
+
+if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+    $allowedHeaders = "Content-Type";
+    header("Access-Control-Allow-Origin: $origin");
+    header("Access-Control-Allow-Credentials: true");
+    header("Access-Control-Allow-Headers: $allowedHeaders");
+    exit;
 }
 
 header('Access-Control-Allow-Credentials: true');

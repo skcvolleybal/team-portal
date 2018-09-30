@@ -23,7 +23,7 @@ export class MijnOverzichtComponent implements OnInit {
 
   getMijnOverzicht(): Observable<any[]> {
     return this.http.get<any[]>(
-      'http://localhost/php/interface.php?action=GetMijnOverzicht',
+      'https://www.skcvolleybal.nl/scripts/team-portal/php/interface.php?action=GetMijnOverzicht',
       {
         withCredentials: true
       }

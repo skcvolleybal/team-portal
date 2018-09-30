@@ -7,10 +7,11 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { AppComponent } from './app.component';
-import { BeschikbaarheidComponent } from './beschikbaarheid/beschikbaarheid.component';
+import { AanwezigheidComponent } from './aanwezigheid/aanwezigheid.component';
 import { CoachWedstrijdenComponent } from './coach-wedstrijden/coach-wedstrijden.component';
 import { FluitAanwezigheidComponent } from './fluit-aanwezigheid/fluit-aanwezigheid.component';
 
+import { CustomInterceptor } from './interceptors/add-credentials.interceptor';
 import { MeespeelTeamsComponent } from './meespeel-teams/meespeel-teams.component';
 import { MijnOverzichtComponent } from './mijn-overzicht/mijn-overzicht.component';
 import { ScheidscoComponent } from './scheidsco/scheidsco.component';
@@ -22,7 +23,6 @@ import { WedstrijdOverzichtComponent } from './wedstrijd-overzicht/wedstrijd-ove
 import { WedstrijdComponent } from './wedstrijd/wedstrijd.component';
 import { WedstrijdenCardComponent } from './wedstrijden-card/wedstrijden-card.component';
 import { WedstrijdenComponent } from './wedstrijden/wedstrijden.component';
-import { CustomInterceptor } from './interceptors/add-credentials.interceptor';
 
 export const appRoutes: Routes = [
   { path: '', redirectTo: 'mijn-overzicht', pathMatch: 'full' },
@@ -74,7 +74,7 @@ export const appRoutes: Routes = [
     TellersComponent,
     ScheidsrechterComponent,
     WedstrijdComponent,
-    BeschikbaarheidComponent,
+    AanwezigheidComponent,
     FluitAanwezigheidComponent,
     WedstrijdOverzichtComponent,
     WedstrijdenCardComponent,

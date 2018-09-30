@@ -34,7 +34,7 @@ export class CoachWedstrijdenComponent implements OnInit {
       tellers: 'SKC HS 1',
       isTellers: false,
       locatie: 'Universitair Sport Centrum, Sportweg 6 2333 AS Leiden',
-      beschikbaarheid: 'ja',
+      aanwezigheid: 'ja',
       eigenWedstrijden: [
         {
           datum: '20 okt',
@@ -103,7 +103,7 @@ export class CoachWedstrijdenComponent implements OnInit {
       isTellers: false,
       locatie: 'Universitair Sport Centrum, Sportweg 6 2333 AS Leiden',
       isCollapsed: false,
-      beschikbaarheid: 'ja',
+      aanwezigheid: 'ja',
       eigenWedstrijden: []
     },
     {

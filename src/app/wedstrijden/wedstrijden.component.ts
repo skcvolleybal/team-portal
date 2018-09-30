@@ -1,9 +1,12 @@
+// tslint:disable-next-line:no-submodule-imports
+import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import {
   faCheck,
   faQuestion,
   faTimes
 } from '@fortawesome/free-solid-svg-icons';
+import { Observable } from 'rxjs/internal/Observable';
 
 @Component({
   templateUrl: './wedstrijden.component.html',
@@ -14,62 +17,37 @@ export class WedstrijdenComponent implements OnInit {
   neeIcon = faTimes;
   misschienIcon = faQuestion;
   jaIcon = faCheck;
+  wedstrijden: any[];
 
-  wedstrijden = [
-    {
-      datum: '21 okt',
-      tijd: '19:30',
-      team1: 'SKC HS 2',
-      isTeam1: true,
-      isCoachTeam1: false,
-      team2: 'Gemini-Kangoeroes HS 2',
-      isTeam: false,
-      isCoachTeam2: false,
-      scheidsrechter: 'Kevin Fung',
-      isScheidsrechter: false,
-      tellers: 'SKC HS 1',
-      isTellers: false,
-      locatie: 'Universitair Sport Centrum, Sportweg 6 2333 AS Leiden',
-      isCollapsed: false,
-      beschikbaarheid: 'ja'
-    },
-    {
-      datum: '28 okt',
-      tijd: '19:30',
-      team1: 'Gemini-Kangoeroes HS 2',
-      isTeam1: true,
-      isCoachTeam1: false,
-      team2: 'Gemini HS 2',
-      isTeam: false,
-      isCoachTeam2: false,
-      scheidsrechter: 'Kevin Fung',
-      isScheidsrechter: false,
-      tellers: 'SKC HS 1',
-      isTellers: false,
-      locatie: 'Universitair Sport Centrum, Sportweg 6 2333 AS Leiden',
-      isCollapsed: false,
-      beschikbaarheid: null
-    },
-    {
-      datum: '5 nov',
-      tijd: '19:30',
-      team1: 'SKC HS 2',
-      isTeam1: true,
-      isCoachTeam1: false,
-      team2: 'Kalinko HS 2',
-      isTeam: false,
-      isCoachTeam2: false,
-      scheidsrechter: 'Kevin Fung',
-      isScheidsrechter: false,
-      tellers: 'SKC HS 1',
-      isTellers: false,
-      locatie: 'Universitair Sport Centrum, Sportweg 6 2333 AS Leiden',
-      isCollapsed: false,
-      beschikbaarheid: 'nee'
-    }
-  ];
+  constructor(private http: HttpClient) {}
 
-  constructor() {}
+  getWedstrijdAanwezigheid(): Observable<any[]> {
+    return this.http.get<any[]>(
+      'https://www.skcvolleybal.nl/scripts/team-portal/php/interface.php?action=GetWedstrijdAanwezigheid',
+      {
+        withCredentials: true
+      }
+    );
+  }
 
-  ngOnInit() {}
+  updateAanwezigheid(aanwezigheid, match) {
+    this.http
+      .post<any>(
+        'https://www.skcvolleybal.nl/scripts/team-portal/php/interface.php?action=UpdateAanwezigheid',
+        {
+          matchId: match.id,
+          aanwezigheid
+        },
+        {
+          withCredentials: true
+        }
+      )
+      .subscribe();
+  }
+
+  ngOnInit() {
+    this.getWedstrijdAanwezigheid().subscribe(wedstrijden => {
+      this.wedstrijden = wedstrijden;
+    });
+  }
 }

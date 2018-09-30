@@ -220,7 +220,6 @@ class NevoboGateway
         foreach ($matches as $match) {
             $title = addslashes($match['title']);
             $description = addslashes($match['description']);
-            $asd = strpos($title, 'PQV Pijl Solutions DS 1');
 
             if (strpos($title, 'Uitslag: ') !== false) {
                 continue;
@@ -231,7 +230,7 @@ class NevoboGateway
             $team2 = stripslashes($titleMatches[3]);
 
             preg_match("/Wedstrijd: (.*), Datum: (.*), Speellocatie: (.*)/", $description, $descriptionMatches);
-            $matchId = str_replace("   ", " ", $descriptionMatches[1]);
+            $matchId = preg_replace('/\s+/', ' ',$descriptionMatches[1]);
             $date = $descriptionMatches[2];
             $location = stripslashes($descriptionMatches[3]);
 

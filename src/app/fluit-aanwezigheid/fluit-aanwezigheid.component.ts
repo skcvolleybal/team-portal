@@ -32,7 +32,7 @@ export class FluitAanwezigheidComponent implements OnInit {
               isTeam: false
             }
           ],
-          beschikbaarheid: 'ja'
+          aanwezigheid: 'ja'
         },
         {
           tijd: '21:30',
@@ -56,7 +56,7 @@ export class FluitAanwezigheidComponent implements OnInit {
               isTeam: false
             }
           ],
-          beschikbaarheid: null
+          aanwezigheid: null
         }
       ],
       eigenWedstrijden: [
@@ -104,7 +104,7 @@ export class FluitAanwezigheidComponent implements OnInit {
               isTeam: false
             }
           ],
-          beschikbaarheid: 'ja'
+          aanwezigheid: 'ja'
         },
         {
           tijd: '21:30',
@@ -128,7 +128,7 @@ export class FluitAanwezigheidComponent implements OnInit {
               isTeam: false
             }
           ],
-          beschikbaarheid: null
+          aanwezigheid: null
         }
       ],
       eigenWedstrijden: [
