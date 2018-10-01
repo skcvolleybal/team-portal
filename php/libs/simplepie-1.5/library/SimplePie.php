@@ -1728,7 +1728,7 @@ class SimplePie
 		}
 
 		$this->raw_data = $file->body;
-		$this->permanent_url = $file->permanent_url;
+		$this->permanent_url = $file->permanent_url ?? null;
 		$headers = $file->headers;
 		$sniffer = $this->registry->create('Content_Type_Sniffer', array(&$file));
 		$sniffed = $sniffer->get_type();

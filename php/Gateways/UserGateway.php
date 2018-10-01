@@ -81,6 +81,17 @@ class UserGateway
         return $this->ConvertToNevoboName($team[0]['naam']);
     }
 
+    public function GetPlayers($team)
+    {
+        $team = $this->GetSkcTeam($team);
+        $query = "SELECT  FROM J3_users U
+                  INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
+                  INNER JOIN J3_usergroups G ON M.group_id = G.id
+                  WHERE G.title = :team";
+        $params = [new Param(":team", $team, PDO::PARAM_INT)];
+        $team = $this->database->Execute($query, $params);
+    }
+
     public function GetCoachTeam($userId)
     {
         $query = "SELECT G.title as naam
@@ -157,5 +168,10 @@ class UserGateway
         } else {
             return false;
         }
+    }
+
+    private function GetSkcTeam($team)
+    {
+        return ($team[5] == 'D' ? "Dames " : "Heren ") . substr($team, 7);
     }
 }

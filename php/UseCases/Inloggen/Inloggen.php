@@ -2,7 +2,6 @@
 
 include 'IInteractorWithData.php';
 include 'UserGateway.php';
-include 'NevoboGateway.php';
 
 class Inloggen implements IInteractorWithData
 {

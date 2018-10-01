@@ -40,26 +40,26 @@ export const appRoutes: Routes = [
     component: WedstrijdenComponent,
     data: { title: 'Wedstrijd Aanwezigheid' }
   },
-  {
-    path: 'wedstrijd-overzicht',
-    component: WedstrijdOverzichtComponent,
-    data: { title: 'Wedstrijd Overzicht' }
-  },
-  {
-    path: 'coach-aanwezigheid',
-    component: CoachWedstrijdenComponent,
-    data: { title: 'Coach Aanwezigheid' }
-  },
-  {
-    path: 'fluit-aanwezigheid',
-    component: FluitAanwezigheidComponent,
-    data: { title: 'Fluit Aanwezigheid' }
-  },
-  {
-    path: 'scheidsco',
-    component: ScheidscoComponent,
-    data: { title: 'Scheidsco' }
-  },
+//   {
+//     path: 'wedstrijd-overzicht',
+//     component: WedstrijdOverzichtComponent,
+//     data: { title: 'Wedstrijd Overzicht' }
+//   },
+//   {
+//     path: 'coach-aanwezigheid',
+//     component: CoachWedstrijdenComponent,
+//     data: { title: 'Coach Aanwezigheid' }
+//   },
+//   {
+//     path: 'fluit-aanwezigheid',
+//     component: FluitAanwezigheidComponent,
+//     data: { title: 'Fluit Aanwezigheid' }
+//   },
+//   {
+//     path: 'scheidsco',
+//     component: ScheidscoComponent,
+//     data: { title: 'Scheidsco' }
+//   },
   {
     path: 'statistieken',
     component: StatistiekenComponent,

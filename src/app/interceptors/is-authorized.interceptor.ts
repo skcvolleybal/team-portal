@@ -24,7 +24,7 @@ export class HTTPListener implements HttpInterceptor {
         event => {},
         error => {
           if (error.status === 401) {
-            this.authenticationService.setUnauthorized(error);
+            this.authenticationService.setUnauthorized();
           }
         }
       )

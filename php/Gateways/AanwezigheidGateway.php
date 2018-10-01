@@ -36,6 +36,21 @@ class AanwezigheidGateway
         return null;
     }
 
+    public function GetAanwezigheidForTeam($matchIds)
+    {
+        $matchIdstring = implode(",", $matchIds);
+        $query = "SELECT A.*, U.name as naam
+                  FROM TeamPortal_wedstrijdaanwezigheden A
+                  INNER JOIN J3_users U ON A.user_id = U.id
+                  WHERE match_id IN (:matchIdstring)
+                  ORDER BY match_id, U.name";
+        $params = [
+            new Param(":matchIdstring", $matchIdstring, PDO::PARAM_STR),
+        ];
+
+        return $this->database->Execute($query, $params);
+    }
+
     public function UpdateAanwezigheid($userId, $matchId, $aanwezigheid)
     {
         if (!in_array($aanwezigheid, ['Ja', 'Nee', 'Misschien'])) {
@@ -75,5 +90,10 @@ class AanwezigheidGateway
         ];
 
         $this->database->Execute($query, $params);
+    }
+
+    private function GetSkcTeam($team)
+    {
+        return ($team[5] == 'D' ? "Dames " : "Heren ") . substr($team, 7);
     }
 }

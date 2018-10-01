@@ -1,3 +1,5 @@
+// tslint:disable-next-line:no-submodule-imports
+import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import {
   faAngleDoubleDown,
@@ -7,6 +9,7 @@ import {
   faPlusSquare,
   faTimesCircle
 } from '@fortawesome/free-solid-svg-icons';
+import { Observable } from 'rxjs/internal/Observable';
 
 @Component({
   selector: 'app-wedstrijd-overzicht',
@@ -460,11 +463,18 @@ export class WedstrijdOverzichtComponent implements OnInit {
     }
   ];
 
-  toggle(collapsable) {
-    collapsable = !collapsable;
+  getWedstrijdOverzicht(): Observable<any[]> {
+    return this.http.get<any[]>(
+      'http://localhost/php/interface.php?action=GetWedstrijdOverzicht'
+    );
   }
 
-  constructor() {}
+  ngOnInit() {
+    this.getWedstrijdOverzicht().subscribe(wedstrijden => {
+      console.log(wedstrijden);
+      this.wedstrijden = wedstrijden;
+    });
+  }
 
-  ngOnInit() {}
+  constructor(private http: HttpClient) {}
 }

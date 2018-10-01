@@ -48,18 +48,9 @@ export class AppComponent implements OnInit {
     }
   }
 
-  open() {
-    if (!this.loginModal) {
-      this.loginModal = true;
-      this.modalService.open(LoginModalComponent);
-    }
-  }
-
   ngOnInit() {
-    this.authenticationService
-      .getUnauthorized()
-      .subscribe((status: boolean) => {
-        setTimeout(() => this.open());
-      });
+    this.authenticationService.isAuthorized.subscribe(() => {
+      setTimeout(() => this.modalService.open(LoginModalComponent));
+    });
   }
 }

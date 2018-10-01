@@ -38,6 +38,13 @@ class TeamPortal
         $interactor->Execute();
     }
 
+    public function GetWedstrijdOverzicht()
+    {
+        include 'UseCases' . DIRECTORY_SEPARATOR . 'WedstrijdOverzicht' . DIRECTORY_SEPARATOR . 'GetWedstrijdOverzicht.php';
+        $interactor = new GetWedstrijdOverzicht($this->database);
+        $interactor->Execute();
+    }
+
     public function UpdateAanwezigheid()
     {
         include 'UseCases' . DIRECTORY_SEPARATOR . 'Aanwezigheid' . DIRECTORY_SEPARATOR . 'UpdateAanwezigheid.php';
