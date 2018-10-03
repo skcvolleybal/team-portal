@@ -1,6 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
+// tslint:disable-next-line:no-implicit-dependencies
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-login-modal',
@@ -19,13 +21,10 @@ export class LoginModalComponent implements OnInit {
     this.errorMessage = null;
 
     this.httpClient
-      .post<any>(
-        'https://www.skcvolleybal.nl/scripts/team-portal/php/interface.php?action=Login',
-        {
-          username: this.username,
-          password: this.password
-        }
-      )
+      .post<any>(environment.baseUrl + 'php/interface.php?action=Login', {
+        username: this.username,
+        password: this.password
+      })
       .subscribe(
         () => window.location.reload(),
         error => {

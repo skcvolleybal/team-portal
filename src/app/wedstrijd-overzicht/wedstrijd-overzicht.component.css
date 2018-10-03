@@ -1,0 +1,39 @@
+div.card-body {
+    padding-bottom: 0px;
+}
+
+.input-group-text {
+    background-color: white;
+}
+
+.input-group {
+    padding: 5px;
+}
+
+.no-border {
+    border: 0px;
+}
+
+#loading {
+    text-align: center;
+    display: inline-block;
+    width: 100px;
+    height: 100px;
+    border: 3px solid rgba(255, 255, 255, 0.479);
+    border-radius: 50%;
+    border-top-color: rgb(0, 0, 0);
+    animation: spin 1s ease-in-out infinite;
+    -webkit-animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to {
+        -webkit-transform: rotate(360deg);
+    }
+}
+
+@-webkit-keyframes spin {
+    to {
+        -webkit-transform: rotate(360deg);
+    }
+}

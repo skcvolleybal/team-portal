@@ -81,7 +81,7 @@ class GetMijnOverzichtInteractor implements IInteractor
             "isScheidsrechter" => $match['user_id'] == $userId,
             "tellers" => $match['tellers'],
             "isTellers" => $match['tellers'] == $team,
-            "locatie" => $uscMatch['location'],
+            "locatie" => $uscMatch['locatie'],
         ];
     }
 
@@ -97,7 +97,7 @@ class GetMijnOverzichtInteractor implements IInteractor
             "team2" => $match['team2'],
             "isTeam2" => $match['team2'] == $team,
             "isCoachTeam2" => $match['team2'] == $coachTeam,
-            "locatie" => $match['location'],
+            "locatie" => $match['locatie'],
         ];
     }
 

@@ -1,6 +1,7 @@
 <?php
 
 include_once 'Param.php';
+include_once 'Utilities.php';
 
 class UserGateway
 {
@@ -44,7 +45,7 @@ class UserGateway
         $params = [new Param(":userId", $userId, PDO::PARAM_INT)];
         $result = $this->database->Execute($query, $params);
         foreach ($result as &$row) {
-            $row['tellers'] = $this->ConvertToNevoboName($row['tellers']);
+            $row['tellers'] = ConvertToNevoboName($row['tellers']);
         }
         return $result;
     }
@@ -59,7 +60,7 @@ class UserGateway
         $params = [new Param(":userId", $userId, PDO::PARAM_INT)];
         $result = $this->database->Execute($query, $params);
         foreach ($result as &$row) {
-            $row['tellers'] = $this->ConvertToNevoboName($row['tellers']);
+            $row['tellers'] = ConvertToNevoboName($row['tellers']);
         }
         return $result;
     }
@@ -78,18 +79,19 @@ class UserGateway
             return null;
         }
 
-        return $this->ConvertToNevoboName($team[0]['naam']);
+        return ConvertToNevoboName($team[0]['naam']);
     }
 
-    public function GetPlayers($team)
+    public function GetSpelers($team)
     {
-        $team = $this->GetSkcTeam($team);
-        $query = "SELECT  FROM J3_users U
+        $team = GetSkcTeam($team);
+        $query = "SELECT U.id, name as naam
+                  FROM J3_users U
                   INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
                   INNER JOIN J3_usergroups G ON M.group_id = G.id
                   WHERE G.title = :team";
-        $params = [new Param(":team", $team, PDO::PARAM_INT)];
-        $team = $this->database->Execute($query, $params);
+        $params = [new Param(":team", $team, PDO::PARAM_STR)];
+        return $this->database->Execute($query, $params);
     }
 
     public function GetCoachTeam($userId)
@@ -106,18 +108,7 @@ class UserGateway
         }
 
         $coachTeam = substr($team[0]['naam'], 6);
-        return $this->ConvertToNevoboName($coachTeam);
-    }
-
-    private function ConvertToNevoboName($teamnaam)
-    {
-        if (substr($teamnaam, 0, 6) == "Dames ") {
-            return "SKC DS " . substr($teamnaam, 6);
-        } else if (substr($teamnaam, 0, 6) == "Heren ") {
-            return "SKC HS " . substr($teamnaam, 6);
-        }
-
-        throw new Exception("unknown team: " . $teamnaam);
+        return ConvertToNevoboName($coachTeam);
     }
 
     private function InitJoomla()
@@ -168,10 +159,5 @@ class UserGateway
         } else {
             return false;
         }
-    }
-
-    private function GetSkcTeam($team)
-    {
-        return ($team[5] == 'D' ? "Dames " : "Heren ") . substr($team, 7);
     }
 }

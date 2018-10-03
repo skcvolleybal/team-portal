@@ -9,8 +9,8 @@
       <td>
         <app-wedstrijd [wedstrijd]="wedstrijd"></app-wedstrijd>
         <div>
-          <app-spelers-lijst *ngIf="wedstrijd.aanwezigen.length > 0" [spelers]="wedstrijd.aanwezigen" title="Aanwezigen"
-            class="alert-success"></app-spelers-lijst>
+          <app-spelers-lijst (deleteAanwezigheid)="DeleteAanwezigheid($event, wedstrijd.id)" *ngIf="wedstrijd.aanwezigen.length > 0"
+            [spelers]="wedstrijd.aanwezigen" title="Aanwezigen" class="alert-success"></app-spelers-lijst>
 
           <app-spelers-lijst *ngIf="wedstrijd.onbekend.length > 0" [spelers]="wedstrijd.onbekend" title="Onbekend"
             class="alert-warning"></app-spelers-lijst>
@@ -22,7 +22,7 @@
     </tr>
     <tr>
       <td colspan="3" style="padding: 0px;">
-        <app-meespeel-teams [teams]="wedstrijd.meespeelTeams"></app-meespeel-teams>
+        <app-inval-teams (addAanwezigheid)="AddAanwezigheid($event, wedstrijd.id)" [teams]="wedstrijd.invalTeams"></app-inval-teams>
       </td>
     </tr>
     <tr class="gray-background">
@@ -30,3 +30,4 @@
     </tr>
   </tbody>
 </table>
+<app-spinner *ngIf="loading"></app-spinner>

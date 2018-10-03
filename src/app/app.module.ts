@@ -1,4 +1,3 @@
-// tslint:disable-next-line:no-submodule-imports
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -14,8 +13,8 @@ import { FluitAanwezigheidComponent } from './fluit-aanwezigheid/fluit-aanwezigh
 
 import { CustomInterceptor } from './interceptors/add-credentials.interceptor';
 import { HTTPListener } from './interceptors/is-authorized.interceptor';
+import { InvalTeamsComponent } from './inval-teams/inval-teams.component';
 import { LoginModalComponent } from './login-modal/login-modal.component';
-import { MeespeelTeamsComponent } from './meespeel-teams/meespeel-teams.component';
 import { MijnOverzichtComponent } from './mijn-overzicht/mijn-overzicht.component';
 import { ScheidscoComponent } from './scheidsco/scheidsco.component';
 import { ScheidsrechterComponent } from './scheidsrechter/scheidsrechter.component';
@@ -27,6 +26,7 @@ import { WedstrijdOverzichtComponent } from './wedstrijd-overzicht/wedstrijd-ove
 import { WedstrijdComponent } from './wedstrijd/wedstrijd.component';
 import { WedstrijdenCardComponent } from './wedstrijden-card/wedstrijden-card.component';
 import { WedstrijdenComponent } from './wedstrijden/wedstrijden.component';
+import { SpinnerComponent } from './spinner/spinner.component';
 
 export const appRoutes: Routes = [
   { path: '', redirectTo: 'mijn-overzicht', pathMatch: 'full' },
@@ -40,26 +40,26 @@ export const appRoutes: Routes = [
     component: WedstrijdenComponent,
     data: { title: 'Wedstrijd Aanwezigheid' }
   },
-//   {
-//     path: 'wedstrijd-overzicht',
-//     component: WedstrijdOverzichtComponent,
-//     data: { title: 'Wedstrijd Overzicht' }
-//   },
-//   {
-//     path: 'coach-aanwezigheid',
-//     component: CoachWedstrijdenComponent,
-//     data: { title: 'Coach Aanwezigheid' }
-//   },
-//   {
-//     path: 'fluit-aanwezigheid',
-//     component: FluitAanwezigheidComponent,
-//     data: { title: 'Fluit Aanwezigheid' }
-//   },
-//   {
-//     path: 'scheidsco',
-//     component: ScheidscoComponent,
-//     data: { title: 'Scheidsco' }
-//   },
+  {
+    path: 'wedstrijd-overzicht',
+    component: WedstrijdOverzichtComponent,
+    data: { title: 'Wedstrijd Overzicht' }
+  },
+  //   {
+  //     path: 'coach-aanwezigheid',
+  //     component: CoachWedstrijdenComponent,
+  //     data: { title: 'Coach Aanwezigheid' }
+  //   },
+  //   {
+  //     path: 'fluit-aanwezigheid',
+  //     component: FluitAanwezigheidComponent,
+  //     data: { title: 'Fluit Aanwezigheid' }
+  //   },
+  //   {
+  //     path: 'scheidsco',
+  //     component: ScheidscoComponent,
+  //     data: { title: 'Scheidsco' }
+  //   },
   {
     path: 'statistieken',
     component: StatistiekenComponent,
@@ -84,8 +84,9 @@ export const appRoutes: Routes = [
     WedstrijdOverzichtComponent,
     WedstrijdenCardComponent,
     SpelersLijstComponent,
-    MeespeelTeamsComponent,
-    LoginModalComponent
+    InvalTeamsComponent,
+    LoginModalComponent,
+    SpinnerComponent
   ],
   imports: [
     FormsModule,

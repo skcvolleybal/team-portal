@@ -1,5 +1,7 @@
 <?php
 
+include_once 'NevoboGateway.php';
+
 class AanwezigheidGateway
 {
     private $database;
@@ -7,12 +9,13 @@ class AanwezigheidGateway
     public function __construct($database)
     {
         $this->database = $database;
+        $this->nevoboGateway = new NevoboGateway();
     }
 
     public function GetAanwezigheden($userId)
     {
         $query = "SELECT *
-                  FROM TeamPortal_wedstrijdaanwezigheden
+                  FROM TeamPortal_aanwezigheden
                   WHERE user_id = :userId";
         $params = [new Param(":userId", $userId, PDO::PARAM_INT)];
 
@@ -22,7 +25,7 @@ class AanwezigheidGateway
     public function GetAanwezigheid($userId, $matchId)
     {
         $query = "SELECT *
-                  FROM TeamPortal_wedstrijdaanwezigheden
+                  FROM TeamPortal_aanwezigheden
                   WHERE user_id = :userId and match_id = :matchId";
         $params = [
             new Param(":userId", $userId, PDO::PARAM_INT),
@@ -36,16 +39,49 @@ class AanwezigheidGateway
         return null;
     }
 
-    public function GetAanwezigheidForTeam($matchIds)
+    public function GetAanwezighedenForTeam($team)
     {
-        $matchIdstring = implode(",", $matchIds);
-        $query = "SELECT A.*, U.name as naam
-                  FROM TeamPortal_wedstrijdaanwezigheden A
-                  INNER JOIN J3_users U ON A.user_id = U.id
-                  WHERE match_id IN (:matchIdstring)
-                  ORDER BY match_id, U.name";
+        $wedstrijden = $this->nevoboGateway->GetProgrammaForTeam($team);
+        $skcTeam = GetSkcTeam($team);
+        $matchList = "";
+        foreach ($wedstrijden as $wedstrijd) {
+            $matchId = $wedstrijd['id'];
+            $matchList .= " UNION SELECT \"$matchId\" as id";
+            $ids[] = $matchId;
+        }
+        $matchList = substr($matchList, 7);
+
+        $query = "SELECT
+                    U.id as userId,
+                    U.name as naam,
+                    Matches.id as matchId,
+                    A.aanwezigheid,
+                    0 as isInvaller
+                  FROM J3_users U
+                  INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
+                  INNER JOIN J3_usergroups G on M.group_id = G.id
+                  JOIN ($matchList) Matches
+                  LEFT JOIN TeamPortal_aanwezigheden A ON Matches.id = A.match_id and U.id = A.user_id
+                  WHERE G.title = :team
+
+                  UNION
+
+                  SELECT
+                    U.id as userId,
+                    U.name as naam,
+                    A.match_id as matchId,
+                    A.aanwezigheid,
+                    1 as isInvaller
+                  FROM TeamPortal_aanwezigheden A
+                  INNER JOIN J3_users U ON U.id = A.user_id
+                  INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
+                  INNER JOIN J3_usergroups G on M.group_id = G.id
+                  WHERE G.title != :team2 and G.parent_id = (
+                      select id from J3_usergroups where title = 'Teams'
+                  )";
         $params = [
-            new Param(":matchIdstring", $matchIdstring, PDO::PARAM_STR),
+            new Param(":team", $skcTeam, PDO::PARAM_STR),
+            new Param(":team2", $skcTeam, PDO::PARAM_STR),
         ];
 
         return $this->database->Execute($query, $params);
@@ -59,7 +95,11 @@ class AanwezigheidGateway
 
         $wedstrijdAanwezigheid = $this->GetAanwezigheid($userId, $matchId);
         if ($wedstrijdAanwezigheid) {
-            $this->Update($userId, $matchId, $aanwezigheid);
+            if ($aanwezigheid == 'Misschien') {
+                $this->Delete($userId, $matchId);
+            } else {
+                $this->Update($userId, $matchId, $aanwezigheid);
+            }
         } else {
             $this->Insert($userId, $matchId, $aanwezigheid);
         }
@@ -67,7 +107,7 @@ class AanwezigheidGateway
 
     private function Update($userId, $matchId, $aanwezigheid)
     {
-        $query = "UPDATE TeamPortal_wedstrijdaanwezigheden
+        $query = "UPDATE TeamPortal_aanwezigheden
                   set aanwezigheid = :aanwezigheid
                   WHERE user_id = :userId and match_id = :matchId";
         $params = [
@@ -81,7 +121,7 @@ class AanwezigheidGateway
 
     private function Insert($userId, $matchId, $aanwezigheid)
     {
-        $query = "INSERT INTO TeamPortal_wedstrijdaanwezigheden (user_id, match_id, aanwezigheid)
+        $query = "INSERT INTO TeamPortal_aanwezigheden (user_id, match_id, aanwezigheid)
                   VALUES (:userId, :matchId, :aanwezigheid)";
         $params = [
             new Param(":userId", $userId, PDO::PARAM_INT),
@@ -92,8 +132,14 @@ class AanwezigheidGateway
         $this->database->Execute($query, $params);
     }
 
-    private function GetSkcTeam($team)
+    private function Delete($userId, $matchId)
     {
-        return ($team[5] == 'D' ? "Dames " : "Heren ") . substr($team, 7);
+        $query = "DELETE FROM TeamPortal_aanwezigheden
+                  WHERE user_id = :userId and match_id = :matchId";
+        $params = [
+            new Param(":userId", $userId, PDO::PARAM_INT),
+            new Param(":matchId", $matchId, PDO::PARAM_STR),
+        ];
+        $this->database->Execute($query, $params);
     }
 }

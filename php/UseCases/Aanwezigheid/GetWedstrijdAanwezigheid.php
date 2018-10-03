@@ -3,7 +3,7 @@
 include 'IInteractor.php';
 include 'UserGateway.php';
 include 'AanwezigheidGateway.php';
-include 'NevoboGateway.php';
+include_once 'NevoboGateway.php';
 
 class GetWedstrijdAanwezigheid implements IInteractor
 {
@@ -33,7 +33,7 @@ class GetWedstrijdAanwezigheid implements IInteractor
 
         $overzicht = [];
         foreach ($wedstrijden as $wedstrijd) {
-            $aanwezigheid = $this->GetAanwezigheid($aanwezigheden, $wedstrijd);
+            $aanwezigheid = $this->GetAanwezigheid($aanwezigheden, $wedstrijd['id']);
             $overzicht[] = $this->MapFromNevoboMatch($wedstrijd, $aanwezigheid, $team);
         }
 
@@ -51,14 +51,14 @@ class GetWedstrijdAanwezigheid implements IInteractor
             "isTeam1" => $wedstrijd["team1"] == $team,
             "team2" => $wedstrijd["team2"],
             "isTeam2" => $wedstrijd["team2"] == $team,
-            "aanwezigheid" => $aanwezigheid['aanwezigheid'] ?? null,
+            "aanwezigheid" => $aanwezigheid['aanwezigheid'] ?? "Misschien",
         ];
     }
 
-    private function GetAanwezigheid($aanwezigheden, $wedstrijd)
+    private function GetAanwezigheid($aanwezigheden, $matchId)
     {
         foreach ($aanwezigheden as $aanwezigheid) {
-            if ($wedstrijd['id'] == $aanwezigheid['match_id']) {
+            if ($aanwezigheid['match_id'] == $matchId) {
                 return $aanwezigheid;
             }
         }

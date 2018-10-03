@@ -1,4 +1,3 @@
-// tslint:disable-next-line:no-submodule-imports
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import {
@@ -7,6 +6,8 @@ import {
   faTimes
 } from '@fortawesome/free-solid-svg-icons';
 import { Observable } from 'rxjs/internal/Observable';
+// tslint:disable-next-line:no-implicit-dependencies
+import { environment } from 'src/environments/environment';
 
 @Component({
   templateUrl: './wedstrijden.component.html',
@@ -18,36 +19,36 @@ export class WedstrijdenComponent implements OnInit {
   misschienIcon = faQuestion;
   jaIcon = faCheck;
   wedstrijden: any[];
+  loading: boolean;
 
   constructor(private http: HttpClient) {}
 
   getWedstrijdAanwezigheid(): Observable<any[]> {
     return this.http.get<any[]>(
-      'https://www.skcvolleybal.nl/scripts/team-portal/php/interface.php?action=GetWedstrijdAanwezigheid',
-      {
-        withCredentials: true
-      }
+      environment.baseUrl + 'php/interface.php?action=GetWedstrijdAanwezigheid'
     );
   }
 
   updateAanwezigheid(aanwezigheid, match) {
     this.http
       .post<any>(
-        'https://www.skcvolleybal.nl/scripts/team-portal/php/interface.php?action=UpdateAanwezigheid',
+        environment.baseUrl + 'php/interface.php?action=UpdateAanwezigheid',
         {
           matchId: match.id,
           aanwezigheid
-        },
-        {
-          withCredentials: true
         }
       )
       .subscribe();
   }
 
   ngOnInit() {
-    this.getWedstrijdAanwezigheid().subscribe(wedstrijden => {
-      this.wedstrijden = wedstrijden;
-    });
+    this.loading = true;
+    this.getWedstrijdAanwezigheid().subscribe(
+      wedstrijden => {
+        this.wedstrijden = wedstrijden;
+      },
+      () => {},
+      () => (this.loading = false)
+    );
   }
 }

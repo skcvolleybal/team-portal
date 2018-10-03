@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import {
   faMinusSquare,
   faPlusSquare,
@@ -18,10 +18,17 @@ export class SpelersLijstComponent {
   @Input()
   class;
 
+  @Output()
+  deleteAanwezigheid = new EventEmitter();
+
   inklappen = faMinusSquare;
   uitklappen = faPlusSquare;
   verwijderIcon = faTimesCircle;
   isCollapsed = true;
 
   constructor() {}
+
+  DeleteAanwezigheid(spelerId) {
+    this.deleteAanwezigheid.emit(spelerId);
+  }
 }

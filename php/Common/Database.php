@@ -34,7 +34,8 @@ class Database
 
         if (!$stmt->execute()) {
             $message = "query:\n" . print_r($query, true) . "\n\nparams:\n" . print_r($params, true);
-            // $this->returnError("Fout bij het uitvoeren van query (" . $message . ") " . print_r($stmt->errorInfo(), true) . "  om " . date('H:i:s:(u) d-m-Y'));
+            header("HTTP/1.1 500 Internal Server Error");
+            exit("Fout bij het uitvoeren van query (" . $message . ") " . print_r($stmt->errorInfo(), true) . "  om " . date('H:i:s:(u) d-m-Y'));
         }
 
         return $stmt->fetchAll();

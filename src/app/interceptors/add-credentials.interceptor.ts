@@ -1,6 +1,4 @@
-// tslint:disable-next-line:no-submodule-imports
 import { HttpEvent, HttpHandler, HttpRequest } from '@angular/common/http';
-// tslint:disable-next-line:no-submodule-imports
 import { HttpInterceptor } from '@angular/common/http/src/interceptor';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/internal/Observable';

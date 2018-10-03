@@ -1,6 +1,4 @@
-// tslint:disable-next-line:no-submodule-imports
-import { HttpClient } from '@angular/common/http';
-import { Component, Injectable, Injector, OnInit } from '@angular/core';
+import { Component, Injector, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
 import { NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
@@ -22,7 +20,6 @@ export class AppComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private injector: Injector,
     private modalService: NgbModal,
-    private http: HttpClient,
     private authenticationService: AuthenticationService,
     config: NgbModalConfig
   ) {

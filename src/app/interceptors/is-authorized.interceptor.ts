@@ -3,7 +3,6 @@ import {
   HttpHandler,
   HttpInterceptor,
   HttpRequest
-  // tslint:disable-next-line:no-submodule-imports
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';

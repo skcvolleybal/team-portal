@@ -48,11 +48,13 @@
       "rxjs",
       "@angular/platform-browser",
       "@angular/core/testing",
+      "@angular/common/http",
       "zone.js/dist/zone-testing",
       "@angular/platform-browser-dynamic/testing",
       "zone.js/dist/zone",
       "core-js/es7/reflect",
-      "protractor"
+      "protractor",
+      "src/environments/environment"
     ],
     "no-shadowed-variable": true,
     "no-string-literal": false,

@@ -230,9 +230,9 @@ class NevoboGateway
             $team2 = stripslashes($titleMatches[3]);
 
             preg_match("/Wedstrijd: (.*), Datum: (.*), Speellocatie: (.*)/", $description, $descriptionMatches);
-            $matchId = preg_replace('/\s+/', ' ',$descriptionMatches[1]);
+            $matchId = preg_replace('/\s+/', ' ', $descriptionMatches[1]);
             $date = $descriptionMatches[2];
-            $location = stripslashes($descriptionMatches[3]);
+            $locatie = preg_replace('/\s+/', ' ', stripslashes($descriptionMatches[3]));
 
             $programma[] = [
                 'team1' => $team1,
@@ -240,7 +240,7 @@ class NevoboGateway
                 'id' => $matchId,
                 'poule' => substr($matchId, 4, 3),
                 'timestamp' => $this->ConvertNevoboDate($date),
-                'location' => $location,
+                'locatie' => $locatie,
             ];
         }
 
