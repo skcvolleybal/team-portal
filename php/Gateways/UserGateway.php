@@ -117,7 +117,7 @@ class UserGateway
             define('_JEXEC', 1);
 
             if (DIRECTORY_SEPARATOR == '/') {
-                define('JPATH_BASE', realpath(dirname(__DIR__) . '/../../../'));
+                define('JPATH_BASE', '/home/deb105013n2/domains/skcvolleybal.nl/public_html/');
             } else {
                 define('JPATH_BASE', realpath(dirname(__DIR__) . '/../joomla/'));
             }
