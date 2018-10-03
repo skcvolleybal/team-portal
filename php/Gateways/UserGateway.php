@@ -27,7 +27,7 @@ class UserGateway
     public function GetZaalwachten($userId)
     {
         $query = "SELECT Z.*
-                  FROM scheidsapp_zaalwacht Z
+                  FROM ScheidsApp_zaalwacht Z
                   INNER JOIN J3_user_usergroup_map M on Z.team_id = M.group_id
                   WHERE M.user_id = :userId and Z.date >= CURRENT_DATE()";
         $params = [new Param(":userId", $userId, PDO::PARAM_INT)];
@@ -37,7 +37,7 @@ class UserGateway
     public function GetTelbeurten($userId)
     {
         $query = "SELECT Matches.*, G.title as tellers, U.name as scheidsrechter
-                  FROM scheidsapp_matches Matches
+                  FROM ScheidsApp_matches Matches
                   LEFT JOIN J3_usergroups G on Matches.telteam_id = G.id
                   INNER JOIN J3_user_usergroup_map M on Matches.telteam_id = M.group_id
                   LEFT JOIN J3_users U on U.id = Matches.user_id
@@ -53,7 +53,7 @@ class UserGateway
     public function GetFluitbeurten($userId)
     {
         $query = "SELECT Matches.*, G.title as tellers, U.name as scheidsrechter
-                  FROM scheidsapp_matches Matches
+                  FROM ScheidsApp_matches Matches
                   LEFT JOIN J3_usergroups G on Matches.telteam_id = G.id
                   LEFT JOIN J3_users U on U.id = Matches.user_id
                   WHERE Matches.user_id = :userId and Matches.date >= CURRENT_DATE()";
