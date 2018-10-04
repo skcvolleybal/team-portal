@@ -26,9 +26,10 @@ class UserGateway
 
     public function GetZaalwachten($userId)
     {
-        $query = "SELECT Z.*
+        $query = "SELECT Z.*, title as team
                   FROM ScheidsApp_zaalwacht Z
                   INNER JOIN J3_user_usergroup_map M on Z.team_id = M.group_id
+                  INNER JOIN J3_usergroups G ON Z.team_id = G.id
                   WHERE M.user_id = :userId and Z.date >= CURRENT_DATE()";
         $params = [new Param(":userId", $userId, PDO::PARAM_INT)];
         return $this->database->Execute($query, $params);

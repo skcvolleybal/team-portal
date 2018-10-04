@@ -54,10 +54,12 @@ class GetMijnOverzichtInteractor implements IInteractor
             $this->AddToOverzicht($overzicht, $overzichtItem);
         }
 
-        $coachWedstrijden = $this->nevoboGateway->GetProgrammaForTeam($coachTeam);
-        foreach ($coachWedstrijden as $coachWedstrijd) {
-            $overzichtItem = $this->MapFromNevoboMatch($coachWedstrijd, $team, $coachTeam);
-            $this->AddToOverzicht($overzicht, $overzichtItem);
+        if ($coachTeam != null) {
+            $coachWedstrijden = $this->nevoboGateway->GetProgrammaForTeam($coachTeam);
+            foreach ($coachWedstrijden as $coachWedstrijd) {
+                $overzichtItem = $this->MapFromNevoboMatch($coachWedstrijd, $team, $coachTeam);
+                $this->AddToOverzicht($overzicht, $overzichtItem);
+            }
         }
 
         echo json_encode($overzicht);
@@ -145,6 +147,9 @@ class GetMijnOverzichtInteractor implements IInteractor
 
         $counter = 0;
         foreach ($tijdsloten as $tijdslot) {
+            if ($tijdslot['type'] == 'zaalwacht') {
+                continue;
+            }
             if ($newItem['tijd'] <= $tijdslot['tijd']) {
                 array_splice($tijdsloten, $counter, 0, [$newItem]);
                 return;

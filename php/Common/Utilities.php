@@ -2,7 +2,7 @@
 
 function GetSkcTeam($team)
 {
-    return ($team[5] == 'D' ? "Dames " : "Heren ") . substr($team, 7);
+    return ($team[4] == 'D' ? "Dames " : "Heren ") . substr($team, 7);
 }
 
 function ConvertToNevoboName($teamnaam)
