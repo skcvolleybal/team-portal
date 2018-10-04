@@ -93,14 +93,44 @@ class GetWedstrijdOverzicht implements IInteractor
     private function GetAllInvalTeamsForTeam($team)
     {
         $teams = [];
-        $sequence = intval(substr($team, 7)) + 1;
+        $startSequences = [
+            "SKC DS 1" => 2,
+            "SKC DS 2" => 3,
+            "SKC DS 3" => 3,
+            "SKC DS 4" => 3,
+            "SKC DS 5" => 5,
+            "SKC DS 6" => 5,
+            "SKC DS 7" => 5,
+            "SKC DS 8" => 8,
+            "SKC DS 9" => 8,
+            "SKC DS 10" => 8,
+            "SKC DS 11" => 8,
+            "SKC DS 12" => 8,
+            "SKC DS 13" => 8,
+            "SKC DS 14" => 8,
+            "SKC DS 15" => 8,
+            "SKC HS 1" => 2,
+            "SKC HS 2" => 3,
+            "SKC HS 3" => 4,
+            "SKC HS 4" => 5,
+            "SKC HS 5" => 5,
+            "SKC HS 6" => 5,
+            "SKC HS 7" => 5,
+            "SKC HS 8" => 5,
+        ];
+        if (!isset($startSequences[$team])) {
+            return [];
+        }
+        $startSequence = intval($startSequences[$team]);
         $maxSequence = substr($team, 4, 1) == "D" ? 15 : 8;
-        for ($sequence + 1; $sequence <= $maxSequence; $sequence++) {
+        for ($sequence = $startSequence; $sequence <= $maxSequence; $sequence++) {
             $teamnaam = substr($team, 0, 7) . $sequence;
-            $this->invalTeams[$teamnaam] = [
-                "naam" => GetSkcTeam($teamnaam),
-                "spelers" => $this->userGateway->GetSpelers($teamnaam),
-            ];
+            if ($team != $teamnaam) {
+                $this->invalTeams[$teamnaam] = [
+                    "naam" => GetSkcTeam($teamnaam),
+                    "spelers" => $this->userGateway->GetSpelers($teamnaam),
+                ];
+            }
         }
         return $teams;
     }
