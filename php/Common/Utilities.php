@@ -37,10 +37,10 @@ function CheckIfPossible($wedstrijd1, $wedstrijd2)
         return true;
     }
 
-    $hourDifference = $difference->d;
+    $hourDifference = $difference->h;
 
     if (IsThuis($wedstrijd1['locatie'])) {
-        if (IsThuis($wedstrijd2)) {
+        if (IsThuis($wedstrijd2['locatie'])) {
             return $hourDifference >= 2;
         } else {
             return $hourDifference >= 4;
@@ -52,5 +52,5 @@ function CheckIfPossible($wedstrijd1, $wedstrijd2)
 
 function IsThuis($locatie)
 {
-    return strpos($locatie, "Universitair SC");
+    return strpos($locatie, "Universitair SC") >= 0;
 }
