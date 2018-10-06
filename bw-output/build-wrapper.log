@@ -1,0 +1,5 @@
+Sat Oct 06 20:40:05 2018: build-wrapper, version 5.1 (win-x86-64)
+Sat Oct 06 20:40:05 2018: isWow64: 0
+Sat Oct 06 20:40:05 2018: windows version: 6.2, service pack: 0.0, build number: 9200, product type: 1
+Sat Oct 06 20:40:05 2018: current directory: C:\skc-website\team-portal
+Sat Oct 06 20:40:05 2018: command line received: <make clean all>

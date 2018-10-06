@@ -1,5 +1,17 @@
 <?php
 
+function UnauthorizedResult()
+{
+    header("HTTP/1.1 401 Unauthorized");
+    exit;
+}
+
+function InternalServerError($message)
+{
+    header("HTTP/1.1 500 Internal Server Error");
+    exit($message);
+}
+
 function GetSkcTeam($team)
 {
     return ($team[4] == 'D' ? "Dames " : "Heren ") . substr($team, 7);
@@ -23,9 +35,9 @@ function GetShortLocatie($locatie)
     return $firstPart . ", " . $lastPart;
 }
 
-function CheckIfPossible($wedstrijd1, $wedstrijd2)
+function IsMogelijk($wedstrijd1, $wedstrijd2)
 {
-    if ($wedstrijd1 == null || $wedstrijd2 == null) {
+    if ($wedstrijd1 === null || $wedstrijd2 === null) {
         return true;
     }
 
@@ -43,14 +55,26 @@ function CheckIfPossible($wedstrijd1, $wedstrijd2)
         if (IsThuis($wedstrijd2['locatie'])) {
             return $hourDifference >= 2;
         } else {
-            return $hourDifference >= 4;
+            if ($hourDifference <= 2) {
+                return false;
+            } else if ($hourDifference >= 6) {
+                return false;
+            } else {
+                return null;
+            }
         }
     } else {
-        return $hourDifference >= 4;
+        if ($hourDifference <= 2) {
+            return false;
+        } else if ($hourDifference >= 6) {
+            return false;
+        } else {
+            return null;
+        }
     }
 }
 
 function IsThuis($locatie)
 {
-    return strpos($locatie, "Universitair SC") >= 0;
+    return strpos($locatie, "Universitair SC") !== false;
 }

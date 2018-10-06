@@ -24,9 +24,8 @@ class GetWedstrijdOverzicht implements IInteractor
     {
         $userId = $this->userGateway->GetUserId();
 
-        if ($userId == null) {
-            header("HTTP/1.1 401 Unauthorized");
-            exit;
+        if ($userId === null) {
+            UnauthorizedResult();
         }
 
         $overzicht = [];
@@ -83,7 +82,7 @@ class GetWedstrijdOverzicht implements IInteractor
             $invalTeams[] = [
                 "naam" => GetSkcTeam($nevobonaam),
                 "wedstrijd" => $invalTeamWedstrijd,
-                "isMogelijk" => CheckIfPossible($wedstrijd, $invalTeamWedstrijd),
+                "isMogelijk" => IsMogelijk($wedstrijd, $invalTeamWedstrijd),
                 "spelers" => $this->invalTeams[$nevobonaam]['spelers'],
             ];
         }

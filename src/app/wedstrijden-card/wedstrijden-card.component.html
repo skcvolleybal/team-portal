@@ -1,6 +1,6 @@
 <ul class="list-group">
-  <li class="list-group-item" [ngClass]="{'list-group-item-warning': wedstrijd.isMogelijk === 'Ja', 
-      'list-group-item-danger': wedstrijd.isMogelijk === 'Nee', 'list-group-item-success': wedstrijd.isMogelijk === 'Misschien'}"
+  <li class="list-group-item" [ngClass]="{'list-group-item-warning': wedstrijd.isMogelijk === null, 
+      'list-group-item-danger': wedstrijd.isMogelijk === false, 'list-group-item-success': wedstrijd.isMogelijk === true}"
     *ngFor="let wedstrijd of wedstrijden">
     <app-wedstrijd [wedstrijd]="wedstrijd"></app-wedstrijd>
     <div style="font-size: 12px;" class="card-subtitle mb-2 text-muted">

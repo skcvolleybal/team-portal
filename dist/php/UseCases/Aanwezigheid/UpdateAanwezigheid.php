@@ -19,9 +19,8 @@ class UpdateAanwezigheid implements IInteractorWithData
     {
         $userId = $this->userGateway->GetUserId();
 
-        if ($userId == null) {
-            header("HTTP/1.1 401 Unauthorized");
-            exit;
+        if ($userId === null) {
+            UnauthorizedResult();
         }
 
         $userIdForMatch = $data->spelerId ?? $userId;

@@ -18,9 +18,8 @@ class GetMijnOverzichtInteractor implements IInteractor
     {
         $userId = $this->userGateway->GetUserId();
 
-        if ($userId == null) {
-            header("HTTP/1.1 401 Unauthorized");
-            exit;
+        if ($userId === null) {
+            UnauthorizedResult();
         }
 
         $team = $this->userGateway->GetTeam($userId);

@@ -1,6 +1,7 @@
 <?php
 
 include 'Database.php';
+include 'Utilities.php';
 
 class TeamPortal
 {
@@ -10,18 +11,15 @@ class TeamPortal
     {
         $this->database = new Database();
     }
+
     public function NoAction()
     {
-        header("HTTP/1.1 500 Internal Server Error");
-        echo "No action specified";
-        exit();
+        InternalServerError("No action specified");
     }
 
     public function UnknownAction($action)
     {
-        header("HTTP/1.1 500 Internal Server Error");
-        echo "Unknown function '$action'";
-        exit();
+        InternalServerError("Unknown function '$action'");
     }
 
     public function GetMijnOverzicht()
@@ -53,11 +51,27 @@ class TeamPortal
         $interactor->Execute($postData);
     }
 
-    public function Login(){
-      include 'UseCases' . DIRECTORY_SEPARATOR . 'Inloggen' . DIRECTORY_SEPARATOR . 'Inloggen.php';
-      $interactor = new Inloggen($this->database);
-      $postData = $this->GetPostValues();
-      $interactor->Execute($postData);
+    public function GetFluitOverzicht()
+    {
+        include 'UseCases' . DIRECTORY_SEPARATOR . 'FluitBeschikbaarheid' . DIRECTORY_SEPARATOR . 'GetFluitBeschikbaarheid.php';
+        $interactor = new GetFluitBeschikbaarheid($this->database);
+        $interactor->Execute();
+    }
+
+    public function UpdateFluitBeschikbaarheid()
+    {
+        include 'UseCases' . DIRECTORY_SEPARATOR . 'FluitBeschikbaarheid' . DIRECTORY_SEPARATOR . 'UpdateFluitBeschikbaarheid.php';
+        $interactor = new UpdateFluitBeschikbaarheid($this->database);
+        $postData = $this->GetPostValues();
+        $interactor->Execute($postData);
+    }
+
+    public function Login()
+    {
+        include 'UseCases' . DIRECTORY_SEPARATOR . 'Inloggen' . DIRECTORY_SEPARATOR . 'Inloggen.php';
+        $interactor = new Inloggen($this->database);
+        $postData = $this->GetPostValues();
+        $interactor->Execute($postData);
     }
 
     private function GetPostValues()

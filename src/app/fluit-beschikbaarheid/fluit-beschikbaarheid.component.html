@@ -19,7 +19,8 @@
 
       </td>
       <td>
-        <app-aanwezigheid [aanwezigheid]="speeltijd.aanwezigheid"></app-aanwezigheid>
+        <app-aanwezigheid (updateAanwezigheid)="UpdateFluitBeschikbaarheid($event, speeldag.date, speeltijd.time)"
+          [aanwezigheid]="speeltijd.beschikbaarheid"></app-aanwezigheid>
       </td>
     </tr>
     <tr class="gray-background">
@@ -27,3 +28,4 @@
     </tr>
   </tbody>
 </table>
+<app-spinner *ngIf="loading"></app-spinner>

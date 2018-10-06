@@ -18,15 +18,13 @@ class Inloggen implements IInteractorWithData
         $password = $data->password ?? null;
 
         if (empty($username) || empty($password)) {
-            header("HTTP/1.1 500 Internal Server Error");
-            exit("Vul alle gegevens in");
+            InternalServerError("Vul alle gegevens in");
         }
 
         if ($this->userGateway->Login($username, $password)) {
             exit();
         } else {
-            header("HTTP/1.1 500 Internal Server Error");
-            exit("Gebruikersnaam/wachtwoord combinatie klopt niet");
+            InternalServerError("Gebruikersnaam/wachtwoord combinatie klopt niet");
         }
     }
 }

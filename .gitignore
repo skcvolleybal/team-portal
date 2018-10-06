@@ -1,7 +1,7 @@
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 
-/joomla
 /php/cache
+.scannerwork
 
 # compiled output
 /tmp
@@ -40,3 +40,4 @@ testem.log
 .DS_Store
 Thumbs.db
 *.spc
+build-wrapper-win-x86-64.exe

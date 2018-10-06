@@ -24,6 +24,28 @@ class UserGateway
         return $user->id;
     }
 
+    public function IsScheidsrechter($userId)
+    {
+        $query = "SELECT *
+                  FROM J3_user_usergroup_map M
+                  INNER JOIN J3_usergroups G ON M.group_id = G.id
+                  WHERE M.user_id = :userId and G.title = 'Scheidsrechters'";
+        $params = [new Param(":userId", $userId, PDO::PARAM_INT)];
+        $result = $this->database->Execute($query, $params);
+        return count($result) > 0;
+    }
+
+    public function IsScheidsco($userId)
+    {
+        $query = "SELECT *
+                  FROM J3_user_usergroup_map M
+                  INNER JOIN J3_usergroups G ON M.group_id = G.id
+                  WHERE M.user_id = :userId and G.title = 'Scheidsco'";
+        $params = [new Param(":userId", $userId, PDO::PARAM_INT)];
+        $result = $this->database->Execute($query, $params);
+        return count($result) > 0;
+    }
+
     public function GetZaalwachten($userId)
     {
         $query = "SELECT Z.*, title as team
@@ -120,7 +142,7 @@ class UserGateway
             if (DIRECTORY_SEPARATOR == '/') {
                 define('JPATH_BASE', '/home/deb105013n2/domains/skcvolleybal.nl/public_html/');
             } else {
-                define('JPATH_BASE', realpath(dirname(__DIR__) . '/../joomla/'));
+                define('JPATH_BASE', "C:\skc-website\\");
             }
 
             require_once JPATH_BASE . '/includes/defines.php';
