@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable } from 'rxjs/internal/Observable';
 import { environment } from '../../environments/environment';
 
 @Component({

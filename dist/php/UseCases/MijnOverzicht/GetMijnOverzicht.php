@@ -3,6 +3,7 @@
 include 'IInteractor.php';
 include 'UserGateway.php';
 include 'NevoboGateway.php';
+include 'IndelingGateway.php';
 
 class GetMijnOverzichtInteractor implements IInteractor
 {
@@ -10,6 +11,7 @@ class GetMijnOverzichtInteractor implements IInteractor
     {
         $this->userGateway = new UserGateway($database);
         $this->nevoboGateway = new NevoboGateway();
+        $this->indelingGateway = new IndelingGateway($database);
     }
 
     private $nevoboGateway;
@@ -29,19 +31,19 @@ class GetMijnOverzichtInteractor implements IInteractor
 
         $allUscMatches = $this->nevoboGateway->GetProgrammaForSporthal("LDNUN");
 
-        $zaalwachten = $this->userGateway->GetZaalwachten($userId);
+        $zaalwachten = $this->indelingGateway->GetZaalwachtForUserId($userId);
         foreach ($zaalwachten as $zaalwacht) {
             $overzichtItem = $this->MapFromZaalwacht($zaalwacht, $allUscMatches);
             $this->AddToOverzicht($overzicht, $overzichtItem);
         }
 
-        $telbeurten = $this->userGateway->GetTelbeurten($userId);
+        $telbeurten = $this->indelingGateway->GetTelbeurten($userId);
         foreach ($telbeurten as $telbeurt) {
             $overzichtItem = $this->MapFromMatch($telbeurt, $allUscMatches, $team, $coachTeam, $userId);
             $this->AddToOverzicht($overzicht, $overzichtItem);
         }
 
-        $fluitbeurten = $this->userGateway->GetFluitbeurten($userId);
+        $fluitbeurten = $this->indelingGateway->GetFluitbeurten($userId);
         foreach ($fluitbeurten as $fluitbeurt) {
             $overzichtItem = $this->MapFromMatch($fluitbeurt, $allUscMatches, $team, $coachTeam, $userId);
             $this->AddToOverzicht($overzicht, $overzichtItem);
@@ -80,8 +82,8 @@ class GetMijnOverzichtInteractor implements IInteractor
             "isCoachTeam2" => $uscMatch['team2'] == $coachTeam,
             "scheidsrechter" => $match['scheidsrechter'],
             "isScheidsrechter" => $match['user_id'] == $userId,
-            "tellers" => $match['tellers'],
-            "isTellers" => $match['tellers'] == $team,
+            "telteam" => $match['telteam'],
+            "isTelteam" => $match['telteam'] == $team,
             "locatie" => $uscMatch['locatie'],
         ];
     }

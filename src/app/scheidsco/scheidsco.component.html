@@ -27,9 +27,10 @@
                 Zaalwacht
               </label>
             </div>
-            <select class="custom-select" [(ngModel)]="speeldag.zaalwacht" [ngClass]="{'is-invalid': !speeldag.zaalwacht, 'is-valid': speeldag.zaalwacht}">
+            <select class="custom-select" [ngModel]="speeldag.zaalwacht" (ngModelChange)="UpdateZaalwacht(speeldag.date, $event)"
+              [ngClass]="{'is-invalid': !speeldag.zaalwacht, 'is-valid': speeldag.zaalwacht}">
               <option></option>
-              <option *ngFor="let team of teams" [value]="team.naam">{{team.naam + " (" + team.geteld + ")"}}</option>
+              <option *ngFor="let team of teams" [value]="team.naam">{{team.naam + " (" + team.zaalwacht + ")"}}</option>
             </select>
           </div>
         </div>
@@ -51,7 +52,8 @@
                       <fa-icon [icon]="scheidsrechterIcon"></fa-icon>
                     </label>
                   </div>
-                  <select [(ngModel)]="wedstrijd.scheidsrechter" class="form-control" [ngClass]="{'is-invalid': !wedstrijd.scheidsrechter, 'is-valid': wedstrijd.scheidsrechter}">
+                  <select [ngModel]="wedstrijd.scheidsrechter" (ngModelChange)="UpdateWedstrijd(wedstrijd.id, $event, wedstrijd.telteam)"
+                    class="form-control" [ngClass]="{'is-invalid': !wedstrijd.scheidsrechter, 'is-valid': wedstrijd.scheidsrechter}">
                     <option></option>
                     <optgroup *ngFor="let group of scheidsrechtersGroepen" [label]="group.name">
                       <option *ngFor="let scheidsrechter of group.scheidsrechters" [value]="scheidsrechter.naam">
@@ -69,7 +71,8 @@
                       <fa-icon [icon]="teamIcon"></fa-icon>
                     </label>
                   </div>
-                  <select [(ngModel)]="wedstrijd.tellers" class="form-control" [ngClass]="{'is-invalid': !wedstrijd.tellers, 'is-valid': wedstrijd.tellers}">
+                  <select [ngModel]="wedstrijd.telteam" (ngModelChange)="UpdateWedstrijd(wedstrijd.id, wedstrijd.scheidsrechter, $event)"
+                    class="form-control" [ngClass]="{'is-invalid': !wedstrijd.telteam, 'is-valid': wedstrijd.telteam}">
                     <option></option>
                     <option *ngFor="let team of teams" [value]="team.naam">
                       {{team.naam + " (" + team.geteld + ")"}}
@@ -84,3 +87,4 @@
     </tr>
   </tbody>
 </table>
+<app-spinner *ngIf="scheidsrechterLoading || overzichtLoading || teamsLoading"></app-spinner>

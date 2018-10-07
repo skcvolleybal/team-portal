@@ -12,6 +12,11 @@ function InternalServerError($message)
     exit($message);
 }
 
+function GetShortTeam($naam)
+{
+    return $naam[0] . substr($naam, 6);
+}
+
 function GetSkcTeam($team)
 {
     return ($team[4] == 'D' ? "Dames " : "Heren ") . substr($team, 7);

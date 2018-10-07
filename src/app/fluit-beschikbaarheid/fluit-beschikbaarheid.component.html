@@ -17,15 +17,16 @@
           *ngFor="let speeltijd of speeldag.speeltijden">
           <form>
             <div class="form-row">
-              <div class="col">
+              <div class="col" style="line-height: 38px;">
                 {{speeltijd.tijd}}
+              </div>
+              <div class="col" style="max-width:115px;">
                 <app-aanwezigheid (updateAanwezigheid)="UpdateFluitBeschikbaarheid($event, speeldag.date, speeltijd.time)"
                   [aanwezigheid]="speeltijd.beschikbaarheid"></app-aanwezigheid>
               </div>
-              <div class="col">
-                <div class="bg-light text-dark rounded m-1" *ngFor="let wedstrijd of speeltijd.wedstrijden">
-                  <app-wedstrijd [wedstrijd]="wedstrijd"></app-wedstrijd>
-                </div>
+
+              <div class="bg-light text-dark rounded m-1" *ngFor="let wedstrijd of speeltijd.wedstrijden">
+                <app-wedstrijd [wedstrijd]="wedstrijd"></app-wedstrijd>
               </div>
             </div>
           </form>

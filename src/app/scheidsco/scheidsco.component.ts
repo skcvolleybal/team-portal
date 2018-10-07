@@ -1,6 +1,10 @@
+import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { faCalendarCheck, faUser } from '@fortawesome/free-solid-svg-icons';
 import * as Enumerable from 'linq';
+import { Observable } from 'rxjs/internal/Observable';
+import { environment } from '../../environments/environment';
+
 @Component({
   selector: 'app-scheidsco',
   templateUrl: './scheidsco.component.html',
@@ -10,116 +14,20 @@ export class ScheidscoComponent implements OnInit {
   scheidsrechterIcon = faUser;
   teamIcon = faCalendarCheck;
   scheidsrechterType = 'niveau';
-  teams = [
-    { naam: 'SKC HS 1', geteld: 1 },
-    { naam: 'SKC HS 2', geteld: 2 },
-    { naam: 'SKC HS 3', geteld: 1 },
-    { naam: 'SKC HS 4', geteld: 3 },
-    { naam: 'SKC HS 5', geteld: 1 },
-    { naam: 'SKC HS 6', geteld: 5 },
-    { naam: 'SKC HS 7', geteld: 1 },
-    { naam: 'SKC HS 8', geteld: 2 }
-  ];
-  scheidsrechtersGroepen;
-  scheidsrechterData = [
-    { naam: 'Jonathan Neuteboom', niveau: 'V5', team: 'SKC HS 2', gefloten: 4 },
-    { naam: 'Kevin Fung', niveau: 'V4', team: 'Geen Team', gefloten: 2 },
-    { naam: 'Tanita de Graaf', niveau: 'V5', team: 'SKC DS 2', gefloten: 0 }
-  ];
-  speeldagen = [
-    {
-      datum: '21 oktober 2018',
-      speeltijden: [
-        {
-          tijd: '19:30',
-          wedstrijden: [
-            {
-              teams: 'SKC HS 2 - Kalinko HS 2',
-              scheidsrechter: null,
-              tellers: 'SKC HS 1'
-            },
-            {
-              teams: 'SKC HS 2 - Kalinko HS 2',
-              scheidsrechter: 'Kevin Fung',
-              tellers: 'SKC HS 2'
-            },
-            {
-              teams: 'SKC HS 2 - Kalinko HS 2',
-              scheidsrechter: 'Kevin Fung',
-              tellers: 'SKC HS 3'
-            }
-          ]
-        },
-        {
-          tijd: '21:30',
-          wedstrijden: [
-            {
-              teams: 'SKC HS 2 - Kalinko HS 2',
-              scheidsrechter: 'Kevin Fung',
-              tellers: 'SKC HS 3'
-            },
-            {
-              teams: 'SKC HS 2 - Kalinko HS 2',
-              scheidsrechter: 'Kevin Fung',
-              tellers: 'SKC HS 3'
-            },
-            {
-              teams: 'SKC HS 2 - Kalinko HS 2',
-              scheidsrechter: 'Kevin Fung',
-              tellers: 'SKC HS 3'
-            }
-          ]
-        }
-      ],
-      zaalwacht: 'SKC HS 2'
-    },
-    {
-      datum: '21 oktober 2018',
-      speeltijden: [
-        {
-          tijd: '19:30',
-          wedstrijden: [
-            {
-              teams: 'SKC HS 2 - Kalinko HS 2',
-              scheidsrechter: 'Kevin Fung',
-              tellers: 'SKC HS 3'
-            },
-            {
-              teams: 'SKC HS 2 - Kalinko HS 2',
-              scheidsrechter: 'Kevin Fung',
-              tellers: 'SKC HS 3'
-            },
-            {
-              teams: 'SKC HS 2 - Kalinko HS 2',
-              scheidsrechter: 'Kevin Fung',
-              tellers: 'SKC HS 3'
-            }
-          ]
-        },
-        {
-          tijd: '21:30',
-          wedstrijden: [
-            {
-              teams: 'SKC HS 2 - Kalinko HS 2',
-              scheidsrechter: 'Kevin Fung',
-              tellers: 'SKC HS 3'
-            },
-            {
-              teams: 'SKC HS 2 - Kalinko HS 2',
-              scheidsrechter: 'Kevin Fung',
-              tellers: 'SKC HS 3'
-            },
-            {
-              teams: 'SKC HS 2 - Kalinko HS 2',
-              scheidsrechter: 'Kevin Fung',
-              tellers: 'SKC HS 3'
-            }
-          ]
-        }
-      ],
-      zaalwacht: 'SKC HS 3'
-    }
-  ];
+
+  scheidsrechters: any[];
+  scheidsrechtersGroepen: any[];
+
+  speeldagen: any[];
+  teams: any[];
+
+  scheidsrechterLoading: boolean;
+  overzichtLoading: boolean;
+  teamsLoading: boolean;
+
+  errorMessage: any;
+
+  constructor(private httpClient: HttpClient) {}
 
   onChange() {
     this.setScheidsrechters();
@@ -127,7 +35,7 @@ export class ScheidscoComponent implements OnInit {
 
   setScheidsrechters() {
     const result = [];
-    this.scheidsrechterData.forEach(scheidsrechter => {
+    this.scheidsrechters.forEach(scheidsrechter => {
       let binName;
       switch (this.scheidsrechterType) {
         case 'niveau':
@@ -158,7 +66,7 @@ export class ScheidscoComponent implements OnInit {
 
     Enumerable.from(result).forEach(bin => {
       bin.scheidsrechters = Enumerable.from(bin.scheidsrechters)
-        .orderByDescending(scheidsrechter => {
+        .orderBy(scheidsrechter => {
           return scheidsrechter['gefloten'];
         })
         .toArray();
@@ -169,9 +77,121 @@ export class ScheidscoComponent implements OnInit {
       .toArray();
   }
 
-  constructor() {}
+  getScheidscoOverzicht() {
+    this.overzichtLoading = true;
+
+    this.httpClient
+      .get<any[]>(
+        environment.baseUrl + 'php/interface.php?action=GetScheidscoOverzicht'
+      )
+      .subscribe(
+        speeldagen => {
+          this.speeldagen = speeldagen;
+          this.overzichtLoading = false;
+        },
+        error => {
+          if (error.status === 500) {
+            this.errorMessage = error.error;
+            this.overzichtLoading = false;
+          }
+        }
+      );
+  }
+
+  getScheidsrechters() {
+    this.scheidsrechterLoading = true;
+
+    this.httpClient
+      .get<any[]>(
+        environment.baseUrl + 'php/interface.php?action=GetScheidsrechters'
+      )
+      .subscribe(
+        scheidsrechters => {
+          this.scheidsrechters = scheidsrechters;
+          this.setScheidsrechters();
+          this.scheidsrechterLoading = false;
+        },
+        error => {
+          if (error.status === 500) {
+            this.errorMessage = error.error;
+            this.scheidsrechterLoading = false;
+          }
+        }
+      );
+  }
+
+  getZaalwachtTeams() {
+    this.teamsLoading = true;
+
+    this.httpClient
+      .get<any[]>(
+        environment.baseUrl + 'php/interface.php?action=GetZaalwachtTeams'
+      )
+      .subscribe(
+        teams => {
+          this.teams = teams;
+          this.teamsLoading = false;
+        },
+        error => {
+          if (error.status === 500) {
+            this.errorMessage = error.error;
+            this.teamsLoading = false;
+          }
+        }
+      );
+  }
+
+  UpdateWedstrijd(matchId, scheidsrechter, telteam) {
+    const speeldagen = this.speeldagen;
+    this.httpClient
+      .post<any>(
+        environment.baseUrl +
+          'php/interface.php?action=UpdateScheidscoWedstrijd',
+        {
+          matchId,
+          scheidsrechter,
+          telteam
+        }
+      )
+      .subscribe(() => {
+        speeldagen.forEach(speeldag => {
+          speeldag.speeltijden.forEach(speeltijd => {
+            speeltijd.wedstrijden.forEach(wedstrijd => {
+              if (wedstrijd.id === matchId) {
+                wedstrijd.scheidsrechter = scheidsrechter;
+                wedstrijd.telteam = telteam;
+              }
+            });
+          });
+        });
+        this.getScheidsrechters();
+      });
+  }
+
+  UpdateZaalwacht(date, team) {
+    const speeldagen = this.speeldagen;
+    this.httpClient
+      .post<any>(
+        environment.baseUrl +
+          'php/interface.php?action=UpdateScheidscoZaalwacht',
+        {
+          date,
+          team
+        }
+      )
+      .subscribe(() => {
+        speeldagen.forEach(speeldag => {
+          if (speeldag.date === date) {
+            speeldag.zaalwacht = team;
+          }
+        });
+        this.getZaalwachtTeams();
+      });
+  }
 
   ngOnInit() {
-    this.setScheidsrechters();
+    this.getScheidsrechters();
+    this.getZaalwachtTeams();
+    this.getScheidscoOverzicht();
   }
 }

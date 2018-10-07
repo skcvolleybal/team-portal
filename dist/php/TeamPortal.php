@@ -66,6 +66,43 @@ class TeamPortal
         $interactor->Execute($postData);
     }
 
+    public function GetScheidscoOverzicht()
+    {
+        include 'UseCases' . DIRECTORY_SEPARATOR . 'Scheidsco' . DIRECTORY_SEPARATOR . 'GetScheidscoOverzicht.php';
+        $interactor = new GetScheidscoOverzicht($this->database);
+        $interactor->Execute();
+    }
+
+    public function GetScheidsrechters()
+    {
+        include 'UseCases' . DIRECTORY_SEPARATOR . 'Scheidsco' . DIRECTORY_SEPARATOR . 'GetScheidsrechters.php';
+        $interactor = new GetScheidsrechters($this->database);
+        $interactor->Execute();
+    }
+
+    public function GetZaalwachtTeams()
+    {
+        include 'UseCases' . DIRECTORY_SEPARATOR . 'Scheidsco' . DIRECTORY_SEPARATOR . 'GetZaalwachtTeams.php';
+        $interactor = new GetZaalwachtTeams($this->database);
+        $interactor->Execute();
+    }
+
+    public function UpdateScheidscoWedstrijd()
+    {
+        include 'UseCases' . DIRECTORY_SEPARATOR . 'Scheidsco' . DIRECTORY_SEPARATOR . 'UpdateScheidscoWedstrijd.php';
+        $interactor = new UpdateScheidscoWedstrijd($this->database);
+        $postData = $this->GetPostValues();
+        $interactor->Execute($postData);
+    }
+
+    public function UpdateScheidscoZaalwacht()
+    {
+        include 'UseCases' . DIRECTORY_SEPARATOR . 'Scheidsco' . DIRECTORY_SEPARATOR . 'UpdateScheidscoZaalwacht.php';
+        $interactor = new UpdateScheidscoZaalwacht($this->database);
+        $postData = $this->GetPostValues();
+        $interactor->Execute($postData);
+    }
+
     public function Login()
     {
         include 'UseCases' . DIRECTORY_SEPARATOR . 'Inloggen' . DIRECTORY_SEPARATOR . 'Inloggen.php';

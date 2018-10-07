@@ -5,7 +5,7 @@ import {
   HttpRequest
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable } from 'rxjs/internal/Observable';
 import { tap } from 'rxjs/operators';
 import { AuthenticationService } from '../services/authentication.service';
 

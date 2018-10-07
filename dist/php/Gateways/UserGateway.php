@@ -46,48 +46,6 @@ class UserGateway
         return count($result) > 0;
     }
 
-    public function GetZaalwachten($userId)
-    {
-        $query = "SELECT Z.*, title as team
-                  FROM ScheidsApp_zaalwacht Z
-                  INNER JOIN J3_user_usergroup_map M on Z.team_id = M.group_id
-                  INNER JOIN J3_usergroups G ON Z.team_id = G.id
-                  WHERE M.user_id = :userId and Z.date >= CURRENT_DATE()";
-        $params = [new Param(":userId", $userId, PDO::PARAM_INT)];
-        return $this->database->Execute($query, $params);
-    }
-
-    public function GetTelbeurten($userId)
-    {
-        $query = "SELECT Matches.*, G.title as tellers, U.name as scheidsrechter
-                  FROM ScheidsApp_matches Matches
-                  LEFT JOIN J3_usergroups G on Matches.telteam_id = G.id
-                  INNER JOIN J3_user_usergroup_map M on Matches.telteam_id = M.group_id
-                  LEFT JOIN J3_users U on U.id = Matches.user_id
-                  WHERE M.user_id = :userId and Matches.date >= CURRENT_DATE()";
-        $params = [new Param(":userId", $userId, PDO::PARAM_INT)];
-        $result = $this->database->Execute($query, $params);
-        foreach ($result as &$row) {
-            $row['tellers'] = ConvertToNevoboName($row['tellers']);
-        }
-        return $result;
-    }
-
-    public function GetFluitbeurten($userId)
-    {
-        $query = "SELECT Matches.*, G.title as tellers, U.name as scheidsrechter
-                  FROM ScheidsApp_matches Matches
-                  LEFT JOIN J3_usergroups G on Matches.telteam_id = G.id
-                  LEFT JOIN J3_users U on U.id = Matches.user_id
-                  WHERE Matches.user_id = :userId and Matches.date >= CURRENT_DATE()";
-        $params = [new Param(":userId", $userId, PDO::PARAM_INT)];
-        $result = $this->database->Execute($query, $params);
-        foreach ($result as &$row) {
-            $row['tellers'] = ConvertToNevoboName($row['tellers']);
-        }
-        return $result;
-    }
-
     public function GetTeam($userId)
     {
         $query = "SELECT title as naam

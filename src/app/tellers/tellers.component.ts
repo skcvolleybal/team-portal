@@ -8,17 +8,17 @@ import { faCalendarCheck } from '@fortawesome/free-solid-svg-icons';
 })
 export class TellersComponent implements OnInit {
   @Input()
-  isTellers;
+  isTelteam;
   @Input()
-  tellers;
+  telteam;
 
   teamIcon = faCalendarCheck;
 
   constructor() {}
 
   ngOnInit() {
-    if (this.tellers) {
-      this.tellers = this.tellers.replace('SKC ', '');
+    if (this.telteam) {
+      this.telteam = this.telteam.replace('SKC ', '');
     }
   }
 }

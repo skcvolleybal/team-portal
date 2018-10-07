@@ -91,7 +91,6 @@ class GetWedstrijdOverzicht implements IInteractor
 
     private function GetAllInvalTeamsForTeam($team)
     {
-        $teams = [];
         $startSequences = [
             "SKC DS 1" => 2,
             "SKC DS 2" => 3,
@@ -130,8 +129,11 @@ class GetWedstrijdOverzicht implements IInteractor
                     "spelers" => $this->userGateway->GetSpelers($teamnaam),
                 ];
             }
+
+            if (count($this->invalTeams) >= 5) {
+                return;
+            }
         }
-        return $teams;
     }
 
     private function GetAanwezigheidForWedstrijd($matchId, $aanwezigheden)

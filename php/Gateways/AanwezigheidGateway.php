@@ -54,14 +54,14 @@ class AanwezigheidGateway
         $query = "SELECT
                     U.id as userId,
                     U.name as naam,
-                    Matches.id as matchId,
+                    W.id as matchId,
                     A.aanwezigheid,
                     0 as isInvaller
                   FROM J3_users U
                   INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
                   INNER JOIN J3_usergroups G on M.group_id = G.id
-                  JOIN ($matchList) Matches
-                  LEFT JOIN TeamPortal_aanwezigheden A ON Matches.id = A.match_id and U.id = A.user_id
+                  JOIN ($matchList) W
+                  LEFT JOIN TeamPortal_aanwezigheden A ON W.id = A.match_id and U.id = A.user_id
                   WHERE G.title = :team
 
                   UNION
