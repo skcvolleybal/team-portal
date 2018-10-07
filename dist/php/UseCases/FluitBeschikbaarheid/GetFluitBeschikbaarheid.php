@@ -2,7 +2,7 @@
 include 'IInteractor.php';
 include 'NevoboGateway.php';
 include 'UserGateway.php';
-include 'FluitBeschikbaarheid.php';
+include 'FluitBeschikbaarheidGateway.php';
 
 class GetFluitBeschikbaarheid implements IInteractor
 {
@@ -29,6 +29,10 @@ class GetFluitBeschikbaarheid implements IInteractor
             UnauthorizedResult();
         }
 
+        if (!$this->userGateway->IsScheidsrechter($userId)) {
+            InternalServerError("Je bent (helaas) geen scheidsrechter");
+        }
+
         $this->team = $this->userGateway->GetTeam($userId);
         $this->coachTeam = $this->userGateway->GetCoachTeam($userId);
         $this->fluitBeschikbaarheid = $this->fluitBeschikbaarheidGateway->GetFluitBeschikbaarheid($userId);
@@ -43,25 +47,24 @@ class GetFluitBeschikbaarheid implements IInteractor
         $rooster = $this->GetUscRooster($skcProgramma);
 
         foreach ($rooster as &$wedstrijdDag) {
-            foreach ($wedstrijdDag['speeltijden'] as $tijdslot) {
-                $fluitBeschikbaarheid = $this->GetFluitBeschikbaarheid($wedstrijdDag['date'], $tijdslot['time']);
-                for ($i = 0; $i < count($wedstrijdDag['speeltijden']); $i++) {
-                    if ($wedstrijdDag['speeltijden'][$i]['time'] == $tijdslot['time']) {
-                        $wedstrijdDag['speeltijden'][$i]['beschikbaarheid'] = $fluitBeschikbaarheid;
-                        break;
-                    }
-                }
-
-            }
             $datum = $wedstrijdDag['datum'];
             $speelWedstrijd = $this->GetWedstrijdWithDatumAndTijd($programma, $datum);
             $coachWedstrijd = $this->GetWedstrijdWithDatumAndTijd($coachProgramma, $datum);
-            if ($speelWedstrijd !== null) {
-                $wedstrijdDag['eigenWedstrijden'][] = $this->MapToEigenWedstrijd($speelWedstrijd, $wedstrijdDag['speeltijden']);
+            $eigenWedstrijden = array_filter([$speelWedstrijd, $coachWedstrijd], function ($value) {return $value !== null;});
+
+            foreach ($wedstrijdDag['speeltijden'] as $tijdslot) {
+                $fluitBeschikbaarheid = $this->GetFluitBeschikbaarheid($wedstrijdDag['date'], $tijdslot['time']);
+                $i = $this->GetIndexOfTijd($wedstrijdDag['speeltijden'], $tijdslot['tijd']);
+
+                $wedstrijdDag['speeltijden'][$i]['beschikbaarheid'] = $fluitBeschikbaarheid;
+
+                $wedstrijdDag['speeltijden'][$i]['isMogelijk'] = $this->isMogelijk($eigenWedstrijden, $tijdslot['tijd']);
             }
-            if ($coachWedstrijd !== null) {
-                $wedstrijdDag['eigenWedstrijden'][] = $this->MapToEigenWedstrijd($coachWedstrijd, $wedstrijdDag['speeltijden']);
+
+            foreach ($eigenWedstrijden as $wedstrijd) {
+                $wedstrijdDag['eigenWedstrijden'][] = $this->MapToEigenWedstrijd($wedstrijd);
             }
+
         }
 
         exit(json_encode($rooster));
@@ -78,7 +81,7 @@ class GetFluitBeschikbaarheid implements IInteractor
         return null;
     }
 
-    private function MapToEigenWedstrijd($wedstrijd, $speeltijden)
+    private function MapToEigenWedstrijd($wedstrijd)
     {
         return [
             "datum" => $wedstrijd['timestamp']->format('j F Y'),
@@ -90,27 +93,26 @@ class GetFluitBeschikbaarheid implements IInteractor
             "isTeam2" => $wedstrijd['team2'] == $this->team,
             "isCoachTeam2" => $wedstrijd['team2'] == $this->coachTeam,
             "locatie" => GetShortLocatie($wedstrijd['locatie']),
-            "isThuis" => IsThuis($wedstrijd['locatie']),
-            "isMogelijk" => $this->isMogelijk($wedstrijd, $speeltijden),
         ];
     }
 
-    private function isMogelijk($wedstrijd, $speeltijden)
+    private function isMogelijk($wedstrijden, $tijd)
     {
-        $bestResult = false;
-        foreach ($speeltijden as $speeltijd) {
+        $bestResult = true;
+        foreach ($wedstrijden as $wedstrijd) {
             $format = 'Y-m-d H:i';
-            $timestring = $wedstrijd['timestamp']->format('Y-m-d') . " " . $speeltijd["tijd"];
+            $timestring = $wedstrijd['timestamp']->format('Y-m-d') . " " . $tijd;
             $fluitWedstrijd = [
                 "timestamp" => $date = DateTime::createFromFormat($format, $timestring),
                 "locatie" => "Universitair SC",
             ];
             $isMogelijk = isMogelijk($wedstrijd, $fluitWedstrijd);
-            if ($isMogelijk) {
-                return true;
+            if (!$isMogelijk) {
+                return false;
             }
-            $bestResult = $isMogelijk === false ? $bestResult : null;
+            $bestResult = $isMogelijk === true ? $bestResult : null;
         }
+
         return $bestResult;
     }
 
