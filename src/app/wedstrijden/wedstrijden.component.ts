@@ -20,6 +20,7 @@ export class WedstrijdenComponent implements OnInit {
   jaIcon = faCheck;
   wedstrijden: any[];
   loading: boolean;
+  errorMessage: any;
 
   constructor(private http: HttpClient) {}
 
@@ -47,8 +48,12 @@ export class WedstrijdenComponent implements OnInit {
       wedstrijden => {
         this.wedstrijden = wedstrijden;
       },
-      () => {},
-      () => (this.loading = false)
+      error => {
+        if (error.status === 500) {
+          this.errorMessage = error.error;
+          this.loading = false;
+        }
+      }
     );
   }
 }

@@ -10,22 +10,34 @@
         <app-wedstrijden-card [wedstrijden]="speeldag.eigenWedstrijden"></app-wedstrijden-card>
       </td>
     </tr>
-    <tr *ngFor="let speeltijd of speeldag.speeltijden">
-      <th scope="row">{{speeltijd.tijd}}</th>
-      <td>
-        <div class="border border-secondary rounded m-1" *ngFor="let wedstrijd of speeltijd.wedstrijden">
-          <app-wedstrijd [wedstrijd]="wedstrijd"></app-wedstrijd>
-        </div>
-
-      </td>
-      <td>
-        <app-aanwezigheid (updateAanwezigheid)="UpdateFluitBeschikbaarheid($event, speeldag.date, speeltijd.time)"
-          [aanwezigheid]="speeltijd.beschikbaarheid"></app-aanwezigheid>
-      </td>
+    <tr>
+      <ul class="list-group">
+        <li class="list-group-item" [ngClass]="{'list-group-item-warning': speeltijd.isMogelijk === null, 
+            'list-group-item-danger': speeltijd.isMogelijk === false, 'list-group-item-success': speeltijd.isMogelijk === true}"
+          *ngFor="let speeltijd of speeldag.speeltijden">
+          <form>
+            <div class="form-row">
+              <div class="col">
+                {{speeltijd.tijd}}
+                <app-aanwezigheid (updateAanwezigheid)="UpdateFluitBeschikbaarheid($event, speeldag.date, speeltijd.time)"
+                  [aanwezigheid]="speeltijd.beschikbaarheid"></app-aanwezigheid>
+              </div>
+              <div class="col">
+                <div class="bg-light text-dark rounded m-1" *ngFor="let wedstrijd of speeltijd.wedstrijden">
+                  <app-wedstrijd [wedstrijd]="wedstrijd"></app-wedstrijd>
+                </div>
+              </div>
+            </div>
+          </form>
+        </li>
+      </ul>
     </tr>
     <tr class="gray-background">
       <td colspan="3"></td>
     </tr>
   </tbody>
 </table>
+<div class="alert alert-danger" role="alert" *ngIf="errorMessage">
+  {{errorMessage}}
+</div>
 <app-spinner *ngIf="loading"></app-spinner>

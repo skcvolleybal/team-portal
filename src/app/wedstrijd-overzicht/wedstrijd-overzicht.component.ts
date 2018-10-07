@@ -20,6 +20,7 @@ import { environment } from 'src/environments/environment';
 export class WedstrijdOverzichtComponent implements OnInit {
   wedstrijden: any[];
   loading: boolean;
+  errorMessage: string;
 
   constructor(private httpClient: HttpClient) {}
 
@@ -90,8 +91,12 @@ export class WedstrijdOverzichtComponent implements OnInit {
     this.loading = true;
     this.getWedstrijdOverzicht().subscribe(
       wedstrijden => (this.wedstrijden = wedstrijden),
-      () => {},
-      () => (this.loading = false)
+      error => {
+        if (error.status === 500) {
+          this.errorMessage = error.error;
+          this.loading = false;
+        }
+      }
     );
   }
 }

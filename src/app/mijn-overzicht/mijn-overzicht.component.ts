@@ -21,6 +21,7 @@ export class MijnOverzichtComponent implements OnInit {
   tellersIcon = faCalendarCheck;
   openIcon = faPlusSquare;
   dagen: any[];
+  errorMessage: string;
 
   constructor(private http: HttpClient) {}
 
@@ -33,9 +34,16 @@ export class MijnOverzichtComponent implements OnInit {
   ngOnInit() {
     this.loading = true;
     this.getMijnOverzicht().subscribe(
-      overzicht => (this.dagen = overzicht),
-      () => {},
-      () => (this.loading = false)
+      overzicht => {
+        this.dagen = overzicht;
+        this.loading = false;
+      },
+      error => {
+        if (error.status === 500) {
+          this.errorMessage = error.error;
+          this.loading = false;
+        }
+      }
     );
   }
 }

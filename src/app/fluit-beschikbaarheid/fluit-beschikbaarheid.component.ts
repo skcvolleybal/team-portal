@@ -11,6 +11,7 @@ import { environment } from '../../environments/environment';
 export class FluitBeschikbaarheidComponent implements OnInit {
   loading: boolean;
   speeldagen: any[];
+  errorMessage: string;
 
   constructor(private httpClient: HttpClient) {}
 
@@ -18,9 +19,14 @@ export class FluitBeschikbaarheidComponent implements OnInit {
     this.getFluitBeschikbaarheid().subscribe(
       speeldagen => {
         this.speeldagen = speeldagen;
+        this.loading = false;
       },
-      () => {},
-      () => (this.loading = false)
+      error => {
+        if (error.status === 500) {
+          this.errorMessage = error.error;
+          this.loading = false;
+        }
+      }
     );
   }
 

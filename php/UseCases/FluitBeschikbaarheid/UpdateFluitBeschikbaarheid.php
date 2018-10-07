@@ -1,7 +1,7 @@
 <?php
 include 'IInteractorWithData.php';
 include 'UserGateway.php';
-include 'FluitBeschikbaarheid.php';
+include 'FluitBeschikbaarheidGateway.php';
 
 class UpdateFluitBeschikbaarheid implements IInteractorWithData
 {
@@ -18,6 +18,10 @@ class UpdateFluitBeschikbaarheid implements IInteractorWithData
         $userId = $this->userGateway->GetUserId();
         if ($userId === null) {
             UnauthorizedResult();
+        }
+
+        if (!$this->userGateway->IsScheidsrechter($userId)) {
+            InternalServerError("Je bent (helaas) geen scheidsrechter");
         }
 
         $datum = $data->datum;
