@@ -87,4 +87,7 @@
     </tr>
   </tbody>
 </table>
+<div class="alert alert-danger" role="alert" *ngIf="errorMessage">
+  {{errorMessage}}
+</div>
 <app-spinner *ngIf="scheidsrechterLoading || overzichtLoading || teamsLoading"></app-spinner>

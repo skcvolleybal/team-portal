@@ -69,7 +69,7 @@ class GetMijnOverzichtInteractor implements IInteractor
 
     private function MapFromMatch($match, $allUscMatches, $team, $coachTeam, $userId)
     {
-        $uscMatch = $this->GetUscMatch($match['code'], $allUscMatches);
+        $uscMatch = $this->GetUscMatch($match['match_id'], $allUscMatches);
         return [
             "type" => "wedstrijd",
             "datum" => $uscMatch['timestamp']->format('Y-m-d'),
@@ -81,7 +81,7 @@ class GetMijnOverzichtInteractor implements IInteractor
             "isTeam2" => $uscMatch['team2'] == $team,
             "isCoachTeam2" => $uscMatch['team2'] == $coachTeam,
             "scheidsrechter" => $match['scheidsrechter'],
-            "isScheidsrechter" => $match['user_id'] == $userId,
+            "isScheidsrechter" => $match['scheidsrechter_id'] == $userId,
             "telteam" => $match['telteam'],
             "isTelteam" => $match['telteam'] == $team,
             "locatie" => $uscMatch['locatie'],

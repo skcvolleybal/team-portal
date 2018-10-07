@@ -24,10 +24,15 @@
                 <app-aanwezigheid (updateAanwezigheid)="UpdateFluitBeschikbaarheid($event, speeldag.date, speeltijd.time)"
                   [aanwezigheid]="speeltijd.beschikbaarheid"></app-aanwezigheid>
               </div>
+            </div>
+            <div>
 
-              <div class="bg-light text-dark rounded m-1" *ngFor="let wedstrijd of speeltijd.wedstrijden">
-                <app-wedstrijd [wedstrijd]="wedstrijd"></app-wedstrijd>
+              <div class="bg-light d-inline-flex text-dark rounded m-1" *ngFor="let wedstrijd of speeltijd.wedstrijden">
+                <div>
+                  <app-wedstrijd [wedstrijd]="wedstrijd"></app-wedstrijd>
+                </div>
               </div>
+
             </div>
           </form>
         </li>
