@@ -35,6 +35,9 @@ class GetScheidscoOverzicht implements IInteractor
         $zaalwachtIndeling = $this->indelingGateway->GetZaalwachtIndeling();
 
         foreach ($uscProgramma as $wedstrijd) {
+            if ($wedstrijd['timestamp'] == null){
+                continue;
+            }
             $matchId = $wedstrijd['id'];
             $datum = $wedstrijd['timestamp']->format('j F Y');
             $date = $wedstrijd['timestamp']->format('Y-m-d');

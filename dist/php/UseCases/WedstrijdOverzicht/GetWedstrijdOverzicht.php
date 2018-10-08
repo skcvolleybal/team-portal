@@ -91,6 +91,7 @@ class GetWedstrijdOverzicht implements IInteractor
 
     private function GetAllInvalTeamsForTeam($team)
     {
+        $this->invalTeams = [];
         $startSequences = [
             "SKC DS 1" => 2,
             "SKC DS 2" => 3,

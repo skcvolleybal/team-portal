@@ -38,6 +38,7 @@ class GetFluitBeschikbaarheid implements IInteractor
         $this->fluitBeschikbaarheid = $this->fluitBeschikbaarheidGateway->GetFluitBeschikbaarheid($userId);
 
         $programma = $this->nevoboGateway->GetProgrammaForTeam($this->team);
+        $coachProgramma = [];
         if ($this->coachTeam != null) {
             $coachProgramma = $this->nevoboGateway->GetProgrammaForTeam($this->coachTeam);
         }
@@ -130,6 +131,9 @@ class GetFluitBeschikbaarheid implements IInteractor
     {
         $rooster = [];
         foreach ($skcProgramma as $wedstrijd) {
+            if ($wedstrijd['timestamp'] == null) {
+                continue;
+            }
             $datum = $wedstrijd['timestamp']->format("j F Y");
             $date = $wedstrijd['timestamp']->format("Y-m-d");
             $tijd = $wedstrijd['timestamp']->format("G:i");

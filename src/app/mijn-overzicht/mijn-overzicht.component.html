@@ -18,19 +18,39 @@
       </ng-container>
       <ng-container *ngIf="tijdslot.type === 'wedstrijd'">
         <tr>
-          <td>
-            {{tijdslot.tijd}}
-          </td>
-          <td>
-            <app-wedstrijd [wedstrijd]="tijdslot"></app-wedstrijd>
-          </td>
-          <td>
-            <app-scheidsrechter [scheidsrechter]="tijdslot.scheidsrechter" [isScheidsrechter]="tijdslot.isScheidsrechter"></app-scheidsrechter>
-          </td>
-          <td>
-            <app-tellers [telteam]="tijdslot.telteam" [isTelteam]="tijdslot.isTelteam"> </app-tellers>
+          <td colspan="4">
+            <div style="display: flex;">
+              <div style="margin-top: auto;margin-bottom: auto; width: 45px;">
+                {{tijdslot.tijd}}
+              </div>
+              <div style="margin-top: auto;margin-bottom: auto;">
+                <app-wedstrijd [wedstrijd]="tijdslot"></app-wedstrijd>
+              </div>
+              <div style="padding: 10px;margin-top: auto;margin-bottom: auto;" *ngIf="tijdslot.isScheidsrechter">
+                <app-scheidsrechter [scheidsrechter]="tijdslot.scheidsrechter" [isScheidsrechter]="tijdslot.isScheidsrechter"></app-scheidsrechter>
+              </div>
+              <div style="padding: 10px;margin-top: auto;margin-bottom: auto;" *ngIf="tijdslot.isTelteam">
+                <app-tellers [telteam]="tijdslot.telteam" [isTelteam]="tijdslot.isTelteam">
+                </app-tellers>
+              </div>
+            </div>
           </td>
         </tr>
+        <!-- <tr>
+          <td class="align-middle">
+            {{tijdslot.tijd}}
+          </td>
+          <td class="align-middle">
+            <app-wedstrijd [wedstrijd]="tijdslot"></app-wedstrijd>
+          </td>
+          <td class="align-middle">
+            <app-scheidsrechter [scheidsrechter]="tijdslot.scheidsrechter" [isScheidsrechter]="tijdslot.isScheidsrechter"></app-scheidsrechter>
+          </td>
+          <td class="align-middle">
+            <app-tellers *ngIf="tijdslot.isTelteam" [telteam]="tijdslot.telteam" [isTelteam]="tijdslot.isTelteam">
+            </app-tellers>
+          </td>
+        </tr> -->
       </ng-container>
     </ng-container>
     <tr class="gray-background">

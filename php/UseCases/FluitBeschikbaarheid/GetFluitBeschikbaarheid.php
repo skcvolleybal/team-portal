@@ -131,6 +131,9 @@ class GetFluitBeschikbaarheid implements IInteractor
     {
         $rooster = [];
         foreach ($skcProgramma as $wedstrijd) {
+            if ($wedstrijd['timestamp'] == null) {
+                continue;
+            }
             $datum = $wedstrijd['timestamp']->format("j F Y");
             $date = $wedstrijd['timestamp']->format("Y-m-d");
             $tijd = $wedstrijd['timestamp']->format("G:i");

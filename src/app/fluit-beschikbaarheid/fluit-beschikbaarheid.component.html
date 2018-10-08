@@ -26,13 +26,15 @@
               </div>
             </div>
             <div>
-
-              <div class="bg-light d-inline-flex text-dark rounded m-1" *ngFor="let wedstrijd of speeltijd.wedstrijden">
-                <div>
-                  <app-wedstrijd [wedstrijd]="wedstrijd"></app-wedstrijd>
-                </div>
-              </div>
-
+              <table>
+                <tbody>
+                  <tr *ngFor="let wedstrijd of speeltijd.wedstrijden">
+                    <td class="bg-light d-inline-flex text-dark rounded m-1">
+                      <app-wedstrijd [wedstrijd]="wedstrijd"></app-wedstrijd>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </form>
         </li>

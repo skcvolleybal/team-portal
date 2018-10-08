@@ -24,10 +24,24 @@ export class WedstrijdenComponent implements OnInit {
 
   constructor(private http: HttpClient) {}
 
-  getWedstrijdAanwezigheid(): Observable<any[]> {
-    return this.http.get<any[]>(
-      environment.baseUrl + 'php/interface.php?action=GetWedstrijdAanwezigheid'
-    );
+  getWedstrijdAanwezigheid() {
+    this.http
+      .get<any[]>(
+        environment.baseUrl +
+          'php/interface.php?action=GetWedstrijdAanwezigheid'
+      )
+      .subscribe(
+        wedstrijden => {
+          this.wedstrijden = wedstrijden;
+          this.loading = false;
+        },
+        error => {
+          if (error.status === 500) {
+            this.errorMessage = error.error;
+            this.loading = false;
+          }
+        }
+      );
   }
 
   updateAanwezigheid(aanwezigheid, match) {
@@ -44,16 +58,6 @@ export class WedstrijdenComponent implements OnInit {
 
   ngOnInit() {
     this.loading = true;
-    this.getWedstrijdAanwezigheid().subscribe(
-      wedstrijden => {
-        this.wedstrijden = wedstrijden;
-      },
-      error => {
-        if (error.status === 500) {
-          this.errorMessage = error.error;
-          this.loading = false;
-        }
-      }
-    );
+    this.getWedstrijdAanwezigheid();
   }
 }

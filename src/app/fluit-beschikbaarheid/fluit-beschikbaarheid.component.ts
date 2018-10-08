@@ -16,18 +16,7 @@ export class FluitBeschikbaarheidComponent implements OnInit {
   constructor(private httpClient: HttpClient) {}
 
   ngOnInit() {
-    this.getFluitBeschikbaarheid().subscribe(
-      speeldagen => {
-        this.speeldagen = speeldagen;
-        this.loading = false;
-      },
-      error => {
-        if (error.status === 500) {
-          this.errorMessage = error.error;
-          this.loading = false;
-        }
-      }
-    );
+    this.getFluitBeschikbaarheid();
   }
 
   UpdateFluitBeschikbaarheid(beschikbaarheid, datum, tijd) {
@@ -44,10 +33,23 @@ export class FluitBeschikbaarheidComponent implements OnInit {
       .subscribe();
   }
 
-  getFluitBeschikbaarheid(): Observable<any[]> {
+  getFluitBeschikbaarheid() {
     this.loading = true;
-    return this.httpClient.get<any[]>(
-      environment.baseUrl + 'php/interface.php?action=GetFluitOverzicht'
-    );
+    this.httpClient
+      .get<any[]>(
+        environment.baseUrl + 'php/interface.php?action=GetFluitOverzicht'
+      )
+      .subscribe(
+        speeldagen => {
+          this.speeldagen = speeldagen;
+          this.loading = false;
+        },
+        error => {
+          if (error.status === 500) {
+            this.errorMessage = error.error;
+            this.loading = false;
+          }
+        }
+      );
   }
 }

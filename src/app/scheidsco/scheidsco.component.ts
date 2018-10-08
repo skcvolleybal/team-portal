@@ -2,7 +2,6 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { faCalendarCheck, faUser } from '@fortawesome/free-solid-svg-icons';
 import * as Enumerable from 'linq';
-import { Observable } from 'rxjs/internal/Observable';
 import { environment } from '../../environments/environment';
 
 @Component({
@@ -165,6 +164,7 @@ export class ScheidscoComponent implements OnInit {
           });
         });
         this.getScheidsrechters();
+        this.getZaalwachtTeams();
       });
   }
 

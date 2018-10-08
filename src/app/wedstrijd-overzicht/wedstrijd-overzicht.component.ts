@@ -1,13 +1,5 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import {
-  faAngleDoubleDown,
-  faAngleDoubleUp,
-  faMinusSquare,
-  faPlus,
-  faPlusSquare,
-  faTimesCircle
-} from '@fortawesome/free-solid-svg-icons';
 import { Observable } from 'rxjs/internal/Observable';
 // tslint:disable-next-line:no-implicit-dependencies
 import { environment } from 'src/environments/environment';
@@ -90,7 +82,10 @@ export class WedstrijdOverzichtComponent implements OnInit {
   ngOnInit() {
     this.loading = true;
     this.getWedstrijdOverzicht().subscribe(
-      wedstrijden => (this.wedstrijden = wedstrijden),
+      wedstrijden => {
+        this.wedstrijden = wedstrijden;
+        this.loading = false;
+      },
       error => {
         if (error.status === 500) {
           this.errorMessage = error.error;
