@@ -38,6 +38,7 @@ class GetFluitBeschikbaarheid implements IInteractor
         $this->fluitBeschikbaarheid = $this->fluitBeschikbaarheidGateway->GetFluitBeschikbaarheid($userId);
 
         $programma = $this->nevoboGateway->GetProgrammaForTeam($this->team);
+        $coachProgramma = [];
         if ($this->coachTeam != null) {
             $coachProgramma = $this->nevoboGateway->GetProgrammaForTeam($this->coachTeam);
         }
