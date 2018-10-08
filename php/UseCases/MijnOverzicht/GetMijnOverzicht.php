@@ -40,13 +40,17 @@ class GetMijnOverzichtInteractor implements IInteractor
         $telbeurten = $this->indelingGateway->GetTelbeurten($userId);
         foreach ($telbeurten as $telbeurt) {
             $overzichtItem = $this->MapFromMatch($telbeurt, $allUscMatches, $team, $coachTeam, $userId);
-            $this->AddToOverzicht($overzicht, $overzichtItem);
+            if ($overzichtItem != null) {
+                $this->AddToOverzicht($overzicht, $overzichtItem);
+            }
         }
 
         $fluitbeurten = $this->indelingGateway->GetFluitbeurten($userId);
         foreach ($fluitbeurten as $fluitbeurt) {
             $overzichtItem = $this->MapFromMatch($fluitbeurt, $allUscMatches, $team, $coachTeam, $userId);
-            $this->AddToOverzicht($overzicht, $overzichtItem);
+            if ($overzichtItem != null) {
+                $this->AddToOverzicht($overzicht, $overzichtItem);
+            }
         }
 
         $speelWedstrijden = $this->nevoboGateway->GetProgrammaForTeam($team);
@@ -70,6 +74,9 @@ class GetMijnOverzichtInteractor implements IInteractor
     private function MapFromMatch($match, $allUscMatches, $team, $coachTeam, $userId)
     {
         $uscMatch = $this->GetUscMatch($match['match_id'], $allUscMatches);
+        if ($uscMatch == null) {
+            return null;
+        }
         return [
             "type" => "wedstrijd",
             "datum" => $uscMatch['timestamp']->format('Y-m-d'),
