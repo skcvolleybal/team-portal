@@ -67,7 +67,9 @@ class GetMijnOverzichtInteractor implements IInteractor
             }
         }
 
-        echo json_encode($overzicht);
+        $isWebcie = $this->userGateway->IsWebcie($userId);
+
+        echo json_encode(["overzicht" => $overzicht, "isWebcie" => $isWebcie]);
         exit;
     }
 

@@ -22,10 +22,22 @@
     </button>
   </div>
 
+  <ng-template #rt let-r="result" let-t="term">
+    <ngb-highlight [result]="r.naam" [term]="t"></ngb-highlight>
+  </ng-template>
+
   <div [ngbCollapse]="isNavbarHidden" class="navbar-collapse collapse" id="navbarColor02">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item" routerLinkActive="active" *ngFor="let appRoute of appRoutes" (click)="onLinkClick()">
         <a class="nav-link" [routerLink]="appRoute.path">{{appRoute.data.title}}</a>
+      </li>
+      <li *ngIf="isWebcie">
+        <div class="form-group">
+          <input (change)="setImpersonation()" class="form-control" [(ngModel)]="impersonatedUser"
+            [inputFormatter]="formatter" [ngbTypeahead]="searchUsers" placeholder="gebruiker" [resultTemplate]="rt" />
+          <span *ngIf="searching">searching...</span>
+          <div class="invalid-feedback" *ngIf="searchFailed">Sorry, suggestions could not be loaded.</div>
+        </div>
       </li>
     </ul>
   </div>

@@ -7,12 +7,12 @@ import {
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/internal/Observable';
 import { tap } from 'rxjs/operators';
-import { AuthenticationService } from '../services/authentication.service';
+import { StateService } from '../services/state.service';
 
 // tslint:disable-next-line:max-classes-per-file
 @Injectable()
 export class HTTPListener implements HttpInterceptor {
-  constructor(private authenticationService: AuthenticationService) {}
+  constructor(private stateService: StateService) {}
 
   intercept(
     request: HttpRequest<any>,
@@ -23,7 +23,7 @@ export class HTTPListener implements HttpInterceptor {
         event => {},
         error => {
           if (error.status === 401) {
-            this.authenticationService.setUnauthorized();
+            this.stateService.setUnauthorized();
           }
         }
       )

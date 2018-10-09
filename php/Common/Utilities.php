@@ -1,5 +1,15 @@
 <?php
 
+function GetPostValues()
+{
+    $postData = file_get_contents("php://input");
+    if (empty($postData)) {
+        return null;
+    }
+
+    return json_decode($postData);
+}
+
 function UnauthorizedResult()
 {
     header("HTTP/1.1 401 Unauthorized");

@@ -77,8 +77,8 @@ class IndelingGateway
                     FROM J3_user_usergroup_map M
                     INNER JOIN J3_usergroups G ON M.group_id = G.id
                     WHERE G.parent_id = (SELECT id FROM J3_usergroups WHERE title = 'Teams')) G2 ON U.id = G2.user_id
-                  LEFT JOIN j3_comprofiler C ON C.user_id = U.id
-                  LEFT JOIN scheidsapp_matches W ON W.user_id = U.id
+                  LEFT JOIN J3_comprofiler C ON C.user_id = U.id
+                  LEFT JOIN TeamPortal_wedstrijden W ON W.user_id = U.id
                   WHERE G.id IN (SELECT id FROM J3_usergroups WHERE title = 'Scheidsrechters')
                   GROUP BY U.name";
         return $this->database->Execute($query);

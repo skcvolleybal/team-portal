@@ -10,13 +10,14 @@ import { AppComponent } from './app.component';
 import { CoachWedstrijdenComponent } from './coach-wedstrijden/coach-wedstrijden.component';
 import { FluitBeschikbaarheidComponent } from './fluit-beschikbaarheid/fluit-beschikbaarheid.component';
 import { CustomInterceptor } from './interceptors/add-credentials.interceptor';
+import { ImpersonationInterceptor } from './interceptors/add-impersonation.interceptor';
 import { HTTPListener } from './interceptors/is-authorized.interceptor';
 import { InvalTeamsComponent } from './inval-teams/inval-teams.component';
 import { LoginModalComponent } from './login-modal/login-modal.component';
 import { MijnOverzichtComponent } from './mijn-overzicht/mijn-overzicht.component';
 import { ScheidscoComponent } from './scheidsco/scheidsco.component';
 import { ScheidsrechterComponent } from './scheidsrechter/scheidsrechter.component';
-import { AuthenticationService } from './services/authentication.service';
+import { StateService } from './services/state.service';
 import { SpelersLijstComponent } from './spelers-lijst/spelers-lijst.component';
 import { SpinnerComponent } from './spinner/spinner.component';
 import { StatistiekenComponent } from './statistieken/statistieken.component';
@@ -98,7 +99,7 @@ export const appRoutes: Routes = [
   ],
   exports: [],
   providers: [
-    AuthenticationService,
+    StateService,
     { provide: 'appRoutes', useValue: appRoutes },
     {
       provide: HTTP_INTERCEPTORS,
@@ -108,6 +109,11 @@ export const appRoutes: Routes = [
     {
       provide: HTTP_INTERCEPTORS,
       useClass: HTTPListener,
+      multi: true
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: ImpersonationInterceptor,
       multi: true
     }
   ],

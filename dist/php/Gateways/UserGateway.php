@@ -12,7 +12,7 @@ class UserGateway
         $this->database = $database;
     }
 
-    public function GetUserId()
+    public function GetUserId($forceImpersonation = true)
     {
         $this->InitJoomla();
 
@@ -21,29 +21,60 @@ class UserGateway
         if ($user->guest) {
             return null;
         }
+
+        if ($forceImpersonation && $this->IsWebcie($user->id) && isset($_GET['impersonationId'])) {
+            $impersonationId = $_GET['impersonationId'];
+            if (isset($impersonationId) && $this->DoesUserIdExist($impersonationId)) {
+                return $impersonationId;
+            }
+        }
+
         return $user->id;
+    }
+
+    private function DoesUserIdExist($userId)
+    {
+        $query = "SELECT id FROM J3_users WHERE id = :userId";
+        $params = [new Param(":userId", $userId, PDO::PARAM_INT)];
+        $result = $this->database->Execute($query, $params);
+        return count($result) > 0;
+    }
+
+    public function GetUsersWithName($name)
+    {
+        $name = "%$name%";
+        $query = "SELECT * FROM J3_users where name like :name LIMIT 0, 5";
+        $params = [new Param(":name", $name, PDO::PARAM_STR)];
+        return $this->database->Execute($query, $params);
+    }
+
+    private function IsUserInUsergroup($userId, $usergroup)
+    {
+        $query = "SELECT *
+                  FROM J3_user_usergroup_map M
+                  INNER JOIN J3_usergroups G ON M.group_id = G.id
+                  WHERE M.user_id = :userId and G.title = :usergroup";
+        $params = [
+            new Param(":userId", $userId, PDO::PARAM_INT),
+            new Param(":usergroup", $usergroup, PDO::PARAM_STR),
+        ];
+        $result = $this->database->Execute($query, $params);
+        return count($result) > 0;
     }
 
     public function IsScheidsrechter($userId)
     {
-        $query = "SELECT *
-                  FROM J3_user_usergroup_map M
-                  INNER JOIN J3_usergroups G ON M.group_id = G.id
-                  WHERE M.user_id = :userId and G.title = 'Scheidsrechters'";
-        $params = [new Param(":userId", $userId, PDO::PARAM_INT)];
-        $result = $this->database->Execute($query, $params);
-        return count($result) > 0;
+        return $this->IsUserInUsergroup($userId, 'Scheidsrechters');
+    }
+
+    public function IsWebcie($userId)
+    {
+        return $this->IsUserInUsergroup($userId, 'Super Users');
     }
 
     public function IsScheidsco($userId)
     {
-        $query = "SELECT *
-                  FROM J3_user_usergroup_map M
-                  INNER JOIN J3_usergroups G ON M.group_id = G.id
-                  WHERE M.user_id = :userId and G.title = 'Scheidsco'";
-        $params = [new Param(":userId", $userId, PDO::PARAM_INT)];
-        $result = $this->database->Execute($query, $params);
-        return count($result) > 0;
+        return $this->IsUserInUsergroup($userId, 'Scheidsco');
     }
 
     public function GetTeam($userId)

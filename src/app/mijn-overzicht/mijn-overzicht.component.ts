@@ -22,11 +22,12 @@ export class MijnOverzichtComponent implements OnInit {
   openIcon = faPlusSquare;
   dagen: any[];
   errorMessage: string;
+  isWebcie: boolean;
 
   constructor(private http: HttpClient) {}
 
-  getMijnOverzicht(): Observable<any[]> {
-    return this.http.get<any[]>(
+  getMijnOverzicht(): Observable<{ overzicht: any; isWebcie: boolean }> {
+    return this.http.get<{ overzicht: any; isWebcie: boolean }>(
       environment.baseUrl + 'php/interface.php?action=GetMijnOverzicht'
     );
   }
@@ -34,8 +35,9 @@ export class MijnOverzichtComponent implements OnInit {
   ngOnInit() {
     this.loading = true;
     this.getMijnOverzicht().subscribe(
-      overzicht => {
-        this.dagen = overzicht;
+      response => {
+        this.dagen = response.overzicht;
+        this.isWebcie = response.isWebcie;
         this.loading = false;
       },
       error => {

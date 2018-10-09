@@ -22,6 +22,21 @@ class TeamPortal
         InternalServerError("Unknown function '$action'");
     }
 
+    public function IsWebcie()
+    {
+        include 'UseCases' . DIRECTORY_SEPARATOR . 'Webcie' . DIRECTORY_SEPARATOR . 'IsWebcie.php';
+        $interactor = new IsWebcie($this->database);
+        $interactor->Execute();
+    }
+
+    public function GetUsers()
+    {
+        include 'UseCases' . DIRECTORY_SEPARATOR . 'Webcie' . DIRECTORY_SEPARATOR . 'GetUsers.php';
+        $interactor = new GetUsers($this->database);
+        $postData = GetPostValues();
+        $interactor->Execute($postData);
+    }
+
     public function GetMijnOverzicht()
     {
         include 'UseCases' . DIRECTORY_SEPARATOR . 'MijnOverzicht' . DIRECTORY_SEPARATOR . 'GetMijnOverzicht.php';
@@ -47,7 +62,7 @@ class TeamPortal
     {
         include 'UseCases' . DIRECTORY_SEPARATOR . 'Aanwezigheid' . DIRECTORY_SEPARATOR . 'UpdateAanwezigheid.php';
         $interactor = new UpdateAanwezigheid($this->database);
-        $postData = $this->GetPostValues();
+        $postData = GetPostValues();
         $interactor->Execute($postData);
     }
 
@@ -62,7 +77,7 @@ class TeamPortal
     {
         include 'UseCases' . DIRECTORY_SEPARATOR . 'FluitBeschikbaarheid' . DIRECTORY_SEPARATOR . 'UpdateFluitBeschikbaarheid.php';
         $interactor = new UpdateFluitBeschikbaarheid($this->database);
-        $postData = $this->GetPostValues();
+        $postData = GetPostValues();
         $interactor->Execute($postData);
     }
 
@@ -91,7 +106,7 @@ class TeamPortal
     {
         include 'UseCases' . DIRECTORY_SEPARATOR . 'Scheidsco' . DIRECTORY_SEPARATOR . 'UpdateScheidscoWedstrijd.php';
         $interactor = new UpdateScheidscoWedstrijd($this->database);
-        $postData = $this->GetPostValues();
+        $postData = GetPostValues();
         $interactor->Execute($postData);
     }
 
@@ -99,7 +114,7 @@ class TeamPortal
     {
         include 'UseCases' . DIRECTORY_SEPARATOR . 'Scheidsco' . DIRECTORY_SEPARATOR . 'UpdateScheidscoZaalwacht.php';
         $interactor = new UpdateScheidscoZaalwacht($this->database);
-        $postData = $this->GetPostValues();
+        $postData = GetPostValues();
         $interactor->Execute($postData);
     }
 
@@ -107,17 +122,7 @@ class TeamPortal
     {
         include 'UseCases' . DIRECTORY_SEPARATOR . 'Inloggen' . DIRECTORY_SEPARATOR . 'Inloggen.php';
         $interactor = new Inloggen($this->database);
-        $postData = $this->GetPostValues();
+        $postData = GetPostValues();
         $interactor->Execute($postData);
-    }
-
-    private function GetPostValues()
-    {
-        $postData = file_get_contents("php://input");
-        if (empty($postData)) {
-            return null;
-        }
-
-        return json_decode($postData);
     }
 }
