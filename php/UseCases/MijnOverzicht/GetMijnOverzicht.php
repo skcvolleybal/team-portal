@@ -56,14 +56,18 @@ class GetMijnOverzichtInteractor implements IInteractor
         $speelWedstrijden = $this->nevoboGateway->GetProgrammaForTeam($team);
         foreach ($speelWedstrijden as $speelWedstrijd) {
             $overzichtItem = $this->MapFromNevoboMatch($speelWedstrijd, $team, $coachTeam);
-            $this->AddToOverzicht($overzicht, $overzichtItem);
+            if ($overzichtItem != null) {
+                $this->AddToOverzicht($overzicht, $overzichtItem);
+            }
         }
 
         if ($coachTeam != null) {
             $coachWedstrijden = $this->nevoboGateway->GetProgrammaForTeam($coachTeam);
             foreach ($coachWedstrijden as $coachWedstrijd) {
                 $overzichtItem = $this->MapFromNevoboMatch($coachWedstrijd, $team, $coachTeam);
-                $this->AddToOverzicht($overzicht, $overzichtItem);
+                if ($overzichtItem != null) {
+                    $this->AddToOverzicht($overzicht, $overzichtItem);
+                }
             }
         }
 
@@ -99,6 +103,9 @@ class GetMijnOverzichtInteractor implements IInteractor
 
     private function MapFromNevoboMatch($match, $team, $coachTeam)
     {
+        if ($match['timestamp'] == null) {
+            return null;
+        }
         return [
             "type" => "wedstrijd",
             "datum" => $match['timestamp']->format('Y-m-d'),
