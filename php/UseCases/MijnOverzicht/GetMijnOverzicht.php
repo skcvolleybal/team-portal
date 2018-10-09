@@ -80,7 +80,7 @@ class GetMijnOverzichtInteractor implements IInteractor
     private function MapFromMatch($match, $allUscMatches, $team, $coachTeam, $userId)
     {
         $uscMatch = $this->GetUscMatch($match['match_id'], $allUscMatches);
-        if ($uscMatch == null) {
+        if ($uscMatch == null || $uscMatch['timestamp'] == null) {
             return null;
         }
         return [
@@ -103,7 +103,7 @@ class GetMijnOverzichtInteractor implements IInteractor
 
     private function MapFromNevoboMatch($match, $team, $coachTeam)
     {
-        if ($match['timestamp'] == null) {
+        if ($match['timestamp'] == null || $uscMatch['timestamp'] == null) {
             return null;
         }
         return [
