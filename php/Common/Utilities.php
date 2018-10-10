@@ -43,6 +43,11 @@ function ConvertToNevoboName($teamnaam)
     throw new Exception("unknown team: " . $teamnaam);
 }
 
+function RemoveMatchesWithoutData($array)
+{
+    return array_filter($array, function ($match) {return $match['timestamp'] != null;});
+}
+
 function GetShortLocatie($locatie)
 {
     $firstPart = substr($locatie, 0, strpos($locatie, ","));

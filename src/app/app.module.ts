@@ -17,6 +17,9 @@ import { LoginModalComponent } from './login-modal/login-modal.component';
 import { MijnOverzichtComponent } from './mijn-overzicht/mijn-overzicht.component';
 import { ScheidscoComponent } from './scheidsco/scheidsco.component';
 import { ScheidsrechterComponent } from './scheidsrechter/scheidsrechter.component';
+import { SelecteerScheidsrechterComponent } from './selecteer-scheidsrechter/selecteer-scheidsrechter.component';
+import { SelecteerTellersComponent } from './selecteer-tellers/selecteer-tellers.component';
+import { SelecteerZaalwachtComponent } from './selecteer-zaalwacht/selecteer-zaalwacht.component';
 import { StateService } from './services/state.service';
 import { SpelersLijstComponent } from './spelers-lijst/spelers-lijst.component';
 import { SpinnerComponent } from './spinner/spinner.component';
@@ -85,7 +88,10 @@ export const appRoutes: Routes = [
     SpelersLijstComponent,
     InvalTeamsComponent,
     LoginModalComponent,
-    SpinnerComponent
+    SpinnerComponent,
+    SelecteerScheidsrechterComponent,
+    SelecteerTellersComponent,
+    SelecteerZaalwachtComponent
   ],
   imports: [
     FormsModule,

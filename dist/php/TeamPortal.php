@@ -22,6 +22,26 @@ class TeamPortal
         InternalServerError("Unknown function '$action'");
     }
 
+    // public function LogError($errorMessage)
+    // {
+    //     try {
+    //         throw new Exception;
+    //         $trace = GenerateCallTrace();
+    //         $query = "INSERT INTO log (application, error_message, call_stack)
+    //                   VALUES ('TeamPortal', :errorMessage, :trace)";
+    //         $params = [
+    //             new Param(":errorMessage", $errorMessage, PDO::PARAM_STR),
+    //             new Param(":trace", $trace, PDO::PARAM_STR),
+    //         ];
+    //         $result = $this->database->Execute($query, $params);
+    //     } catch (Exception $ex) {
+    //         // write to disk
+    //         $my_file = 'errors/error-' . date("Y-m-d.H:i:s.u") . '.txt';
+    //         $handle = fopen($my_file, 'w') or die('Cannot open file:  ' . $my_file);
+    //         fwrite($handle, $ex);
+    //     }
+    // }
+
     public function IsWebcie()
     {
         include 'UseCases' . DIRECTORY_SEPARATOR . 'Webcie' . DIRECTORY_SEPARATOR . 'IsWebcie.php';

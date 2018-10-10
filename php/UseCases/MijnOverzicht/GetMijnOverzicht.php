@@ -31,6 +31,8 @@ class GetMijnOverzichtInteractor implements IInteractor
 
         $allUscMatches = $this->nevoboGateway->GetProgrammaForSporthal("LDNUN");
 
+        $allUscMatches = RemoveMatchesWithoutData($allUscMatches);
+
         $zaalwachten = $this->indelingGateway->GetZaalwachtForUserId($userId);
         foreach ($zaalwachten as $zaalwacht) {
             $overzichtItem = $this->MapFromZaalwacht($zaalwacht, $allUscMatches);
@@ -80,7 +82,7 @@ class GetMijnOverzichtInteractor implements IInteractor
     private function MapFromMatch($match, $allUscMatches, $team, $coachTeam, $userId)
     {
         $uscMatch = $this->GetUscMatch($match['match_id'], $allUscMatches);
-        if ($uscMatch == null || $uscMatch['timestamp'] == null) {
+        if ($uscMatch == null) {
             return null;
         }
         return [
@@ -103,9 +105,6 @@ class GetMijnOverzichtInteractor implements IInteractor
 
     private function MapFromNevoboMatch($match, $team, $coachTeam)
     {
-        if ($match['timestamp'] == null || $uscMatch['timestamp'] == null) {
-            return null;
-        }
         return [
             "type" => "wedstrijd",
             "datum" => $match['timestamp']->format('Y-m-d'),

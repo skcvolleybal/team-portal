@@ -31,13 +31,12 @@ class GetScheidscoOverzicht implements IInteractor
         }
         $overzicht = [];
         $uscProgramma = $this->nevoboGateway->GetProgrammaForSporthal($this->uscCode);
+        $uscProgramma = RemoveMatchesWithoutData($uscProgramma);
+
         $indeling = $this->indelingGateway->GetIndeling();
         $zaalwachtIndeling = $this->indelingGateway->GetZaalwachtIndeling();
 
         foreach ($uscProgramma as $wedstrijd) {
-            if ($wedstrijd['timestamp'] == null){
-                continue;
-            }
             $matchId = $wedstrijd['id'];
             $datum = $wedstrijd['timestamp']->format('j F Y');
             $date = $wedstrijd['timestamp']->format('Y-m-d');

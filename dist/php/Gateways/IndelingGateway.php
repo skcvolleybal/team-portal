@@ -67,7 +67,7 @@ class IndelingGateway
         $query = "SELECT
                     U.name AS naam,
                     C.cb_scheidsrechterscode AS niveau,
-                    COUNT(W.user_id) AS gefloten,
+                    COUNT(W.scheidsrechter_id) AS gefloten,
                     team
                   FROM J3_users U
                   INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
@@ -78,7 +78,7 @@ class IndelingGateway
                     INNER JOIN J3_usergroups G ON M.group_id = G.id
                     WHERE G.parent_id = (SELECT id FROM J3_usergroups WHERE title = 'Teams')) G2 ON U.id = G2.user_id
                   LEFT JOIN J3_comprofiler C ON C.user_id = U.id
-                  LEFT JOIN TeamPortal_wedstrijden W ON W.user_id = U.id
+                  LEFT JOIN TeamPortal_wedstrijden W ON W.scheidsrechter_id = U.id
                   WHERE G.id IN (SELECT id FROM J3_usergroups WHERE title = 'Scheidsrechters')
                   GROUP BY U.name";
         return $this->database->Execute($query);

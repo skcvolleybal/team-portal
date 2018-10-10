@@ -39,5 +39,5 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
-*.spc
+**/*.spc
 build-wrapper-win-x86-64.exe
