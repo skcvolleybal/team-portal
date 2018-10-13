@@ -1,6 +1,6 @@
 <div class="modal-header">
   <h6>{{teams}}, {{tijd}}</h6>
-  <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+  <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
     <span aria-hidden="true">&times;</span>
   </button>
 </div>
@@ -81,5 +81,5 @@
 </div>
 
 <div class="modal-footer">
-  <button type="button" class="btn btn-light" (click)="modal.close('Close click')">Close</button>
+  <button type="button" class="btn btn-light" (click)="modal.close()">Close</button>
 </div>
