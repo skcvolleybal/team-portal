@@ -17,19 +17,26 @@ export class WedstrijdOverzichtComponent implements OnInit {
   constructor(private httpClient: HttpClient) {}
 
   getWedstrijdOverzicht(): Observable<any[]> {
-    return this.httpClient.get<any[]>(
-      environment.baseUrl + 'php/interface.php?action=GetWedstrijdOverzicht'
-    );
+    return this.httpClient.get<any[]>(environment.baseUrl, {
+      params: {
+        action: 'GetWedstrijdOverzicht'
+      }
+    });
   }
 
   AddAanwezigheid(speler, matchId) {
     this.httpClient
       .post<any>(
-        environment.baseUrl + 'php/interface.php?action=UpdateAanwezigheid',
+        environment.baseUrl,
         {
           matchId,
           spelerId: speler.id,
           aanwezigheid: 'Ja'
+        },
+        {
+          params: {
+            action: 'UpdateAanwezigheid'
+          }
         }
       )
       .subscribe(() => {
@@ -56,11 +63,16 @@ export class WedstrijdOverzichtComponent implements OnInit {
   DeleteAanwezigheid(spelerId, matchId) {
     this.httpClient
       .post<any>(
-        environment.baseUrl + 'php/interface.php?action=UpdateAanwezigheid',
+        environment.baseUrl,
         {
           matchId,
           spelerId,
           aanwezigheid: 'Misschien'
+        },
+        {
+          params: {
+            action: 'UpdateAanwezigheid'
+          }
         }
       )
       .subscribe(() => {

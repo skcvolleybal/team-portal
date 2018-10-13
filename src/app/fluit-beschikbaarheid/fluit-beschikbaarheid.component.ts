@@ -22,12 +22,14 @@ export class FluitBeschikbaarheidComponent implements OnInit {
   UpdateFluitBeschikbaarheid(beschikbaarheid, datum, tijd) {
     this.httpClient
       .post(
-        environment.baseUrl +
-          'php/interface.php?action=UpdateFluitBeschikbaarheid',
+        environment.baseUrl,
         {
           datum,
           tijd,
           beschikbaarheid
+        },
+        {
+          params: { action: 'UpdateFluitBeschikbaarheid' }
         }
       )
       .subscribe();
@@ -36,9 +38,11 @@ export class FluitBeschikbaarheidComponent implements OnInit {
   getFluitBeschikbaarheid() {
     this.loading = true;
     this.httpClient
-      .get<any[]>(
-        environment.baseUrl + 'php/interface.php?action=GetFluitOverzicht'
-      )
+      .get<any[]>(environment.baseUrl, {
+        params: {
+          action: 'GetFluitOverzicht'
+        }
+      })
       .subscribe(
         speeldagen => {
           this.speeldagen = speeldagen;

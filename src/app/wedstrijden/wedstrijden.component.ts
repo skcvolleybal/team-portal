@@ -26,10 +26,11 @@ export class WedstrijdenComponent implements OnInit {
 
   getWedstrijdAanwezigheid() {
     this.http
-      .get<any[]>(
-        environment.baseUrl +
-          'php/interface.php?action=GetWedstrijdAanwezigheid'
-      )
+      .get<any[]>(environment.baseUrl, {
+        params: {
+          action: 'GetWedstrijdAanwezigheid'
+        }
+      })
       .subscribe(
         wedstrijden => {
           this.wedstrijden = wedstrijden;
@@ -47,10 +48,15 @@ export class WedstrijdenComponent implements OnInit {
   updateAanwezigheid(aanwezigheid, match) {
     this.http
       .post<any>(
-        environment.baseUrl + 'php/interface.php?action=UpdateAanwezigheid',
+        environment.baseUrl,
         {
           matchId: match.id,
           aanwezigheid
+        },
+        {
+          params: {
+            action: 'UpdateAanwezigheid'
+          }
         }
       )
       .subscribe();

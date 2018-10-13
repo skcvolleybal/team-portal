@@ -59,11 +59,15 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.stateService.isAuthorized.subscribe(() => {
-      setTimeout(() => this.modalService.open(LoginModalComponent));
+      setTimeout(() =>
+        this.modalService.open(LoginModalComponent, { centered: true })
+      );
     });
 
     this.httpClient
-      .get<boolean>(environment.baseUrl + 'php/interface.php?action=IsWebcie')
+      .get<boolean>(environment.baseUrl, {
+        params: { action: 'IsWebcie' }
+      })
       .subscribe(response => {
         this.stateService.isWebcie = response;
         this.isWebcie = response;
@@ -82,7 +86,7 @@ export class AppComponent implements OnInit {
       distinctUntilChanged(),
       switchMap(term =>
         this.httpClient.post(
-          environment.baseUrl + 'php/interface.php',
+          environment.baseUrl,
           {
             name: `${term}`
           },

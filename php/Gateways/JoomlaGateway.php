@@ -3,7 +3,7 @@
 include_once 'Param.php';
 include_once 'Utilities.php';
 
-class UserGateway
+class JoomlaGateway
 {
     private $database;
 
@@ -30,6 +30,40 @@ class UserGateway
         }
 
         return $user->id;
+    }
+
+    public function GetScheidsrechterByName($scheidsrechter)
+    {
+        if (empty($scheidsrechter)) {
+            return null;
+        }
+
+        $query = "SELECT U.id, name
+                  FROM J3_users U
+                  INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
+                  INNER JOIN J3_usergroups G ON M.group_id = G.id
+                  WHERE U.name = :scheidsrechter and
+                        G.id in (SELECT id FROM J3_usergroups WHERE title = 'Scheidsrechters')";
+        $params = [
+            new Param(":scheidsrechter", $scheidsrechter, PDO::PARAM_STR),
+        ];
+        $scheidsrechters = $this->database->Execute($query, $params);
+        if (count($scheidsrechters) == 0) {
+            InternalServerError("Unknown scheidsrechter: $scheidsrechter");
+        };
+        return $scheidsrechters[0];
+    }
+
+    public function GetTeamByNaam($naam)
+    {
+        $query = "SELECT * FROM J3_usergroups
+                  WHERE title = :naam";
+        $params = [new Param(":naam", $naam, PDO::PARAM_STR)];
+        $teams = $this->database->Execute($query, $params);
+        if (count($teams) == 0) {
+            return null;
+        }
+        return $teams[0];
     }
 
     private function DoesUserIdExist($userId)
@@ -91,12 +125,12 @@ class UserGateway
             return null;
         }
 
-        return ConvertToNevoboName($team[0]['naam']);
+        return ToNevoboName($team[0]['naam']);
     }
 
     public function GetSpelers($team)
     {
-        $team = GetSkcTeam($team);
+        $team = ToSkcName($team);
         $query = "SELECT U.id, name as naam
                   FROM J3_users U
                   INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
@@ -120,7 +154,7 @@ class UserGateway
         }
 
         $coachTeam = substr($team[0]['naam'], 6);
-        return ConvertToNevoboName($coachTeam);
+        return ToNevoboName($coachTeam);
     }
 
     private function InitJoomla()

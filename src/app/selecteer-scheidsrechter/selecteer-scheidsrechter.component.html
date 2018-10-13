@@ -1,3 +1,85 @@
-<p>
-  selecteer-scheidsrechter works!
-</p>
+<div class="modal-header">
+  <h6>{{teams}}, {{tijd}}</h6>
+  <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<div class="modal-body" style="min-height: 500px;">
+  <div class="alert alert-danger" role="alert" *ngIf="errorMessage">
+    {{errorMessage}}
+  </div>
+  <app-spinner *ngIf="scheidsrechterOptiesLoading"></app-spinner>
+
+  <div *ngIf="scheidsrechterOptiesLoading == false">
+    <div class="card mb-3">
+      <div class="card-header">
+        Spelende Scheidsrechter
+      </div>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item">Ja</li>
+        <li class="list-group-item">
+          <div class="input-group mb-3" *ngFor="let scheidsrechter of spelendeScheidsrechters.Ja">
+            <button type="button" (click)="UpdateScheidsrechter(scheidsrechter.naam)" class="btn btn-block" [ngClass]="{'btn-danger': scheidsrechter.isMogelijk === false, 'btn-success': scheidsrechter.isMogelijk === true,'btn-warning': scheidsrechter.isMogelijk === null}">
+              {{GetScheidsrechterText(scheidsrechter)}}
+            </button>
+          </div>
+        </li>
+        <li class="list-group-item">Onbekend</li>
+        <li class="list-group-item">
+          <div class="input-group mb-3" *ngFor="let scheidsrechter of spelendeScheidsrechters.Onbekend">
+            <button type="button" (click)="UpdateScheidsrechter(scheidsrechter.naam)" class="btn btn-block" [ngClass]="{'btn-danger': scheidsrechter.isMogelijk === false, 'btn-success': scheidsrechter.isMogelijk === true,'btn-warning': scheidsrechter.isMogelijk === null}">
+              {{GetScheidsrechterText(scheidsrechter)}}
+            </button>
+          </div>
+        </li>
+        <li class="list-group-item">Nee</li>
+        <li class="list-group-item">
+          <div class="input-group mb-3" *ngFor="let scheidsrechter of spelendeScheidsrechters.Nee">
+            <button type="button" (click)="UpdateScheidsrechter(scheidsrechter.naam)" class="btn btn-block" [ngClass]="{'btn-danger': scheidsrechter.isMogelijk === false, 'btn-success': scheidsrechter.isMogelijk === true,'btn-warning': scheidsrechter.isMogelijk === null}">
+              {{GetScheidsrechterText(scheidsrechter)}}
+            </button>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="card mb-3">
+      <div class="card-header">
+        Overige Scheidsrechter
+      </div>
+
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item">Ja</li>
+        <li class="list-group-item">
+          <div class="input-group mb-3" *ngFor="let scheidsrechter of overigeScheidsrechters.Ja">
+            <button type="button" (click)="UpdateScheidsrechter(scheidsrechter.naam)" class="btn btn-block" [ngClass]="{'btn-danger': scheidsrechter.isMogelijk === false, 'btn-success': scheidsrechter.isMogelijk === true,'btn-warning': scheidsrechter.isMogelijk === null}">
+              {{GetScheidsrechterTextWithoutTime(scheidsrechter)}}
+            </button>
+          </div>
+        </li>
+        <li class="list-group-item">Onbekend</li>
+        <li class="list-group-item">
+          <div class="input-group mb-3" *ngFor="let scheidsrechter of overigeScheidsrechters.Onbekend">
+            <button type="button" (click)="UpdateScheidsrechter(scheidsrechter.naam)" class="btn btn-block" [ngClass]="{'btn-danger': scheidsrechter.isMogelijk === false, 'btn-success': scheidsrechter.isMogelijk === true,'btn-warning': scheidsrechter.isMogelijk === null}">
+              {{GetScheidsrechterTextWithoutTime(scheidsrechter)}}
+            </button>
+          </div>
+        </li>
+        <li class="list-group-item">Nee</li>
+        <li class="list-group-item">
+          <div class="input-group mb-3" *ngFor="let scheidsrechter of overigeScheidsrechters.Nee">
+            <button type="button" (click)="UpdateScheidsrechter(scheidsrechter.naam)" class="btn btn-block" [ngClass]="{'btn-danger': scheidsrechter.isMogelijk === false, 'btn-success': scheidsrechter.isMogelijk === true,'btn-warning': scheidsrechter.isMogelijk === null}">
+              {{GetScheidsrechterTextWithoutTime(scheidsrechter)}}
+            </button>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <button type="button" (click)="UpdateScheidsrechter()" class="btn btn-danger btn-lg btn-block">Geen Scheidsrechter</button>
+  </div>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-light" (click)="modal.close('Close click')">Close</button>
+</div>

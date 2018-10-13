@@ -37,6 +37,19 @@ class FluitBeschikbaarheid
         return null;
     }
 
+    public function GetAllBeschikbaarheid($datum, $tijd)
+    {
+        $query = "SELECT *
+                  FROM TeamPortal_fluitbeschikbaarheid
+                  WHERE datum = :datum and tijd = :tijd";
+        $params = [
+            new Param(":datum", $datum, PDO::PARAM_STR),
+            new Param(":tijd", $tijd, PDO::PARAM_STR),
+        ];
+
+        return $this->database->Execute($query, $params);
+    }
+
     public function UpdateBeschikbaarheid($userId, $datum, $tijd, $beschikbaarheid)
     {
         if (!$this->VerifyDate($datum)) {

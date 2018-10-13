@@ -70,7 +70,12 @@ export const appRoutes: Routes = [
 ];
 
 @NgModule({
-  entryComponents: [LoginModalComponent],
+  entryComponents: [
+    LoginModalComponent,
+    SelecteerZaalwachtComponent,
+    SelecteerTellersComponent,
+    SelecteerScheidsrechterComponent
+  ],
   declarations: [
     AppComponent,
     ScheidscoComponent,

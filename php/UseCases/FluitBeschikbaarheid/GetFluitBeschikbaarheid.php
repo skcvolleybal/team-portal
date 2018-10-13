@@ -1,12 +1,12 @@
 <?php
 include 'IInteractor.php';
 include 'NevoboGateway.php';
-include 'UserGateway.php';
+include 'JoomlaGateway.php';
 include 'FluitBeschikbaarheidGateway.php';
 
 class GetFluitBeschikbaarheid implements IInteractor
 {
-    private $userGateway;
+    private $joomlaGateway;
     private $nevoboGateway;
 
     private $uscCode = 'LDNUN';
@@ -17,24 +17,24 @@ class GetFluitBeschikbaarheid implements IInteractor
 
     public function __construct($database)
     {
-        $this->userGateway = new UserGateway($database);
+        $this->joomlaGateway = new JoomlaGateway($database);
         $this->nevoboGateway = new NevoboGateway();
         $this->fluitBeschikbaarheidGateway = new FluitBeschikbaarheid($database);
     }
 
     public function Execute()
     {
-        $userId = $this->userGateway->GetUserId();
+        $userId = $this->joomlaGateway->GetUserId();
         if ($userId === null) {
             UnauthorizedResult();
         }
 
-        if (!$this->userGateway->IsScheidsrechter($userId)) {
+        if (!$this->joomlaGateway->IsScheidsrechter($userId)) {
             InternalServerError("Je bent (helaas) geen scheidsrechter");
         }
 
-        $this->team = $this->userGateway->GetTeam($userId);
-        $this->coachTeam = $this->userGateway->GetCoachTeam($userId);
+        $this->team = $this->joomlaGateway->GetTeam($userId);
+        $this->coachTeam = $this->joomlaGateway->GetCoachTeam($userId);
         $this->fluitBeschikbaarheid = $this->fluitBeschikbaarheidGateway->GetFluitBeschikbaarheid($userId);
 
         $programma = $this->nevoboGateway->GetProgrammaForTeam($this->team);

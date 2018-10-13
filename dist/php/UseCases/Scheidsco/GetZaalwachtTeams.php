@@ -1,44 +1,69 @@
 <?php
-include 'IInteractor.php';
-include 'UserGateway.php';
-include 'IndelingGateway.php';
+include 'IInteractorWithData.php';
+include 'JoomlaGateway.php';
+include 'ZaalwachtGateway.php';
+include 'NevoboGateway.php';
 
-class GetZaalwachtTeams implements IInteractor
+class GetZaalwachtTeams implements IInteractorWithData
 {
-    private $indelingGateway;
-    private $userGateway;
+    private $telFluitGateway;
+    private $joomlaGateway;
+    private $nevoboGateway;
 
     public function __construct($database)
     {
-        $this->indelingGateway = new IndelingGateway($database);
-        $this->userGateway = new UserGateway($database);
+        $this->zaalwachtGateway = new ZaalwachtGateway($database);
+        $this->joomlaGateway = new JoomlaGateway($database);
+        $this->nevoboGateway = new NevoboGateway();
     }
 
-    public function Execute()
+    public function Execute($data)
     {
-        $userId = $this->userGateway->GetUserId();
+        $userId = $this->joomlaGateway->GetUserId();
         if ($userId == null) {
             UnauthorizedResult();
         }
 
-        if (!$this->userGateway->IsScheidsco($userId)) {
+        if (!$this->joomlaGateway->IsScheidsco($userId)) {
             InternalServerError("Je bent (helaas) geen Scheidsco");
         }
-        $result = [];
-        $zaalwachtTeams = $this->indelingGateway->GetZaalwachtTeams();
+
+        $date = $data->date ?? null;
+        if ($date == null) {
+            InternalServerError("Geen datum meegegeven");
+        }
+
+        $uscWedstrijden = $this->nevoboGateway->GetProgrammaForSporthal("LDNUN");
+        $zaalwachtTeams = $this->zaalwachtGateway->GetZaalwachtTeams();
+        $spelendeTeams = $this->GetSpelendeTeamsForDate($uscWedstrijden, $date);
+
+        $result = ["spelendeTeams" => [], "overigeTeams" => []];
         foreach ($zaalwachtTeams as $team) {
-            $result[] = $this->MapToUsecaseModel($team);
+            if (in_array($team['naam'], $spelendeTeams)) {
+                $result["spelendeTeams"][] = $this->MapToUsecaseModel($team);
+            } else {
+                $result["overigeTeams"][] = $this->MapToUsecaseModel($team);
+            }
         }
         exit(json_encode($result));
     }
 
+    private function GetSpelendeTeamsForDate($wedstrijden, $date)
+    {
+        $result = [];
+        foreach ($wedstrijden as $wedstrijd) {
+            $timestamp = $wedstrijd['timestamp'];
+            if ($timestamp != null && $timestamp->format('Y-m-d') == $date) {
+                $result[] = ToSkcName($wedstrijd['team1']);
+            }
+        }
+        return $result;
+    }
+
     private function MapToUsecaseModel($team)
     {
-        $naam = $team['team'];
-
         return [
-            "naam" => $naam[0] . substr($naam, 6),
-            "geteld" => $team['geteld'],
+            "naam" => $team['naam'],
             "zaalwacht" => $team['zaalwacht'],
         ];
     }

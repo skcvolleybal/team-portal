@@ -1,31 +1,33 @@
 <?php
 
 include 'IInteractor.php';
-include 'UserGateway.php';
+include 'JoomlaGateway.php';
 include 'NevoboGateway.php';
-include 'IndelingGateway.php';
+include 'TelFluitGateway.php';
+include 'ZaalwachtGateway.php';
 
 class GetMijnOverzichtInteractor implements IInteractor
 {
     public function __construct($database)
     {
-        $this->userGateway = new UserGateway($database);
+        $this->joomlaGateway = new JoomlaGateway($database);
         $this->nevoboGateway = new NevoboGateway();
-        $this->indelingGateway = new IndelingGateway($database);
+        $this->telFluitGateway = new TelFluitGateway($database);
+        $this->zaalwachtGateway = new ZaalwachtGateway($database);
     }
 
     private $nevoboGateway;
 
     public function Execute()
     {
-        $userId = $this->userGateway->GetUserId();
+        $userId = $this->joomlaGateway->GetUserId();
 
         if ($userId === null) {
             UnauthorizedResult();
         }
 
-        $team = $this->userGateway->GetTeam($userId);
-        $coachTeam = $this->userGateway->GetCoachTeam($userId);
+        $team = $this->joomlaGateway->GetTeam($userId);
+        $coachTeam = $this->joomlaGateway->GetCoachTeam($userId);
 
         $overzicht = [];
 
@@ -33,13 +35,13 @@ class GetMijnOverzichtInteractor implements IInteractor
 
         $allUscMatches = RemoveMatchesWithoutData($allUscMatches);
 
-        $zaalwachten = $this->indelingGateway->GetZaalwachtForUserId($userId);
+        $zaalwachten = $this->zaalwachtGateway->GetZaalwachtForUserId($userId);
         foreach ($zaalwachten as $zaalwacht) {
             $overzichtItem = $this->MapFromZaalwacht($zaalwacht, $allUscMatches);
             $this->AddToOverzicht($overzicht, $overzichtItem);
         }
 
-        $telbeurten = $this->indelingGateway->GetTelbeurten($userId);
+        $telbeurten = $this->telFluitGateway->GetTelbeurten($userId);
         foreach ($telbeurten as $telbeurt) {
             $overzichtItem = $this->MapFromMatch($telbeurt, $allUscMatches, $team, $coachTeam, $userId);
             if ($overzichtItem != null) {
@@ -47,7 +49,7 @@ class GetMijnOverzichtInteractor implements IInteractor
             }
         }
 
-        $fluitbeurten = $this->indelingGateway->GetFluitbeurten($userId);
+        $fluitbeurten = $this->telFluitGateway->GetFluitbeurten($userId);
         foreach ($fluitbeurten as $fluitbeurt) {
             $overzichtItem = $this->MapFromMatch($fluitbeurt, $allUscMatches, $team, $coachTeam, $userId);
             if ($overzichtItem != null) {
@@ -73,7 +75,7 @@ class GetMijnOverzichtInteractor implements IInteractor
             }
         }
 
-        $isWebcie = $this->userGateway->IsWebcie($userId);
+        $isWebcie = $this->joomlaGateway->IsWebcie($userId);
 
         echo json_encode(["overzicht" => $overzicht, "isWebcie" => $isWebcie]);
         exit;

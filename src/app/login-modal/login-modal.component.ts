@@ -21,10 +21,18 @@ export class LoginModalComponent implements OnInit {
     this.errorMessage = null;
 
     this.httpClient
-      .post<any>(environment.baseUrl + 'php/interface.php?action=Login', {
-        username: this.username,
-        password: this.password
-      })
+      .post<any>(
+        environment.baseUrl,
+        {
+          username: this.username,
+          password: this.password
+        },
+        {
+          params: {
+            action: 'Login'
+          }
+        }
+      )
       .subscribe(
         () => window.location.reload(),
         error => {

@@ -28,7 +28,12 @@ export class MijnOverzichtComponent implements OnInit {
 
   getMijnOverzicht(): Observable<{ overzicht: any; isWebcie: boolean }> {
     return this.http.get<{ overzicht: any; isWebcie: boolean }>(
-      environment.baseUrl + 'php/interface.php?action=GetMijnOverzicht'
+      environment.baseUrl,
+      {
+        params: {
+          action: 'GetMijnOverzicht'
+        }
+      }
     );
   }
 

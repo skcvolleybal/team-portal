@@ -1,40 +1,42 @@
 <?php
 include 'IInteractor.php';
-include 'UserGateway.php';
+include 'JoomlaGateway.php';
 include 'NevoboGateway.php';
-include 'IndelingGateway.php';
+include 'TelFluitGateway.php';
+include 'ZaalwachtGateway.php';
 
 class GetScheidscoOverzicht implements IInteractor
 {
     private $nevoboGateway;
-    private $userGateway;
+    private $joomlaGateway;
     private $fluitBeschikbaarheidGateway;
-    private $indelingGateway;
-    private $uscCode = 'LDNUN';
+    private $telFluitGateway;
+    private $zaalwachtGateway;
 
     public function __construct($database)
     {
-        $this->userGateway = new UserGateway($database);
-        $this->indelingGateway = new IndelingGateway($database);
+        $this->joomlaGateway = new JoomlaGateway($database);
+        $this->telFluitGateway = new TelFluitGateway($database);
         $this->nevoboGateway = new NevoboGateway();
+        $this->zaalwachtGateway = new ZaalwachtGateway($database);
     }
 
     public function Execute()
     {
-        $userId = $this->userGateway->GetUserId();
+        $userId = $this->joomlaGateway->GetUserId();
         if ($userId == null) {
             UnauthorizedResult();
         }
 
-        if (!$this->userGateway->IsScheidsco($userId)) {
+        if (!$this->joomlaGateway->IsScheidsco($userId)) {
             InternalServerError("Je bent (helaas) geen Scheidsco");
         }
         $overzicht = [];
-        $uscProgramma = $this->nevoboGateway->GetProgrammaForSporthal($this->uscCode);
+        $uscProgramma = $this->nevoboGateway->GetProgrammaForSporthal('LDNUN');
         $uscProgramma = RemoveMatchesWithoutData($uscProgramma);
 
-        $indeling = $this->indelingGateway->GetIndeling();
-        $zaalwachtIndeling = $this->indelingGateway->GetZaalwachtIndeling();
+        $indeling = $this->telFluitGateway->GetIndeling();
+        $zaalwachtIndeling = $this->zaalwachtGateway->GetZaalwachtIndeling();
 
         foreach ($uscProgramma as $wedstrijd) {
             $matchId = $wedstrijd['id'];

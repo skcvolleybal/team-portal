@@ -1,7 +1,7 @@
 <?php
 
 include 'IInteractor.php';
-include 'UserGateway.php';
+include 'JoomlaGateway.php';
 include 'AanwezigheidGateway.php';
 include_once 'NevoboGateway.php';
 
@@ -9,24 +9,24 @@ class GetWedstrijdAanwezigheid implements IInteractor
 {
     public function __construct($database)
     {
-        $this->userGateway = new UserGateway($database);
+        $this->joomlaGateway = new JoomlaGateway($database);
         $this->aanwezigheidGateway = new AanwezigheidGateway($database);
         $this->nevoboGateway = new NevoboGateway();
     }
 
     private $nevoboGateway;
-    private $userGateway;
+    private $joomlaGateway;
     private $aanwezigheidGateway;
 
     public function Execute()
     {
-        $userId = $this->userGateway->GetUserId();
+        $userId = $this->joomlaGateway->GetUserId();
 
         if ($userId === null) {
             UnauthorizedResult();
         }
 
-        $team = $this->userGateway->GetTeam($userId);
+        $team = $this->joomlaGateway->GetTeam($userId);
         $aanwezigheden = $this->aanwezigheidGateway->GetAanwezigheden($userId);
         $wedstrijden = $this->nevoboGateway->GetProgrammaForTeam($team);
 

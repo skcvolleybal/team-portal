@@ -1,4 +1,4 @@
-<div class="mx-auto" style="width: 200px; padding: 10px;">
+<!-- <div class="mx-auto" style="width: 200px; padding: 10px;">
   <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" [(ngModel)]="scheidsrechterType" (change)="onChange()">
     <label ngbButtonLabel class="btn-primary">
       <input ngbButton type="radio" value="naam"> Naam
@@ -10,28 +10,30 @@
       <input ngbButton type="radio" value="team"> Team
     </label>
   </div>
-</div>
+</div> -->
 
 <table class="table" *ngFor="let speeldag of speeldagen">
   <thead>
     <tr>
-      <th scope="col" colspan="2">
-        <div class="form-row">
-          <div class="col col-form-label" style="max-width: 140px;">
+      <th colspan="2">
+        <div class="row">
+          <div class="col-auto mr-auto" style="line-height: 38px;">
             {{speeldag.datum}}
           </div>
-
-          <div class="input-group col">
-            <div class="input-group-prepend">
-              <label class="input-group-text">
-                Zaalwacht
-              </label>
+          <div class="col-auto">
+            <div class="input-group col col-md-auto">
+              <div class="input-group-prepend">
+                <label class="input-group-text">
+                  <fa-icon [icon]="zaalwacht"></fa-icon>
+                </label>
+              </div>
+              <div class="input-group-append">
+                <button class="btn" (click)="SelecteerZaalwacht(speeldag.datum, speeldag.date)" [ngClass]="{'btn-danger': speeldag.zaalwacht === null, 'btn-success': speeldag.zaalwacht}"
+                  type="button">
+                  {{speeldag.zaalwacht === null ? "..." : speeldag.zaalwacht}}
+                </button>
+              </div>
             </div>
-            <select class="custom-select" [ngModel]="speeldag.zaalwacht" (ngModelChange)="UpdateZaalwacht(speeldag.date, $event)"
-              [ngClass]="{'is-invalid': !speeldag.zaalwacht, 'is-valid': speeldag.zaalwacht}">
-              <option></option>
-              <option *ngFor="let team of teams" [value]="team.naam">{{team.naam + " (" + team.zaalwacht + ")"}}</option>
-            </select>
           </div>
         </div>
       </th>
@@ -39,48 +41,43 @@
   </thead>
   <tbody>
     <tr *ngFor="let speeltijd of speeldag.speeltijden">
-      <td>
-        <div class="col-form-label">{{speeltijd.tijd}}</div>
+      <td class="align-middle">
+        {{speeltijd.tijd}}
         <ul class="list-group">
           <li class="list-group-item" *ngFor="let wedstrijd of speeltijd.wedstrijden">
             <h5 class="card-title">{{wedstrijd.teams}}</h5>
-            <div class="form-row">
-              <div class="col">
-                <div class="input-group">
-                  <div class="input-group-prepend">
-                    <label class="input-group-text">
-                      <fa-icon [icon]="scheidsrechterIcon"></fa-icon>
-                    </label>
-                  </div>
-                  <select [ngModel]="wedstrijd.scheidsrechter" (ngModelChange)="UpdateWedstrijd(wedstrijd.id, $event, wedstrijd.telteam)"
-                    class="form-control" [ngClass]="{'is-invalid': !wedstrijd.scheidsrechter, 'is-valid': wedstrijd.scheidsrechter}">
-                    <option></option>
-                    <optgroup *ngFor="let group of scheidsrechtersGroepen" [label]="group.name">
-                      <option *ngFor="let scheidsrechter of group.scheidsrechters" [value]="scheidsrechter.naam">
-                        {{scheidsrechter.naam + " (" + scheidsrechter.gefloten + ")"}}
-                      </option>
-                    </optgroup>
-                  </select>
-                </div>
-              </div>
 
-              <div class="col">
-                <div class="input-group">
-                  <div class="input-group-prepend">
-                    <label class="input-group-text">
-                      <fa-icon [icon]="teamIcon"></fa-icon>
-                    </label>
-                  </div>
-                  <select [ngModel]="wedstrijd.telteam" (ngModelChange)="UpdateWedstrijd(wedstrijd.id, wedstrijd.scheidsrechter, $event)"
-                    class="form-control" [ngClass]="{'is-invalid': !wedstrijd.telteam, 'is-valid': wedstrijd.telteam}">
-                    <option></option>
-                    <option *ngFor="let team of teams" [value]="team.naam">
-                      {{team.naam + " (" + team.geteld + ")"}}
-                    </option>
-                  </select>
+            <div class="row m-1">
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <label class="input-group-text">
+                    <fa-icon [icon]="scheidsrechterIcon"></fa-icon>
+                  </label>
+                </div>
+                <div class="input-group-append">
+                  <button class="btn" (click)="SelecteerScheidsrechter(wedstrijd, speeltijd.tijd)" [ngClass]="{'btn-danger': wedstrijd.scheidsrechter === null, 'btn-success': wedstrijd.scheidsrechter}"
+                    type="button">
+                    {{wedstrijd.scheidsrechter === null ? "Kiezen..." : wedstrijd.scheidsrechter}}
+                  </button>
                 </div>
               </div>
             </div>
+            <div class="row m-1">
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <label class="input-group-text">
+                    <fa-icon [icon]="teamIcon"></fa-icon>
+                  </label>
+                </div>
+                <div class="input-group-append">
+                  <button class="btn" (click)="SelecteerTellers(wedstrijd, speeltijd.tijd)" [ngClass]="{'btn-primary': wedstrijd.telteam === null, 'btn-success': wedstrijd.telteam}"
+                    type="button">
+                    {{wedstrijd.telteam === null ? "..." : wedstrijd.telteam}}
+                  </button>
+                </div>
+              </div>
+            </div>
+
           </li>
         </ul>
       </td>

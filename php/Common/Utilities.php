@@ -1,5 +1,12 @@
 <?php
 
+function IsDateValid($date, $format = 'Y-m-d')
+{
+    $d = DateTime::createFromFormat($format, $date);
+    // The Y ( 4 digits year ) returns TRUE for any integer with any number of digits so changing the comparison from == to === fixes the issue.
+    return $d && $d->format($format) === $date;
+}
+
 function GetPostValues()
 {
     $postData = file_get_contents("php://input");
@@ -24,23 +31,20 @@ function InternalServerError($message)
 
 function GetShortTeam($naam)
 {
+    if ($naam == null) {
+        return null;
+    }
     return $naam[0] . substr($naam, 6);
 }
 
-function GetSkcTeam($team)
+function ToSkcName($team)
 {
     return ($team[4] == 'D' ? "Dames " : "Heren ") . substr($team, 7);
 }
 
-function ConvertToNevoboName($teamnaam)
+function ToNevoboName($teamnaam)
 {
-    if (substr($teamnaam, 0, 6) == "Dames ") {
-        return "SKC DS " . substr($teamnaam, 6);
-    } else if (substr($teamnaam, 0, 6) == "Heren ") {
-        return "SKC HS " . substr($teamnaam, 6);
-    }
-
-    throw new Exception("unknown team: " . $teamnaam);
+    return substr($teamnaam, 0, 6) == "Dames " ? "SKC DS " . substr($teamnaam, 6) : "SKC HS " . substr($teamnaam, 6);
 }
 
 function RemoveMatchesWithoutData($array)

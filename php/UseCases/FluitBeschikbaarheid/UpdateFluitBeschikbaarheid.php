@@ -1,6 +1,6 @@
 <?php
 include 'IInteractorWithData.php';
-include 'UserGateway.php';
+include 'JoomlaGateway.php';
 include 'FluitBeschikbaarheidGateway.php';
 
 class UpdateFluitBeschikbaarheid implements IInteractorWithData
@@ -10,17 +10,17 @@ class UpdateFluitBeschikbaarheid implements IInteractorWithData
     public function __construct($database)
     {
         $this->fluitBeschikbaarheidGateway = new FluitBeschikbaarheid($database);
-        $this->userGateway = new UserGateway($database);
+        $this->joomlaGateway = new JoomlaGateway($database);
     }
 
     public function Execute($data)
     {
-        $userId = $this->userGateway->GetUserId();
+        $userId = $this->joomlaGateway->GetUserId();
         if ($userId === null) {
             UnauthorizedResult();
         }
 
-        if (!$this->userGateway->IsScheidsrechter($userId)) {
+        if (!$this->joomlaGateway->IsScheidsrechter($userId)) {
             InternalServerError("Je bent (helaas) geen scheidsrechter");
         }
 

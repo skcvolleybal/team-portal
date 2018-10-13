@@ -1,19 +1,19 @@
 <?php
 include 'IInteractorWithData.php';
-include 'UserGateway.php';
+include 'JoomlaGateway.php';
 
 class GetUsers implements IInteractorWithData
 {
 
     public function __construct($database)
     {
-        $this->userGateway = new UserGateway($database);
+        $this->joomlaGateway = new JoomlaGateway($database);
     }
 
     public function Execute($data)
     {
-        $userId = $this->userGateway->GetUserId(false);
-        $isWebcie = $this->userGateway->IsWebcie($userId);
+        $userId = $this->joomlaGateway->GetUserId(false);
+        $isWebcie = $this->joomlaGateway->IsWebcie($userId);
         if ($isWebcie === false) {
             InternalServerError("Je bent geen webcie");
         }
@@ -22,7 +22,7 @@ class GetUsers implements IInteractorWithData
         $result = [];
 
         if ($name != null && 3 <= strlen($name)) {
-            $users = $this->userGateway->GetUsersWithName($name);
+            $users = $this->joomlaGateway->GetUsersWithName($name);
             foreach ($users as $user) {
                 $result[] = [
                     "naam" => $user['name'],

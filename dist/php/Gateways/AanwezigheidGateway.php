@@ -42,7 +42,7 @@ class AanwezigheidGateway
     public function GetAanwezighedenForTeam($team)
     {
         $wedstrijden = $this->nevoboGateway->GetProgrammaForTeam($team);
-        $skcTeam = GetSkcTeam($team);
+        $skcTeam = ToSkcName($team);
         $matchList = "";
         foreach ($wedstrijden as $wedstrijd) {
             $matchId = $wedstrijd['id'];

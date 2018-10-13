@@ -1,7 +1,7 @@
 <?php
 
 include 'IInteractorWithData.php';
-include 'UserGateway.php';
+include 'JoomlaGateway.php';
 include 'NevoboGateway.php';
 include 'AanwezigheidGateway.php';
 
@@ -9,7 +9,7 @@ class UpdateAanwezigheid implements IInteractorWithData
 {
     public function __construct($database)
     {
-        $this->userGateway = new UserGateway($database);
+        $this->joomlaGateway = new JoomlaGateway($database);
         $this->aanwezigheidGateway = new AanwezigheidGateway($database);
     }
 
@@ -17,7 +17,7 @@ class UpdateAanwezigheid implements IInteractorWithData
 
     public function Execute($data)
     {
-        $userId = $this->userGateway->GetUserId();
+        $userId = $this->joomlaGateway->GetUserId();
 
         if ($userId === null) {
             UnauthorizedResult();

@@ -1,7 +1,7 @@
 <?php
 
 include 'IInteractor.php';
-include 'UserGateway.php';
+include 'JoomlaGateway.php';
 include 'NevoboGateway.php';
 include 'AanwezigheidGateway.php';
 include_once 'Utilities.php';
@@ -10,27 +10,27 @@ class GetWedstrijdOverzicht implements IInteractor
 {
     public function __construct($database)
     {
-        $this->userGateway = new UserGateway($database);
+        $this->joomlaGateway = new JoomlaGateway($database);
         $this->aanwezigheidGateway = new AanwezigheidGateway($database);
         $this->nevoboGateway = new NevoboGateway();
     }
 
     private $aanwezigheidGateway;
-    private $userGateway;
+    private $joomlaGateway;
     private $nevoboGateway;
     private $invalTeams;
 
     public function Execute()
     {
-        $userId = $this->userGateway->GetUserId();
+        $userId = $this->joomlaGateway->GetUserId();
 
         if ($userId === null) {
             UnauthorizedResult();
         }
 
         $overzicht = [];
-        $team = $this->userGateway->GetTeam($userId);
-        $spelers = $this->userGateway->GetSpelers($team);
+        $team = $this->joomlaGateway->GetTeam($userId);
+        $spelers = $this->joomlaGateway->GetSpelers($team);
         $aanwezigheden = $this->aanwezigheidGateway->GetAanwezighedenForTeam($team);
         $wedstrijden = $this->nevoboGateway->GetProgrammaForTeam($team);
         $aanwezigheidPerWedstrijd = $this->GetAanwezighedenPerWedstrijd($aanwezigheden);
@@ -80,7 +80,7 @@ class GetWedstrijdOverzicht implements IInteractor
             }
 
             $invalTeams[] = [
-                "naam" => GetSkcTeam($nevobonaam),
+                "naam" => ToSkcName($nevobonaam),
                 "wedstrijd" => $invalTeamWedstrijd,
                 "isMogelijk" => IsMogelijk($wedstrijd, $invalTeamWedstrijd),
                 "spelers" => $this->invalTeams[$nevobonaam]['spelers'],
@@ -126,8 +126,8 @@ class GetWedstrijdOverzicht implements IInteractor
             $teamnaam = substr($team, 0, 7) . $sequence;
             if ($team != $teamnaam) {
                 $this->invalTeams[$teamnaam] = [
-                    "naam" => GetSkcTeam($teamnaam),
-                    "spelers" => $this->userGateway->GetSpelers($teamnaam),
+                    "naam" => ToSkcName($teamnaam),
+                    "spelers" => $this->joomlaGateway->GetSpelers($teamnaam),
                 ];
             }
 

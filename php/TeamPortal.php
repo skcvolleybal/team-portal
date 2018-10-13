@@ -112,28 +112,46 @@ class TeamPortal
     {
         include 'UseCases' . DIRECTORY_SEPARATOR . 'Scheidsco' . DIRECTORY_SEPARATOR . 'GetScheidsrechters.php';
         $interactor = new GetScheidsrechters($this->database);
-        $interactor->Execute();
+        $postData = GetPostValues();
+        $interactor->Execute($postData);
+    }
+
+    public function GetTelTeams()
+    {
+        include 'UseCases' . DIRECTORY_SEPARATOR . 'Scheidsco' . DIRECTORY_SEPARATOR . 'GetTelTeams.php';
+        $interactor = new GetTelTeams($this->database);
+        $postData = GetPostValues();
+        $interactor->Execute($postData);
     }
 
     public function GetZaalwachtTeams()
     {
         include 'UseCases' . DIRECTORY_SEPARATOR . 'Scheidsco' . DIRECTORY_SEPARATOR . 'GetZaalwachtTeams.php';
         $interactor = new GetZaalwachtTeams($this->database);
-        $interactor->Execute();
-    }
-
-    public function UpdateScheidscoWedstrijd()
-    {
-        include 'UseCases' . DIRECTORY_SEPARATOR . 'Scheidsco' . DIRECTORY_SEPARATOR . 'UpdateScheidscoWedstrijd.php';
-        $interactor = new UpdateScheidscoWedstrijd($this->database);
         $postData = GetPostValues();
         $interactor->Execute($postData);
     }
 
-    public function UpdateScheidscoZaalwacht()
+    public function UpdateScheidsrechter()
     {
-        include 'UseCases' . DIRECTORY_SEPARATOR . 'Scheidsco' . DIRECTORY_SEPARATOR . 'UpdateScheidscoZaalwacht.php';
-        $interactor = new UpdateScheidscoZaalwacht($this->database);
+        include 'UseCases' . DIRECTORY_SEPARATOR . 'Scheidsco' . DIRECTORY_SEPARATOR . 'UpdateScheidsrechter.php';
+        $interactor = new UpdateScheidsrechter($this->database);
+        $postData = GetPostValues();
+        $interactor->Execute($postData);
+    }
+
+    public function UpdateTellers()
+    {
+        include 'UseCases' . DIRECTORY_SEPARATOR . 'Scheidsco' . DIRECTORY_SEPARATOR . 'UpdateTellers.php';
+        $interactor = new UpdateTellers($this->database);
+        $postData = GetPostValues();
+        $interactor->Execute($postData);
+    }
+
+    public function UpdateZaalwacht()
+    {
+        include 'UseCases' . DIRECTORY_SEPARATOR . 'Scheidsco' . DIRECTORY_SEPARATOR . 'UpdateZaalwacht.php';
+        $interactor = new UpdateZaalwacht($this->database);
         $postData = GetPostValues();
         $interactor->Execute($postData);
     }

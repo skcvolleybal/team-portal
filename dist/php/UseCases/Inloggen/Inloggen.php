@@ -1,16 +1,16 @@
 <?php
 
 include 'IInteractorWithData.php';
-include 'UserGateway.php';
+include 'JoomlaGateway.php';
 
 class Inloggen implements IInteractorWithData
 {
     public function __construct($database)
     {
-        $this->userGateway = new UserGateway($database);
+        $this->joomlaGateway = new JoomlaGateway($database);
     }
 
-    private $userGateway;
+    private $joomlaGateway;
 
     public function Execute($data)
     {
@@ -21,7 +21,7 @@ class Inloggen implements IInteractorWithData
             InternalServerError("Vul alle gegevens in");
         }
 
-        if ($this->userGateway->Login($username, $password)) {
+        if ($this->joomlaGateway->Login($username, $password)) {
             exit();
         } else {
             InternalServerError("Gebruikersnaam/wachtwoord combinatie klopt niet");
