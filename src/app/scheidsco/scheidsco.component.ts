@@ -71,14 +71,15 @@ export class ScheidscoComponent implements OnInit {
     this.modalService
       .open(component)
       .result.then(team => {
-        if (team) {
-          this.speeldagen.forEach(speeldag => {
-            if (speeldag.date === date) {
-              speeldag.zaalwacht = `${team[0]}${team.substring(6)}`;
-              return;
-            }
-          });
-        }
+        this.speeldagen.forEach(speeldag => {
+          if (speeldag.date === date) {
+            speeldag.zaalwacht =
+              team == null
+                ? null
+                : (speeldag.zaalwacht = `${team[0]}${team.substring(6)}`);
+            return;
+          }
+        });
       })
       .catch(() => {});
   }
@@ -90,17 +91,15 @@ export class ScheidscoComponent implements OnInit {
     this.modalService
       .open(component)
       .result.then(tellers => {
-        if (tellers) {
-          this.speeldagen.forEach(speeldag => {
-            speeldag.speeltijden.forEach(speeltijd => {
-              speeltijd.wedstrijden.forEach(wedstrijd => {
-                if (wedstrijd.id === geselecteerdeWedstrijd.id) {
-                  wedstrijd.telteam = `${tellers[0]}${tellers.substring(6)}`;
-                }
-              });
+        this.speeldagen.forEach(speeldag => {
+          speeldag.speeltijden.forEach(speeltijd => {
+            speeltijd.wedstrijden.forEach(wedstrijd => {
+              if (wedstrijd.id === geselecteerdeWedstrijd.id) {
+                wedstrijd.tellers = tellers;
+              }
             });
           });
-        }
+        });
       })
       .catch(() => {});
   }
@@ -112,18 +111,16 @@ export class ScheidscoComponent implements OnInit {
     this.modalService
       .open(component)
       .result.then(scheidsrechter => {
-        if (scheidsrechter) {
-          this.speeldagen.forEach(speeldag => {
-            speeldag.speeltijden.forEach(speeltijd => {
-              speeltijd.wedstrijden.forEach(wedstrijd => {
-                if (wedstrijd.id === geselecteerdeWedstrijd.id) {
-                  wedstrijd.scheidsrechter = scheidsrechter;
-                  return;
-                }
-              });
+        this.speeldagen.forEach(speeldag => {
+          speeldag.speeltijden.forEach(speeltijd => {
+            speeltijd.wedstrijden.forEach(wedstrijd => {
+              if (wedstrijd.id === geselecteerdeWedstrijd.id) {
+                wedstrijd.scheidsrechter = scheidsrechter;
+                return;
+              }
             });
           });
-        }
+        });
       })
       .catch(() => {});
   }

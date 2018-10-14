@@ -46,7 +46,6 @@
         <ul class="list-group">
           <li class="list-group-item" *ngFor="let wedstrijd of speeltijd.wedstrijden">
             <h5 class="card-title">{{wedstrijd.teams}}</h5>
-
             <div class="row m-1">
               <div class="input-group">
                 <div class="input-group-prepend">
@@ -70,14 +69,13 @@
                   </label>
                 </div>
                 <div class="input-group-append">
-                  <button class="btn" (click)="SelecteerTellers(wedstrijd, speeltijd.tijd)" [ngClass]="{'btn-primary': wedstrijd.telteam === null, 'btn-success': wedstrijd.telteam}"
+                  <button class="btn" (click)="SelecteerTellers(wedstrijd, speeltijd.tijd)" [ngClass]="{'btn-danger': wedstrijd.tellers === null, 'btn-success': wedstrijd.tellers}"
                     type="button">
-                    {{wedstrijd.telteam === null ? "..." : wedstrijd.telteam}}
+                    {{wedstrijd.tellers === null ? "Kiezen..." : wedstrijd.tellers}}
                   </button>
                 </div>
               </div>
             </div>
-
           </li>
         </ul>
       </td>

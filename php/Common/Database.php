@@ -1,16 +1,24 @@
 <?php
 
 include_once 'Param.php';
+include_once 'JoomlaGateway.php';
 
 class Database
 {
     private $dbc;
+
+    public function __construct()
+    {
+        $this->joomlaGateway = new JoomlaGateway($this);
+    }
 
     private function getDbConnection()
     {
         if ($this->dbc != null) {
             return $this->dbc;
         }
+
+        $this->joomlaGateway->InitJoomla();
 
         $config = JFactory::getConfig();
         $host = $config->get('host');

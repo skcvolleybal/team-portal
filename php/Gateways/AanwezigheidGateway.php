@@ -14,7 +14,11 @@ class AanwezigheidGateway
 
     public function GetAanwezigheden($userId)
     {
-        $query = "SELECT *
+        $query = "SELECT 
+                    id,
+                    match_id as matchId,
+                    user_id as userId,
+                    aanwezigheid
                   FROM TeamPortal_aanwezigheden
                   WHERE user_id = :userId";
         $params = [new Param(":userId", $userId, PDO::PARAM_INT)];

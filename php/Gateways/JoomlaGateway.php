@@ -66,7 +66,7 @@ class JoomlaGateway
         return $teams[0];
     }
 
-    private function DoesUserIdExist($userId)
+    public function DoesUserIdExist($userId)
     {
         $query = "SELECT id FROM J3_users WHERE id = :userId";
         $params = [new Param(":userId", $userId, PDO::PARAM_INT)];
@@ -145,7 +145,7 @@ class JoomlaGateway
         $query = "SELECT G.title as naam
                   FROM J3_usergroups G
                   INNER JOIN J3_user_usergroup_map M on G.id = M.group_id
-                  WHERE M.user_id = :userId and (G.title like 'Coach Dames %' or G.title like 'Coach Herem %')";
+                  WHERE M.user_id = :userId and (G.title like 'Coach Dames %' or G.title like 'Coach Heren %')";
         $params = [new Param(":userId", $userId, PDO::PARAM_INT)];
 
         $team = $this->database->Execute($query, $params);
@@ -157,7 +157,7 @@ class JoomlaGateway
         return ToNevoboName($coachTeam);
     }
 
-    private function InitJoomla()
+    public function InitJoomla()
     {
         if (!defined('_JEXEC')) {
             define('_JEXEC', 1);

@@ -1,0 +1,20 @@
+<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
+<html>
+<body>
+Beste {{naam}},<br>
+<br>
+Aanstaande {{datum}} moet jouw team een wedstrijd tellen om {{tijd}}.<br>
+Jullie zullen de wedstrijd {{teams}} gaan tellen.<br>
+<br>
+Je kunt jouw eigen telschema importeren met deze <a target="_blank" href="https://www.google.com/calendar/render?cid=https://www.skcvolleybal.nl/team-portal/php/interface.php?action=GetCalendar&userid={{userId}}&tellen=true">google calendar link</a>.<br>
+<br>
+Als je dit importeert worden alle wedstrijden automatisch in je google calendar gezet en ben je in 1 keer van al jouw wedstrijden op de hoogte.<br>
+(het kan even duren voordat je agenda wordt gesynchroniseerd...)<br>
+<br>
+Met vriendelijke groet,<br>
+<br>
+{{afzender}}<br>
+<br>
+(Dit is een automatisch gegenereerd bericht)
+</body>
+</html>

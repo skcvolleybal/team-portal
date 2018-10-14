@@ -1,7 +1,7 @@
 <?php
-include 'IInteractorWithData.php';
-include 'TelFluitGateway.php';
-include 'JoomlaGateway.php';
+include_once 'IInteractorWithData.php';
+include_once 'TelFluitGateway.php';
+include_once 'JoomlaGateway.php';
 
 class UpdateTellers implements IInteractorWithData
 {
@@ -40,11 +40,13 @@ class UpdateTellers implements IInteractorWithData
             }
         } else {
             if ($team == null) {
-                if ($wedstrijd['scheidsrechter_id'] == null) {
+                if ($wedstrijd['scheidsrechterId'] == null) {
                     $this->telFluitGateway->Delete($matchId);
+                } else {
+                    $this->telFluitGateway->Update($matchId, $wedstrijd['scheidsrechterId'], null);
                 }
             } else {
-                $this->telFluitGateway->Update($matchId, $wedstrijd['scheidsrechter_id'], $team['id']);
+                $this->telFluitGateway->Update($matchId, $wedstrijd['scheidsrechterId'], $team['id']);
             }
         }
 

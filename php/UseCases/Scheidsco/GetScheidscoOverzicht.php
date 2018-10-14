@@ -1,9 +1,9 @@
 <?php
-include 'IInteractor.php';
-include 'JoomlaGateway.php';
-include 'NevoboGateway.php';
-include 'TelFluitGateway.php';
-include 'ZaalwachtGateway.php';
+include_once 'IInteractor.php';
+include_once 'JoomlaGateway.php';
+include_once 'NevoboGateway.php';
+include_once 'TelFluitGateway.php';
+include_once 'ZaalwachtGateway.php';
 
 class GetScheidscoOverzicht implements IInteractor
 {
@@ -40,7 +40,7 @@ class GetScheidscoOverzicht implements IInteractor
 
         foreach ($uscProgramma as $wedstrijd) {
             $matchId = $wedstrijd['id'];
-            $datum = $wedstrijd['timestamp']->format('j F Y');
+            $datum = GetDutchDate($wedstrijd['timestamp']);
             $date = $wedstrijd['timestamp']->format('Y-m-d');
             $tijd = $wedstrijd['timestamp']->format('G:i');
             $time = $wedstrijd['timestamp']->format('G:i:s');
@@ -71,12 +71,12 @@ class GetScheidscoOverzicht implements IInteractor
                 "id" => $matchId,
                 "teams" => $team1 . " - " . $team2,
                 "scheidsrechter" => null,
-                "telteam" => null,
+                "tellers" => null,
             ];
 
             $wedstrijdIndeling = $this->GetWedstrijdIndeling($matchId, $indeling);
             if ($wedstrijdIndeling != null) {
-                $newWedstrijd['telteam'] = GetShortTeam($wedstrijdIndeling['telteam']);
+                $newWedstrijd['tellers'] = $wedstrijdIndeling['tellers'];
                 $newWedstrijd['scheidsrechter'] = $wedstrijdIndeling['scheidsrechter'];
             }
 
@@ -119,7 +119,7 @@ class GetScheidscoOverzicht implements IInteractor
     private function GetWedstrijdIndeling($matchId, $indeling)
     {
         foreach ($indeling as $indelingItem) {
-            if ($indelingItem['match_id'] == $matchId) {
+            if ($indelingItem['matchId'] == $matchId) {
                 return $indelingItem;
             }
         }

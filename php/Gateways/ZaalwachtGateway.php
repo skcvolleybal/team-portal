@@ -22,7 +22,9 @@ class ZaalwachtGateway
 
     public function GetZaalwachtTeams()
     {
-        $query = "SELECT G.title as naam, count(Z.id) as zaalwacht
+        $query = "SELECT
+                    G.title as naam,
+                    count(Z.id) as zaalwacht
                   FROM J3_usergroups G
                   LEFT JOIN TeamPortal_zaalwacht Z ON Z.team_id = G.id
                   WHERE G.id in (
@@ -35,9 +37,27 @@ class ZaalwachtGateway
         return $this->database->Execute($query);
     }
 
+    public function GetZaalwachtersWithinPeriod($dagen)
+    {
+        $query = "SELECT
+                    Z.date,
+                    U.name as naam,
+                    U.email,
+                    G.title as zaalwacht
+                  FROM TeamPortal_zaalwacht Z
+                  INNER JOIN J3_user_usergroup_map M ON Z.team_id = M.group_id
+                  INNER JOIN J3_usergroups G ON M.group_id = G.id
+                  INNER JOIN J3_users U ON M.user_id = U.id
+                  WHERE date between CURRENT_DATE() AND DATE_ADD(CURRENT_DATE(), INTERVAL :dagen DAY)";
+        $params = [new Param(":dagen", $dagen, PDO::PARAM_INT)];
+        return $this->database->Execute($query, $params);
+    }
+
     public function GetZaalwachtIndeling()
     {
-        $query = "SELECT Z.date, G.title as team
+        $query = "SELECT
+                    Z.date,
+                    G.title as team
                   FROM TeamPortal_zaalwacht Z
                   INNER JOIN J3_usergroups G ON Z.team_id = G.id";
         return $this->database->Execute($query);
@@ -45,7 +65,11 @@ class ZaalwachtGateway
 
     public function GetZaalwacht($date)
     {
-        $query = "SELECT * FROM TeamPortal_zaalwacht WHERE date = :date";
+        $query = "SELECT
+                    id,
+                    date,
+                    team_id as teamId
+                  FROM TeamPortal_zaalwacht WHERE date = :date";
         $params = [new Param(":date", $date, PDO::PARAM_STR)];
         $zaalwachten = $this->database->Execute($query, $params);
         if (count($zaalwachten) == 0) {

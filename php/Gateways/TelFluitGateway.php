@@ -10,7 +10,11 @@ class TelFluitGateway
     }
     public function GetFluitbeurten($userId)
     {
-        $query = "SELECT W.*, G.title as telteam, U.name as scheidsrechter
+        $query = "SELECT
+                    W.match_id as matchId,
+                    W.scheidsrechter_id as scheidsrechterId,
+                    G.title as tellers,
+                    U.name as scheidsrechter
                   FROM TeamPortal_wedstrijden W
                   LEFT JOIN J3_usergroups G on W.telteam_id = G.id
                   LEFT JOIN J3_users U on U.id = W.scheidsrechter_id
@@ -18,14 +22,18 @@ class TelFluitGateway
         $params = [new Param(":userId", $userId, PDO::PARAM_INT)];
         $result = $this->database->Execute($query, $params);
         foreach ($result as &$row) {
-            $row['telteam'] = ToNevoboName($row['telteam']);
+            $row['tellers'] = ToNevoboName($row['tellers']);
         }
         return $result;
     }
 
     public function GetTelbeurten($userId)
     {
-        $query = "SELECT W.*, G.title as telteam, U.name as scheidsrechter
+        $query = "SELECT
+                    W.match_id as matchId,
+                    W.scheidsrechter_id as scheidsrechterId,
+                    G.title as tellers,
+                    U.name as scheidsrechter
                   FROM TeamPortal_wedstrijden W
                   LEFT JOIN J3_usergroups G on W.telteam_id = G.id
                   INNER JOIN J3_user_usergroup_map M on W.telteam_id = M.group_id
@@ -34,7 +42,7 @@ class TelFluitGateway
         $params = [new Param(":userId", $userId, PDO::PARAM_INT)];
         $result = $this->database->Execute($query, $params);
         foreach ($result as &$row) {
-            $row['telteam'] = ToNevoboName($row['telteam']);
+            $row['tellers'] = ToNevoboName($row['tellers']);
         }
         return $result;
     }
@@ -42,9 +50,9 @@ class TelFluitGateway
     public function GetIndeling()
     {
         $query = "SELECT
-                    W.match_id,
+                    W.match_id as matchId,
                     U.name as scheidsrechter,
-                    G.title as telteam
+                    G.title as tellers
                   FROM TeamPortal_wedstrijden W
                   LEFT JOIN J3_users U on W.scheidsrechter_id = U.id
                   LEFT JOIN J3_usergroups G on W.telteam_id = G.id";
@@ -75,9 +83,67 @@ class TelFluitGateway
         return $this->database->Execute($query);
     }
 
+    public function GetTellersForWedstrijdenWithMatchId($matchIds)
+    {
+        $matchQuery = $this->GetSaveMatchQuery($matchIds);
+
+        $query = "SELECT
+                    W.match_id as matchId,
+                    U.id as userId,
+                    U.name as naam,
+                    U.email,
+                    G.title as tellers
+                  FROM TeamPortal_wedstrijden W
+                  INNER JOIN ($matchQuery) matchIds ON matchIds.id = W.match_id
+                  INNER JOIN J3_user_usergroup_map M ON M.group_id = W.telteam_id
+                  INNER JOIN J3_usergroups G ON G.id = M.group_id
+                  INNER JOIN J3_users U ON M.user_id = U.id";
+        $params = [];
+        $counter = 0;
+        foreach ($matchIds as $matchId) {
+            $params[] = new Param(":matchId" . $counter++, $matchId, PDO::PARAM_STR);
+        }
+        return $this->database->Execute($query, $params);
+    }
+
+    public function GetScheidsrechtersForWedstrijdenWithMatchId($matchIds)
+    {
+        $matchQuery = $this->GetSaveMatchQuery($matchIds);
+
+        $query = "SELECT
+                    W.match_id as matchId,
+                    U.id as userId,
+                    U.name as naam,
+                    U.email
+                  FROM TeamPortal_wedstrijden W
+                  INNER JOIN ($matchQuery) matchIds ON matchIds.id = W.match_id
+                  INNER JOIN J3_users U ON w.scheidsrechter_id = U.id";
+        $params = [];
+        $counter = 0;
+        foreach ($matchIds as $matchId) {
+            $params[] = new Param(":matchId" . $counter++, $matchId, PDO::PARAM_STR);
+        }
+        return $this->database->Execute($query, $params);
+    }
+
+    private function GetSaveMatchQuery($matchIds)
+    {
+        $matchList = "";
+        $counter = 0;
+        foreach ($matchIds as $matchId) {
+            $matchList .= " UNION SELECT :matchId" . $counter++ . " as id";
+            $ids[] = $matchId;
+        }
+        return addslashes(substr($matchList, 7));
+    }
+
     public function GetWedstrijd($matchId)
     {
-        $query = "SELECT * FROM TeamPortal_wedstrijden WHERE match_id = :matchId";
+        $query = "SELECT
+                    match_id as matchId,
+                    scheidsrechter_id as scheidsrechterId,
+                    telteam_id as telteamId
+                   FROM TeamPortal_wedstrijden WHERE match_id = :matchId";
         $params = [
             new Param(":matchId", $matchId, PDO::PARAM_STR),
         ];
@@ -90,7 +156,9 @@ class TelFluitGateway
 
     public function GetTelTeams()
     {
-        $query = "SELECT G.title as naam, count(W.telteam_id) as geteld
+        $query = "SELECT
+                    G.title as naam,
+                    count(W.telteam_id) as geteld
                   FROM J3_usergroups G
                   LEFT JOIN TeamPortal_wedstrijden W ON W.telteam_id = G.id
                   WHERE G.id in (
