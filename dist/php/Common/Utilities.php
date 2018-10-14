@@ -1,4 +1,5 @@
 <?php
+setlocale(LC_ALL, 'nl_NL');
 
 function IsDateValid($date, $format = 'Y-m-d')
 {
@@ -17,6 +18,20 @@ function GetPostValues()
     return json_decode($postData);
 }
 
+function GetDutchDate($datetime)
+{
+    if ($datetime != null) {
+        return strftime("%e %B %Y", $datetime->getTimestamp());
+    }
+}
+
+function GetDutchDateLong($datetime)
+{
+    if ($datetime != null) {
+        return strftime("%A %e %B %Y", $datetime->getTimestamp());
+    }
+}
+
 function UnauthorizedResult()
 {
     header("HTTP/1.1 401 Unauthorized");
@@ -29,12 +44,32 @@ function InternalServerError($message)
     exit($message);
 }
 
+function GetQueryStringParamater($name)
+{
+    $queryString = $_SERVER['QUERY_STRING'];
+    if (empty($queryString)) {
+        return null;
+    }
+
+    parse_str($queryString, $parsedQueryString);
+    if (isset($parsedQueryString[$name])) {
+        return $parsedQueryString[$name];
+    }
+
+    return null;
+}
+
 function GetShortTeam($naam)
 {
     if ($naam == null) {
         return null;
     }
-    return $naam[0] . substr($naam, 6);
+    if (substr($naam, 0, 4) == "SKC ") {
+        return $naam[4] . substr($naam, 7);
+    } else {
+        return $naam[0] . substr($naam, 6);
+    }
+
 }
 
 function ToSkcName($team)

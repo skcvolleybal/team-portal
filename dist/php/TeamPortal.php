@@ -1,7 +1,7 @@
 <?php
 
-include 'Database.php';
-include 'Utilities.php';
+include_once 'Database.php';
+include_once 'Utilities.php';
 
 class TeamPortal
 {
@@ -44,14 +44,14 @@ class TeamPortal
 
     public function IsWebcie()
     {
-        include 'UseCases' . DIRECTORY_SEPARATOR . 'Webcie' . DIRECTORY_SEPARATOR . 'IsWebcie.php';
+        include_once 'UseCases' . DIRECTORY_SEPARATOR . 'Webcie' . DIRECTORY_SEPARATOR . 'IsWebcie.php';
         $interactor = new IsWebcie($this->database);
         $interactor->Execute();
     }
 
     public function GetUsers()
     {
-        include 'UseCases' . DIRECTORY_SEPARATOR . 'Webcie' . DIRECTORY_SEPARATOR . 'GetUsers.php';
+        include_once 'UseCases' . DIRECTORY_SEPARATOR . 'Webcie' . DIRECTORY_SEPARATOR . 'GetUsers.php';
         $interactor = new GetUsers($this->database);
         $postData = GetPostValues();
         $interactor->Execute($postData);
@@ -59,28 +59,28 @@ class TeamPortal
 
     public function GetMijnOverzicht()
     {
-        include 'UseCases' . DIRECTORY_SEPARATOR . 'MijnOverzicht' . DIRECTORY_SEPARATOR . 'GetMijnOverzicht.php';
+        include_once 'UseCases' . DIRECTORY_SEPARATOR . 'MijnOverzicht' . DIRECTORY_SEPARATOR . 'GetMijnOverzicht.php';
         $interactor = new GetMijnOverzichtInteractor($this->database);
         $interactor->Execute();
     }
 
     public function GetWedstrijdAanwezigheid()
     {
-        include 'UseCases' . DIRECTORY_SEPARATOR . 'Aanwezigheid' . DIRECTORY_SEPARATOR . 'GetWedstrijdAanwezigheid.php';
+        include_once 'UseCases' . DIRECTORY_SEPARATOR . 'Aanwezigheid' . DIRECTORY_SEPARATOR . 'GetWedstrijdAanwezigheid.php';
         $interactor = new GetWedstrijdAanwezigheid($this->database);
         $interactor->Execute();
     }
 
     public function GetWedstrijdOverzicht()
     {
-        include 'UseCases' . DIRECTORY_SEPARATOR . 'WedstrijdOverzicht' . DIRECTORY_SEPARATOR . 'GetWedstrijdOverzicht.php';
+        include_once 'UseCases' . DIRECTORY_SEPARATOR . 'WedstrijdOverzicht' . DIRECTORY_SEPARATOR . 'GetWedstrijdOverzicht.php';
         $interactor = new GetWedstrijdOverzicht($this->database);
         $interactor->Execute();
     }
 
     public function UpdateAanwezigheid()
     {
-        include 'UseCases' . DIRECTORY_SEPARATOR . 'Aanwezigheid' . DIRECTORY_SEPARATOR . 'UpdateAanwezigheid.php';
+        include_once 'UseCases' . DIRECTORY_SEPARATOR . 'Aanwezigheid' . DIRECTORY_SEPARATOR . 'UpdateAanwezigheid.php';
         $interactor = new UpdateAanwezigheid($this->database);
         $postData = GetPostValues();
         $interactor->Execute($postData);
@@ -88,14 +88,14 @@ class TeamPortal
 
     public function GetFluitOverzicht()
     {
-        include 'UseCases' . DIRECTORY_SEPARATOR . 'FluitBeschikbaarheid' . DIRECTORY_SEPARATOR . 'GetFluitBeschikbaarheid.php';
+        include_once 'UseCases' . DIRECTORY_SEPARATOR . 'FluitBeschikbaarheid' . DIRECTORY_SEPARATOR . 'GetFluitBeschikbaarheid.php';
         $interactor = new GetFluitBeschikbaarheid($this->database);
         $interactor->Execute();
     }
 
     public function UpdateFluitBeschikbaarheid()
     {
-        include 'UseCases' . DIRECTORY_SEPARATOR . 'FluitBeschikbaarheid' . DIRECTORY_SEPARATOR . 'UpdateFluitBeschikbaarheid.php';
+        include_once 'UseCases' . DIRECTORY_SEPARATOR . 'FluitBeschikbaarheid' . DIRECTORY_SEPARATOR . 'UpdateFluitBeschikbaarheid.php';
         $interactor = new UpdateFluitBeschikbaarheid($this->database);
         $postData = GetPostValues();
         $interactor->Execute($postData);
@@ -103,14 +103,14 @@ class TeamPortal
 
     public function GetScheidscoOverzicht()
     {
-        include 'UseCases' . DIRECTORY_SEPARATOR . 'Scheidsco' . DIRECTORY_SEPARATOR . 'GetScheidscoOverzicht.php';
+        include_once 'UseCases' . DIRECTORY_SEPARATOR . 'Scheidsco' . DIRECTORY_SEPARATOR . 'GetScheidscoOverzicht.php';
         $interactor = new GetScheidscoOverzicht($this->database);
         $interactor->Execute();
     }
 
     public function GetScheidsrechters()
     {
-        include 'UseCases' . DIRECTORY_SEPARATOR . 'Scheidsco' . DIRECTORY_SEPARATOR . 'GetScheidsrechters.php';
+        include_once 'UseCases' . DIRECTORY_SEPARATOR . 'Scheidsco' . DIRECTORY_SEPARATOR . 'GetScheidsrechters.php';
         $interactor = new GetScheidsrechters($this->database);
         $postData = GetPostValues();
         $interactor->Execute($postData);
@@ -118,7 +118,7 @@ class TeamPortal
 
     public function GetTelTeams()
     {
-        include 'UseCases' . DIRECTORY_SEPARATOR . 'Scheidsco' . DIRECTORY_SEPARATOR . 'GetTelTeams.php';
+        include_once 'UseCases' . DIRECTORY_SEPARATOR . 'Scheidsco' . DIRECTORY_SEPARATOR . 'GetTelTeams.php';
         $interactor = new GetTelTeams($this->database);
         $postData = GetPostValues();
         $interactor->Execute($postData);
@@ -126,7 +126,7 @@ class TeamPortal
 
     public function GetZaalwachtTeams()
     {
-        include 'UseCases' . DIRECTORY_SEPARATOR . 'Scheidsco' . DIRECTORY_SEPARATOR . 'GetZaalwachtTeams.php';
+        include_once 'UseCases' . DIRECTORY_SEPARATOR . 'Scheidsco' . DIRECTORY_SEPARATOR . 'GetZaalwachtTeams.php';
         $interactor = new GetZaalwachtTeams($this->database);
         $postData = GetPostValues();
         $interactor->Execute($postData);
@@ -134,7 +134,7 @@ class TeamPortal
 
     public function UpdateScheidsrechter()
     {
-        include 'UseCases' . DIRECTORY_SEPARATOR . 'Scheidsco' . DIRECTORY_SEPARATOR . 'UpdateScheidsrechter.php';
+        include_once 'UseCases' . DIRECTORY_SEPARATOR . 'Scheidsco' . DIRECTORY_SEPARATOR . 'UpdateScheidsrechter.php';
         $interactor = new UpdateScheidsrechter($this->database);
         $postData = GetPostValues();
         $interactor->Execute($postData);
@@ -142,7 +142,7 @@ class TeamPortal
 
     public function UpdateTellers()
     {
-        include 'UseCases' . DIRECTORY_SEPARATOR . 'Scheidsco' . DIRECTORY_SEPARATOR . 'UpdateTellers.php';
+        include_once 'UseCases' . DIRECTORY_SEPARATOR . 'Scheidsco' . DIRECTORY_SEPARATOR . 'UpdateTellers.php';
         $interactor = new UpdateTellers($this->database);
         $postData = GetPostValues();
         $interactor->Execute($postData);
@@ -150,7 +150,7 @@ class TeamPortal
 
     public function UpdateZaalwacht()
     {
-        include 'UseCases' . DIRECTORY_SEPARATOR . 'Scheidsco' . DIRECTORY_SEPARATOR . 'UpdateZaalwacht.php';
+        include_once 'UseCases' . DIRECTORY_SEPARATOR . 'Scheidsco' . DIRECTORY_SEPARATOR . 'UpdateZaalwacht.php';
         $interactor = new UpdateZaalwacht($this->database);
         $postData = GetPostValues();
         $interactor->Execute($postData);
@@ -158,9 +158,23 @@ class TeamPortal
 
     public function Login()
     {
-        include 'UseCases' . DIRECTORY_SEPARATOR . 'Inloggen' . DIRECTORY_SEPARATOR . 'Inloggen.php';
+        include_once 'UseCases' . DIRECTORY_SEPARATOR . 'Inloggen' . DIRECTORY_SEPARATOR . 'Inloggen.php';
         $interactor = new Inloggen($this->database);
         $postData = GetPostValues();
         $interactor->Execute($postData);
+    }
+
+    public function SendWeeklyEmails()
+    {
+        include_once 'UseCases' . DIRECTORY_SEPARATOR . 'Email' . DIRECTORY_SEPARATOR . 'SendWeeklyEmails.php';
+        $interactor = new SendWeeklyEmails($this->database);
+        $interactor->Execute();
+    }
+
+    public function GetCalendar()
+    {
+        include_once 'UseCases' . DIRECTORY_SEPARATOR . 'Calendar' . DIRECTORY_SEPARATOR . 'GetCalendar.php';
+        $interactor = new GetCalendar($this->database);
+        $interactor->Execute();
     }
 }

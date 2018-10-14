@@ -1,9 +1,9 @@
 <?php
 
-include 'IInteractorWithData.php';
-include 'JoomlaGateway.php';
-include 'NevoboGateway.php';
-include 'AanwezigheidGateway.php';
+include_once 'IInteractorWithData.php';
+include_once 'JoomlaGateway.php';
+include_once 'NevoboGateway.php';
+include_once 'AanwezigheidGateway.php';
 
 class UpdateAanwezigheid implements IInteractorWithData
 {

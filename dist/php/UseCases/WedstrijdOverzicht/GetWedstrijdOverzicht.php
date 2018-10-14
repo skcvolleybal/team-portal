@@ -1,9 +1,9 @@
 <?php
 
-include 'IInteractor.php';
-include 'JoomlaGateway.php';
-include 'NevoboGateway.php';
-include 'AanwezigheidGateway.php';
+include_once 'IInteractor.php';
+include_once 'JoomlaGateway.php';
+include_once 'NevoboGateway.php';
+include_once 'AanwezigheidGateway.php';
 include_once 'Utilities.php';
 
 class GetWedstrijdOverzicht implements IInteractor
@@ -42,7 +42,7 @@ class GetWedstrijdOverzicht implements IInteractor
             $aanwezigheid = $this->GetAanwezigheidForWedstrijd($matchId, $aanwezigheidPerWedstrijd);
             $overzicht[] = [
                 "id" => $wedstrijd['id'],
-                "datum" => $wedstrijd['timestamp']->format('j F Y'),
+                "datum" => GetDutchDate($wedstrijd['timestamp']),
                 "tijd" => $wedstrijd['timestamp']->format('G:i'),
                 "team1" => $wedstrijd['team1'],
                 "isTeam1" => $wedstrijd['team1'] == $team,
@@ -61,12 +61,11 @@ class GetWedstrijdOverzicht implements IInteractor
 
     private function GetInvalTeamInfo($wedstrijd)
     {
-        $datum = $wedstrijd['timestamp']->format('j F Y');
         foreach ($this->invalTeams as $nevobonaam => $invalTeam) {
             $programma = $this->nevoboGateway->GetProgrammaForTeam($nevobonaam);
             $invalTeamWedstrijd = null;
             foreach ($programma as $programmaItem) {
-                if ($programmaItem['timestamp']->format('j F Y') == $datum) {
+                if ($programmaItem['timestamp'] == $wedstrijd['timestamp']) {
                     $invalTeamWedstrijd = [
                         "timestamp" => $programmaItem['timestamp'],
                         "tijd" => $programmaItem['timestamp']->format('G:i'),

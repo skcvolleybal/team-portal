@@ -1,8 +1,8 @@
 <?php
 
-include 'IInteractor.php';
-include 'JoomlaGateway.php';
-include 'AanwezigheidGateway.php';
+include_once 'IInteractor.php';
+include_once 'JoomlaGateway.php';
+include_once 'AanwezigheidGateway.php';
 include_once 'NevoboGateway.php';
 
 class GetWedstrijdAanwezigheid implements IInteractor
@@ -44,7 +44,7 @@ class GetWedstrijdAanwezigheid implements IInteractor
     {
         return [
             "id" => $wedstrijd['id'],
-            "datum" => $wedstrijd["timestamp"]->format("j F Y"),
+            "datum" => GetDutchDate($wedstrijd["timestamp"]),
             "tijd" => $wedstrijd["timestamp"]->format('G:i'),
             "team1" => $wedstrijd["team1"],
             "isTeam1" => $wedstrijd["team1"] == $team,
@@ -57,7 +57,7 @@ class GetWedstrijdAanwezigheid implements IInteractor
     private function GetAanwezigheid($aanwezigheden, $matchId)
     {
         foreach ($aanwezigheden as $aanwezigheid) {
-            if ($aanwezigheid['match_id'] == $matchId) {
+            if ($aanwezigheid['matchId'] == $matchId) {
                 return $aanwezigheid;
             }
         }

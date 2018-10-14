@@ -1,8 +1,8 @@
 <?php
-include 'IInteractor.php';
-include 'NevoboGateway.php';
-include 'JoomlaGateway.php';
-include 'FluitBeschikbaarheidGateway.php';
+include_once 'IInteractor.php';
+include_once 'NevoboGateway.php';
+include_once 'JoomlaGateway.php';
+include_once 'FluitBeschikbaarheidGateway.php';
 
 class GetFluitBeschikbaarheid implements IInteractor
 {
@@ -75,7 +75,7 @@ class GetFluitBeschikbaarheid implements IInteractor
     private function GetWedstrijdWithDatumAndTijd($programma, $datum)
     {
         foreach ($programma as $wedstrijd) {
-            $wedstrijdDatum = $wedstrijd['timestamp']->format('j F Y');
+            $wedstrijdDatum = GetDutchDate($wedstrijd['timestamp']);
             if ($wedstrijdDatum == $datum) {
                 return $wedstrijd;
             }
@@ -86,8 +86,8 @@ class GetFluitBeschikbaarheid implements IInteractor
     private function MapToEigenWedstrijd($wedstrijd)
     {
         return [
-            "datum" => $wedstrijd['timestamp']->format('j F Y'),
-            "tijd" => $wedstrijd['timestamp']->format('G:i'),
+            "datum" => GetDutchDate($wedstrijd['timestamp']),
+            "tijd" => GetDutchDate($wedstrijd['timestamp']),
             "team1" => $wedstrijd['team1'],
             "isTeam1" => $wedstrijd['team1'] == $this->team,
             "isCoachTeam1" => $wedstrijd['team1'] == $this->coachTeam,
@@ -132,7 +132,7 @@ class GetFluitBeschikbaarheid implements IInteractor
     {
         $rooster = [];
         foreach ($skcProgramma as $wedstrijd) {
-            $datum = $wedstrijd['timestamp']->format("j F Y");
+            $datum = GetDutchDate($wedstrijd['timestamp']);
             $date = $wedstrijd['timestamp']->format("Y-m-d");
             $tijd = $wedstrijd['timestamp']->format("G:i");
             $time = $wedstrijd['timestamp']->format("G:i:s");

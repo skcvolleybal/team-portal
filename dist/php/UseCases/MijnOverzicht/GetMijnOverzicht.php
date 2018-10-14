@@ -1,10 +1,10 @@
 <?php
 
-include 'IInteractor.php';
-include 'JoomlaGateway.php';
-include 'NevoboGateway.php';
-include 'TelFluitGateway.php';
-include 'ZaalwachtGateway.php';
+include_once 'IInteractor.php';
+include_once 'JoomlaGateway.php';
+include_once 'NevoboGateway.php';
+include_once 'TelFluitGateway.php';
+include_once 'ZaalwachtGateway.php';
 
 class GetMijnOverzichtInteractor implements IInteractor
 {
@@ -83,13 +83,14 @@ class GetMijnOverzichtInteractor implements IInteractor
 
     private function MapFromMatch($match, $allUscMatches, $team, $coachTeam, $userId)
     {
-        $uscMatch = $this->GetUscMatch($match['match_id'], $allUscMatches);
+        $uscMatch = $this->GetUscMatch($match['matchId'], $allUscMatches);
         if ($uscMatch == null) {
             return null;
         }
         return [
+            "id" => $uscMatch['id'],
             "type" => "wedstrijd",
-            "datum" => $uscMatch['timestamp']->format('Y-m-d'),
+            "date" => $uscMatch['timestamp']->format('Y-m-d'),
             "tijd" => $uscMatch['timestamp']->format('G:i'),
             "team1" => $uscMatch['team1'],
             "isTeam1" => $uscMatch['team1'] == $team,
@@ -98,9 +99,9 @@ class GetMijnOverzichtInteractor implements IInteractor
             "isTeam2" => $uscMatch['team2'] == $team,
             "isCoachTeam2" => $uscMatch['team2'] == $coachTeam,
             "scheidsrechter" => $match['scheidsrechter'],
-            "isScheidsrechter" => $match['scheidsrechter_id'] == $userId,
-            "telteam" => $match['telteam'],
-            "isTelteam" => $match['telteam'] == $team,
+            "isScheidsrechter" => $match['scheidsrechterId'] == $userId,
+            "tellers" => GetShortTeam($match['tellers']),
+            "isTellers" => $match['tellers'] == $team,
             "locatie" => $uscMatch['locatie'],
         ];
     }
@@ -108,8 +109,9 @@ class GetMijnOverzichtInteractor implements IInteractor
     private function MapFromNevoboMatch($match, $team, $coachTeam)
     {
         return [
+            "id" => $match['id'],
             "type" => "wedstrijd",
-            "datum" => $match['timestamp']->format('Y-m-d'),
+            "date" => $match['timestamp']->format('Y-m-d'),
             "tijd" => $match['timestamp']->format('G:i'),
             "team1" => $match['team1'],
             "isTeam1" => $match['team1'] == $team,
@@ -125,33 +127,37 @@ class GetMijnOverzichtInteractor implements IInteractor
     {
         return [
             "type" => "zaalwacht",
-            "datum" => (new DateTime($match['date']))->format('Y-m-d'),
+            "date" => (new DateTime($match['date']))->format('Y-m-d'),
             "team" => $match['team'],
         ];
     }
 
     private function AddToOverzicht(&$overzicht, $newItem)
     {
-        $newItemDatum = $newItem['datum'];
+        $newItemDate = $newItem['date'];
         $counter = 0;
         foreach ($overzicht as &$item) {
-            if (strtotime($newItemDatum) == strtotime($item['datum'])) {
+            if ($newItemDate == $item['date']) {
                 $this->AddToTijdslot($item['tijdsloten'], $newItem);
                 return;
             }
 
-            if (strtotime($newItemDatum) < strtotime($item['datum'])) {
-                $newDay = [
-                    "datum" => (new DateTime($newItemDatum))->format("j F Y"),
-                    "tijdsloten" => [$newItem],
-                ];
+            if ($newItemDate < $item['date']) {
+                $newDay = $this->GetNewDateItem($newItemDate, $newItem);
                 array_splice($overzicht, $counter, 0, [$newDay]);
                 return;
             }
             $counter++;
         }
-        $overzicht[] = [
-            "datum" => (new DateTime($newItemDatum))->format("j F Y"),
+        $overzicht[] = $this->GetNewDateItem($newItemDate, $newItem);
+    }
+
+    private function GetNewDateItem($date, $newItem)
+    {
+        $datetime = new DateTime($date);
+        return [
+            "datum" => GetDutchDate($datetime),
+            "date" => $datetime->format('Y-m-d'),
             "tijdsloten" => [$newItem],
         ];
     }
@@ -167,7 +173,9 @@ class GetMijnOverzichtInteractor implements IInteractor
         foreach ($tijdsloten as $tijdslot) {
             if ($tijdslot['type'] != 'zaalwacht') {
                 if ($newItem['tijd'] <= $tijdslot['tijd']) {
-                    array_splice($tijdsloten, $counter, 0, [$newItem]);
+                    if ($newItem['id'] != $tijdslot['id']) {
+                        array_splice($tijdsloten, $counter, 0, [$newItem]);
+                    }
                     return;
                 }
             }

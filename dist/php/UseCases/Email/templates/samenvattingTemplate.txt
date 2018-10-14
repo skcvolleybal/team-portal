@@ -1,0 +1,23 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<body>
+Beste {{scheidsco}},<br>
+<br>
+De volgende mensen hebben zojuist een mail gekregen vanuit de webserver over het fluit/tel/zaalwacht schema:<br>
+<br>
+<b>Scheidsrechters</b><br>
+{{scheidsrechters}}
+<br>
+<b>Tellers</b><br>
+{{tellers}}
+<br>
+<b>Zaalwacht</b><br>
+{{zaalwachters}}
+<br>
+Met vriendelijke groet,<br>
+<br>
+De (binkies van de) Webcie,<br>
+<br>
+(Dit is een automatisch gegenereerd bericht)
+</body>
+</html>
