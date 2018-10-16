@@ -35,7 +35,16 @@ class GetCalendar implements IInteractor
         $uscLocatie = "Universitair SC, Einsteinweg 6, 2333CC LEIDEN";
         $this->uscWedstrijden = $this->nevoboGateway->GetProgrammaForSporthal('LDNUN');
 
-        $this->CreateCalendar();
+        $skcTeam = ToSkcName($team) ?? "je team";
+        if ($withTellen !== null && $withFluiten !== null) {
+            $title = "Fluit-, tel- en zaalwachtrooster van $skcTeam";
+        } else if ($withTellen !== null) {
+            $title = "Tel- en zaalwachtrooster van $skcTeam";
+        } else {
+            $title = "Fluit- en zaalwachtrooster van $skcTeam";
+        }
+
+        $this->CreateCalendar($title);
 
         $zaalwachten = $this->zaalwachtGateway->GetZaalwachtForUserId($userId);
         foreach ($zaalwachten as $zaalwacht) {
@@ -107,7 +116,7 @@ class GetCalendar implements IInteractor
         return [$firstWedstrijd['timestamp'], $lastWedstrijd['timestamp']->add(new DateInterval('PT2H'))];
     }
 
-    private function CreateCalendar()
+    private function CreateCalendar($title)
     {
         $timezone = "Europe/Amsterdam";
         $config = array(
@@ -116,8 +125,8 @@ class GetCalendar implements IInteractor
         );
         $this->calendar = new kigkonsult\iCalcreator\vcalendar($config);
         $this->calendar->setProperty(kigkonsult\iCalcreator\util\util::$METHOD, "PUBLISH");
-        $this->calendar->setProperty("x-wr-calname", "Persoonlijke Overzicht SKC");
-        $this->calendar->setProperty("X-WR-CALDESC", "Alle Fluit- en telwedstrijden en zaalwachten en mogelijk jouw wedstrijden en coachwedstrijden");
+        $this->calendar->setProperty("x-wr-calname", $title);
+        $this->calendar->setProperty("X-WR-CALDESC", "Alle Fluit-, telwedstrijden of zaalwachtendiensten van jouw team");
         $this->calendar->setProperty("X-WR-TIMEZONE", $timezone);
     }
 

@@ -74,6 +74,9 @@ function GetShortTeam($naam)
 
 function ToSkcName($team)
 {
+    if ($team == null) {
+        return null;
+    }
     return ($team[4] == 'D' ? "Dames " : "Heren ") . substr($team, 7);
 }
 

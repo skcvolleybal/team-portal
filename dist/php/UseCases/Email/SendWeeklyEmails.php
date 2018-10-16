@@ -114,11 +114,13 @@ class SendWeeklyEmails implements IInteractor
         $email = $scheidsrechter['email'];
         $title = "Fluiten " . $spelendeTeams;
         $userId = $scheidsrechter['userId'];
+        $team = $scheidsrechter['team'] ?? "je team";
 
         $body = str_replace("{{naam}}", $naam, $body);
         $body = str_replace("{{datum}}", $datum, $body);
         $body = str_replace("{{tijd}}", $tijd, $body);
         $body = str_replace("{{userId}}", $userId, $body);
+        $body = str_replace("{{team}}", $team, $body);
         $body = str_replace("{{teams}}", $spelendeTeams, $body);
         $body = str_replace("{{afzender}}", $this->scheidsco['naam'], $body);
 
@@ -136,12 +138,14 @@ class SendWeeklyEmails implements IInteractor
         $email = $teller['email'];
         $title = "Tellen " . $spelendeTeams;
         $userId = $teller['userId'];
+        $team = $teller['tellers'];
 
         $body = str_replace("{{naam}}", $naam, $body);
         $body = str_replace("{{datum}}", $datum, $body);
         $body = str_replace("{{tijd}}", $tijd, $body);
         $body = str_replace("{{userId}}", $userId, $body);
         $body = str_replace("{{teams}}", $spelendeTeams, $body);
+        $body = str_replace("{{team}}", $team, $body);
         $body = str_replace("{{afzender}}", $this->scheidsco['naam'], $body);
 
         $this->mailGateway->SendMail($this->scheidsco['email'], $this->scheidsco['naam'], $email, $naam, $title, $body);

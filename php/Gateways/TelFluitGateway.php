@@ -114,10 +114,21 @@ class TelFluitGateway
                     W.match_id as matchId,
                     U.id as userId,
                     U.name as naam,
-                    U.email
+                    U.email,
+                    G.title as team
                   FROM TeamPortal_wedstrijden W
                   INNER JOIN ($matchQuery) matchIds ON matchIds.id = W.match_id
-                  INNER JOIN J3_users U ON W.scheidsrechter_id = U.id";
+                  INNER JOIN J3_users U ON W.scheidsrechter_id = U.id
+                  LEFT JOIN (
+                      SELECT user_id, group_id, title 
+                      FROM J3_user_usergroup_map M
+                      INNER JOIN J3_usergroups G ON G.id = M.group_id
+                      WHERE G.id in (
+                        SELECT id FROM J3_usergroups WHERE parent_id = (
+                          SELECT id FROM J3_usergroups WHERE title = 'Teams'
+                        )
+                      )
+                  ) as G ON G.user_id = U.id";   
         $params = [];
         $counter = 0;
         foreach ($matchIds as $matchId) {
