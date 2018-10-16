@@ -69,28 +69,7 @@ class GetCalendar implements IInteractor
             }
         }
 
-        // $speelWedstrijden = $this->nevoboGateway->GetProgrammaForTeam($team);
-        // foreach ($speelWedstrijden as $wedstrijd) {
-        //     $start = $wedstrijd['timestamp'];
-        //     $end = (clone $start)->add(new DateInterval('PT2H'));
-        //     $summary = $wedstrijd['team1'] . ' ' . $wedstrijd['team2'];
-        //     $location = $wedstrijd['locatie'];
-        //     $this->AddEvent($start, $end, $location, $summary);
-        // }
-
-        // if ($coachTeam != null) {
-        //     $coachWedstrijden = $this->nevoboGateway->GetProgrammaForTeam($coachTeam);
-        //     foreach ($coachWedstrijden as $wedstrijd) {
-        //         $start = $wedstrijd['timestamp'];
-        //         $end = (clone $start)->add(new DateInterval('PT2H'));
-        //         $summary = $wedstrijd['team1'] . ' ' . $wedstrijd['team2'];
-        //         $location = $wedstrijd['locatie'];
-        //         $this->AddEvent($start, $end, $location, $summary);
-        //     }
-        // }
-
-        $this->calendar->returnCalendar();
-        exit;
+        exit($this->calendar->createCalendar());
     }
 
     private function GetMatchWithId($matchId)
