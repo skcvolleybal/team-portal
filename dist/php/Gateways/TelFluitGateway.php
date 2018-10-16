@@ -117,7 +117,7 @@ class TelFluitGateway
                     U.email
                   FROM TeamPortal_wedstrijden W
                   INNER JOIN ($matchQuery) matchIds ON matchIds.id = W.match_id
-                  INNER JOIN J3_users U ON w.scheidsrechter_id = U.id";
+                  INNER JOIN J3_users U ON W.scheidsrechter_id = U.id";
         $params = [];
         $counter = 0;
         foreach ($matchIds as $matchId) {

@@ -105,7 +105,7 @@ class SendWeeklyEmails implements IInteractor
 
     private function MailScheidsrechter($scheidsrechter, $wedstrijd)
     {
-        $body = file_get_contents("./Usecases/Email/templates/scheidsrechterTemplate.txt");
+        $body = file_get_contents("./UseCases/Email/templates/scheidsrechterTemplate.txt");
 
         $datum = GetDutchDate($wedstrijd['timestamp']);
         $tijd = $wedstrijd['timestamp']->format('G:i');
@@ -127,7 +127,7 @@ class SendWeeklyEmails implements IInteractor
 
     private function MailTeller($teller, $wedstrijd)
     {
-        $body = file_get_contents("./Usecases/Email/templates/tellerTemplate.txt");
+        $body = file_get_contents("./UseCases/Email/templates/tellerTemplate.txt");
 
         $datum = GetDutchDate($wedstrijd['timestamp']);
         $tijd = $wedstrijd['timestamp']->format('G:i');
@@ -149,7 +149,7 @@ class SendWeeklyEmails implements IInteractor
 
     private function MailZaalwachter($zaalwachter)
     {
-        $body = file_get_contents("./Usecases/Email/templates/zaalwachtTemplate.txt");
+        $body = file_get_contents("./UseCases/Email/templates/zaalwachtTemplate.txt");
 
         $email = $zaalwachter['email'];
         $naam = $zaalwachter['naam'];
@@ -169,7 +169,7 @@ class SendWeeklyEmails implements IInteractor
 
     private function MailSamenvatting($wedstrijden, $scheidsrechters, $tellers, $zaalwachters)
     {
-        $body = file_get_contents("./Usecases/Email/templates/samenvattingTemplate.txt");
+        $body = file_get_contents("./UseCases/Email/templates/samenvattingTemplate.txt");
 
         $scheidsrechtersContent = count($scheidsrechters) == 0 ? "Geen scheidsrechters" : "";
         $tellersContent = count($tellers) == 0 ? "Geen tellers" : "";
