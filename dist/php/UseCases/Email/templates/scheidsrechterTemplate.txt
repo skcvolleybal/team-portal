@@ -6,8 +6,11 @@ Beste {{naam}},<br>
 Aanstaande {{datum}} moet je een wedstrijd fluiten om {{tijd}}.<br>
 Je zult de wedstrijd {{teams}} gaan fluiten.<br>
 <br>
-Je kunt jouw eigen fluitschema importeren met deze <a target="_blank" href="https://www.google.com/calendar/render?cid=webcal://www.skcvolleybal.nl/team-portal/php/interface.php?action=GetCalendar&userid={{userId}}&fluiten=true">google calendar link</a> (fluiten en zaalwacht).<br>
-Wil je alle tel-, fluit- en zaalwachtbeurten van {{team}}, klik dan op deze <a target="_blank" href="https://www.google.com/calendar/render?cid=webcal://www.skcvolleybal.nl/team-portal/php/interface.php?action=GetCalendar&userid={{userId}}&fluiten=true&tellen=true">google calendar link</a>.<br>
+Je kunt jouw eigen fluitschema importeren met deze 
+<a target="_blank" href="https://www.google.com/calendar/render?cid=http%3A%2F%2Fwww.skcvolleybal.nl%2Fteam-portal%2Fphp%2Finterface.php%3Faction%3DGetCalendar%26userid%3D{{userId}}%26fluiten%3Dtrue">google calendar link</a> 
+(fluiten en zaalwacht).<br>
+Wil je alle tel-, fluit- en zaalwachtbeurten van {{team}}, klik dan op deze 
+<a target="_blank" href="https://www.google.com/calendar/render?cid=http%3A%2F%2Fwww.skcvolleybal.nl%2Fteam-portal%2Fphp%2Finterface.php%3Faction%3DGetCalendar%26userid%3D{{userId}}%26fluiten%3Dtrue%26tellen%3Dtrue">google calendar link</a>.<br>
 <br>
 Als je dit importeert worden alle wedstrijden automatisch in je google calendar gezet en ben je in 1 keer van al jouw wedstrijden op de hoogte.<br>
 (het kan even duren voordat je agenda wordt gesynchroniseerd...)<br>
