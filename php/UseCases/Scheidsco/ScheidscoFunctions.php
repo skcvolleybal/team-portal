@@ -5,7 +5,7 @@ function GetWedstrijdenWithDate($wedstrijden, $date)
     $result = [];
     foreach ($wedstrijden as $wedstrijd) {
         $timestamp = $wedstrijd['timestamp'];
-        if ($timestamp != null && $timestamp->format('Y-m-d') == $date->format('Y-m-d')) {
+        if ($timestamp && $timestamp->format('Y-m-d') == $date->format('Y-m-d')) {
             $result[] = $wedstrijd;
         }
     }

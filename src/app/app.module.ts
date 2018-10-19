@@ -47,15 +47,15 @@ export const appRoutes: Routes = [
     component: WedstrijdOverzichtComponent,
     data: { title: 'Wedstrijd Overzicht' }
   },
-  //   {
-  //     path: 'coach-aanwezigheid',
-  //     component: CoachWedstrijdenComponent,
-  //     data: { title: 'Coach Aanwezigheid' }
-  //   },
   {
-    path: 'fluit-aanwezigheid',
+    path: 'coach-aanwezigheid',
+    component: CoachWedstrijdenComponent,
+    data: { title: 'Coach Aanwezigheid' }
+  },
+  {
+    path: 'fluit-beschikbaarheid',
     component: FluitBeschikbaarheidComponent,
-    data: { title: 'Fluit Aanwezigheid' }
+    data: { title: 'Fluit Beschikbaarheid' }
   },
   {
     path: 'scheidsco',

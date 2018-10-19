@@ -39,7 +39,7 @@ class GetFluitBeschikbaarheid implements IInteractor
 
         $programma = $this->nevoboGateway->GetProgrammaForTeam($this->team);
         $coachProgramma = [];
-        if ($this->coachTeam != null) {
+        if ($this->coachTeam) {
             $coachProgramma = $this->nevoboGateway->GetProgrammaForTeam($this->coachTeam);
         }
 

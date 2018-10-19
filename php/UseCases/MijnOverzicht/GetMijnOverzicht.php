@@ -44,7 +44,7 @@ class GetMijnOverzichtInteractor implements IInteractor
         $telbeurten = $this->telFluitGateway->GetTelbeurten($userId);
         foreach ($telbeurten as $telbeurt) {
             $overzichtItem = $this->MapFromMatch($telbeurt, $allUscMatches, $team, $coachTeam, $userId);
-            if ($overzichtItem != null) {
+            if ($overzichtItem) {
                 $this->AddToOverzicht($overzicht, $overzichtItem);
             }
         }
@@ -52,7 +52,7 @@ class GetMijnOverzichtInteractor implements IInteractor
         $fluitbeurten = $this->telFluitGateway->GetFluitbeurten($userId);
         foreach ($fluitbeurten as $fluitbeurt) {
             $overzichtItem = $this->MapFromMatch($fluitbeurt, $allUscMatches, $team, $coachTeam, $userId);
-            if ($overzichtItem != null) {
+            if ($overzichtItem) {
                 $this->AddToOverzicht($overzicht, $overzichtItem);
             }
         }
@@ -60,16 +60,16 @@ class GetMijnOverzichtInteractor implements IInteractor
         $speelWedstrijden = $this->nevoboGateway->GetProgrammaForTeam($team);
         foreach ($speelWedstrijden as $speelWedstrijd) {
             $overzichtItem = $this->MapFromNevoboMatch($speelWedstrijd, $team, $coachTeam);
-            if ($overzichtItem != null) {
+            if ($overzichtItem) {
                 $this->AddToOverzicht($overzicht, $overzichtItem);
             }
         }
 
-        if ($coachTeam != null) {
+        if ($coachTeam) {
             $coachWedstrijden = $this->nevoboGateway->GetProgrammaForTeam($coachTeam);
             foreach ($coachWedstrijden as $coachWedstrijd) {
                 $overzichtItem = $this->MapFromNevoboMatch($coachWedstrijd, $team, $coachTeam);
-                if ($overzichtItem != null) {
+                if ($overzichtItem) {
                     $this->AddToOverzicht($overzicht, $overzichtItem);
                 }
             }

@@ -1,27 +1,48 @@
 <table class="table table-sm" *ngFor="let wedstrijd of wedstrijden">
   <thead>
     <tr>
-      <th colspan="2" scope="col">
+      <th scope="col">
         {{wedstrijd.datum}}, {{wedstrijd.tijd}}
       </th>
     </tr>
   </thead>
   <tbody>
-    <tr *ngIf="wedstrijd.eigenWedstrijden.length > 0" class="gray-background">
-      <td colspan="2">
-        <app-wedstrijden-card [wedstrijden]="wedstrijd.eigenWedstrijden"></app-wedstrijden-card>
-      </td>
-    </tr>
-    <tr>
+    <tr class="gray-background">
       <td>
-        <app-wedstrijd [wedstrijd]="wedstrijd"></app-wedstrijd>
-      </td>
-      <td>
-        <app-aanwezigheid [aanwezigheid]="wedstrijd.aanwezigheid"></app-aanwezigheid>
+        <ul class="list-group">
+          <li *ngIf="wedstrijd.zaalwacht" class="list-group-item">
+            Zaalwacht: <span class="badge big-badge badge-success">{{wedstrijd.zaalwacht}}</span>
+          </li>
+          <li *ngFor="let eigenWedstrijd of wedstrijd.eigenWedstrijden" class="list-group-item" [ngClass]="{'list-group-item-warning': eigenWedstrijd.isMogelijk === null, 
+                  'list-group-item-danger': eigenWedstrijd.isMogelijk === false, 'list-group-item-success': wedstrijd.isMogelijk === true}">
+            <app-wedstrijd [wedstrijd]="eigenWedstrijd"></app-wedstrijd>
+            <div style="font-size: 12px;" class="card-subtitle mb-2 text-muted">
+              {{eigenWedstrijd.tijd}}, {{eigenWedstrijd.locatie}}
+            </div>
+            <p class="card-text">
+              <app-scheidsrechter [isScheidsrechter]="eigenWedstrijd.isScheidsrechter" [scheidsrechter]="eigenWedstrijd.scheidsrechter"></app-scheidsrechter>
+              <app-tellers [isTellers]="eigenWedstrijd.isTellers" [tellers]="eigenWedstrijd.tellers"></app-tellers>
+            </p>
+          </li>
+        </ul>
       </td>
     </tr>
     <tr class="gray-background">
-      <td colspan="2"></td>
+      <ul class="list-group">
+        <li class="list-group-item" [ngClass]="{'list-group-item-warning': wedstrijd.isMogelijk === null, 
+                  'list-group-item-danger': wedstrijd.isMogelijk === false, 'list-group-item-success': wedstrijd.isMogelijk === true}">
+
+          <app-wedstrijd [wedstrijd]="wedstrijd"></app-wedstrijd>
+          <app-aanwezigheid [aanwezigheid]="wedstrijd.aanwezigheid"></app-aanwezigheid>
+        </li>
+      </ul>
     </tr>
-  </tbody>
+
+    <tr class="gray-background">
+      <td></td>
+    </tr>
 </table>
+<div class="alert alert-danger" role="alert" *ngIf="errorMessage">
+  {{errorMessage}}
+</div>
+<app-spinner *ngIf="loading"></app-spinner>

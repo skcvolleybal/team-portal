@@ -21,7 +21,7 @@ class GetUsers implements IInteractorWithData
         $name = $data->name ?? null;
         $result = [];
 
-        if ($name != null && 3 <= strlen($name)) {
+        if ($name && 3 <= strlen($name)) {
             $users = $this->joomlaGateway->GetUsersWithName($name);
             foreach ($users as $user) {
                 $result[] = [
