@@ -15,7 +15,7 @@ class TelFluitGateway
                     W.match_id AS matchId,
                     W.scheidsrechter_id AS scheidsrechterId,
                     G.team AS tellers,
-                    U.name AS scheidsrechter FROM teamportal_wedstrijden W
+                    U.name AS scheidsrechter FROM TeamPortal_wedstrijden W
                   LEFT JOIN J3_users U ON W.scheidsrechter_id = U.id
                   LEFT JOIN (
                     SELECT M.user_id, G.id AS team_id, G.title AS team FROM J3_user_usergroup_map M
