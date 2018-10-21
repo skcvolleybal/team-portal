@@ -205,7 +205,7 @@ class AanwezigheidGateway
     {
         $query = "UPDATE TeamPortal_aanwezigheden
                   set aanwezigheid = :aanwezigheid
-                  WHERE user_id = :userId and match_id = :matchId and A.is_coach != 'Y'";
+                  WHERE user_id = :userId and match_id = :matchId and is_coach != 'Y'";
         $params = [
             new Param(":userId", $userId, PDO::PARAM_INT),
             new Param(":matchId", $matchId, PDO::PARAM_STR),
