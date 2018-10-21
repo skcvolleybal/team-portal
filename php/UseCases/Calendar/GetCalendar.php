@@ -55,7 +55,7 @@ class GetCalendar implements IInteractor
         if ($withTellen !== null) {
             $telbeurten = $this->telFluitGateway->GetTelbeurten($userId);
             foreach ($telbeurten as $telbeurt) {
-                $telWedstrijd = $this->GetMatchWithId($telbeurt['matchId']);
+                $telWedstrijd = $this->GetMatchWithId($telbeurt['id']);
                 if ($telWedstrijd) {
                     $start = $telWedstrijd['timestamp'];
                     $end = (clone $start)->add(new DateInterval('PT2H'));
@@ -68,7 +68,7 @@ class GetCalendar implements IInteractor
         if ($withFluiten !== null) {
             $fluitbeurten = $this->telFluitGateway->GetFluitbeurten($userId);
             foreach ($fluitbeurten as $fluitbeurt) {
-                $fluitWedstrijd = $this->GetMatchWithId($fluitbeurt['matchId']);
+                $fluitWedstrijd = $this->GetMatchWithId($fluitbeurt['id']);
                 if ($fluitWedstrijd) {
                     $start = $fluitWedstrijd['timestamp'];
                     $end = (clone $start)->add(new DateInterval('PT2H'));

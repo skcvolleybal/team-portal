@@ -67,7 +67,7 @@ export class WedstrijdOverzichtComponent implements OnInit {
         {
           matchId,
           spelerId,
-          aanwezigheid: 'Misschien'
+          aanwezigheid: 'Onbekend'
         },
         {
           params: {

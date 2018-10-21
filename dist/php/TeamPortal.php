@@ -177,4 +177,19 @@ class TeamPortal
         $interactor = new GetCalendar($this->database);
         $interactor->Execute();
     }
+
+    public function GetCoachAanwezigheid()
+    {
+        include_once 'UseCases' . DIRECTORY_SEPARATOR . 'Aanwezigheid' . DIRECTORY_SEPARATOR . 'GetCoachAanwezigheid.php';
+        $interactor = new GetCoachAanwezigheid($this->database);
+        $interactor->Execute();
+    }
+
+    public function UpdateCoachAanwezigheid()
+    {
+        include_once 'UseCases' . DIRECTORY_SEPARATOR . 'Aanwezigheid' . DIRECTORY_SEPARATOR . 'UpdateCoachAanwezigheid.php';
+        $interactor = new UpdateCoachAanwezigheid($this->database);
+        $postData = GetPostValues();
+        $interactor->Execute($postData);
+    }
 }

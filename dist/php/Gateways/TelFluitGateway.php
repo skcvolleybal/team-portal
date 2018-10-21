@@ -8,10 +8,37 @@ class TelFluitGateway
     {
         $this->database = $database;
     }
+
+    public function GetFluitEnTelbeurten($userId)
+    {
+        $query = "SELECT
+                    W.match_id AS matchId,
+                    W.scheidsrechter_id AS scheidsrechterId,
+                    G.team AS tellers,
+                    U.name AS scheidsrechter FROM teamportal_wedstrijden W
+                  LEFT JOIN J3_users U ON W.scheidsrechter_id = U.id
+                  LEFT JOIN (
+                    SELECT M.user_id, G.id AS team_id, G.title AS team FROM J3_user_usergroup_map M
+                    INNER JOIN J3_usergroups G ON M.group_id = G.id
+                    WHERE id IN (
+                        SELECT id FROM J3_usergroups WHERE parent_id IN (
+                            SELECT id FROM J3_usergroups WHERE title = 'Teams'
+                        )
+                    ) AND user_id = :userId
+                  ) G ON G.team_id = W.telteam_id
+                  WHERE W.scheidsrechter_id = :userId OR user_id = :userId";
+        $params = [new Param(":userId", $userId, PDO::PARAM_INT)];
+        $result = $this->database->Execute($query, $params);
+        foreach ($result as &$row) {
+            $row['tellers'] = ToNevoboName($row['tellers']);
+        }
+        return $result;
+    }
+
     public function GetFluitbeurten($userId)
     {
         $query = "SELECT
-                    W.match_id as matchId,
+                    W.match_id as id,
                     W.scheidsrechter_id as scheidsrechterId,
                     G.title as tellers,
                     U.name as scheidsrechter
@@ -30,7 +57,7 @@ class TelFluitGateway
     public function GetTelbeurten($userId)
     {
         $query = "SELECT
-                    W.match_id as matchId,
+                    W.match_id as id,
                     W.scheidsrechter_id as scheidsrechterId,
                     G.title as tellers,
                     U.name as scheidsrechter
@@ -120,7 +147,7 @@ class TelFluitGateway
                   INNER JOIN ($matchQuery) matchIds ON matchIds.id = W.match_id
                   INNER JOIN J3_users U ON W.scheidsrechter_id = U.id
                   LEFT JOIN (
-                      SELECT user_id, group_id, title 
+                      SELECT user_id, group_id, title
                       FROM J3_user_usergroup_map M
                       INNER JOIN J3_usergroups G ON G.id = M.group_id
                       WHERE G.id in (
@@ -128,7 +155,7 @@ class TelFluitGateway
                           SELECT id FROM J3_usergroups WHERE title = 'Teams'
                         )
                       )
-                  ) as G ON G.user_id = U.id";   
+                  ) as G ON G.user_id = U.id";
         $params = [];
         $counter = 0;
         foreach ($matchIds as $matchId) {

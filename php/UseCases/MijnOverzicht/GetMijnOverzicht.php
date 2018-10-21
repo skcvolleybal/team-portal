@@ -59,7 +59,7 @@ class GetMijnOverzichtInteractor implements IInteractor
 
         $speelWedstrijden = $this->nevoboGateway->GetProgrammaForTeam($team);
         foreach ($speelWedstrijden as $speelWedstrijd) {
-            $overzichtItem = $this->MapFromNevoboMatch($speelWedstrijd, $team, $coachTeam);
+            $overzichtItem = $this->MapFromMatch($speelWedstrijd, $allUscMatches, $team, $coachTeam, $userId);
             if ($overzichtItem) {
                 $this->AddToOverzicht($overzicht, $overzichtItem);
             }
@@ -68,22 +68,20 @@ class GetMijnOverzichtInteractor implements IInteractor
         if ($coachTeam) {
             $coachWedstrijden = $this->nevoboGateway->GetProgrammaForTeam($coachTeam);
             foreach ($coachWedstrijden as $coachWedstrijd) {
-                $overzichtItem = $this->MapFromNevoboMatch($coachWedstrijd, $team, $coachTeam);
+                $overzichtItem = $this->MapFromMatch($coachWedstrijd, $allUscMatches, $team, $coachTeam, $userId);
                 if ($overzichtItem) {
                     $this->AddToOverzicht($overzicht, $overzichtItem);
                 }
             }
         }
 
-        $isWebcie = $this->joomlaGateway->IsWebcie($userId);
-
-        echo json_encode(["overzicht" => $overzicht, "isWebcie" => $isWebcie]);
+        echo json_encode($overzicht);
         exit;
     }
 
     private function MapFromMatch($match, $allUscMatches, $team, $coachTeam, $userId)
     {
-        $uscMatch = $this->GetUscMatch($match['matchId'], $allUscMatches);
+        $uscMatch = $this->GetUscMatch($match['id'], $allUscMatches);
         if ($uscMatch == null) {
             return null;
         }
@@ -98,30 +96,34 @@ class GetMijnOverzichtInteractor implements IInteractor
             "team2" => $uscMatch['team2'],
             "isTeam2" => $uscMatch['team2'] == $team,
             "isCoachTeam2" => $uscMatch['team2'] == $coachTeam,
-            "scheidsrechter" => $match['scheidsrechter'],
-            "isScheidsrechter" => $match['scheidsrechterId'] == $userId,
-            "tellers" => GetShortTeam($match['tellers']),
-            "isTellers" => $match['tellers'] == $team,
+            "scheidsrechter" => $match['scheidsrechter'] ?? null,
+            "isScheidsrechter" => ($match['scheidsrechterId'] ?? null) == $userId,
+            "tellers" => GetShortTeam(($match['tellers'] ?? null)),
+            "isTellers" => ($match['tellers'] ?? null) == $team,
             "locatie" => $uscMatch['locatie'],
         ];
     }
 
-    private function MapFromNevoboMatch($match, $team, $coachTeam)
-    {
-        return [
-            "id" => $match['id'],
-            "type" => "wedstrijd",
-            "date" => $match['timestamp']->format('Y-m-d'),
-            "tijd" => $match['timestamp']->format('G:i'),
-            "team1" => $match['team1'],
-            "isTeam1" => $match['team1'] == $team,
-            "isCoachTeam1" => $match['team1'] == $coachTeam,
-            "team2" => $match['team2'],
-            "isTeam2" => $match['team2'] == $team,
-            "isCoachTeam2" => $match['team2'] == $coachTeam,
-            "locatie" => $match['locatie'],
-        ];
-    }
+    // private function MapFromNevoboMatch($match, $team, $coachTeam)
+    // {
+    //     $uscMatch = $this->GetUscMatch($match['matchId'], $allUscMatches);
+    //     if ($uscMatch == null) {
+    //         return null;
+    //     }
+    //     return [
+    //         "id" => $match['id'],
+    //         "type" => "wedstrijd",
+    //         "date" => $match['timestamp']->format('Y-m-d'),
+    //         "tijd" => $match['timestamp']->format('G:i'),
+    //         "team1" => $match['team1'],
+    //         "isTeam1" => $match['team1'] == $team,
+    //         "isCoachTeam1" => $match['team1'] == $coachTeam,
+    //         "team2" => $match['team2'],
+    //         "isTeam2" => $match['team2'] == $team,
+    //         "isCoachTeam2" => $match['team2'] == $coachTeam,
+    //         "locatie" => $match['locatie'],
+    //     ];
+    // }
 
     private function MapFromZaalwacht($match)
     {
@@ -166,6 +168,14 @@ class GetMijnOverzichtInteractor implements IInteractor
     {
         if ($newItem['type'] == "zaalwacht") {
             array_splice($tijdsloten, 0, 0, $newItem);
+            return;
+        }
+
+        $duplicates = array_filter($tijdsloten, function ($wedstrijd) use ($newItem) {
+            return $wedstrijd['type'] == "wedstrijd" && $wedstrijd['id'] == $newItem['id'];
+        });
+
+        if (count($duplicates) > 0) {
             return;
         }
 

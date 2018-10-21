@@ -17,7 +17,7 @@ class UpdateTellers implements IInteractorWithData
     public function Execute($data)
     {
         $userId = $this->joomlaGateway->GetUserId();
-        if ($userId == null) {
+        if ($userId === null) {
             UnauthorizedResult();
         }
 
@@ -35,7 +35,7 @@ class UpdateTellers implements IInteractorWithData
         $team = $this->joomlaGateway->GetTeamByNaam($tellers);
         $wedstrijd = $this->telFluitGateway->GetWedstrijd($matchId);
         if ($wedstrijd == null) {
-            if ($team != null) {
+            if ($team) {
                 $this->telFluitGateway->Insert($matchId, null, $team['id']);
             }
         } else {

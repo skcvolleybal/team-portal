@@ -17,7 +17,7 @@ class UpdateScheidsrechter implements IInteractorWithData
     public function Execute($data)
     {
         $userId = $this->joomlaGateway->GetUserId();
-        if ($userId == null) {
+        if ($userId === null) {
             UnauthorizedResult();
         }
 
@@ -36,7 +36,7 @@ class UpdateScheidsrechter implements IInteractorWithData
 
         $wedstrijd = $this->telFluitGateway->GetWedstrijd($matchId);
         if ($wedstrijd == null) {
-            if ($scheidsrechter != null) {
+            if ($scheidsrechter) {
                 $this->telFluitGateway->Insert($matchId, $scheidsrechter['id'], null);
             }
         } else {

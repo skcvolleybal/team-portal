@@ -24,7 +24,7 @@ class GetScheidsrechters implements IInteractorWithData
     public function Execute($data)
     {
         $userId = $this->joomlaGateway->GetUserId();
-        if ($userId == null) {
+        if ($userId === null) {
             UnauthorizedResult();
         }
 
@@ -68,7 +68,7 @@ class GetScheidsrechters implements IInteractorWithData
         foreach ($scheidsrechters as $scheidsrechter) {
             $wedstrijd = GetWedstrijdOfTeam($wedstrijdenWithSameDate, $scheidsrechter['team']);
             $fluitBeschikbaarheid = $this->GetFluitbeschikbaarheid($scheidsrechter, $fluitBeschikbaarheden);
-            $type = $wedstrijd != null ? "spelendeScheidsrechters" : "overigeScheidsrechters";
+            $type = $wedstrijd ? "spelendeScheidsrechters" : "overigeScheidsrechters";
 
             $result[$type][$fluitBeschikbaarheid][] = $this->MapToUsecaseModel($scheidsrechter, $fluitBeschikbaarheid, $wedstrijd, $fluitWedstrijd);
         }
@@ -91,7 +91,7 @@ class GetScheidsrechters implements IInteractorWithData
         $team = $scheidsrechter['team'];
         $niveau = empty($scheidsrechter['niveau']) ? 'X' : $scheidsrechter['niveau'];
 
-        if ($team != null) {
+        if ($team) {
             $team = $team[0] . $team[6];
         } else {
             $team = 'Geen Team';
@@ -99,7 +99,7 @@ class GetScheidsrechters implements IInteractorWithData
 
         $eigenTijd = null;
         $isMogelijk = true;
-        if ($wedstrijd != null && $fluitWedstrijd != null && $wedstrijd['timestamp'] != null && $fluitWedstrijd['timestamp']) {
+        if ($wedstrijd && $fluitWedstrijd && $wedstrijd['timestamp'] && $fluitWedstrijd['timestamp']) {
             $interval = $wedstrijd['timestamp']->diff($fluitWedstrijd['timestamp']);
             $verschil = $interval->h;
             $eigenTijd = $wedstrijd['timestamp']->format("G:i");

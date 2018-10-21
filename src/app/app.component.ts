@@ -36,11 +36,12 @@ export class AppComponent implements OnInit {
       .get('appRoutes')
       .filter(appRoute => appRoute.path !== '');
   }
+
+  isWebcie = false;
   isNavbarHidden = true;
   rightIcon = faAngleRight;
   appRoutes;
   loginModal = false;
-  isWebcie: boolean;
   impersonatedUser: any;
 
   onLinkClick() {

@@ -38,7 +38,7 @@ class TelFluitGateway
     public function GetFluitbeurten($userId)
     {
         $query = "SELECT
-                    W.match_id as matchId,
+                    W.match_id as id,
                     W.scheidsrechter_id as scheidsrechterId,
                     G.title as tellers,
                     U.name as scheidsrechter
@@ -57,7 +57,7 @@ class TelFluitGateway
     public function GetTelbeurten($userId)
     {
         $query = "SELECT
-                    W.match_id as matchId,
+                    W.match_id as id,
                     W.scheidsrechter_id as scheidsrechterId,
                     G.title as tellers,
                     U.name as scheidsrechter

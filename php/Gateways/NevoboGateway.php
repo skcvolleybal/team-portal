@@ -86,6 +86,9 @@ class NevoboGateway
 
     public function GetProgrammaForTeam($team)
     {
+        if (!$team) {
+            return [];
+        }
         $gender = $this->GetGender($team);
         $sequence = $this->GetSequence($team);
         $url = sprintf($this->teamprogrammaUrl, $this->verenigingscode, $gender, $sequence, $this->exportType);

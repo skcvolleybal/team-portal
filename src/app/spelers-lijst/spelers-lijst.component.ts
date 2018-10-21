@@ -17,6 +17,8 @@ export class SpelersLijstComponent {
   title;
   @Input()
   class;
+  @Input()
+  coaches;
 
   @Output()
   deleteAanwezigheid = new EventEmitter();

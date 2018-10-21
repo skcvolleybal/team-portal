@@ -46,7 +46,7 @@ class SendWeeklyEmails implements IInteractor
 
         foreach ($wedstrijden as $wedstrijd) {
             $scheidsrechter = $this->GetScheidsrechterFromList($scheidsrechters, $wedstrijd);
-            if ($scheidsrechter != null) {
+            if ($scheidsrechter) {
                 $this->MailScheidsrechter($scheidsrechter, $wedstrijd);
             }
             $wedstrijdTellers = $this->GetTellersFromList($tellers, $wedstrijd);
@@ -91,10 +91,10 @@ class SendWeeklyEmails implements IInteractor
         $startDate = date("Y-m-d");
         $endDate = date("Y-m-d", strtotime("+$numberOfDays days"));
         foreach ($wedstrijden as $wedstrijd) {
-            if ($wedstrijd['timestamp'] != null) {
+            if ($wedstrijd['timestamp']) {
                 $date = $wedstrijd['timestamp']->format('Y-m-d');
                 $wedstrijdId = $wedstrijd['id'];
-                if ($startDate <= $date && $date <= $endDate && $wedstrijdId != null) {
+                if ($startDate <= $date && $date <= $endDate && $wedstrijdId) {
                     $result[] = $wedstrijd;
                 }
             }
@@ -180,7 +180,7 @@ class SendWeeklyEmails implements IInteractor
         $zaalwachtersContent = count($zaalwachters) == 0 ? "Geen zaalwacht" : "";
         foreach ($wedstrijden as $wedstrijd) {
             $wedstrijdScheidsrechter = $this->GetScheidsrechterFromList($scheidsrechters, $wedstrijd);
-            if ($wedstrijdScheidsrechter != null) {
+            if ($wedstrijdScheidsrechter) {
                 $scheidsrechtersContent .= $wedstrijdScheidsrechter['naam'] . " (" . $wedstrijdScheidsrechter['email'] . ")<br>";
             }
 

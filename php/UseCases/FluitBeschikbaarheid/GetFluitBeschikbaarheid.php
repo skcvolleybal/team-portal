@@ -125,7 +125,7 @@ class GetFluitBeschikbaarheid implements IInteractor
                 return $fluitBeschikbaarheid['beschikbaarheid'];
             }
         }
-        return "Misschien";
+        return "Onbekend";
     }
 
     private function GetUscRooster($skcProgramma)

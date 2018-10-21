@@ -20,7 +20,7 @@ class GetZaalwachtTeams implements IInteractorWithData
     public function Execute($data)
     {
         $userId = $this->joomlaGateway->GetUserId();
-        if ($userId == null) {
+        if ($userId === null) {
             UnauthorizedResult();
         }
 
@@ -53,7 +53,7 @@ class GetZaalwachtTeams implements IInteractorWithData
         $result = [];
         foreach ($wedstrijden as $wedstrijd) {
             $timestamp = $wedstrijd['timestamp'];
-            if ($timestamp != null && $timestamp->format('Y-m-d') == $date) {
+            if ($timestamp && $timestamp->format('Y-m-d') == $date) {
                 $result[] = ToSkcName($wedstrijd['team1']);
             }
         }

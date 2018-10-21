@@ -27,6 +27,9 @@ class GetWedstrijdAanwezigheid implements IInteractor
         }
 
         $team = $this->joomlaGateway->GetTeam($userId);
+        if (!$team){
+            InternalServerError("Je zit niet in een team");
+        }
         $aanwezigheden = $this->aanwezigheidGateway->GetAanwezigheden($userId);
         $wedstrijden = $this->nevoboGateway->GetProgrammaForTeam($team);
 
@@ -50,7 +53,7 @@ class GetWedstrijdAanwezigheid implements IInteractor
             "isTeam1" => $wedstrijd["team1"] == $team,
             "team2" => $wedstrijd["team2"],
             "isTeam2" => $wedstrijd["team2"] == $team,
-            "aanwezigheid" => $aanwezigheid['aanwezigheid'] ?? "Misschien",
+            "aanwezigheid" => $aanwezigheid['aanwezigheid'] ?? "Onbekend",
         ];
     }
 

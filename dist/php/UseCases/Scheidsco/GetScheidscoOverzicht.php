@@ -24,7 +24,7 @@ class GetScheidscoOverzicht implements IInteractor
     public function Execute()
     {
         $userId = $this->joomlaGateway->GetUserId();
-        if ($userId == null) {
+        if ($userId === null) {
             UnauthorizedResult();
         }
 
@@ -75,7 +75,7 @@ class GetScheidscoOverzicht implements IInteractor
             ];
 
             $wedstrijdIndeling = $this->GetWedstrijdIndeling($matchId, $indeling);
-            if ($wedstrijdIndeling != null) {
+            if ($wedstrijdIndeling) {
                 $newWedstrijd['tellers'] = $wedstrijdIndeling['tellers'];
                 $newWedstrijd['scheidsrechter'] = $wedstrijdIndeling['scheidsrechter'];
             }

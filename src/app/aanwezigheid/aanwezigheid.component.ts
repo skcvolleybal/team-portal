@@ -17,7 +17,7 @@ export class AanwezigheidComponent {
   updateAanwezigheid = new EventEmitter();
 
   jaIcon = faCheck;
-  misschienIcon = faQuestion;
+  onbekendIcon = faQuestion;
   neeIcon = faTimes;
 
   onClick(aanwezigheid) {

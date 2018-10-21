@@ -24,5 +24,6 @@ class MailGateway
         if (!$PHPMailer->send()) {
             echo "Mailer Error: " . $PHPMailer->ErrorInfo;
         }
+        //echo $fromAddress . "<br>" . $fromName . "<br>" . $toAddress . "<br>" . $toName . "<br>" . $title . "<br>" . $body;
     }
 }

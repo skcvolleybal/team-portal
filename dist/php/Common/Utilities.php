@@ -20,14 +20,14 @@ function GetPostValues()
 
 function GetDutchDate($datetime)
 {
-    if ($datetime != null) {
+    if ($datetime) {
         return strftime("%e %B %Y", $datetime->getTimestamp());
     }
 }
 
 function GetDutchDateLong($datetime)
 {
-    if ($datetime != null) {
+    if ($datetime) {
         return strftime("%A %e %B %Y", $datetime->getTimestamp());
     }
 }
@@ -87,7 +87,7 @@ function ToNevoboName($teamnaam)
 
 function RemoveMatchesWithoutData($array)
 {
-    return array_filter($array, function ($match) {return $match['timestamp'] != null;});
+    return array_filter($array, function ($match) {return $match['timestamp'];});
 }
 
 function GetShortLocatie($locatie)

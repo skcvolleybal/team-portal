@@ -58,7 +58,7 @@ class FluitBeschikbaarheid
         if (!$this->VerifyTime($tijd)) {
             InternalServerError("Unknown time: $tijd");
         }
-        if (!in_array($beschikbaarheid, ["Ja", "Nee", "Misschien"])) {
+        if (!in_array($beschikbaarheid, ["Ja", "Nee", "Onbekend"])) {
             InternalServerError("Unknown beschikbaarheid: $beschikbaarheid");
         }
 
@@ -66,7 +66,7 @@ class FluitBeschikbaarheid
         if ($dbBeschikbaarheid == null) {
             $this->Insert($userId, $datum, $tijd, $beschikbaarheid);
         } else {
-            if ($beschikbaarheid == 'Misschien') {
+            if ($beschikbaarheid == 'Onbekend') {
                 $this->Delete($dbBeschikbaarheid['id']);
             } else {
                 $this->Update($dbBeschikbaarheid['id'], $beschikbaarheid);

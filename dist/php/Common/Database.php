@@ -14,7 +14,7 @@ class Database
 
     private function getDbConnection()
     {
-        if ($this->dbc != null) {
+        if ($this->dbc) {
             return $this->dbc;
         }
 

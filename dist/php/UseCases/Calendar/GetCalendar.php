@@ -22,7 +22,7 @@ class GetCalendar implements IInteractor
         $withFluiten = GetQueryStringParamater('fluiten');
         $withTellen = GetQueryStringParamater('tellen');
 
-        if ($userId == null) {
+        if (!$userId) {
             InternalServerError("userid is not set");
         }
 
@@ -55,8 +55,8 @@ class GetCalendar implements IInteractor
         if ($withTellen !== null) {
             $telbeurten = $this->telFluitGateway->GetTelbeurten($userId);
             foreach ($telbeurten as $telbeurt) {
-                $telWedstrijd = $this->GetMatchWithId($telbeurt['matchId']);
-                if ($telWedstrijd != null) {
+                $telWedstrijd = $this->GetMatchWithId($telbeurt['id']);
+                if ($telWedstrijd) {
                     $start = $telWedstrijd['timestamp'];
                     $end = (clone $start)->add(new DateInterval('PT2H'));
                     $teams = $telWedstrijd['team1'] . ' ' . $telWedstrijd['team2'];
@@ -68,8 +68,8 @@ class GetCalendar implements IInteractor
         if ($withFluiten !== null) {
             $fluitbeurten = $this->telFluitGateway->GetFluitbeurten($userId);
             foreach ($fluitbeurten as $fluitbeurt) {
-                $fluitWedstrijd = $this->GetMatchWithId($fluitbeurt['matchId']);
-                if ($fluitWedstrijd != null) {
+                $fluitWedstrijd = $this->GetMatchWithId($fluitbeurt['id']);
+                if ($fluitWedstrijd) {
                     $start = $fluitWedstrijd['timestamp'];
                     $end = (clone $start)->add(new DateInterval('PT2H'));
                     $teams = $fluitWedstrijd['team1'] . ' ' . $fluitWedstrijd['team2'];
@@ -95,7 +95,7 @@ class GetCalendar implements IInteractor
     {
         $wedstrijden = [];
         foreach ($this->uscWedstrijden as $wedstrijd) {
-            if ($wedstrijd['timestamp'] != null && $wedstrijd['timestamp']->format('Y-m-d') == $zaalwacht['date']) {
+            if ($wedstrijd['timestamp'] && $wedstrijd['timestamp']->format('Y-m-d') == $zaalwacht['date']) {
                 $wedstrijden[] = $wedstrijd;
             }
         }
@@ -132,13 +132,13 @@ class GetCalendar implements IInteractor
 
     private function AddEvent(DateTime $start, DateTime $end, $location, $summary, $description = null)
     {
-        if ($start != null && $end != null) {
+        if ($start && $end) {
             $event = $this->calendar->newVevent();
             $event->setProperty(kigkonsult\iCalcreator\util\util::$DTSTART, $this->GetDateArray($start));
             $event->setProperty(kigkonsult\iCalcreator\util\util::$DTEND, $this->GetDateArray($end));
             $event->setProperty(kigkonsult\iCalcreator\util\util::$LOCATION, $location);
             $event->setProperty(kigkonsult\iCalcreator\util\util::$SUMMARY, $summary);
-            if ($description != null) {
+            if ($description) {
                 $event->setProperty(kigkonsult\iCalcreator\util\util::$DESCRIPTION, $description);
             }
         }

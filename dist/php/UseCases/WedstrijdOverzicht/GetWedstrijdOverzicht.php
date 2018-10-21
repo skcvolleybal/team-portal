@@ -30,8 +30,12 @@ class GetWedstrijdOverzicht implements IInteractor
 
         $overzicht = [];
         $team = $this->joomlaGateway->GetTeam($userId);
+        if (!$team) {
+            InternalServerError("Je zit niet in een team");
+        }
         $spelers = $this->joomlaGateway->GetSpelers($team);
         $aanwezigheden = $this->aanwezigheidGateway->GetAanwezighedenForTeam($team);
+        $coachAanwezigheden = $this->aanwezigheidGateway->GetCoachAanwezighedenForTeam(ToSkcName($team));
         $wedstrijden = $this->nevoboGateway->GetProgrammaForTeam($team);
         $aanwezigheidPerWedstrijd = $this->GetAanwezighedenPerWedstrijd($aanwezigheden);
 
@@ -51,12 +55,27 @@ class GetWedstrijdOverzicht implements IInteractor
                 "aanwezigen" => $aanwezigheid['aanwezigen'],
                 "afwezigen" => $aanwezigheid['afwezigen'],
                 "onbekend" => $aanwezigheid["onbekend"],
+                "coaches" => $this->GetCoaches($coachAanwezigheden, $wedstrijd['id']),
                 "invalTeams" => $invalTeamInfo,
             ];
         }
 
         echo json_encode($overzicht);
         exit;
+    }
+
+    private function GetCoaches($coachAanwezigheden, $matchId)
+    {
+        $result = [];
+        foreach ($coachAanwezigheden as $coachAanwezigheid) {
+            if ($coachAanwezigheid['matchId'] === $matchId) {
+                $result[] = [
+                    "naam" => $coachAanwezigheid['naam'],
+                    "aanwezigheid" => $coachAanwezigheid['aanwezigheid'] == "Ja",
+                ];
+            }
+        }
+        return $result;
     }
 
     private function GetInvalTeamInfo($wedstrijd)

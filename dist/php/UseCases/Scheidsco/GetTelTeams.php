@@ -19,7 +19,7 @@ class GetTelTeams implements IInteractorWithData
     public function Execute($data)
     {
         $userId = $this->joomlaGateway->GetUserId();
-        if ($userId == null) {
+        if ($userId === null) {
             UnauthorizedResult();
         }
 
@@ -50,7 +50,7 @@ class GetTelTeams implements IInteractorWithData
         $result = ["spelendeTeams" => [], "overigeTeams" => []];
         foreach ($telTeams as $team) {
             $wedstrijd = GetWedstrijdOfTeam($wedstrijdenWithSameDate, $team['naam']);
-            if ($wedstrijd != null) {
+            if ($wedstrijd) {
                 $result["spelendeTeams"][] = $this->MapToUsecaseModel($team, $wedstrijd, $telWedstrijd);
             } else {
                 $result["overigeTeams"][] = $this->MapToUsecaseModel($team);
@@ -63,7 +63,7 @@ class GetTelTeams implements IInteractorWithData
     {
         $eigenTijd = null;
         $isMogelijk = true;
-        if ($wedstrijd != null && $telWedstrijd != null && $wedstrijd['timestamp'] != null && $telWedstrijd['timestamp']) {
+        if ($wedstrijd && $telWedstrijd && $wedstrijd['timestamp'] && $telWedstrijd['timestamp']) {
             $interval = $wedstrijd['timestamp']->diff($telWedstrijd['timestamp']);
             $verschil = $interval->h;
             $isMogelijk = $verschil == 0 ? false : ($verschil == 2 ? true : null);

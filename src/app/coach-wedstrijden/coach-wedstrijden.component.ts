@@ -17,118 +17,13 @@ import { environment } from 'src/environments/environment';
 })
 export class CoachWedstrijdenComponent implements OnInit {
   neeIcon = faTimes;
-  misschienIcon = faQuestion;
+  onbekendIcon = faQuestion;
   jaIcon = faCheck;
   scheidsrechterIcon = faUser;
   teamIcon = faCalendarCheck;
 
-  //   wedstrijden = [
-  //     {
-  //       datum: '21 oktober 2018',
-  //       tijd: '19:30',
-  //       team1: 'SKC HS 2',
-  //       isTeam1: true,
-  //       isCoachTeam1: false,
-  //       team2: 'Kalinko HS 2',
-  //       isTeam: false,
-  //       isCoachTeam2: false,
-  //       scheidsrechter: 'Kevin Fung',
-  //       isScheidsrechter: false,
-  //       telteam: 'SKC HS 1',
-  //       isTelteam: false,
-  //       locatie: 'Universitair Sport Centrum, Sportweg 6 2333 AS Leiden',
-  //       aanwezigheid: 'ja',
-  //       eigenWedstrijden: [
-  //         {
-  //           datum: '20 okt',
-  //           tijd: '19:30',
-  //           team1: 'SKC HS 2',
-  //           isTeam1: true,
-  //           isCoachTeam1: false,
-  //           team2: 'Kalinko HS 2',
-  //           isTeam: false,
-  //           isCoachTeam2: false,
-  //           scheidsrechter: 'Kevin Fung',
-  //           isScheidsrechter: false,
-  //           telteam: 'SKC HS 1',
-  //           isTelteam: false,
-  //           locatie: 'Universitair Sport Centrum, Sportweg 6 2333 AS Leiden',
-  //           isThuis: true,
-  //           isMogelijk: 'Ja'
-  //         },
-  //         {
-  //           datum: '21 okt',
-  //           tijd: '19:30',
-  //           team1: 'SKC HS 4',
-  //           isTeam1: false,
-  //           isCoachTeam1: false,
-  //           team2: 'Kalinko HS 3',
-  //           isTeam: false,
-  //           isCoachTeam2: true,
-  //           scheidsrechter: 'Jonathan',
-  //           isScheidsrechter: false,
-  //           telteam: 'SKC HS 1',
-  //           isTelteam: false,
-  //           locatie: 'Universitair Sport Centrum, Sportweg 6 2333 AS Leiden',
-  //           isThuis: true,
-  //           isMogelijk: 'Nee'
-  //         },
-  //         {
-  //           datum: '21 okt',
-  //           tijd: '19:30',
-  //           team1: 'SKC HS 4',
-  //           isTeam1: false,
-  //           isCoachTeam1: false,
-  //           team2: 'Kalinko HS 2',
-  //           isTeam: false,
-  //           isCoachTeam2: false,
-  //           scheidsrechter: 'Jonathan Neuteboom',
-  //           isScheidsrechter: true,
-  //           telteam: 'SKC HS 2',
-  //           isTelteam: true,
-  //           locatie: 'Universitair Sport Centrum, Sportweg 6 2333 AS Leiden',
-  //           isMogelijk: 'Misschien'
-  //         }
-  //       ]
-  //     },
-  //     {
-  //       datum: '28 oktober 2018',
-  //       tijd: '19:30',
-  //       team1: 'SKC HS 3',
-  //       isTeam1: true,
-  //       isCoachTeam1: false,
-  //       team2: 'Kalinko HS 2',
-  //       isTeam: false,
-  //       isCoachTeam2: false,
-  //       scheidsrechter: 'Kevin Fung',
-  //       isScheidsrechter: false,
-  //       telteam: 'SKC HS 1',
-  //       isTelteam: false,
-  //       locatie: 'Universitair Sport Centrum, Sportweg 6 2333 AS Leiden',
-  //       isCollapsed: false,
-  //       aanwezigheid: 'ja',
-  //       eigenWedstrijden: []
-  //     },
-  //     {
-  //       datum: '10 november 2018',
-  //       tijd: '19:30',
-  //       team1: 'SKC HS 2',
-  //       isTeam1: true,
-  //       isCoachTeam1: false,
-  //       team2: 'Kalinko HS 2',
-  //       isTeam: false,
-  //       isCoachTeam2: false,
-  //       scheidsrechter: 'Kevin Fung',
-  //       isScheidsrechter: false,
-  //       telteam: 'SKC HS 1',
-  //       isTelteam: false,
-  //       locatie: 'Universitair Sport Centrum, Sportweg 6 2333 AS Leiden',
-  //       isCollapsed: false,
-  //       eigenWedstrijden: []
-  //     }
-  //   ];
   loading: boolean;
-  errorMessage: any;
+  errorMessage: string;
   wedstrijden: any[];
 
   constructor(private httpClient: HttpClient) {}
@@ -137,14 +32,13 @@ export class CoachWedstrijdenComponent implements OnInit {
     this.getCoachAanwezigheid();
   }
 
-  UpdateCoachAanwezigheid(beschikbaarheid, datum, tijd) {
+  UpdateCoachAanwezigheid(aanwezigheid, matchId) {
     this.httpClient
       .post(
         environment.baseUrl,
         {
-          datum,
-          tijd,
-          beschikbaarheid
+          matchId,
+          aanwezigheid
         },
         {
           params: { action: 'UpdateCoachAanwezigheid' }

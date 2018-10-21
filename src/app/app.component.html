@@ -33,8 +33,8 @@
       </li>
       <li *ngIf="isWebcie">
         <div class="form-group">
-          <input (change)="setImpersonation()" class="form-control" [(ngModel)]="impersonatedUser"
-            [inputFormatter]="formatter" [ngbTypeahead]="searchUsers" placeholder="gebruiker" [resultTemplate]="rt" />
+          <input (change)="setImpersonation()" class="form-control" [(ngModel)]="impersonatedUser" [inputFormatter]="formatter"
+            [ngbTypeahead]="searchUsers" placeholder="gebruiker" [resultTemplate]="rt" />
           <span *ngIf="searching">searching...</span>
           <div class="invalid-feedback" *ngIf="searchFailed">Sorry, suggestions could not be loaded.</div>
         </div>

@@ -17,7 +17,7 @@ class UpdateZaalwacht implements IInteractorWithData
     public function Execute($data)
     {
         $userId = $this->joomlaGateway->GetUserId();
-        if ($userId == null) {
+        if ($userId === null) {
             UnauthorizedResult();
         }
 
@@ -35,14 +35,14 @@ class UpdateZaalwacht implements IInteractorWithData
         $zaalwacht = $this->zaalwachtGateway->GetZaalwacht($datum);
         $team = $this->joomlaGateway->GetTeamByNaam($teamnaam);
 
-        if ($zaalwacht != null) {
+        if ($zaalwacht) {
             if ($team == null) {
                 $this->zaalwachtGateway->Delete($zaalwacht);
             } else {
                 $this->zaalwachtGateway->Update($zaalwacht, $team);
             }
         } else {
-            if ($team != null) {
+            if ($team) {
                 $this->zaalwachtGateway->Insert($datum, $team);
             }
         }

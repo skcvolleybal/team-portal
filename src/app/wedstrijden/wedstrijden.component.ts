@@ -16,7 +16,7 @@ import { environment } from 'src/environments/environment';
 export class WedstrijdenComponent implements OnInit {
   model1 = null;
   neeIcon = faTimes;
-  misschienIcon = faQuestion;
+  onbekendIcon = faQuestion;
   jaIcon = faCheck;
   wedstrijden: any[];
   loading: boolean;
