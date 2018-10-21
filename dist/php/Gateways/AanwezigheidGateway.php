@@ -118,7 +118,7 @@ class AanwezigheidGateway
 
     public function GetCoachAanwezighedenForTeam($team)
     {
-        $query = "SELECT 
+        $query = "SELECT
                     match_id as matchId,
                     U.name as naam,
                     A.aanwezigheid
@@ -231,7 +231,7 @@ class AanwezigheidGateway
     private function Delete($userId, $matchId)
     {
         $query = "DELETE FROM TeamPortal_aanwezigheden
-                  WHERE user_id = :userId and match_id = :matchId and A.is_coach != 'Y'";
+                  WHERE user_id = :userId and match_id = :matchId and is_coach != 'Y'";
         $params = [
             new Param(":userId", $userId, PDO::PARAM_INT),
             new Param(":matchId", $matchId, PDO::PARAM_STR),
