@@ -7,6 +7,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AanwezigheidComponent } from './aanwezigheid/aanwezigheid.component';
 import { AppComponent } from './app.component';
+import { BarcieBeschikbaarheidComponent } from './barcie-beschikbaarheid/barcie-beschikbaarheid.component';
 import { CoachWedstrijdenComponent } from './coach-wedstrijden/coach-wedstrijden.component';
 import { FluitBeschikbaarheidComponent } from './fluit-beschikbaarheid/fluit-beschikbaarheid.component';
 import { CustomInterceptor } from './interceptors/add-credentials.interceptor';
@@ -58,6 +59,11 @@ export const appRoutes: Routes = [
     data: { title: 'Fluit Beschikbaarheid' }
   },
   {
+    path: 'barcie-beschikbaarheid',
+    component: BarcieBeschikbaarheidComponent,
+    data: { title: 'Barcie Beschikbaarheid' }
+  },
+  {
     path: 'scheidsco',
     component: ScheidscoComponent,
     data: { title: 'Scheidsco' }
@@ -96,7 +102,8 @@ export const appRoutes: Routes = [
     SpinnerComponent,
     SelecteerScheidsrechterComponent,
     SelecteerTellersComponent,
-    SelecteerZaalwachtComponent
+    SelecteerZaalwachtComponent,
+    BarcieBeschikbaarheidComponent
   ],
   imports: [
     FormsModule,
