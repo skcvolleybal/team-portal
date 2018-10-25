@@ -1,6 +1,6 @@
 <?php
 
-class FluitBeschikbaarheid
+class FluitBeschikbaarheidGateway
 {
     private $database;
 

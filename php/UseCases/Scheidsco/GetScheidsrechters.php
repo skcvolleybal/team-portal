@@ -18,7 +18,7 @@ class GetScheidsrechters implements IInteractorWithData
         $this->joomlaGateway = new JoomlaGateway($database);
         $this->telFluitGateway = new TelFluitGateway($database);
         $this->nevoboGateway = new NevoboGateway($database);
-        $this->fluitBeschikbaarheidGateway = new FluitBeschikbaarheid($database);
+        $this->fluitBeschikbaarheidGateway = new FluitBeschikbaarheidGateway($database);
     }
 
     public function Execute($data)

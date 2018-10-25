@@ -2,7 +2,7 @@
 
 include_once 'NevoboGateway.php';
 
-class BarcieBeschikbaarheidGateway
+class BarcieGateway
 {
     private $database;
 
