@@ -141,6 +141,18 @@ function IsThuis($locatie)
     return strpos($locatie, "Universitair SC") !== false;
 }
 
+function SanitizeQueryString($url)
+    {
+        $url = explode("?", $url);
+        $parts = explode("&", $url[1]);
+        $newParts = [];
+        foreach ($parts as $part) {
+            $params = explode("=", $part);
+            $newParts[] = $params[0] . "=" . rawurlencode($params[1]);
+        }
+        return $url[0] . "?" . implode("&", $newParts);
+    }
+
 function SendPost($url, $post_fields = null, $headers = null)
 {
     $ch = curl_init();

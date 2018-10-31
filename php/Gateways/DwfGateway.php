@@ -11,6 +11,7 @@ class DwfGateway
 
     public function Login()
     {
+
         $oauthPage = $this->SendHeadersRequest("https://dwf.volleybal.nl/application/handlers/dwf/oauth.php");
         $location = $this->SanitizeQueryString($oauthPage['Location']);
         $WID = substr($oauthPage['Set-Cookie'], 0, strpos($oauthPage['Set-Cookie'], ";"));
@@ -18,7 +19,7 @@ class DwfGateway
         $loginPage = $this->SendHeadersRequest($location);
         $PHPSESSID = substr($loginPage['Set-Cookie'], 0, strpos($loginPage['Set-Cookie'], ";"));
 
-        $loginCheck = $this->SendHeadersRequest("https://login.nevobo.nl/login_check", ["Cookie: $PHPSESSID"], "_username=jonathan.neuteboom%40gmail.com&_password=XXXXXXXXXX");
+        $loginCheck = $this->SendHeadersRequest("https://login.nevobo.nl/login_check", ["Cookie: $PHPSESSID"], "_username=XXXXXXXXXXXXXXX&_password=XXXXXXXXXX");
         $location = $loginCheck['Location'];
         $PHPSESSID = substr($loginCheck['Set-Cookie'], 0, strpos($loginCheck['Set-Cookie'], ";"));
 
@@ -28,18 +29,6 @@ class DwfGateway
         $codePage = $this->SendHeadersRequest($location, ["Cookie: $WID"]);
         $codePage = $this->SendHeadersRequest("https://dwf.volleybal.nl/", ["Cookie: $WID"]);
         exit;
-    }
-
-    private function SanitizeQueryString($url)
-    {
-        $url = explode("?", $url);
-        $parts = explode("&", $url[1]);
-        $newParts = [];
-        foreach ($parts as $part) {
-            $params = explode("=", $part);
-            $newParts[] = $params[0] . "=" . rawurlencode($params[1]);
-        }
-        return $url[0] . "?" . implode("&", $newParts);
     }
 
     private function SendHeadersRequest($url, $headers = null, $postFields = null)
