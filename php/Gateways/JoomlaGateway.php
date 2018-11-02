@@ -159,20 +159,8 @@ class JoomlaGateway
 
     public function InitJoomla()
     {
-        if (!defined('_JEXEC')) {
-            define('_JEXEC', 1);
-
-            if (DIRECTORY_SEPARATOR == '/') {
-                define('JPATH_BASE', '/home/deb105013n2/domains/skcvolleybal.nl/public_html/');
-            } else {
-                define('JPATH_BASE', "C:\skc-website\\");
-            }
-
-            require_once JPATH_BASE . '/includes/defines.php';
-            require_once JPATH_BASE . '/includes/framework.php';
-            $mainframe = JFactory::getApplication('site');
-            $mainframe->initialise();
-        }
+        $mainframe = JFactory::getApplication('site');
+        $mainframe->initialise();
     }
 
     public function Login($username, $password)

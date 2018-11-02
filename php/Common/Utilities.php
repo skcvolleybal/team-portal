@@ -4,7 +4,6 @@ setlocale(LC_ALL, 'nl_NL');
 function IsDateValid($date, $format = 'Y-m-d')
 {
     $d = DateTime::createFromFormat($format, $date);
-    // The Y ( 4 digits year ) returns TRUE for any integer with any number of digits so changing the comparison from == to === fixes the issue.
     return $d && $d->format($format) === $date;
 }
 
@@ -142,18 +141,18 @@ function IsThuis($locatie)
 }
 
 function SanitizeQueryString($url)
-    {
-        $url = explode("?", $url);
-        $parts = explode("&", $url[1]);
-        $newParts = [];
-        foreach ($parts as $part) {
-            $params = explode("=", $part);
-            $newParts[] = $params[0] . "=" . rawurlencode($params[1]);
-        }
-        return $url[0] . "?" . implode("&", $newParts);
+{
+    $url = explode("?", $url);
+    $parts = explode("&", $url[1]);
+    $newParts = [];
+    foreach ($parts as $part) {
+        $params = explode("=", $part);
+        $newParts[] = $params[0] . "=" . rawurlencode($params[1]);
     }
+    return $url[0] . "?" . implode("&", $newParts);
+}
 
-function SendPost($url, $post_fields = null, $headers = null)
+function SendPost($url, $post_fields, $headers = null)
 {
     $ch = curl_init();
     $timeout = 5;
@@ -176,4 +175,10 @@ function SendPost($url, $post_fields = null, $headers = null)
     }
     curl_close($ch);
     return $data;
+}
+
+function GetConfigValue($key)
+{
+    $config = JFactory::getConfig();
+    return $config->get($key);
 }

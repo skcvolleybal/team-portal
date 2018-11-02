@@ -43,10 +43,10 @@ class GetBarcieBeschikbaarheid extends GetNevoboMatchByDate implements IInteract
                 return $wedstrijd['timestamp'] && $wedstrijd['timestamp']->format("Y-m-d") == $barcieDag;
             });
 
-            $beschikbaarheid = 
+            // $beschikbaarheid = 
 
             
-            $response
+            // $response
         }
     }
 }
