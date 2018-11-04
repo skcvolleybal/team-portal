@@ -31,14 +31,15 @@ class GespeeldeWedstrijdenGateway
         $this->database->Execute($query, $params);
     }
 
-    public function AddPunt($wedstrijd, $set, $opstelling, $isSkcPunt, $stand)
+    public function AddPunt($wedstrijd, $set, $opstelling, $isSkcService, $isSkcPunt, $stand)
     {
-        $query = "INSERT INTO DWF_punten (matchId, huidigeSet, isPuntGemaakt, stand, ra, rv, mv, lv, la, ma)
-                  VALUES (:matchId, :huidigeSet, :isPuntGemaakt, :stand, :ra, :rv, :mv, :lv, :la, :ma)";
+        $query = "INSERT INTO DWF_punten (matchId, huidigeSet, isSkcService, isSkcPunt, stand, ra, rv, mv, lv, la, ma)
+                  VALUES (:matchId, :huidigeSet, :isSkcService, :isSkcPunt, :stand, :ra, :rv, :mv, :lv, :la, :ma)";
         $params = [
-            new Param(":matchId", $wedstrijd['id'], PDO::PARAM_INT),
+            new Param(":matchId", $wedstrijd['id'], PDO::PARAM_STR),
             new Param(":huidigeSet", $set, PDO::PARAM_INT),
-            new Param(":isPuntGemaakt", $isSkcPunt ? "Y" : "N", PDO::PARAM_STR),
+            new Param(":isSkcPunt", $isSkcPunt ? "Y" : "N", PDO::PARAM_STR),
+            new Param(":isSkcService", $isSkcService ? "Y" : "N", PDO::PARAM_STR),
             new Param(":stand", $stand, PDO::PARAM_STR),
             new Param(":ra", $opstelling[0], PDO::PARAM_INT),
             new Param(":rv", $opstelling[1], PDO::PARAM_INT),

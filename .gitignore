@@ -41,3 +41,4 @@ testem.log
 Thumbs.db
 **/*.spc
 build-wrapper-win-x86-64.exe
+php/cookie.txt

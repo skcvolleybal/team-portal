@@ -15,8 +15,8 @@ class WedstrijdenImporteren implements IInteractor
     {
         $this->gespeeldeWedstrijden = $this->dwfGateway->GetGespeeldeWedstrijden();
         $this->opgeslagenWedstrijden = $this->gespeeldeWedstrijdenGateway->GetGespeeldeWedstrijden();
-
-        foreach ($this->gespeeldeWedstrijden as $wedstrijd) {
+      
+        foreach ($this->gespeeldeWedstrijden as $counter => $wedstrijd) {
             if ($this->IsWedstrijdAlOpgeslagen($wedstrijd)) {
                 continue;
             }
@@ -32,7 +32,13 @@ class WedstrijdenImporteren implements IInteractor
                     foreach ($punten as $punt) {
                         switch ($punt["type"]) {
                             case "punt":
-                                $this->gespeeldeWedstrijdenGateway->AddPunt($wedstrijd, $setIndex, $opstelling, $punt['isThuispunt'] == $isThuisWedstrijd, $punt['stand']);
+                                $this->gespeeldeWedstrijdenGateway->AddPunt(
+                                    $wedstrijd,
+                                    $setIndex + 1,
+                                    $opstelling,
+                                    $thuisServeert == $isThuisWedstrijd,
+                                    $punt['isThuispunt'] == $isThuisWedstrijd,
+                                    $punt['stand']);
                                 if ($punt["isThuispunt"] == $isThuisWedstrijd && $thuisServeert == $isThuisWedstrijd) {
                                     $opstelling = $this->Doordraaien($opstelling);
                                 }
@@ -52,7 +58,7 @@ class WedstrijdenImporteren implements IInteractor
             }
         }
 
-        exit;
+        exit("Done!");
     }
 
     private function IsWedstrijdAlOpgeslagen($wedstrijd)

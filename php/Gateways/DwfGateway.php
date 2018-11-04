@@ -135,13 +135,16 @@ class DwfGateway
         }
 
         $wedstrijden = [];
-        foreach ($data->results[0]->data as $item) {
-            if ($item->type == "item") {
+        foreach ($data->results[0]->data as $counter => $item) {
+            if ($item->type == "title") {
+                $date = $item->type;
+            } else if ($item->type == "item") {
                 if ($item->data->sStartTime == "-") {
                     continue;
                 }
                 $wedstrijden[] = [
                     "id" => preg_replace('/\s+/', ' ', $item->data->sMatchId),
+                    "date" => $date,
                     "team1" => $item->data->sHomeName,
                     "team2" => $item->data->sOutName,
                     "setsTeam1" => $item->data->sStartTime[0],
