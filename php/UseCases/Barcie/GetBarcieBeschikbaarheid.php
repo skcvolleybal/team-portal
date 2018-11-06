@@ -1,8 +1,9 @@
 <?php
-include_once '';
 
 include 'IInteractor.php';
-include_once 'GetNevoboMatchByDate';
+include 'NevoboGateway.php';
+include 'BarcieGateway.php';
+include_once 'GetNevoboMatchByDate.php';
 
 class GetBarcieBeschikbaarheid extends GetNevoboMatchByDate implements IInteractor
 {
@@ -25,28 +26,46 @@ class GetBarcieBeschikbaarheid extends GetNevoboMatchByDate implements IInteract
             UnauthorizedResult();
         }
 
-        $this->team = $this->joomlaGateway->GetTeam($userId);
-        $this->coachTeam = $this->joomlaGateway->GetCoachTeam($userId);
+        $team = $this->joomlaGateway->GetTeam($userId);
+        $coachTeam = $this->joomlaGateway->GetCoachTeam($userId);
 
-        $this->wedstrijden = $this->nevoboGateway->GetProgrammaForTeam($team);
-        $this->coachWedstrijden = $this->nevoboGateway->GetProgrammaForTeam($team);
-        
-        $this->barcieDagen = $this->barcieGateway->GetBarcieDagen();
+        $alleWedstrijden = $this->nevoboGateway->GetProgrammaForTeam($team);
+        $alleCoachWedstrijden = $this->nevoboGateway->GetProgrammaForTeam($coachTeam);
+
+        $barcieDagen = $this->barcieGateway->GetBarcieDagen();
+        $beschikbaarheden = $this->barcieGateway->GetBeschikbaarheden($userId);
 
         $response = [];
-        foreach ($this->$barcieDagen as $barcieDag){
-            $eigenWedstrijden = array_filter($this->wedstrijden, function ($wedstrijd) use ($barcieDag) {
-                return $wedstrijd['timestamp'] && $wedstrijd['timestamp']->format("Y-m-d") == $barcieDag;
+        foreach ($barcieDagen as $barcieDag) {
+            $date = $barcieDag['date'];
+            $eigenWedstrijden = array_filter($alleWedstrijden, function ($wedstrijd) use ($barcieDag, $date) {
+                return $wedstrijd['timestamp'] && $wedstrijd['timestamp']->format("Y-m-d") == $date;
             });
 
-            $coachWedstrijden = array_filter($this->coachWedstrijden, function ($wedstrijd) use ($barcieDag) {
-                return $wedstrijd['timestamp'] && $wedstrijd['timestamp']->format("Y-m-d") == $barcieDag;
+            $coachWedstrijden = array_filter($alleCoachWedstrijden, function ($wedstrijd) use ($barcieDag, $date) {
+                return $wedstrijd['timestamp'] && $wedstrijd['timestamp']->format("Y-m-d") == $date;
             });
 
-            // $beschikbaarheid = 
+            $beschikbaarheid = $this->GetBeschikbaarheid($beschikbaarheden, $date);
 
-            
-            // $response
+            $response[] = [
+                "datum" => GetDutchDate(new DateTime($date)),
+                "date" => $barcieDag['date'],
+                "available" => $beschikbaarheid,
+            ];
         }
+
+        exit(json_encode($response));
+    }
+
+    private function GetBeschikbaarheid($beschikbaarheden, $date)
+    {
+        foreach ($beschikbaarheden as $beschikbaarheid) {
+            if ($beschikbaarheid['date'] == $date) {
+                return $beschikbaarheid['available'];
+            }
+        }
+
+        return null;
     }
 }

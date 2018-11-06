@@ -20,14 +20,14 @@ function GetPostValues()
 function GetDutchDate($datetime)
 {
     if ($datetime) {
-        return strftime("%e %B %Y", $datetime->getTimestamp());
+        return trim(strftime("%e %B %Y", $datetime->getTimestamp()));
     }
 }
 
 function GetDutchDateLong($datetime)
 {
     if ($datetime) {
-        return strftime("%A %e %B %Y", $datetime->getTimestamp());
+        return trim(strftime("%A %e %B %Y", $datetime->getTimestamp()));
     }
 }
 

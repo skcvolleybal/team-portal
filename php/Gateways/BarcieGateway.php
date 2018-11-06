@@ -28,11 +28,20 @@ class BarcieGateway
         return $result[0]['id'];
     }
 
-    public function GetBeschikbaarheden($userId)
+    public function GetBarcieDagen()
     {
         $query = "SELECT *
-                  FROM barcie_availability
-                  WHERE barcie";
+                  FROM barcie_days
+                  WHERE CURRENT_DATE() <= date";
+        return $this->database->Execute($query);
+    }
+
+    public function GetBeschikbaarheden($userId)
+    {
+        $query = "SELECT D.date, A.available
+                  FROM barcie_availability A
+                  INNER JOIN barcie_days D on A.day_id = A.id
+                  WHERE A.user_id = :userId";
         $params = [
             new Param(":userId", $userId, PDO::PARAM_INT),
         ];

@@ -173,6 +173,13 @@ class TeamPortal
         $interactor->Execute($postData);
     }
 
+    public function GetBarcieBeschikbaarheid()
+    {
+        include_once 'UseCases' . DIRECTORY_SEPARATOR . 'Barcie' . DIRECTORY_SEPARATOR . 'GetBarcieBeschikbaarheid.php';
+        $interactor = new GetBarcieBeschikbaarheid($this->database);
+        $interactor->Execute();
+    }
+
     public function DwfWedstrijdenImporteren()
     {
         include_once 'UseCases' . DIRECTORY_SEPARATOR . 'DWF' . DIRECTORY_SEPARATOR . 'WedstrijdenImporteren.php';
