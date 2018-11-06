@@ -34,7 +34,7 @@ class GetMijnOverzichtInteractor implements IInteractor
 
         $overzicht = [];
 
-        $allUscMatches = $this->nevoboGateway->GetProgrammaForSporthal("LDNUN");
+        $allUscMatches = $this->nevoboGateway->GetProgrammaForVereniging("CKL9R53");
 
         $allUscMatches = RemoveMatchesWithoutData($allUscMatches);
 
