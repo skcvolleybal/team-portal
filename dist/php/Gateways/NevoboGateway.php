@@ -135,55 +135,6 @@ class NevoboGateway
         return -1;
     }
 
-    public function Test()
-    {
-        echo "Programma voor poule: ";
-        $count = count($this->GetProgrammaForPoule('H1E'));
-        if ($count > 0) {
-            echo "Gelukt ($count)<br \>";
-        } else {
-            echo "Gefaald<br \>";
-        }
-
-        echo "Programma voor sporthal: ";
-        $count = count($this->GetProgrammaForSporthal('LDNUN'));
-        if ($count > 0) {
-            echo "Gelukt ($count)<br \>";
-        } else {
-            echo "Gefaald<br \>";
-        }
-
-        echo "Programma voor vereniging: ";
-        $count = count($this->GetProgrammaForVereniging('CKL9R53'));
-        if ($count > 0) {
-            echo "Gelukt ($count)<br \>";
-        } else {
-            echo "Gefaald<br \>";
-        }
-
-        echo "Programma voor team: ";
-        $count = count($this->GetProgrammaForTeam('CKL9R53', 'heren', 1));
-        if ($count > 0) {
-            echo "Gelukt ($count)<br \>";
-        } else {
-            echo "Gefaald<br \>";
-        }
-
-        echo "Stand voor team: ";
-        $count = count($this->GetStandForTeam('H1E'));
-        if ($count > 0) {
-            echo "Gelukt ($count)<br \>";
-        } else {
-            echo "Gefaald<br \>";
-        }
-
-        echo "Dames 44 bestaat " . ($this->DoesTeamExist('CKL9R53', 'dames', 44) ? "wel" : "niet") . "<br />";
-        echo "Heren 2 bestaat " . ($this->DoesTeamExist('CKL9R53', 'heren', 2) ? "wel" : "niet") . "<br />";
-
-        echo "Het laagste dames team is: Dames " . $this->GetLowestTeamOf('dames') . "<br \>";
-        echo "Het laagste heren team is: Heren " . $this->GetLowestTeamOf('heren') . "<br \>";
-    }
-
     private function GetGender($team)
     {
         if (substr($team, 4, 2) == "HS") {

@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Component, OnInit } from '@angular/core';
+// tslint:disable-next-line:no-implicit-dependencies
 import { environment } from 'src/environments/environment';
 
 @Component({

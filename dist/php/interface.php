@@ -5,6 +5,16 @@ if (DIRECTORY_SEPARATOR != '/') {
     ini_set("display_errors", 1);
 }
 
+if (DIRECTORY_SEPARATOR == '/') {
+    define('JPATH_BASE', '/home/deb105013n2/domains/skcvolleybal.nl/public_html/');
+} else {
+    define('JPATH_BASE', "C:\\skc-website\\");
+}
+
+define('_JEXEC', 1);
+require_once JPATH_BASE . '/includes/defines.php';
+require_once JPATH_BASE . '/includes/framework.php';
+
 set_include_path(get_include_path() . PATH_SEPARATOR . '.' . DIRECTORY_SEPARATOR . 'UseCases');
 set_include_path(get_include_path() . PATH_SEPARATOR . '.' . DIRECTORY_SEPARATOR . 'Common');
 set_include_path(get_include_path() . PATH_SEPARATOR . '.' . DIRECTORY_SEPARATOR . 'DomainEntities');

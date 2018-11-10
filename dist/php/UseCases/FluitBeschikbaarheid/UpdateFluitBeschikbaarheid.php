@@ -9,7 +9,7 @@ class UpdateFluitBeschikbaarheid implements IInteractorWithData
 
     public function __construct($database)
     {
-        $this->fluitBeschikbaarheidGateway = new FluitBeschikbaarheid($database);
+        $this->fluitBeschikbaarheidGateway = new FluitBeschikbaarheidGateway($database);
         $this->joomlaGateway = new JoomlaGateway($database);
     }
 

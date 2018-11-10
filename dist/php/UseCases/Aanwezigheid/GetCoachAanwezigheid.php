@@ -36,7 +36,7 @@ class GetCoachAanwezigheid implements IInteractor
         $fluitEnTelbeurten = $this->telFluitGateway->GetFluitEnTelbeurten($this->userId);
         $zaalwachten = $this->zaalwachtGateway->GetZaalwachtForUserId($this->userId);
         $aanwezigheden = $this->aanwezigheidGateway->GetCoachAanwezigheden($this->userId);
-        $this->uscWedstrijden = $this->nevoboGateway->GetProgrammaForSporthal('LDNUN');
+        $this->skcWedstrijden = $this->nevoboGateway->GetProgrammaForVereniging("CKL9R53");
 
         $response = [];
         foreach ($coachWedstrijden as $wedstrijd) {
@@ -86,10 +86,10 @@ class GetCoachAanwezigheid implements IInteractor
         return "Onbekend";
     }
 
-    private function GetUscWedstrijd($matchId)
+    private function GetSkcWedstrijd($matchId)
     {
         if ($matchId !== null) {
-            foreach ($this->uscWedstrijden as $wedstrijd) {
+            foreach ($this->skcWedstrijden as $wedstrijd) {
                 if ($wedstrijd['id'] == $matchId) {
                     return $wedstrijd;
                 }
@@ -101,7 +101,7 @@ class GetCoachAanwezigheid implements IInteractor
     private function GetMatchIdsByDate($date)
     {
         $result = [];
-        foreach ($this->uscWedstrijden as $wedstrijd) {
+        foreach ($this->skcWedstrijden as $wedstrijd) {
             if ($wedstrijd['timestamp'] && $wedstrijd['timestamp']->format('Y-m-d') == $date) {
                 $result[] = $wedstrijd['id'];
             }
@@ -130,7 +130,7 @@ class GetCoachAanwezigheid implements IInteractor
 
     private function MapFluitOfTelBeurtToUsecase($telOfFluitBeurt)
     {
-        $wedstrijd = $this->GetUscWedstrijd($telOfFluitBeurt['matchId']);
+        $wedstrijd = $this->GetSkcWedstrijd($telOfFluitBeurt['matchId']);
         if ($wedstrijd == null) {
             return null;
         }

@@ -4,7 +4,6 @@ setlocale(LC_ALL, 'nl_NL');
 function IsDateValid($date, $format = 'Y-m-d')
 {
     $d = DateTime::createFromFormat($format, $date);
-    // The Y ( 4 digits year ) returns TRUE for any integer with any number of digits so changing the comparison from == to === fixes the issue.
     return $d && $d->format($format) === $date;
 }
 
@@ -21,14 +20,14 @@ function GetPostValues()
 function GetDutchDate($datetime)
 {
     if ($datetime) {
-        return strftime("%e %B %Y", $datetime->getTimestamp());
+        return trim(strftime("%e %B %Y", $datetime->getTimestamp()));
     }
 }
 
 function GetDutchDateLong($datetime)
 {
     if ($datetime) {
-        return strftime("%A %e %B %Y", $datetime->getTimestamp());
+        return trim(strftime("%A %e %B %Y", $datetime->getTimestamp()));
     }
 }
 
@@ -139,4 +138,47 @@ function IsMogelijk($wedstrijd1, $wedstrijd2)
 function IsThuis($locatie)
 {
     return strpos($locatie, "Universitair SC") !== false;
+}
+
+function SanitizeQueryString($url)
+{
+    $url = explode("?", $url);
+    $parts = explode("&", $url[1]);
+    $newParts = [];
+    foreach ($parts as $part) {
+        $params = explode("=", $part);
+        $newParts[] = $params[0] . "=" . rawurlencode($params[1]);
+    }
+    return $url[0] . "?" . implode("&", $newParts);
+}
+
+function SendPost($url, $post_fields, $headers = null)
+{
+    $ch = curl_init();
+    $timeout = 5;
+    curl_setopt($ch, CURLOPT_URL, $url);
+    if ($post_fields && !empty($post_fields)) {
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $post_fields);
+    }
+    if ($headers && !empty($headers)) {
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    }
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+    $data = curl_exec($ch);
+
+    if (curl_errno($ch)) {
+        echo 'Error:' . curl_error($ch);
+    }
+    curl_close($ch);
+    return $data;
+}
+
+function GetConfigValue($key)
+{
+    $config = JFactory::getConfig();
+    return $config->get($key);
 }

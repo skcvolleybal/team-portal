@@ -44,20 +44,22 @@ class GetWedstrijdOverzicht implements IInteractor
             $invalTeamInfo = $this->GetInvalTeamInfo($wedstrijd);
             $matchId = $wedstrijd['id'];
             $aanwezigheid = $this->GetAanwezigheidForWedstrijd($matchId, $aanwezigheidPerWedstrijd);
-            $overzicht[] = [
-                "id" => $wedstrijd['id'],
-                "datum" => GetDutchDate($wedstrijd['timestamp']),
-                "tijd" => $wedstrijd['timestamp']->format('G:i'),
-                "team1" => $wedstrijd['team1'],
-                "isTeam1" => $wedstrijd['team1'] == $team,
-                "team2" => $wedstrijd['team2'],
-                "isTeam2" => $wedstrijd['team2'] == $team,
-                "aanwezigen" => $aanwezigheid['aanwezigen'],
-                "afwezigen" => $aanwezigheid['afwezigen'],
-                "onbekend" => $aanwezigheid["onbekend"],
-                "coaches" => $this->GetCoaches($coachAanwezigheden, $wedstrijd['id']),
-                "invalTeams" => $invalTeamInfo,
-            ];
+            if ($wedstrijd['timestamp']) {
+                $overzicht[] = [
+                    "id" => $wedstrijd['id'],
+                    "datum" => GetDutchDate($wedstrijd['timestamp']),
+                    "tijd" => $wedstrijd['timestamp']->format('G:i'),
+                    "team1" => $wedstrijd['team1'],
+                    "isTeam1" => $wedstrijd['team1'] == $team,
+                    "team2" => $wedstrijd['team2'],
+                    "isTeam2" => $wedstrijd['team2'] == $team,
+                    "aanwezigen" => $aanwezigheid['aanwezigen'],
+                    "afwezigen" => $aanwezigheid['afwezigen'],
+                    "onbekend" => $aanwezigheid["onbekend"],
+                    "coaches" => $this->GetCoaches($coachAanwezigheden, $wedstrijd['id']),
+                    "invalTeams" => $invalTeamInfo,
+                ];
+            }
         }
 
         echo json_encode($overzicht);

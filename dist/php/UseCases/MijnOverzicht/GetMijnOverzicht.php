@@ -8,6 +8,11 @@ include_once 'ZaalwachtGateway.php';
 
 class GetMijnOverzichtInteractor implements IInteractor
 {
+    private $joomlaGateway;
+    private $nevoboGateway;
+    private $telFluitGateway;
+    private $zaalwachtGateway;
+
     public function __construct($database)
     {
         $this->joomlaGateway = new JoomlaGateway($database);
@@ -15,8 +20,6 @@ class GetMijnOverzichtInteractor implements IInteractor
         $this->telFluitGateway = new TelFluitGateway($database);
         $this->zaalwachtGateway = new ZaalwachtGateway($database);
     }
-
-    private $nevoboGateway;
 
     public function Execute()
     {
@@ -31,7 +34,7 @@ class GetMijnOverzichtInteractor implements IInteractor
 
         $overzicht = [];
 
-        $allUscMatches = $this->nevoboGateway->GetProgrammaForSporthal("LDNUN");
+        $allUscMatches = $this->nevoboGateway->GetProgrammaForVereniging("CKL9R53");
 
         $allUscMatches = RemoveMatchesWithoutData($allUscMatches);
 

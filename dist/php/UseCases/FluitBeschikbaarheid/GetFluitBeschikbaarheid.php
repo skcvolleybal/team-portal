@@ -19,7 +19,7 @@ class GetFluitBeschikbaarheid implements IInteractor
     {
         $this->joomlaGateway = new JoomlaGateway($database);
         $this->nevoboGateway = new NevoboGateway();
-        $this->fluitBeschikbaarheidGateway = new FluitBeschikbaarheid($database);
+        $this->fluitBeschikbaarheidGateway = new FluitBeschikbaarheidGateway($database);
     }
 
     public function Execute()
