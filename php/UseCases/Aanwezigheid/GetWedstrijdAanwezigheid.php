@@ -27,7 +27,7 @@ class GetWedstrijdAanwezigheid implements IInteractor
         }
 
         $team = $this->joomlaGateway->GetTeam($userId);
-        if (!$team){
+        if (!$team) {
             InternalServerError("Je zit niet in een team");
         }
         $aanwezigheden = $this->aanwezigheidGateway->GetAanwezigheden($userId);
@@ -36,7 +36,10 @@ class GetWedstrijdAanwezigheid implements IInteractor
         $overzicht = [];
         foreach ($wedstrijden as $wedstrijd) {
             $aanwezigheid = $this->GetAanwezigheid($aanwezigheden, $wedstrijd['id']);
-            $overzicht[] = $this->MapFromNevoboMatch($wedstrijd, $aanwezigheid, $team);
+            $newWedstrijd = $this->MapFromNevoboMatch($wedstrijd, $aanwezigheid, $team);
+            if ($newWedstrijd) {
+                $overzicht[] = $newWedstrijd;
+            }
         }
 
         echo json_encode($overzicht);
@@ -45,6 +48,9 @@ class GetWedstrijdAanwezigheid implements IInteractor
 
     private function MapFromNevoboMatch($wedstrijd, $aanwezigheid, $team)
     {
+        if (!$wedstrijd['timestamp']) {
+            return null;
+        }
         return [
             "id" => $wedstrijd['id'],
             "datum" => GetDutchDate($wedstrijd["timestamp"]),

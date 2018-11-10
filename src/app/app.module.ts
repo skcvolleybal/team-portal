@@ -58,11 +58,11 @@ export const appRoutes: Routes = [
     component: FluitBeschikbaarheidComponent,
     data: { title: 'Fluit Beschikbaarheid' }
   },
-  {
-    path: 'barcie-beschikbaarheid',
-    component: BarcieBeschikbaarheidComponent,
-    data: { title: 'Barcie Beschikbaarheid' }
-  },
+//   {
+//     path: 'barcie-beschikbaarheid',
+//     component: BarcieBeschikbaarheidComponent,
+//     data: { title: 'Barcie Beschikbaarheid' }
+//   },
   {
     path: 'scheidsco',
     component: ScheidscoComponent,
