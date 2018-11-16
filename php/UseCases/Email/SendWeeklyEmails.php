@@ -161,7 +161,7 @@ class SendWeeklyEmails implements IInteractor
         if (!IsDateValid($date)) {
             return;
         }
-        $datum = GetDutchDateLong(new DateTime());
+        $datum = GetDutchDateLong(new DateTime($date));
         $title = "Zaalwacht " . $datum;
 
         $body = str_replace("{{naam}}", $naam, $body);
