@@ -1,25 +1,34 @@
 <?php
 
+function IncludeInPath($folder)
+{
+    set_include_path(get_include_path() . PATH_SEPARATOR . $folder);
+}
+
 if (DIRECTORY_SEPARATOR != '/') {
     error_reporting(E_ALL);
     ini_set("display_errors", 1);
 }
 
-if (DIRECTORY_SEPARATOR == '/') {
-    define('JPATH_BASE', '/home/deb105013n2/domains/skcvolleybal.nl/public_html/');
-} else {
-    define('JPATH_BASE', "C:\\skc-website\\");
+if (!defined('JPATH_BASE')) {
+    if (DIRECTORY_SEPARATOR == '/') {
+        define('JPATH_BASE', '/home/deb105013n2/domains/skcvolleybal.nl/public_html/');
+    } else {
+        define('JPATH_BASE', "C:\\skc-website\\");
+    }
 }
 
-define('_JEXEC', 1);
+if (!defined('_JEXEC')) {
+    define('_JEXEC', 1);
+}
 require_once JPATH_BASE . '/includes/defines.php';
 require_once JPATH_BASE . '/includes/framework.php';
 
-set_include_path(get_include_path() . PATH_SEPARATOR . '.' . DIRECTORY_SEPARATOR . 'UseCases');
-set_include_path(get_include_path() . PATH_SEPARATOR . '.' . DIRECTORY_SEPARATOR . 'Common');
-set_include_path(get_include_path() . PATH_SEPARATOR . '.' . DIRECTORY_SEPARATOR . 'DomainEntities');
-set_include_path(get_include_path() . PATH_SEPARATOR . '.' . DIRECTORY_SEPARATOR . 'Gateways');
-set_include_path(get_include_path() . PATH_SEPARATOR . '.' . DIRECTORY_SEPARATOR . 'libs');
+IncludeInPath(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'UseCases');
+IncludeInPath(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Common');
+IncludeInPath(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'DomainEntities');
+IncludeInPath(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Gateways');
+IncludeInPath(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'libs');
 
 $http_referer = $_SERVER['HTTP_REFERER'] ?? "http://localhost:4200/";
 if ($http_referer == "http://localhost:4200/") {
@@ -49,6 +58,9 @@ if (empty($queryString)) {
 }
 
 parse_str($queryString, $parsedQueryString);
+if (!isset($parsedQueryString['action'])) {
+    $app->NoAction();
+}
 $action = $parsedQueryString['action'];
 
 if (method_exists($app, $action)) {
@@ -56,4 +68,3 @@ if (method_exists($app, $action)) {
 } else {
     $app->unknownAction($action);
 }
-$app->unknownAction($action);

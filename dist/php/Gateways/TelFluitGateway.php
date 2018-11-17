@@ -9,6 +9,18 @@ class TelFluitGateway
         $this->database = $database;
     }
 
+    public function GetAllFluitEnTelbeurten()
+    {
+        $query = "SELECT 
+                    W.match_id as matchId,
+                    U.name as scheidsrechter,
+                    G.title as tellers
+                  FROM TeamPortal_wedstrijden W
+                  LEFT JOIN J3_users U ON W.scheidsrechter_id = U.id
+                  LEFT JOIN J3_usergroups G ON W.telteam_id = G.id";
+        return $this->database->Execute($query);
+    }
+
     public function GetFluitEnTelbeurten($userId)
     {
         $query = "SELECT

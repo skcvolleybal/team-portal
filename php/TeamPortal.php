@@ -186,4 +186,18 @@ class TeamPortal
         $interactor = new WedstrijdenImporteren($this->database);
         $interactor->Execute();
     }
+
+    public function GetVoorpaginaRooster()
+    {
+        include_once 'UseCases' . DIRECTORY_SEPARATOR . 'WedstrijdOverzicht' . DIRECTORY_SEPARATOR . 'GetVoorpaginaRooster.php';
+        $interactor = new GetVoorpaginaRooster($this->database);
+        $interactor->Execute();
+    }
+
+    public function GenerateVoorpaginaRooster()
+    {
+        include_once 'UseCases' . DIRECTORY_SEPARATOR . 'WedstrijdOverzicht' . DIRECTORY_SEPARATOR . 'GenerateVoorpaginaRooster.php';
+        $interactor = new GenerateVoorpaginaRooster($this->database);
+        $interactor->Execute();
+    }
 }
