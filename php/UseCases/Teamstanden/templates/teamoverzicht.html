@@ -1,0 +1,92 @@
+<style>
+  .wrapper {
+    overflow: hidden;
+  }
+
+  .wrapper div {}
+
+  #one {
+    float: left;
+    width: 29%;
+    padding-right: 5px;
+  }
+
+  #two {
+    overflow: hidden;
+  }
+
+  @media screen and (max-width: 600px) {
+    #one {
+      float: none;
+      width: auto;
+    }
+  }
+
+</style>
+<div class='wrapper'>
+  <div class='list-group'>
+    <div href='#' class='list-group-item active' style='display: flex;'>
+      <h4>{{TEAMNAAM}}</h4>
+    </div>
+    <div href='#' class='list-group-item'>Niveau: <a target='_blank' href='{{KLASSE_URL}}'>{{KLASSE}}</a></div>
+    <div href='#' class='list-group-item'>Trainer: {{TRAINER}}</div>
+    <div href='#' class='list-group-item'>Trainingstijden: {{TRAININGSTIJDEN}}</div>
+    <div href='#' class='list-group-item'>Coaches: {{COACHES}}</div>"
+    <div href='#' class='list-group-item'>
+      <a style='color: #337ab7;' href='{{FACEBOOK}}'>
+        <i class='fa fa-2x fa-facebook-official'></i>
+      </a>
+    </div>
+  </div>
+  <div id='one'>
+    <div class='panel panel-primary'>
+      <div class='panel-heading'>Stand (Poule {{POULE}})</div>
+      <table class='table'>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Team</th>
+            <th>W</th>
+            <th>P</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{STAND}}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div id='two'>
+    <div class='panel panel-primary'>
+      <div class='panel-heading'>Uitslagen</div>
+      <table class='table'>
+        <thead>
+          <tr>
+            <th>Wedstrijd</th>
+            <th>Uitslag</th>
+            <th>Setstanden</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{UITSLAGEN}}
+        </tbody>
+      </table>
+    </div>
+    <div class='panel panel-primary'>
+      <div class='panel-heading'>Programma</div>
+      <table class='table'>
+        <thead>
+          <tr>
+            <th>Dag</th>
+            <th>Tijd</th>
+            <th>Wedstrijd</th>
+            <th>Locatie</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{PROGRAMMA}}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

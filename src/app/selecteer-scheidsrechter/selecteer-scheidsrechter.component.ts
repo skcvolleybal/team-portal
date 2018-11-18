@@ -1,7 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import * as Enumerable from 'linq';
 // tslint:disable-next-line:no-implicit-dependencies
 import { environment } from 'src/environments/environment';
 
@@ -69,49 +68,13 @@ export class SelecteerScheidsrechterComponent implements OnInit {
     })`;
   }
 
-  //   setScheidsrechters() {
-  //     const result = [];
-  //     this.scheidsrechters.forEach(scheidsrechter => {
-  //       let binName;
-  //       switch (this.scheidsrechterType) {
-  //         case 'niveau':
-  //           binName = scheidsrechter.niveau;
-  //           break;
-  //         case 'team':
-  //           binName = scheidsrechter.team;
-  //           break;
-  //         default:
-  //           binName = 'naam';
-  //           break;
-  //       }
-
-  //       const bin = Enumerable.from(result).firstOrDefault(
-  //         binItem => binItem.name.toUpperCase() === binName.toUpperCase()
-  //       );
-
-  //       if (!bin) {
-  //         const newBin = {
-  //           name: binName.charAt(0).toUpperCase() + binName.substr(1),
-  //           scheidsrechters: [scheidsrechter]
-  //         };
-  //         result.push(newBin);
-  //       } else {
-  //         bin.scheidsrechters.push(scheidsrechter);
-  //       }
-  //     });
-
-  //     Enumerable.from(result).forEach(bin => {
-  //       bin.scheidsrechters = Enumerable.from(bin.scheidsrechters)
-  //         .orderBy(scheidsrechter => {
-  //           return scheidsrechter['gefloten'];
-  //         })
-  //         .toArray();
-  //     });
-
-  //     this.scheidsrechtersGroepen = Enumerable.from(result)
-  //       .orderBy(bin => bin['name'])
-  //       .toArray();
-  //   }
+  GetClass(scheidsrechter) {
+    return {
+      'btn-danger': scheidsrechter.isMogelijk === 'Onbekend',
+      'btn-success': scheidsrechter.isMogelijk === 'Ja',
+      'btn-warning': scheidsrechter.isMogelijk === 'Nee'
+    };
+  }
 
   UpdateScheidsrechter(scheidsrechter) {
     this.httpClient

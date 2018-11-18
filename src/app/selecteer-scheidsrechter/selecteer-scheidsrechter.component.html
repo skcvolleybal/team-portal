@@ -20,7 +20,7 @@
         <li class="list-group-item">Ja</li>
         <li class="list-group-item">
           <div class="input-group mb-3" *ngFor="let scheidsrechter of spelendeScheidsrechters.Ja">
-            <button type="button" (click)="UpdateScheidsrechter(scheidsrechter.naam)" class="btn btn-block" [ngClass]="{'btn-danger': scheidsrechter.isMogelijk === false, 'btn-success': scheidsrechter.isMogelijk === true,'btn-warning': scheidsrechter.isMogelijk === null}">
+            <button type="button" (click)="UpdateScheidsrechter(scheidsrechter.naam)" class="btn btn-block" [ngClass]="GetClass(scheidsrechter)">
               {{GetScheidsrechterText(scheidsrechter)}}
             </button>
           </div>
@@ -28,7 +28,7 @@
         <li class="list-group-item">Onbekend</li>
         <li class="list-group-item">
           <div class="input-group mb-3" *ngFor="let scheidsrechter of spelendeScheidsrechters.Onbekend">
-            <button type="button" (click)="UpdateScheidsrechter(scheidsrechter.naam)" class="btn btn-block" [ngClass]="{'btn-danger': scheidsrechter.isMogelijk === false, 'btn-success': scheidsrechter.isMogelijk === true,'btn-warning': scheidsrechter.isMogelijk === null}">
+            <button type="button" (click)="UpdateScheidsrechter(scheidsrechter.naam)" class="btn btn-block" [ngClass]="GetClass(scheidsrechter)">
               {{GetScheidsrechterText(scheidsrechter)}}
             </button>
           </div>
@@ -36,7 +36,7 @@
         <li class="list-group-item">Nee</li>
         <li class="list-group-item">
           <div class="input-group mb-3" *ngFor="let scheidsrechter of spelendeScheidsrechters.Nee">
-            <button type="button" (click)="UpdateScheidsrechter(scheidsrechter.naam)" class="btn btn-block" [ngClass]="{'btn-danger': scheidsrechter.isMogelijk === false, 'btn-success': scheidsrechter.isMogelijk === true,'btn-warning': scheidsrechter.isMogelijk === null}">
+            <button type="button" (click)="UpdateScheidsrechter(scheidsrechter.naam)" class="btn btn-block" [ngClass]="GetClass(scheidsrechter)">
               {{GetScheidsrechterText(scheidsrechter)}}
             </button>
           </div>
@@ -53,7 +53,7 @@
         <li class="list-group-item">Ja</li>
         <li class="list-group-item">
           <div class="input-group mb-3" *ngFor="let scheidsrechter of overigeScheidsrechters.Ja">
-            <button type="button" (click)="UpdateScheidsrechter(scheidsrechter.naam)" class="btn btn-block" [ngClass]="{'btn-danger': scheidsrechter.isMogelijk === false, 'btn-success': scheidsrechter.isMogelijk === true,'btn-warning': scheidsrechter.isMogelijk === null}">
+            <button type="button" (click)="UpdateScheidsrechter(scheidsrechter.naam)" class="btn btn-block" [ngClass]="GetClass(scheidsrechter)">
               {{GetScheidsrechterTextWithoutTime(scheidsrechter)}}
             </button>
           </div>
@@ -61,7 +61,7 @@
         <li class="list-group-item">Onbekend</li>
         <li class="list-group-item">
           <div class="input-group mb-3" *ngFor="let scheidsrechter of overigeScheidsrechters.Onbekend">
-            <button type="button" (click)="UpdateScheidsrechter(scheidsrechter.naam)" class="btn btn-block" [ngClass]="{'btn-danger': scheidsrechter.isMogelijk === false, 'btn-success': scheidsrechter.isMogelijk === true,'btn-warning': scheidsrechter.isMogelijk === null}">
+            <button type="button" (click)="UpdateScheidsrechter(scheidsrechter.naam)" class="btn btn-block" [ngClass]="GetClass(scheidsrechter)">
               {{GetScheidsrechterTextWithoutTime(scheidsrechter)}}
             </button>
           </div>
@@ -69,7 +69,7 @@
         <li class="list-group-item">Nee</li>
         <li class="list-group-item">
           <div class="input-group mb-3" *ngFor="let scheidsrechter of overigeScheidsrechters.Nee">
-            <button type="button" (click)="UpdateScheidsrechter(scheidsrechter.naam)" class="btn btn-block" [ngClass]="{'btn-danger': scheidsrechter.isMogelijk === false, 'btn-success': scheidsrechter.isMogelijk === true,'btn-warning': scheidsrechter.isMogelijk === null}">
+            <button type="button" (click)="UpdateScheidsrechter(scheidsrechter.naam)" class="btn btn-block" [ngClass]="GetClass(scheidsrechter)">
               {{GetScheidsrechterTextWithoutTime(scheidsrechter)}}
             </button>
           </div>

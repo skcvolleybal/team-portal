@@ -10,7 +10,11 @@
   <tbody>
     <tr [ngbCollapse]="isCollapsed">
       <td class="gray-background">
-        <div class="card" [ngClass]="{'border-success': team.isMogelijk === true, 'border-danger': team.isMogelijk === false, 'border-warning': team.isMogelijk === null}"
+        <div class="card" [ngClass]="{
+          'border-success': team.isMogelijk == 'Ja', 
+          'border-danger': team.isMogelijk == 'Nee', 
+          'border-warning': team.isMogelijk == 'Onbekend'
+        }"
           style="margin: 5px;" *ngFor="let team of teams; let i = index;">
           <div class="card-body" style="padding: 7px;">
             <div *ngIf="team.wedstrijd">

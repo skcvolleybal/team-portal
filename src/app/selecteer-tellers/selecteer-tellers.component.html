@@ -18,7 +18,11 @@
       </div>
       <div class="card-body">
         <div class="input-group mb-3" *ngFor="let team of spelendeTeams">
-          <button type="button" (click)="UpdateTellers(team.naam)" class="btn btn-block" [ngClass]="{'btn-danger': team.isMogelijk === false, 'btn-success': team.isMogelijk === true,'btn-warning': team.isMogelijk === null}">
+          <button type="button" (click)="UpdateTellers(team.naam)" class="btn btn-block" [ngClass]="{
+            'btn-danger': team.isMogelijk == 'Nee', 
+            'btn-success': team.isMogelijk == 'Ja',
+            'btn-warning': team.isMogelijk == 'Onbekend'
+          }">
             {{team.naam + " (" + team.geteld + ") om " + team.eigenTijd}}
           </button>
         </div>

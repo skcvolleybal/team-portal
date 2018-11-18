@@ -1,5 +1,5 @@
 <?php
-include 'IInteractor.php';
+include_once 'IInteractor.php';
 
 class GetVoorpaginaRooster implements IInteractor
 {

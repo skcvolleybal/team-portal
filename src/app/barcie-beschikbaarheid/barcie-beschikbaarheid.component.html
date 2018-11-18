@@ -12,8 +12,11 @@
     </tr>
     <tr>
       <ul class="list-group">
-        <li class="list-group-item" [ngClass]="{'list-group-item-warning': dag.isMogelijk === null, 
-            'list-group-item-danger': dag.isMogelijk === false, 'list-group-item-success': dag.isMogelijk === true}">
+        <li class="list-group-item" [ngClass]="{
+            'list-group-item-warning': dag.isMogelijk == 'Onbekend', 
+            'list-group-item-danger': dag.isMogelijk == 'Nee', 
+            'list-group-item-success': dag.isMogelijk == 'Ja'
+          }">
           <form>
             <div class="form-row">
               <div class="col" style="line-height: 38px;">

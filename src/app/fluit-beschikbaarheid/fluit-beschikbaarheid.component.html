@@ -12,8 +12,11 @@
     </tr>
     <tr>
       <ul class="list-group">
-        <li class="list-group-item" [ngClass]="{'list-group-item-warning': speeltijd.isMogelijk === null, 
-            'list-group-item-danger': speeltijd.isMogelijk === false, 'list-group-item-success': speeltijd.isMogelijk === true}"
+        <li class="list-group-item" [ngClass]="{
+          'list-group-item-warning': speeltijd.isMogelijk == 'Onbekend', 
+          'list-group-item-danger': speeltijd.isMogelijk == 'Nee', 
+          'list-group-item-success': speeltijd.isMogelijk == 'Ja'
+        }"
           *ngFor="let speeltijd of speeldag.speeltijden">
           <form>
             <div class="form-row">

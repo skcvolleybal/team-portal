@@ -17,6 +17,12 @@ function GetPostValues()
     return json_decode($postData);
 }
 
+function GetQueryParameters()
+{
+    parse_str($_SERVER["QUERY_STRING"], $query_array);
+    return $query_array;
+}
+
 function GetDutchDate($datetime)
 {
     if ($datetime) {
@@ -99,7 +105,7 @@ function GetShortLocatie($locatie)
 function IsMogelijk($wedstrijd1, $wedstrijd2)
 {
     if ($wedstrijd1 === null || $wedstrijd2 === null) {
-        return true;
+        return "Ja";
     }
 
     $timestamp1 = $wedstrijd1['timestamp'];
@@ -107,30 +113,30 @@ function IsMogelijk($wedstrijd1, $wedstrijd2)
 
     $difference = $timestamp1->diff($timestamp2, true);
     if ($difference->d > 0 || $difference->m > 0 || $difference->y > 0) {
-        return true;
+        return "Ja";
     }
 
     $hourDifference = $difference->h;
 
     if (IsThuis($wedstrijd1['locatie'])) {
         if (IsThuis($wedstrijd2['locatie'])) {
-            return $hourDifference >= 2;
+            return $hourDifference >= 2 ? "Ja" : "Nee";
         } else {
             if ($hourDifference <= 2) {
-                return false;
+                return "Nee";
             } else if ($hourDifference >= 6) {
-                return false;
+                return "Nee";
             } else {
-                return null;
+                return "Onbekend";
             }
         }
     } else {
         if ($hourDifference <= 2) {
-            return false;
+            return "Nee";
         } else if ($hourDifference >= 6) {
-            return false;
+            return "Nee";
         } else {
-            return null;
+            return "Onbekend";
         }
     }
 }
@@ -181,4 +187,16 @@ function GetConfigValue($key)
 {
     $config = JFactory::getConfig();
     return $config->get($key);
+}
+
+function GetKlasse($poule)
+{
+    if (strlen($poule) !== 3) {
+        InternalServerError("Poule $poule is niet valide");
+    }
+    if ($poule[1] == "P") {
+        return "Promotieklasse";
+    } else if (is_numeric($poule[1])) {
+        return $poule[1] . "e klasse";
+    }
 }

@@ -1,8 +1,8 @@
 <?php
 
-include 'IInteractor.php';
-include 'NevoboGateway.php';
-include 'BarcieGateway.php';
+include_once 'IInteractor.php';
+include_once 'NevoboGateway.php';
+include_once 'BarcieGateway.php';
 include_once 'GetNevoboMatchByDate.php';
 
 class GetBarcieBeschikbaarheid extends GetNevoboMatchByDate implements IInteractor
