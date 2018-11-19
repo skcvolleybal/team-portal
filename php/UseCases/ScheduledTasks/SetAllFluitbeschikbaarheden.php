@@ -3,7 +3,7 @@ include_once 'IInteractor.php';
 include_once 'TelFluitGateway.php';
 include_once 'NevoboGateway.php';
 include_once 'FluitBeschikbaarheidGateway.php';
-include_once 'shared' . DIRECTORY_SEPARATOR . 'FluitBeschikbaarheidHelper.php';
+include_once 'FluitBeschikbaarheid' . DIRECTORY_SEPARATOR . 'shared' . DIRECTORY_SEPARATOR . 'FluitBeschikbaarheidHelper.php';
 
 class SetAllFluitbeschikbaarheden implements IInteractor
 {

@@ -116,25 +116,15 @@ function IsMogelijk($wedstrijd1, $wedstrijd2)
         return "Ja";
     }
 
-    $hourDifference = $difference->h;
+    $hourDifference = $difference->h + ($difference->i / 60);
 
-    if (IsThuis($wedstrijd1['locatie'])) {
-        if (IsThuis($wedstrijd2['locatie'])) {
-            return $hourDifference >= 2 ? "Ja" : "Nee";
-        } else {
-            if ($hourDifference <= 2) {
-                return "Nee";
-            } else if ($hourDifference >= 6) {
-                return "Nee";
-            } else {
-                return "Onbekend";
-            }
-        }
+    if (IsThuis($wedstrijd1['locatie']) && IsThuis($wedstrijd2['locatie'])) {
+        return $hourDifference >= 2 ? "Ja" : "Nee";
     } else {
-        if ($hourDifference <= 2) {
+        if ($hourDifference < 4) {
             return "Nee";
         } else if ($hourDifference >= 6) {
-            return "Nee";
+            return "Ja";
         } else {
             return "Onbekend";
         }
