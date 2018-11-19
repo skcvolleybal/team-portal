@@ -157,6 +157,29 @@ class JoomlaGateway
         return ToNevoboName($coachTeam);
     }
 
+    public function GetCoaches($teamnaam)
+    {
+        return $this->GetUsersInGroup("Coach " . ToSkcName($teamnaam));
+    }
+
+    public function GetTrainers($teamnaam)
+    {
+        return $this->GetUsersInGroup("Trainer " . ToSkcName($teamnaam));
+    }
+
+    public function GetUsersInGroup($groupname)
+    {
+        $query = "SELECT
+                    U.id,
+                    U.name as naam
+                  FROM J3_users U
+                  INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
+                  INNER JOIN J3_usergroups G ON M.group_id = G.id
+                  WHERE G.title = :groupname";
+        $params = [new Param(":groupname", $groupname, PDO::PARAM_STR)];
+        return $this->database->Execute($query, $params);
+    }
+
     public function InitJoomla()
     {
         $mainframe = JFactory::getApplication('site');

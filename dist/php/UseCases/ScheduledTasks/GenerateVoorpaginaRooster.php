@@ -1,8 +1,8 @@
 <?php
-include 'IInteractor.php';
-include 'TelFluitGateway.php';
-include 'NevoboGateway.php';
-include 'ZaalwachtGateway.php';
+include_once 'IInteractor.php';
+include_once 'TelFluitGateway.php';
+include_once 'NevoboGateway.php';
+include_once 'ZaalwachtGateway.php';
 
 class GenerateVoorpaginaRooster implements IInteractor
 {
@@ -44,7 +44,7 @@ class GenerateVoorpaginaRooster implements IInteractor
             file_put_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . "rooster.json", json_encode($result));
         }
 
-        exit(print_r($result, 1));
+        return $result;
     }
 
     private function MapWedstrijd($wedstrijd)

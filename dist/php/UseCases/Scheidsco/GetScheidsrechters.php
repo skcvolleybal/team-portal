@@ -1,4 +1,5 @@
 <?php
+
 include_once 'IInteractorWithData.php';
 include_once 'JoomlaGateway.php';
 include_once 'FluitBeschikbaarheidGateway.php';
@@ -87,37 +88,13 @@ class GetScheidsrechters implements IInteractorWithData
 
     private function MapToUsecaseModel($scheidsrechter, $fluitBeschikbaarheid, $wedstrijd = null, $fluitWedstrijd = null)
     {
-
-        $team = $scheidsrechter['team'];
-        $niveau = empty($scheidsrechter['niveau']) ? 'X' : $scheidsrechter['niveau'];
-
-        if ($team) {
-            $team = $team[0] . $team[6];
-        } else {
-            $team = 'Geen Team';
-        }
-
-        $eigenTijd = null;
-        $isMogelijk = true;
-        if ($wedstrijd && $fluitWedstrijd && $wedstrijd['timestamp'] && $fluitWedstrijd['timestamp']) {
-            $interval = $wedstrijd['timestamp']->diff($fluitWedstrijd['timestamp']);
-            $verschil = $interval->h;
-            $eigenTijd = $wedstrijd['timestamp']->format("G:i");
-            $isMogelijk = $verschil == 0 ? false : ($verschil == 2 ? true : null);
-        }
-
-        if (isset($fluitBeschikbaarheid['beschikbaarheid'])) {
-            $isMogelijk = $fluitBeschikbaarheid['beschikbaarheid'] == "Ja" ? true : false;
-        }
-
         return [
             "naam" => $scheidsrechter['naam'],
-            "niveau" => $niveau,
+            "niveau" => empty($scheidsrechter['niveau']) ? 'X' : $scheidsrechter['niveau'],
             "gefloten" => $scheidsrechter['gefloten'],
-            "team" => $team,
-            "beschikbaarheid" => $isMogelijk,
-            "eigenTijd" => $eigenTijd,
-            "isMogelijk" => $isMogelijk,
+            "team" => GetShortTeam($scheidsrechter['team']) ?? "Geen Team",
+            "eigenTijd" => $wedstrijd['timestamp'] ? $wedstrijd['timestamp']->format("G:i") : null,
+            "beschikbaarheid" => $fluitBeschikbaarheid['beschikbaarheid'],
         ];
     }
 }

@@ -3,6 +3,7 @@ include_once 'IInteractor.php';
 include_once 'NevoboGateway.php';
 include_once 'JoomlaGateway.php';
 include_once 'FluitBeschikbaarheidGateway.php';
+include_once 'shared' . DIRECTORY_SEPARATOR . 'FluitBeschikbaarheidHelper.php';
 
 class GetFluitBeschikbaarheid implements IInteractor
 {
@@ -20,6 +21,7 @@ class GetFluitBeschikbaarheid implements IInteractor
         $this->joomlaGateway = new JoomlaGateway($database);
         $this->nevoboGateway = new NevoboGateway();
         $this->fluitBeschikbaarheidGateway = new FluitBeschikbaarheidGateway($database);
+        $this->fluitBeschikbaarheidHelper = new FluitBeschikbaarheidHelper();
     }
 
     public function Execute()
@@ -33,161 +35,56 @@ class GetFluitBeschikbaarheid implements IInteractor
             InternalServerError("Je bent (helaas) geen scheidsrechter");
         }
 
-        $this->team = $this->joomlaGateway->GetTeam($userId);
-        $this->coachTeam = $this->joomlaGateway->GetCoachTeam($userId);
-        $this->fluitBeschikbaarheid = $this->fluitBeschikbaarheidGateway->GetFluitBeschikbaarheid($userId);
+        $team = $this->joomlaGateway->GetTeam($userId);
+        $coachTeam = $this->joomlaGateway->GetCoachTeam($userId);
+        $fluitBeschikbaarheden = $this->fluitBeschikbaarheidGateway->GetFluitBeschikbaarheid($userId);
 
-        $programma = $this->nevoboGateway->GetProgrammaForTeam($this->team);
+        $programma = $this->nevoboGateway->GetProgrammaForTeam($team);
         $coachProgramma = [];
-        if ($this->coachTeam) {
-            $coachProgramma = $this->nevoboGateway->GetProgrammaForTeam($this->coachTeam);
+        if ($coachTeam) {
+            $coachProgramma = $this->nevoboGateway->GetProgrammaForTeam($coachTeam);
         }
 
         $skcProgramma = $this->nevoboGateway->GetProgrammaForSporthal($this->uscCode);
         $skcProgramma = RemoveMatchesWithoutData($skcProgramma);
 
-        $rooster = $this->GetUscRooster($skcProgramma);
+        $rooster = $this->fluitBeschikbaarheidHelper->GetUscRooster($skcProgramma, $team, $coachTeam);
 
         foreach ($rooster as &$wedstrijdDag) {
-            $datum = $wedstrijdDag['datum'];
-            $speelWedstrijd = $this->GetWedstrijdWithDatumAndTijd($programma, $datum);
-            $coachWedstrijd = $this->GetWedstrijdWithDatumAndTijd($coachProgramma, $datum);
+            $date = $wedstrijdDag['date'];
+            $speelWedstrijd = $this->fluitBeschikbaarheidHelper->GetWedstrijdWithDate($programma, $date);
+            $coachWedstrijd = $this->fluitBeschikbaarheidHelper->GetWedstrijdWithDate($coachProgramma, $date);
             $eigenWedstrijden = array_filter([$speelWedstrijd, $coachWedstrijd], function ($value) {return $value !== null;});
 
             foreach ($wedstrijdDag['speeltijden'] as $tijdslot) {
-                $fluitBeschikbaarheid = $this->GetFluitBeschikbaarheid($wedstrijdDag['date'], $tijdslot['time']);
-                $i = $this->GetIndexOfTijd($wedstrijdDag['speeltijden'], $tijdslot['tijd']);
+                $date = $wedstrijdDag['date'];
+                $time = $tijdslot['time'];
+                $i = $this->fluitBeschikbaarheidHelper->GetIndexOfTijd($wedstrijdDag['speeltijden'], $time);
 
-                $wedstrijdDag['speeltijden'][$i]['beschikbaarheid'] = $fluitBeschikbaarheid;
-
-                $wedstrijdDag['speeltijden'][$i]['isMogelijk'] = $this->isMogelijk($eigenWedstrijden, $tijdslot['tijd']);
+                $wedstrijdDag['speeltijden'][$i]['beschikbaarheid'] = $this->fluitBeschikbaarheidHelper->GetFluitBeschikbaarheid($fluitBeschikbaarheden, $date, $time);
+                $wedstrijdDag['speeltijden'][$i]['isMogelijk'] = $this->fluitBeschikbaarheidHelper->isMogelijk($eigenWedstrijden, $time);
             }
 
             foreach ($eigenWedstrijden as $wedstrijd) {
-                $wedstrijdDag['eigenWedstrijden'][] = $this->MapToEigenWedstrijd($wedstrijd);
+                $wedstrijdDag['eigenWedstrijden'][] = $this->MapToEigenWedstrijd($wedstrijd, $team, $coachTeam);
             }
-
         }
 
         exit(json_encode($rooster));
     }
 
-    private function GetWedstrijdWithDatumAndTijd($programma, $datum)
-    {
-        foreach ($programma as $wedstrijd) {
-            $wedstrijdDatum = GetDutchDate($wedstrijd['timestamp']);
-            if ($wedstrijdDatum == $datum) {
-                return $wedstrijd;
-            }
-        }
-        return null;
-    }
-
-    private function MapToEigenWedstrijd($wedstrijd)
+    private function MapToEigenWedstrijd($wedstrijd, $team, $coachTeam)
     {
         return [
             "datum" => GetDutchDate($wedstrijd['timestamp']),
-            "tijd" => GetDutchDate($wedstrijd['timestamp']),
+            "tijd" => $wedstrijd['timestamp']->format('H:i'),
             "team1" => $wedstrijd['team1'],
-            "isTeam1" => $wedstrijd['team1'] == $this->team,
-            "isCoachTeam1" => $wedstrijd['team1'] == $this->coachTeam,
+            "isTeam1" => $wedstrijd['team1'] == $team,
+            "isCoachTeam1" => $wedstrijd['team1'] == $coachTeam,
             "team2" => $wedstrijd['team2'],
-            "isTeam2" => $wedstrijd['team2'] == $this->team,
-            "isCoachTeam2" => $wedstrijd['team2'] == $this->coachTeam,
+            "isTeam2" => $wedstrijd['team2'] == $team,
+            "isCoachTeam2" => $wedstrijd['team2'] == $coachTeam,
             "locatie" => GetShortLocatie($wedstrijd['locatie']),
         ];
-    }
-
-    private function isMogelijk($wedstrijden, $tijd)
-    {
-        $bestResult = true;
-        foreach ($wedstrijden as $wedstrijd) {
-            $format = 'Y-m-d H:i';
-            $timestring = $wedstrijd['timestamp']->format('Y-m-d') . " " . $tijd;
-            $fluitWedstrijd = [
-                "timestamp" => $date = DateTime::createFromFormat($format, $timestring),
-                "locatie" => "Universitair SC",
-            ];
-            $isMogelijk = isMogelijk($wedstrijd, $fluitWedstrijd);
-            if (!$isMogelijk) {
-                return false;
-            }
-            $bestResult = $isMogelijk === true ? $bestResult : null;
-        }
-
-        return $bestResult;
-    }
-
-    private function GetFluitBeschikbaarheid($datum, $tijd)
-    {
-        foreach ($this->fluitBeschikbaarheid as $fluitBeschikbaarheid) {
-            if ($fluitBeschikbaarheid['datum'] == $datum && $fluitBeschikbaarheid['tijd'] == $tijd) {
-                return $fluitBeschikbaarheid['beschikbaarheid'];
-            }
-        }
-        return "Onbekend";
-    }
-
-    private function GetUscRooster($skcProgramma)
-    {
-        $rooster = [];
-        foreach ($skcProgramma as $wedstrijd) {
-            $datum = GetDutchDate($wedstrijd['timestamp']);
-            $date = $wedstrijd['timestamp']->format("Y-m-d");
-            $tijd = $wedstrijd['timestamp']->format("G:i");
-            $time = $wedstrijd['timestamp']->format("G:i:s");
-            $team1 = $wedstrijd['team1'];
-            $team2 = $wedstrijd['team2'];
-
-            $i = $this->GetIndexOfDatum($rooster, $datum);
-            if ($i === null) {
-                $rooster[] = [
-                    "datum" => $datum,
-                    "date" => $wedstrijd['timestamp']->format("Y-m-d"),
-                    "speeltijden" => [],
-                ];
-                $i = count($rooster) - 1;
-            }
-            $j = $this->GetIndexOfTijd($rooster[$i]['speeltijden'], $tijd);
-            if ($j === null) {
-                $rooster[$i]['speeltijden'][] = [
-                    "tijd" => $tijd,
-                    "time" => $time,
-                    "wedstrijden" => [],
-                ];
-                $j = count($rooster[$i]['speeltijden']) - 1;
-            }
-
-            $rooster[$i]['speeltijden'][$j]['wedstrijden'][] = [
-                "team1" => $team1,
-                "isTeam1" => $this->team == $team1,
-                "isCoachTeam1" => $this->coachTeam == $team1,
-                "team2" => $team2,
-                "isTeam2" => $this->team == $team2,
-                "isCoachTeam2" => $this->coachTeam == $team2,
-            ];
-        }
-
-        return $rooster;
-    }
-
-    private function GetIndexOfDatum($rooster, $datum)
-    {
-        for ($i = count($rooster) - 1; $i >= 0; $i--) {
-            if ($rooster[$i]['datum'] == $datum) {
-                return $i;
-            }
-        }
-        return null;
-    }
-
-    private function GetIndexOfTijd($roosterDag, $tijd)
-    {
-        for ($i = count($roosterDag) - 1; $i >= 0; $i--) {
-            if ($roosterDag[$i]['tijd'] == $tijd) {
-                return $i;
-            }
-        }
-        return null;
     }
 }

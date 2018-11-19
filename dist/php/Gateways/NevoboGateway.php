@@ -33,7 +33,7 @@ class NevoboGateway
         $this->regio = $regio;
     }
 
-    public function GetStandForTeam($poule)
+    public function GetStandForPoule($poule)
     {
         $url = sprintf($this->poulestandUrl, $this->regio, $poule, $this->exportType);
 
@@ -93,6 +93,17 @@ class NevoboGateway
         $sequence = $this->GetSequence($team);
         $url = sprintf($this->teamprogrammaUrl, $this->verenigingscode, $gender, $sequence, $this->exportType);
         return $this->GetProgramma($url);
+    }
+
+    public function GetUitslagenForTeam($team)
+    {
+        if (!$team) {
+            return [];
+        }
+        $gender = $this->GetGender($team);
+        $sequence = $this->GetSequence($team);
+        $url = sprintf($this->teamresultatenUrl, $this->verenigingscode, $gender, $sequence, $this->exportType);
+        return $this->GetUitslagen($url);
     }
 
     public function DoesTeamExist($vereniging, $gender, $sequence)
@@ -199,6 +210,42 @@ class NevoboGateway
         }
 
         return $programma;
+    }
+
+    private function GetUitslagen($url)
+    {
+        /*
+        Voorbeeld:
+
+        [title] =>
+        SKC HS 2 - Aspasia HS 2, Uitslag: 3-2
+        [description] =>
+        Wedstrijd: SKC HS 2 - Aspasia HS 2, Uitslag: 3-2, Setstanden: 27-25, 17-25, 19-25, 25-16, 15-10
+         */
+
+        $matches = $this->ParseFeed($url);
+        $uitslagen = [];
+        foreach ($matches as $match) {
+            $title = addslashes($match['title']);
+            $description = addslashes($match['description']);
+
+            preg_match("/(.*) - (.*), Uitslag: (.*)/", $title, $titleMatches);
+            $team1 = stripslashes($titleMatches[1]);
+            $team2 = stripslashes($titleMatches[2]);
+            $uitslag = $titleMatches[3];
+
+            preg_match("/Wedstrijd: (.*), Uitslag: (.*), Setstanden: (.*)/", $description, $descriptionMatches);
+            $setstanden = $descriptionMatches[3];
+
+            $uitslagen[] = [
+                'team1' => $team1,
+                'team2' => $team2,
+                'uitslag' => $uitslag,
+                'setstanden' => explode(", ", $setstanden),
+            ];
+        }
+
+        return $uitslagen;
     }
 
     private function ConvertNevoboDate($date)

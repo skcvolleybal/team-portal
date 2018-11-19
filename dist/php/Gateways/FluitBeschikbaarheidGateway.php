@@ -66,11 +66,7 @@ class FluitBeschikbaarheidGateway
         if ($dbBeschikbaarheid == null) {
             $this->Insert($userId, $datum, $tijd, $beschikbaarheid);
         } else {
-            if ($beschikbaarheid == 'Onbekend') {
-                $this->Delete($dbBeschikbaarheid['id']);
-            } else {
-                $this->Update($dbBeschikbaarheid['id'], $beschikbaarheid);
-            }
+            $this->Update($dbBeschikbaarheid['id'], $beschikbaarheid);
         }
     }
 
@@ -100,17 +96,6 @@ class FluitBeschikbaarheidGateway
         $params = [
             new Param(":id", $id, PDO::PARAM_INT),
             new Param(":beschikbaarheid", $beschikbaarheid, PDO::PARAM_STR),
-        ];
-
-        $this->database->Execute($query, $params);
-    }
-
-    private function Delete($id)
-    {
-        $query = "DELETE FROM TeamPortal_fluitbeschikbaarheid
-                  WHERE id = :id";
-        $params = [
-            new Param(":id", $id, PDO::PARAM_INT),
         ];
 
         $this->database->Execute($query, $params);

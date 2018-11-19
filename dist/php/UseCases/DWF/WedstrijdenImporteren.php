@@ -1,7 +1,7 @@
 <?php
-include 'IInteractor.php';
-include 'DwfGateway.php';
-include 'GespeeldeWedstrijdenGateway.php';
+include_once 'IInteractor.php';
+include_once 'DwfGateway.php';
+include_once 'GespeeldeWedstrijdenGateway.php';
 
 class WedstrijdenImporteren implements IInteractor
 {
