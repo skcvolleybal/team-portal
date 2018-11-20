@@ -1,9 +1,9 @@
 <?php
 include_once 'IInteractor.php';
-include_once 'FluitBeschikbaarheid' . DIRECTORY_SEPARATOR . 'SetAllFluitbeschikbaarheden.php';
-include_once 'WedstrijdOverzicht' . DIRECTORY_SEPARATOR . 'GenerateVoorpaginaRooster.php';
-include_once 'Teamstanden' . DIRECTORY_SEPARATOR . 'GenerateTeamstanden.php';
-include_once 'Teamstanden' . DIRECTORY_SEPARATOR . 'GenerateTeamoverzichten.php';
+include_once 'SetAllFluitbeschikbaarheden.php';
+include_once 'GenerateVoorpaginaRooster.php';
+include_once 'GenerateTeamstanden.php';
+include_once 'GenerateTeamoverzichten.php';
 
 class CompleteDailyTasks implements IInteractor
 {
