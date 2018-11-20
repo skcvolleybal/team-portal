@@ -45,3 +45,6 @@ php/cookie.txt
 php/UseCases/WedstrijdOverzicht/rooster.json
 php/UseCases/Teamstanden/teamoverzichten.json
 php/UseCases/Teamstanden/teamstanden.json
+dist/php/UseCases/WedstrijdOverzicht/rooster.json
+dist/php/UseCases/Teamstanden/teamoverzichten.json
+dist/php/UseCases/Teamstanden/teamstanden.json
