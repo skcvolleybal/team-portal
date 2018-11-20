@@ -42,5 +42,6 @@ Thumbs.db
 **/*.spc
 build-wrapper-win-x86-64.exe
 php/cookie.txt
-php/UseCases/Teamstanden/teamstanden.json
-php/UseCases/Teamstanden/teamoverzichten.json
+php/UseCases/ScheduledTasks/teamstanden.json
+php/UseCases/ScheduledTasks/rooster.json
+php/UseCases/ScheduledTasks/teamoverzichten.json
