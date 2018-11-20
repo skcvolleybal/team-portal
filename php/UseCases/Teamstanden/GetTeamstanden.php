@@ -15,8 +15,12 @@ class GetTeamstanden implements IInteractor
         $numberOfSkcTeams = count($teams);
 
         $teamnames = [];
-        foreach ($teams as $team) {
+        $bordercolors = [];
+        $backgroundcolor = [];
+        foreach ($teams as $i => $team) {
             $teamnames[] = '"' . GetShortTeam($team['naam']) . '"';
+            $backgroundcolor[] = $i % 2 == 0 ? "'rgba(75, 192, 192, 0.2)'" : "'rgba(75, 192, 192, 0.2)'";
+            $bordercolors[] = $i % 2 == 0 ? "'rgba(75, 192, 192, 1)'" : "'rgba(54, 162, 235, 1)'";
         }
 
         $rankings = array();
@@ -45,8 +49,8 @@ class GetTeamstanden implements IInteractor
         $template = str_replace("__ALLTEAMS__", implode(", ", $teamnames), $template);
         $template = str_replace("__BACKGROUNDCOLOR__", implode(", ", array_fill(0, $numberOfSkcTeams, "'rgba(0, 0, 0, 0.05)'")), $template);
         $template = str_replace("__BORDERCOLOR__", implode(", ", array_fill(0, $numberOfSkcTeams, "'rgba(0, 0, 0, 0.5)'")), $template);
-        $template = str_replace("__DATABACKGROUNDCOLOR__", implode(", ", array_fill(0, $numberOfSkcTeams, "'rgba(75, 192, 192, 0.2)'")), $template);
-        $template = str_replace("__DATABORDERCOLOR__", implode(", ", array_fill(0, $numberOfSkcTeams, "'rgba(75, 192, 192, 1)'")), $template);
+        $template = str_replace("__DATABACKGROUNDCOLOR__", implode(", ", $backgroundcolor), $template);
+        $template = str_replace("__DATABORDERCOLOR__", implode(", ", $bordercolors), $template);
 
         exit($template);
     }
