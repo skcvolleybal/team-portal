@@ -26,7 +26,8 @@ class GenerateTeamstanden implements IInteractor
         }
 
         if (count($teams) > 0) {
-            file_put_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . "teamstanden.json", json_encode($teams));
+            $filename = dirname(__FILE__) . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "Teamstanden" . DIRECTORY_SEPARATOR . "teamstanden.json";
+            file_put_contents($filename, json_encode($teams));
         }
 
         return [
