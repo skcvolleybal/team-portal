@@ -27,23 +27,35 @@ class GetTeamoverzicht implements IInteractorWithData
         $poule = GetKlasse($teamoverzicht['poule']);
         $klasseUrl = "https://www.volleybal.nl/competitie/poule/" . $poule . "/regio-west";
         $klasse = GetKlasse($teamoverzicht['poule']);
-        $trainer = $teamoverzicht['trainer'];
+        $trainers = [];
+        foreach ($teamoverzicht['trainer'] as $trainer) {
+            $trainers[] = $trainer['naam'];
+        }
+
         $stand = $teamoverzicht['stand'];
         $uitslagen = $teamoverzicht['uitslagen'];
         $programma = $teamoverzicht['programma'];
         $trainingstijden = $teamoverzicht['trainingstijden'];
-        $coaches = $teamoverzicht['coaches'];
+
+        $coaches = [];
+        foreach ($teamoverzicht['coaches'] as $coach) {
+            $coaches[] = $coach['naam'];
+        }
         $facebook = $teamoverzicht['facebook'];
 
         $template = file_get_contents("./UseCases/Teamstanden/templates/teamoverzicht.html");
         $template = str_replace("{{TEAMNAAM}}", $teamnaam, $template);
         $template = str_replace("{{KLASSE}}", GetKlasse($teamoverzicht['poule']), $template);
         $template = str_replace("{{KLASSE_URL}}", $klasseUrl, $template);
-        $template = str_replace("{{TRAINER}}", $trainer, $template);
+        $template = str_replace("{{TRAINER}}", implode(", ", $trainers), $template);
         $template = str_replace("{{TRAININGSTIJDEN}}", $trainingstijden, $template);
-        $template = str_replace("{{COACHES}}", $coaches, $template);
-        $template = str_replace("{{FACEBOOK}}", $facebook, $template);
+        $template = str_replace("{{COACHES}}", implode(", ", $coaches), $template);
         $template = str_replace("{{POULE}}", $poule, $template);
+        $facebookTemplate = "";
+        if ($facebook) {
+            $facebookTemplate = "<div href='#' class='list-group-item'><a style='color: #337ab7;' href='$facebook'><i class='fa fa-2x fa-facebook-official'></i></a></div>";
+        }
+        $template = str_replace("{{FACEBOOK}}", $facebookTemplate, $template);
 
         $html = "";
         foreach ($stand as $team) {
