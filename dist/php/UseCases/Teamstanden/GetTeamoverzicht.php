@@ -25,7 +25,7 @@ class GetTeamoverzicht implements IInteractorWithData
         $teamoverzicht = $this->GetTeamOverzicht($overzichten, $teamnaam);
 
         $poule = GetKlasse($teamoverzicht['poule']);
-        $klasseUrl = "https://www.volleybal.nl/competitie/poule/" . $poule . "/regio-west";
+        $klasseUrl = "https://www.volleybal.nl/competitie/poule/" . $teamoverzicht['poule'] . "/regio-west";
         $klasse = GetKlasse($teamoverzicht['poule']);
         $trainers = [];
         foreach ($teamoverzicht['trainer'] as $trainer) {
@@ -53,7 +53,7 @@ class GetTeamoverzicht implements IInteractorWithData
         $template = str_replace("{{POULE}}", $poule, $template);
         $facebookTemplate = "";
         if ($facebook) {
-            $facebookTemplate = "<div href='#' class='list-group-item'><a style='color: #337ab7;' href='$facebook'><i class='fa fa-2x fa-facebook-official'></i></a></div>";
+            $facebookTemplate = "<div href='#' class='list-group-item'><a style='color: #337ab7;' target='_blank' href='$facebook'><i class='fa fa-2x fa-facebook-official'></i></a></div>";
         }
         $template = str_replace("{{FACEBOOK}}", $facebookTemplate, $template);
 
