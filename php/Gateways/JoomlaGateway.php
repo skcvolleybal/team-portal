@@ -111,6 +111,25 @@ class JoomlaGateway
         return $this->IsUserInUsergroup($userId, 'Scheidsco');
     }
 
+    public function IsBarcie($userId)
+    {
+        return $this->IsUserInUsergroup($userId, 'Barcie');
+    }
+
+    public function IsCoach($userId)
+    {
+        $query = "SELECT *
+                  FROM J3_user_usergroup_map M
+                  INNER JOIN J3_usergroups G ON M.group_id = G.id
+                  WHERE M.user_id = :userId and G.title LIKE :usergroup";
+        $params = [
+            new Param(":userId", $userId, PDO::PARAM_INT),
+            new Param(":usergroup", "Coach %", PDO::PARAM_STR),
+        ];
+        $result = $this->database->Execute($query, $params);
+        return count($result) > 0;
+    }
+
     public function GetTeam($userId)
     {
         $query = "SELECT title as naam

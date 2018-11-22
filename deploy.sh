@@ -5,3 +5,4 @@ rm * -R -v
 cp ../scripts/team-portal/dist/* . -R
 cd php
 mkdir cache
+curl https://www.skcvolleybal.nl/team-portal/php/interface.php?action=CompleteDailyTasks

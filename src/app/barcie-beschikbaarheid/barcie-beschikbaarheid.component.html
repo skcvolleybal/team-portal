@@ -18,13 +18,9 @@
             'list-group-item-success': dag.isMogelijk == 'Ja'
           }">
           <form>
-            <div class="form-row">
-              <div class="col" style="line-height: 38px;">
-                {{dag.tijd}}
-              </div>
-              <div class="col" style="max-width:115px;">
-                <app-aanwezigheid (updateAanwezigheid)="UpdateBarcieBeschikbaarheid($event, dag.date)" [aanwezigheid]="dag.beschikbaarheid"></app-aanwezigheid>
-              </div>
+            <div class="form-row justify-content-center">
+
+              <app-aanwezigheid (updateAanwezigheid)="UpdateBarcieBeschikbaarheid($event, dag.date)" [aanwezigheid]="dag.beschikbaarheid"></app-aanwezigheid>
             </div>
           </form>
         </li>

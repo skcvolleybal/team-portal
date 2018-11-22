@@ -19,13 +19,12 @@ export class BarcieBeschikbaarheidComponent implements OnInit {
     this.getBarcieBeschikbaarheid();
   }
 
-  UpdateBarcieBeschikbaarheid(beschikbaarheid, datum, tijd) {
+  UpdateBarcieBeschikbaarheid(beschikbaarheid, date) {
     this.httpClient
       .post(
         environment.baseUrl,
         {
-          datum,
-          tijd,
+          date,
           beschikbaarheid
         },
         {

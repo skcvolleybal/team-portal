@@ -28,7 +28,8 @@
 
   <div [ngbCollapse]="isNavbarHidden" class="navbar-collapse collapse" id="navbarColor02">
     <ul class="navbar-nav mr-auto">
-      <li class="nav-item" routerLinkActive="active" *ngFor="let appRoute of appRoutes" (click)="onLinkClick()">
+      <li class="nav-item" routerLinkActive="active" *ngFor="let appRoute of appRoutes" (click)="onLinkClick()"
+        [ngClass]="{'hidden': appRoute.data.isHidden}">
         <a class="nav-link" [routerLink]="appRoute.path">{{appRoute.data.title}}</a>
       </li>
       <li *ngIf="isWebcie">

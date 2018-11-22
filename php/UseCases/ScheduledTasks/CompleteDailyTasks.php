@@ -28,6 +28,6 @@ class CompleteDailyTasks implements IInteractor
         $generateTeamoverzichtenInteractor = new GenerateTeamoverzichten($this->database);
         $result[] = $generateTeamoverzichtenInteractor->Execute();
 
-        exit(print_r($result));
+        print_r($result);
     }
 }

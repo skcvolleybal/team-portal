@@ -38,10 +38,10 @@ class BarcieGateway
 
     public function GetBeschikbaarheden($userId)
     {
-        $query = "SELECT D.date, A.available
+        $query = "SELECT D.date, A.beschikbaarheid
                   FROM barcie_availability A
-                  INNER JOIN barcie_days D on A.day_id = A.id
-                  WHERE A.user_id = :userId";
+                  INNER JOIN barcie_days D on A.day_id = D.id
+                  WHERE A.user_id = :userId and D.date >= CURRENT_DATE()";
         $params = [
             new Param(":userId", $userId, PDO::PARAM_INT),
         ];
@@ -59,12 +59,16 @@ class BarcieGateway
             new Param(":dayId", $dayId, PDO::PARAM_INT),
         ];
 
-        return $this->database->Execute($query, $params);
+        $result = $this->database->Execute($query, $params);
+        if (count($result) == 0) {
+            return null;
+        }
+        return $result[0];
     }
 
-    public function UpdateBeschibaarheid($id, $beschikbaarheid)
+    public function UpdateBeschikbaarheid($id, $beschikbaarheid)
     {
-        $beschikbaarheid = BeschikbaarheidToInteger($beschikbaarheid);
+        $this->CheckBeschikbaarheid($beschikbaarheid);
         $query = "UPDATE barcie_availability
                   SET beschikbaarheid = :beschikbaarheid
                   WHERE id = :id";
@@ -76,20 +80,9 @@ class BarcieGateway
         return $this->database->Execute($query, $params);
     }
 
-    public function DeleteBeschibaarheid($id)
+    public function InsertBeschikbaarheid($userId, $dayId, $beschikbaarheid)
     {
-        $query = "DELETE FROM barcie_availability
-                  WHERE id = :id";
-        $params = [
-            new Param(":id", $id, PDO::PARAM_INT),
-        ];
-
-        return $this->database->Execute($query, $params);
-    }
-
-    public function InsertBeschibaarheid($userId, $date, $beschikbaarheid)
-    {
-        $beschikbaarheid = BeschikbaarheidToInteger($beschikbaarheid);
+        $this->CheckBeschikbaarheid($beschikbaarheid);
         $query = "INSERT INTO barcie_availability (day_id, user_id, availability)
                   VALUES (:dayId, :userId, :beschikbaarheid)";
         $params = [
@@ -101,17 +94,10 @@ class BarcieGateway
         return $this->database->Execute($query, $params);
     }
 
-    private function BeschikbaarheidToInteger($beschikbaarheid)
+    private function CheckBeschikbaarheid($beschikbaarheid)
     {
-        switch ($beschikbaarheid) {
-            case "Ja":
-                return 1;
-            case "Nee":
-                return 0;
-            case "Onbekend":
-                return 2;
-            default:
-                InternalServerError("Unknown keuze: $beschikbaarheid");
+        if (!in_array($beschikbaarheid, ["Ja", "Nee", "Onbekend"])) {
+            InternalServerError("$beschikbaarheid is niet een van de opties");
         }
     }
 

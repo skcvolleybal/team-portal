@@ -36,7 +36,7 @@ export const appRoutes: Routes = [
   {
     path: 'mijn-overzicht',
     component: MijnOverzichtComponent,
-    data: { title: 'Mijn Overzicht' }
+    data: { title: 'Mijn Overzicht', isHidden: true }
   },
   {
     path: 'wedstrijd-aanwezigheid',
@@ -51,22 +51,22 @@ export const appRoutes: Routes = [
   {
     path: 'coach-aanwezigheid',
     component: CoachWedstrijdenComponent,
-    data: { title: 'Coach Aanwezigheid' }
+    data: { title: 'Coach Aanwezigheid', isHidden: true }
   },
   {
     path: 'fluit-beschikbaarheid',
     component: FluitBeschikbaarheidComponent,
-    data: { title: 'Fluit Beschikbaarheid' }
+    data: { title: 'Fluit Beschikbaarheid', isHidden: true }
   },
-//   {
-//     path: 'barcie-beschikbaarheid',
-//     component: BarcieBeschikbaarheidComponent,
-//     data: { title: 'Barcie Beschikbaarheid' }
-//   },
+  {
+    path: 'barcie-beschikbaarheid',
+    component: BarcieBeschikbaarheidComponent,
+    data: { title: 'Barcie Beschikbaarheid', isHidden: true }
+  },
   {
     path: 'scheidsco',
     component: ScheidscoComponent,
-    data: { title: 'Scheidsco' }
+    data: { title: 'Scheidsco', isHidden: true }
   },
   {
     path: 'statistieken',

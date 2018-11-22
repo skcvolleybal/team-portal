@@ -3,13 +3,8 @@ import { Component, Injector, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
 import { NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
-import { Observable, of } from 'rxjs';
-import {
-  catchError,
-  debounceTime,
-  distinctUntilChanged,
-  switchMap
-} from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 // tslint:disable-next-line:no-implicit-dependencies
 import { environment } from 'src/environments/environment';
 import { LoginModalComponent } from './login-modal/login-modal.component';
@@ -67,12 +62,37 @@ export class AppComponent implements OnInit {
 
     this.httpClient
       .get<boolean>(environment.baseUrl, {
-        params: { action: 'IsWebcie' }
+        params: { action: 'GetGroups' }
       })
       .subscribe(response => {
-        this.stateService.isWebcie = response;
-        this.isWebcie = response;
+        this.ShowMenuItems(response);
       });
+  }
+
+  ShowMenuItems(groups) {
+    groups.forEach(group => {
+      if (group === 'coach') {
+        this.ShowMenuItem('coach-aanwezigheid');
+      } else if (group === 'scheidsrechter') {
+        this.ShowMenuItem('fluit-beschikbaarheid');
+      } else if (group === 'barcie') {
+        this.ShowMenuItem('barcie-beschikbaarheid');
+      } else if (group === 'scheidsco') {
+        this.ShowMenuItem('scheidsco');
+      } else if (group === 'webcie') {
+        this.stateService.isWebcie = true;
+        this.isWebcie = true;
+        this.ShowMenuItem('coach-aanwezigheid');
+      }
+    });
+  }
+
+  ShowMenuItem(path: string) {
+    this.appRoutes.forEach(route => {
+      if (route.path === path) {
+        route.data.isHidden = false;
+      }
+    });
   }
 
   setImpersonation() {

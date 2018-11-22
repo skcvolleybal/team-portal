@@ -191,35 +191,35 @@ class TeamPortal
     {
         include_once 'UseCases' . DIRECTORY_SEPARATOR . 'WedstrijdOverzicht' . DIRECTORY_SEPARATOR . 'GetVoorpaginaRooster.php';
         $interactor = new GetVoorpaginaRooster($this->database);
-        exit(json_encode($interactor->Execute()));
+        $interactor->Execute();
     }
 
     public function GenerateVoorpaginaRooster()
     {
         include_once 'UseCases' . DIRECTORY_SEPARATOR . 'ScheduledTasks' . DIRECTORY_SEPARATOR . 'GenerateVoorpaginaRooster.php';
         $interactor = new GenerateVoorpaginaRooster($this->database);
-        exit(json_encode($interactor->Execute()));
+        print_r($interactor->Execute());
     }
 
     public function SetAllFluitBeschikbaarheden()
     {
         include_once 'UseCases' . DIRECTORY_SEPARATOR . 'ScheduledTasks' . DIRECTORY_SEPARATOR . 'SetAllFluitbeschikbaarheden.php';
         $interactor = new SetAllFluitbeschikbaarheden($this->database);
-        exit(json_encode($interactor->Execute()));
+        print_r($interactor->Execute());
     }
 
     public function GenerateTeamstanden()
     {
         include_once 'UseCases' . DIRECTORY_SEPARATOR . 'ScheduledTasks' . DIRECTORY_SEPARATOR . 'GenerateTeamstanden.php';
         $interactor = new GenerateTeamstanden($this->database);
-        exit(print_r($interactor->Execute()));
+        print_r($interactor->Execute());
     }
 
     public function GenerateTeamoverzichten()
     {
         include_once 'UseCases' . DIRECTORY_SEPARATOR . 'ScheduledTasks' . DIRECTORY_SEPARATOR . 'GenerateTeamoverzichten.php';
         $interactor = new GenerateTeamoverzichten($this->database);
-        exit(print_r($interactor->Execute()));
+        print_r($interactor->Execute());
     }
 
     public function CompleteDailyTasks()
@@ -227,7 +227,7 @@ class TeamPortal
         include_once 'UseCases' . DIRECTORY_SEPARATOR . 'ScheduledTasks' . DIRECTORY_SEPARATOR . 'CompleteDailyTasks.php';
         $queryParameters = GetQueryParameters();
         $interactor = new CompleteDailyTasks($this->database);
-        exit(print_r($interactor->Execute($queryParameters)));
+        $interactor->Execute($queryParameters);
     }
 
     public function GetTeamstanden()
@@ -235,7 +235,7 @@ class TeamPortal
         include_once 'UseCases' . DIRECTORY_SEPARATOR . 'Teamstanden' . DIRECTORY_SEPARATOR . 'GetTeamstanden.php';
         $queryParameters = GetQueryParameters();
         $interactor = new GetTeamstanden();
-        exit(print_r($interactor->Execute($queryParameters)));
+        $interactor->Execute($queryParameters);
     }
 
     public function GetTeamoverzicht()
@@ -243,6 +243,21 @@ class TeamPortal
         include_once 'UseCases' . DIRECTORY_SEPARATOR . 'Teamstanden' . DIRECTORY_SEPARATOR . 'GetTeamoverzicht.php';
         $queryParameters = GetQueryParameters();
         $interactor = new GetTeamoverzicht();
-        exit(print_r($interactor->Execute($queryParameters)));
+        $interactor->Execute($queryParameters);
+    }
+
+    public function UpdateBarcieBeschikbaarheid()
+    {
+        include_once 'UseCases' . DIRECTORY_SEPARATOR . 'Barcie' . DIRECTORY_SEPARATOR . 'UpdateBarcieBeschikbaarheid.php';
+        $postData = GetPostValues();
+        $interactor = new UpdateBarcieBeschikbaarheid($this->database);
+        $interactor->Execute($postData);
+    }
+
+    public function GetGroups()
+    {
+        include_once 'UseCases' . DIRECTORY_SEPARATOR . 'Inloggen' . DIRECTORY_SEPARATOR . 'GetGroups.php';
+        $interactor = new GetGroups($this->database);
+        $interactor->Execute();
     }
 }
