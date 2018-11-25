@@ -108,7 +108,7 @@ class JoomlaGateway
 
     public function IsScheidsco($userId)
     {
-        return $this->IsUserInUsergroup($userId, 'Scheidsco');
+        return $this->IsUserInUsergroup($userId, 'ScheidsCo');
     }
 
     public function IsBarcie($userId)

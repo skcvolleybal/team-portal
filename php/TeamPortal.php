@@ -260,4 +260,59 @@ class TeamPortal
         $interactor = new GetGroups($this->database);
         $interactor->Execute();
     }
+
+    public function GetBarcieLeden()
+    {
+        include_once 'UseCases' . DIRECTORY_SEPARATOR . 'Barcie' . DIRECTORY_SEPARATOR . 'GetBarcieLeden.php';
+        $queryParameters = GetQueryParameters();
+        $interactor = new GetBarcieLeden($this->database);
+        exit(json_encode($interactor->Execute($queryParameters)));
+    }
+
+    public function AddBarcieAanwezigheid()
+    {
+        include_once 'UseCases' . DIRECTORY_SEPARATOR . 'Barcie' . DIRECTORY_SEPARATOR . 'AddBarcieAanwezigheid.php';
+        $postData = GetPostValues();
+        $interactor = new AddBarcieAanwezigheid($this->database);
+        $interactor->Execute($postData);
+    }
+
+    public function DeleteBarcieAanwezigheid()
+    {
+        include_once 'UseCases' . DIRECTORY_SEPARATOR . 'Barcie' . DIRECTORY_SEPARATOR . 'DeleteBarcieAanwezigheid.php';
+        $postData = GetPostValues();
+        $interactor = new DeleteBarcieAanwezigheid($this->database);
+        $interactor->Execute($postData);
+    }
+
+    public function GetBarcieRooster()
+    {
+        include_once 'UseCases' . DIRECTORY_SEPARATOR . 'Barcie' . DIRECTORY_SEPARATOR . 'GetBarcieRooster.php';
+        $interactor = new GetBarcieRooster($this->database);
+        exit(json_encode($interactor->Execute()));
+    }
+
+    public function ToggleBhv()
+    {
+        include_once 'UseCases' . DIRECTORY_SEPARATOR . 'Barcie' . DIRECTORY_SEPARATOR . 'ToggleBhv.php';
+        $postData = GetPostValues();
+        $interactor = new ToggleBhv($this->database);
+        $interactor->Execute($postData);
+    }
+
+    public function AddBarcieDag()
+    {
+        include_once 'UseCases' . DIRECTORY_SEPARATOR . 'Barcie' . DIRECTORY_SEPARATOR . 'AddBarcieDag.php';
+        $postData = GetPostValues();
+        $interactor = new AddBarcieDag($this->database);
+        $interactor->Execute($postData);
+    }
+
+    public function DeleteBarcieDag()
+    {
+        include_once 'UseCases' . DIRECTORY_SEPARATOR . 'Barcie' . DIRECTORY_SEPARATOR . 'DeleteBarcieDag.php';
+        $postData = GetPostValues();
+        $interactor = new DeleteBarcieDag($this->database);
+        $interactor->Execute($postData);
+    }
 }

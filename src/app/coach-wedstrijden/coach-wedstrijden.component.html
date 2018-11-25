@@ -1,14 +1,14 @@
 <table class="table table-sm" *ngFor="let wedstrijd of wedstrijden">
   <thead>
     <tr>
-      <th scope="col">
+      <th scope="col" colspan="2">
         {{wedstrijd.datum}}, {{wedstrijd.tijd}}
       </th>
     </tr>
   </thead>
   <tbody>
     <tr class="gray-background">
-      <td>
+      <td colspan="2">
         <ul class="list-group">
           <li *ngIf="wedstrijd.zaalwacht" class="list-group-item">
             Zaalwacht: <span class="badge big-badge badge-success">{{wedstrijd.zaalwacht}}</span>
@@ -30,21 +30,16 @@
         </ul>
       </td>
     </tr>
-    <tr class="gray-background">
-      <ul class="list-group">
-        <li class="list-group-item" [ngClass]="{
-          'list-group-item-warning': wedstrijd.isMogelijk == 'Onbekend', 
-          'list-group-item-danger': wedstrijd.isMogelijk == 'Nee', 
-          'list-group-item-success': wedstrijd.isMogelijk == true
-        }">
-          <app-wedstrijd [wedstrijd]="wedstrijd"></app-wedstrijd>
-          <app-aanwezigheid [aanwezigheid]="wedstrijd.aanwezigheid" (updateAanwezigheid)="UpdateCoachAanwezigheid($event, wedstrijd.id)"></app-aanwezigheid>
-        </li>
-      </ul>
+    <tr>
+      <td class="align-middle">
+        <app-wedstrijd [wedstrijd]="wedstrijd"></app-wedstrijd>
+      </td>
+      <td style="text-align:right" class="align-middle">
+        <app-aanwezigheid [aanwezigheid]="wedstrijd.aanwezigheid" (updateAanwezigheid)="updateAanwezigheid($event, wedstrijd)"></app-aanwezigheid>
+      </td>
     </tr>
-
     <tr class="gray-background">
-      <td></td>
+      <td colspan="2"></td>
     </tr>
 </table>
 <div class="alert alert-danger" role="alert" *ngIf="errorMessage">

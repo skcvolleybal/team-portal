@@ -70,9 +70,9 @@ export class SelecteerScheidsrechterComponent implements OnInit {
 
   GetClass(scheidsrechter) {
     return {
-      'btn-danger': scheidsrechter.isMogelijk === 'Onbekend',
+      'btn-danger': scheidsrechter.isMogelijk === 'Nee',
       'btn-success': scheidsrechter.isMogelijk === 'Ja',
-      'btn-warning': scheidsrechter.isMogelijk === 'Nee'
+      'btn-warning': scheidsrechter.isMogelijk === 'Onbekend'
     };
   }
 

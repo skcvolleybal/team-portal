@@ -70,28 +70,16 @@ export class AppComponent implements OnInit {
   }
 
   ShowMenuItems(groups) {
-    groups.forEach(group => {
-      if (group === 'coach') {
-        this.ShowMenuItem('coach-aanwezigheid');
-      } else if (group === 'scheidsrechter') {
-        this.ShowMenuItem('fluit-beschikbaarheid');
-      } else if (group === 'barcie') {
-        this.ShowMenuItem('barcie-beschikbaarheid');
-      } else if (group === 'scheidsco') {
-        this.ShowMenuItem('scheidsco');
-      } else if (group === 'webcie') {
-        this.stateService.isWebcie = true;
-        this.isWebcie = true;
-        this.ShowMenuItem('coach-aanwezigheid');
-      }
-    });
-  }
-
-  ShowMenuItem(path: string) {
-    this.appRoutes.forEach(route => {
-      if (route.path === path) {
-        route.data.isHidden = false;
-      }
+    groups.forEach(subscription => {
+      this.appRoutes.forEach(appRoute => {
+        if (appRoute.data.groups) {
+          appRoute.data.groups.forEach(group => {
+            if (group === subscription) {
+              appRoute.isHidden = false;
+            }
+          });
+        }
+      });
     });
   }
 

@@ -1,6 +1,6 @@
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule, Routes } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -8,6 +8,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AanwezigheidComponent } from './aanwezigheid/aanwezigheid.component';
 import { AppComponent } from './app.component';
 import { BarcieBeschikbaarheidComponent } from './barcie-beschikbaarheid/barcie-beschikbaarheid.component';
+import { BarcieIndelingComponent } from './barcie-indeling/barcie-indeling.component';
 import { CoachWedstrijdenComponent } from './coach-wedstrijden/coach-wedstrijden.component';
 import { FluitBeschikbaarheidComponent } from './fluit-beschikbaarheid/fluit-beschikbaarheid.component';
 import { CustomInterceptor } from './interceptors/add-credentials.interceptor';
@@ -30,13 +31,14 @@ import { WedstrijdOverzichtComponent } from './wedstrijd-overzicht/wedstrijd-ove
 import { WedstrijdComponent } from './wedstrijd/wedstrijd.component';
 import { WedstrijdenCardComponent } from './wedstrijden-card/wedstrijden-card.component';
 import { WedstrijdenComponent } from './wedstrijden/wedstrijden.component';
+import { SelecteerBarcieLidComponent } from './selecteer-barcie-lid/selecteer-barcie-lid.component';
 
 export const appRoutes: Routes = [
   { path: '', redirectTo: 'mijn-overzicht', pathMatch: 'full' },
   {
     path: 'mijn-overzicht',
     component: MijnOverzichtComponent,
-    data: { title: 'Mijn Overzicht', isHidden: true }
+    data: { title: 'Mijn Overzicht' }
   },
   {
     path: 'wedstrijd-aanwezigheid',
@@ -51,22 +53,27 @@ export const appRoutes: Routes = [
   {
     path: 'coach-aanwezigheid',
     component: CoachWedstrijdenComponent,
-    data: { title: 'Coach Aanwezigheid', isHidden: true }
+    data: { title: 'Coach Aanwezigheid', groups: ['coach'] }
   },
   {
     path: 'fluit-beschikbaarheid',
     component: FluitBeschikbaarheidComponent,
-    data: { title: 'Fluit Beschikbaarheid', isHidden: true }
+    data: { title: 'Fluit Beschikbaarheid', groups: ['scheidsrechter'] }
   },
   {
     path: 'barcie-beschikbaarheid',
     component: BarcieBeschikbaarheidComponent,
-    data: { title: 'Barcie Beschikbaarheid', isHidden: true }
+    data: { title: 'Barcie Beschikbaarheid', groups: ['barcie', 'webcie'] }
   },
   {
     path: 'scheidsco',
     component: ScheidscoComponent,
-    data: { title: 'Scheidsco', isHidden: true }
+    data: { title: 'Scheidsco', groups: ['Scheidsco', 'webcie'] }
+  },
+  {
+    path: 'Barco',
+    component: BarcieIndelingComponent,
+    data: { title: 'Barco', groups: ['Scheidsco', 'webcie'] }
   },
   {
     path: 'statistieken',
@@ -80,7 +87,8 @@ export const appRoutes: Routes = [
     LoginModalComponent,
     SelecteerZaalwachtComponent,
     SelecteerTellersComponent,
-    SelecteerScheidsrechterComponent
+    SelecteerScheidsrechterComponent,
+    SelecteerBarcieLidComponent
   ],
   declarations: [
     AppComponent,
@@ -103,7 +111,9 @@ export const appRoutes: Routes = [
     SelecteerScheidsrechterComponent,
     SelecteerTellersComponent,
     SelecteerZaalwachtComponent,
-    BarcieBeschikbaarheidComponent
+    BarcieBeschikbaarheidComponent,
+    BarcieIndelingComponent,
+    SelecteerBarcieLidComponent
   ],
   imports: [
     FormsModule,
@@ -113,7 +123,8 @@ export const appRoutes: Routes = [
     }),
     NgbModule,
     BrowserModule,
-    HttpClientModule
+    HttpClientModule,
+    ReactiveFormsModule
   ],
   exports: [],
   providers: [
