@@ -11,17 +11,17 @@ class StatistiekenGateway
         $skcTeam = ToSkcName($team);
         $query = "SELECT R.naam, T2.rugnummer, T2.gespeeldePunten FROM (
                     SELECT rugnummer, count(*) gespeeldePunten FROM (
-                        SELECT ra as rugnummer FROM dwf_punten P inner join dwf_wedstrijden W on P.matchId = W.id where W.team1 = :team || W.team2 = :team
+                        SELECT ra as rugnummer FROM DWF_punten P inner join DWF_wedstrijden W on P.matchId = W.id where W.team1 = :team || W.team2 = :team
                         UNION ALL
-                        SELECT rv as rugnummer FROM dwf_punten P inner join dwf_wedstrijden W on P.matchId = W.id where W.team1 = :team || W.team2 = :team
+                        SELECT rv as rugnummer FROM DWF_punten P inner join DWF_wedstrijden W on P.matchId = W.id where W.team1 = :team || W.team2 = :team
                         UNION ALL
-                        SELECT mv as rugnummer FROM dwf_punten P inner join dwf_wedstrijden W on P.matchId = W.id where W.team1 = :team || W.team2 = :team
+                        SELECT mv as rugnummer FROM DWF_punten P inner join DWF_wedstrijden W on P.matchId = W.id where W.team1 = :team || W.team2 = :team
                         UNION ALL
-                        SELECT lv as rugnummer FROM dwf_punten P inner join dwf_wedstrijden W on P.matchId = W.id where W.team1 = :team || W.team2 = :team
+                        SELECT lv as rugnummer FROM DWF_punten P inner join DWF_wedstrijden W on P.matchId = W.id where W.team1 = :team || W.team2 = :team
                         UNION ALL
-                        SELECT la as rugnummer FROM dwf_punten P inner join dwf_wedstrijden W on P.matchId = W.id where W.team1 = :team || W.team2 = :team
+                        SELECT la as rugnummer FROM DWF_punten P inner join DWF_wedstrijden W on P.matchId = W.id where W.team1 = :team || W.team2 = :team
                         UNION ALL
-                        SELECT ma as rugnummer FROM dwf_punten P inner join dwf_wedstrijden W on P.matchId = W.id where W.team1 = :team || W.team2 = :team
+                        SELECT ma as rugnummer FROM DWF_punten P inner join DWF_wedstrijden W on P.matchId = W.id where W.team1 = :team || W.team2 = :team
                     ) T1
                     GROUP BY rugnummer ORDER BY gespeeldePunten DESC
                   ) T2
