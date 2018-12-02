@@ -65,7 +65,7 @@ class GetBarcieBeschikbaarheid extends GetNevoboMatchByDate implements IInteract
     private function IsMogelijk($wedstrijden)
     {
         if (count($wedstrijden) == 0) {
-            return "Nee";
+            return "Onbekend";
         }
 
         $bestResult = "Ja";
