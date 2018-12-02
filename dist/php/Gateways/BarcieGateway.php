@@ -36,14 +36,40 @@ class BarcieGateway
         return $this->database->Execute($query);
     }
 
+    public function AddBarcieDag($date)
+    {
+        $query = "INSERT INTO barcie_days (date)
+                  VALUES (:date)";
+        $params = [
+            new Param(":date", $date, PDO::PARAM_STR),
+        ];
+
+        return $this->database->Execute($query, $params);
+    }
+
     public function GetBeschikbaarheden($userId)
     {
-        $query = "SELECT D.date, A.available
+        $query = "SELECT D.date, A.beschikbaarheid
                   FROM barcie_availability A
-                  INNER JOIN barcie_days D on A.day_id = A.id
-                  WHERE A.user_id = :userId";
+                  INNER JOIN barcie_days D on A.day_id = D.id
+                  WHERE A.user_id = :userId and D.date >= CURRENT_DATE()";
         $params = [
             new Param(":userId", $userId, PDO::PARAM_INT),
+        ];
+
+        return $this->database->Execute($query, $params);
+    }
+
+    public function GetBeschikbaarhedenForDate($date)
+    {
+        $query = "SELECT
+                    A.user_id as userId,
+                    A.beschikbaarheid
+                  FROM barcie_availability A
+                  INNER JOIN barcie_days D on A.day_id = D.id
+                  WHERE D.date = :date";
+        $params = [
+            new Param(":date", $date, PDO::PARAM_STR),
         ];
 
         return $this->database->Execute($query, $params);
@@ -59,12 +85,16 @@ class BarcieGateway
             new Param(":dayId", $dayId, PDO::PARAM_INT),
         ];
 
-        return $this->database->Execute($query, $params);
+        $result = $this->database->Execute($query, $params);
+        if (count($result) == 0) {
+            return null;
+        }
+        return $result[0];
     }
 
-    public function UpdateBeschibaarheid($id, $beschikbaarheid)
+    public function UpdateBeschikbaarheid($id, $beschikbaarheid)
     {
-        $beschikbaarheid = BeschikbaarheidToInteger($beschikbaarheid);
+        $this->CheckBeschikbaarheid($beschikbaarheid);
         $query = "UPDATE barcie_availability
                   SET beschikbaarheid = :beschikbaarheid
                   WHERE id = :id";
@@ -76,42 +106,24 @@ class BarcieGateway
         return $this->database->Execute($query, $params);
     }
 
-    public function DeleteBeschibaarheid($id)
+    public function InsertBeschikbaarheid($userId, $dayId, $beschikbaarheid)
     {
-        $query = "DELETE FROM barcie_availability
-                  WHERE id = :id";
-        $params = [
-            new Param(":id", $id, PDO::PARAM_INT),
-        ];
-
-        return $this->database->Execute($query, $params);
-    }
-
-    public function InsertBeschibaarheid($userId, $date, $beschikbaarheid)
-    {
-        $beschikbaarheid = BeschikbaarheidToInteger($beschikbaarheid);
-        $query = "INSERT INTO barcie_availability (day_id, user_id, availability)
+        $this->CheckBeschikbaarheid($beschikbaarheid);
+        $query = "INSERT INTO barcie_availability (day_id, user_id, beschikbaarheid)
                   VALUES (:dayId, :userId, :beschikbaarheid)";
         $params = [
             new Param(":userId", $userId, PDO::PARAM_INT),
             new Param(":dayId", $dayId, PDO::PARAM_INT),
-            new Param(":beschikbaarheid", $beschikbaarheid, PDO::PARAM_INT),
+            new Param(":beschikbaarheid", $beschikbaarheid, PDO::PARAM_STR),
         ];
 
         return $this->database->Execute($query, $params);
     }
 
-    private function BeschikbaarheidToInteger($beschikbaarheid)
+    private function CheckBeschikbaarheid($beschikbaarheid)
     {
-        switch ($beschikbaarheid) {
-            case "Ja":
-                return 1;
-            case "Nee":
-                return 0;
-            case "Onbekend":
-                return 2;
-            default:
-                InternalServerError("Unknown keuze: $beschikbaarheid");
+        if (!in_array($beschikbaarheid, ["Ja", "Nee", "Onbekend"])) {
+            InternalServerError("$beschikbaarheid is niet een van de opties");
         }
     }
 
@@ -129,7 +141,7 @@ class BarcieGateway
         return $this->database->Execute($query, $params);
     }
 
-    public function GetBarcieMapItem($dayId, $userId, $shift)
+    public function GetAanwezigheid($dayId, $userId, $shift)
     {
         $query = "SELECT * FROM barcie_schedule_map
                   WHERE day_id = :dayId and
@@ -141,10 +153,70 @@ class BarcieGateway
             new Param(":shift", $shift, PDO::PARAM_INT),
         ];
 
-        return $this->database->Execute($query, $params);
+        $aanwezigheden = $this->database->Execute($query, $params);
+        if (count($aanwezigheden) == 0) {
+            return null;
+        }
+        return $aanwezigheden[0];
     }
 
-    public function AddBarcie($dayId, $userId, $shift)
+    public function GetBarcieAanwezigheden()
+    {
+        $query = "SELECT
+                    M.user_id as userId,
+                    M.name as naam,
+                    M.is_bhv as isBhv,
+                    D.date,
+                    M.shift
+                  FROM barcie_days D
+                  LEFT JOIN (
+                    SELECT
+                        M.day_id,
+                        M.shift,
+                        M.user_id,
+                        U.name,
+                        M.is_bhv
+                    FROM barcie_schedule_map M
+                    INNER JOIN J3_users U on U.id = M.user_id
+                  ) M on M.day_id = D.id
+                  WHERE D.date >= CURRENT_DATE()
+                  ORDER BY date, shift, name";
+        return $this->database->Execute($query);
+    }
+
+    public function GetBarcieRoosterForNextWeek()
+    {
+        $query = "SELECT
+                    D.date,
+                    U.id as userId,
+                    U.name as naam,
+                    U.email,
+                    shift,
+                    is_bhv as isBhv
+                  FROM barcie_schedule_map M
+                  INNER JOIN J3_users U ON M.user_id = U.id
+                  INNER JOIN barcie_days D ON M.day_id = D.id
+                  WHERE D.date BETWEEN CURRENT_DATE() and DATE_ADD(CURRENT_DATE(), INTERVAL 7 DAY)";
+        return $this->database->Execute($query);
+    }
+
+    public function GetBarcieLeden()
+    {
+        $query = "SELECT
+                    U.id,
+                    U.name AS naam,
+                    count(B.id) AS aantalDiensten
+                  FROM J3_users U
+                  INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
+                  INNER JOIN J3_usergroups G ON G.id = M.group_id
+                  LEFT JOIN barcie_schedule_map B ON B.user_id = U.id
+                  WHERE title = 'Barcie'
+                  GROUP BY U.id
+                  ORDER BY count(B.id) ASC";
+        return $this->database->Execute($query);
+    }
+
+    public function InsertAanwezigheid($dayId, $userId, $shift)
     {
         $query = "INSERT INTO barcie_schedule_map (day_id, user_id, shift)
                   VALUES (:dayId, :userId, :shift)";
@@ -157,16 +229,37 @@ class BarcieGateway
         return $this->database->Execute($query, $params);
     }
 
-    public function DeleteBarcie($id)
+    public function DeleteAanwezigheid($id)
     {
         $query = "DELETE FROM barcie_schedule_map
                   WHERE id = :id";
         $params = [
-            new Param(":userId", $userId, PDO::PARAM_INT),
-            new Param(":dayId", $dayId, PDO::PARAM_INT),
-            new Param(":shift", $shift, PDO::PARAM_INT),
+            new Param(":id", $id, PDO::PARAM_INT),
         ];
 
-        return $this->database->Execute($query, $params);
+        $this->database->Execute($query, $params);
+    }
+
+    public function DeleteBarcieDay($id)
+    {
+        $query = "DELETE FROM barcie_days
+                  WHERE id = :id";
+        $params = [
+            new Param(":id", $id, PDO::PARAM_INT),
+        ];
+
+        $this->database->Execute($query, $params);
+    }
+
+    public function ToggleBhv($id)
+    {
+        $query = "UPDATE barcie_schedule_map
+                  SET is_bhv =  IF(is_bhv = 1, 0, 1)
+                  WHERE id = :id";
+        $params = [
+            new Param(":id", $id, PDO::PARAM_INT),
+        ];
+
+        $this->database->Execute($query, $params);
     }
 }

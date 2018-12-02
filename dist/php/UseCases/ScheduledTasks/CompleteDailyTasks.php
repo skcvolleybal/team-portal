@@ -19,6 +19,9 @@ class CompleteDailyTasks implements IInteractor
         $setAllFluitbeschikbaarhedenInteractor = new SetAllFluitbeschikbaarheden($this->database);
         $result[] = $setAllFluitbeschikbaarhedenInteractor->Execute();
 
+        $setAllBarcieBeschikbaarhedenInteractor = new SetAllBarcieBeschikbaarheden($this->database);
+        $result[] = $setAllFluitbeschikbaarhedenInteractor->Execute();
+
         $generateTeamstandenInteractor = new GenerateTeamstanden();
         $result[] = $generateTeamstandenInteractor->Execute();
 
@@ -28,6 +31,6 @@ class CompleteDailyTasks implements IInteractor
         $generateTeamoverzichtenInteractor = new GenerateTeamoverzichten($this->database);
         $result[] = $generateTeamoverzichtenInteractor->Execute();
 
-        exit(print_r($result));
+        print_r($result);
     }
 }

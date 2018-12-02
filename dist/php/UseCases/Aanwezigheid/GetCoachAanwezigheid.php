@@ -46,14 +46,14 @@ class GetCoachAanwezigheid implements IInteractor
 
             // Zaalwachten eerst, want die moeten bovenaan komen te staan
             $filteredZaalwachten = array_filter($zaalwachten, function ($zaalwacht) use ($wedstrijd) {
-                return $wedstrijd['timestamp'] && $zaalwacht['date'] == $wedstrijd['timestamp']->format('Y-m-d');
+                return $zaalwacht['date'] == $wedstrijd['timestamp']->format('Y-m-d');
             });
             foreach ($filteredZaalwachten as $zaalwacht) {
                 $newItem["zaalwacht"] = $zaalwacht['team'];
             }
 
-            $filteredEigenWedstrijden = array_filter($coachWedstrijden, function ($eigenWedstrijd) use ($wedstrijd) {
-                return $eigenWedstrijd['timestamp'] && $eigenWedstrijd['timestamp'] && $eigenWedstrijd['timestamp'] == $wedstrijd['timestamp']->format('Y-m-d');
+            $filteredEigenWedstrijden = array_filter($eigenWedstrijden, function ($eigenWedstrijd) use ($wedstrijd) {
+                return $wedstrijd['timestamp'] && $eigenWedstrijd['timestamp'] && $eigenWedstrijd['timestamp']->format('Y-m-d') == $wedstrijd['timestamp']->format('Y-m-d');
             });
             foreach ($filteredEigenWedstrijden as $eigenWedstrijd) {
                 $newItem["eigenWedstrijden"][] = $this->MapWedstrijdToUsecase($eigenWedstrijd);

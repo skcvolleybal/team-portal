@@ -14,6 +14,9 @@ De volgende mensen hebben zojuist een mail gekregen vanuit de webserver over het
 <b>Zaalwacht</b><br>
 {{zaalwachters}}
 <br>
+<b>Barcie</b><br>
+{{barcieleden}}
+<br>
 Met vriendelijke groet,<br>
 <br>
 De (binkies van de) Webcie,<br>
