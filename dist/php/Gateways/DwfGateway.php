@@ -11,10 +11,10 @@ class DwfGateway
     {
         if (file_exists($this->cookieFilename)) {
             $this->WID = file_get_contents($this->cookieFilename);
-            if (!$this->IsCookieValid()) {
-                file_put_contents($this->cookieFilename, null);
-                $this->Connect();
-            }
+        }
+        if (!$this->IsCookieValid()) {
+            file_put_contents($this->cookieFilename, null);
+            $this->Connect();
         }
     }
 
@@ -137,7 +137,7 @@ class DwfGateway
         $wedstrijden = [];
         foreach ($data->results[0]->data as $counter => $item) {
             if ($item->type == "title") {
-                $date = $item->type;
+                $date = $item->data->sDate;
             } else if ($item->type == "item") {
                 if ($item->data->sStartTime == "-") {
                     continue;

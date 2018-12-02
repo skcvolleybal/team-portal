@@ -180,7 +180,7 @@ class TeamPortal
         $interactor->Execute();
     }
 
-    public function DwfWedstrijdenImporteren()
+    public function WedstrijdenImporteren()
     {
         include_once 'UseCases' . DIRECTORY_SEPARATOR . 'DWF' . DIRECTORY_SEPARATOR . 'WedstrijdenImporteren.php';
         $interactor = new WedstrijdenImporteren($this->database);
@@ -321,5 +321,13 @@ class TeamPortal
         $postData = GetPostValues();
         $interactor = new DeleteBarcieDag($this->database);
         $interactor->Execute($postData);
+    }
+
+    public function GetGespeeldePunten()
+    {
+        include_once 'UseCases' . DIRECTORY_SEPARATOR . 'DWF' . DIRECTORY_SEPARATOR . 'GetGespeeldePunten.php';
+        $postData = GetPostValues();
+        $interactor = new GetGespeeldePunten($this->database);
+        exit(json_encode($interactor->Execute($postData)));
     }
 }
