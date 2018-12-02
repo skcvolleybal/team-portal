@@ -35,7 +35,7 @@
         <app-wedstrijd [wedstrijd]="wedstrijd"></app-wedstrijd>
       </td>
       <td style="text-align:right" class="align-middle">
-        <app-aanwezigheid [aanwezigheid]="wedstrijd.aanwezigheid" (updateAanwezigheid)="updateAanwezigheid($event, wedstrijd)"></app-aanwezigheid>
+        <app-aanwezigheid [aanwezigheid]="wedstrijd.aanwezigheid" (updateAanwezigheid)="UpdateCoachAanwezigheid($event, wedstrijd.id)"></app-aanwezigheid>
       </td>
     </tr>
     <tr class="gray-background">
