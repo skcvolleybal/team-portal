@@ -15,6 +15,11 @@ class ToggleBhv implements IInteractorWithData
     public function Execute($data)
     {
         $userId = $this->joomlaGateway->GetUserId();
+
+        if ($userId === null) {
+            UnauthorizedResult();
+        }
+
         if (!$this->joomlaGateway->IsScheidsco($userId)) {
             InternalServerError("Je bent geen scheidsco");
         }

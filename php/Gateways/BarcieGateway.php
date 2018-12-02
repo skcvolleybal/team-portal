@@ -109,12 +109,12 @@ class BarcieGateway
     public function InsertBeschikbaarheid($userId, $dayId, $beschikbaarheid)
     {
         $this->CheckBeschikbaarheid($beschikbaarheid);
-        $query = "INSERT INTO barcie_availability (day_id, user_id, availability)
+        $query = "INSERT INTO barcie_availability (day_id, user_id, beschikbaarheid)
                   VALUES (:dayId, :userId, :beschikbaarheid)";
         $params = [
             new Param(":userId", $userId, PDO::PARAM_INT),
             new Param(":dayId", $dayId, PDO::PARAM_INT),
-            new Param(":beschikbaarheid", $beschikbaarheid, PDO::PARAM_INT),
+            new Param(":beschikbaarheid", $beschikbaarheid, PDO::PARAM_STR),
         ];
 
         return $this->database->Execute($query, $params);
@@ -181,6 +181,22 @@ class BarcieGateway
                   ) M on M.day_id = D.id
                   WHERE D.date >= CURRENT_DATE()
                   ORDER BY date, shift, name";
+        return $this->database->Execute($query);
+    }
+
+    public function GetBarcieRoosterForNextWeek()
+    {
+        $query = "SELECT
+                    D.date,
+                    U.id as userId,
+                    U.name as naam,
+                    U.email,
+                    shift,
+                    is_bhv as isBhv
+                  FROM barcie_schedule_map M
+                  INNER JOIN J3_users U ON M.user_id = U.id
+                  INNER JOIN barcie_days D ON M.day_id = D.id
+                  WHERE D.date BETWEEN CURRENT_DATE() and DATE_ADD(CURRENT_DATE(), INTERVAL 7 DAY)";
         return $this->database->Execute($query);
     }
 

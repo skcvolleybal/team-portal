@@ -4,6 +4,7 @@ include_once 'NevoboGateway.php';
 include_once 'TelFluitGateway.php';
 include_once 'MailGateway.php';
 include_once 'ZaalwachtGateway.php';
+include_once 'BarcieGateway.php';
 
 class SendWeeklyEmails implements IInteractor
 {
@@ -23,6 +24,7 @@ class SendWeeklyEmails implements IInteractor
         $this->telFluitGateway = new TelFluitGateway($database);
         $this->zaalwachtGateway = new ZaalwachtGateway($database);
         $this->mailGateway = new MailGateway();
+        $this->barcieGateway = new BarcieGateway($database);
     }
 
     public function Execute()
@@ -40,6 +42,7 @@ class SendWeeklyEmails implements IInteractor
             $wedstrijdIds[] = $wedstrijd['id'];
         }
 
+        $barcieLeden = $this->barcieGateway->GetBarcieRoosterForNextWeek();
         $scheidsrechters = $this->telFluitGateway->GetScheidsrechtersForWedstrijdenWithMatchId($wedstrijdIds);
         $tellers = $this->telFluitGateway->GetTellersForWedstrijdenWithMatchId($wedstrijdIds);
         $zaalwachters = $this->zaalwachtGateway->GetZaalwachtersWithinPeriod(7);
@@ -59,7 +62,11 @@ class SendWeeklyEmails implements IInteractor
             $this->MailZaalwachter($zaalwachter);
         }
 
-        $this->MailSamenvatting($wedstrijden, $scheidsrechters, $tellers, $zaalwachters);
+        foreach ($barcieLeden as $barcieLid) {
+            $this->MailBarcieLid($barcieLid);
+        }
+
+        $this->MailSamenvatting($wedstrijden, $scheidsrechters, $tellers, $zaalwachters, $barcieLeden);
 
         exit("Verzonden");
     }
@@ -171,13 +178,35 @@ class SendWeeklyEmails implements IInteractor
         $this->mailGateway->SendMail($this->scheidsco['email'], $this->scheidsco['naam'], $email, $naam, $title, $body);
     }
 
-    private function MailSamenvatting($wedstrijden, $scheidsrechters, $tellers, $zaalwachters)
+    private function MailBarcieLid($barcieLid)
+    {
+        $body = file_get_contents("./UseCases/Email/templates/barcieTemplate.txt");
+
+        $email = $barcieLid['email'];
+        $naam = $barcieLid['naam'];
+        $datum = GetDutchDateLong(new DateTime($barcieLid['date']));
+        $shift = $barcieLid['shift'];
+        $bhv = $barcieLid['isBhv'] == 1 ? "<br>Je bent BHV'er." : "";
+        $title = "Barciedienst " . $datum;
+
+        $body = str_replace("{{email}}", $email, $body);
+        $body = str_replace("{{naam}}", $naam, $body);
+        $body = str_replace("{{datum}}", $datum, $body);
+        $body = str_replace("{{shift}}", $shift, $body);
+        $body = str_replace("{{bhv}}", $bhv, $body);
+        $body = str_replace("{{afzender}}", $this->scheidsco['naam'], $body);
+
+        $this->mailGateway->SendMail($this->scheidsco['email'], $this->scheidsco['naam'], $email, $naam, $title, $body);
+    }
+
+    private function MailSamenvatting($wedstrijden, $scheidsrechters, $tellers, $zaalwachters, $barcieLeden)
     {
         $body = file_get_contents("./UseCases/Email/templates/samenvattingTemplate.txt");
 
-        $scheidsrechtersContent = count($scheidsrechters) == 0 ? "Geen scheidsrechters" : "";
-        $tellersContent = count($tellers) == 0 ? "Geen tellers" : "";
-        $zaalwachtersContent = count($zaalwachters) == 0 ? "Geen zaalwacht" : "";
+        $scheidsrechtersContent = count($scheidsrechters) == 0 ? "Geen scheidsrechters<br>" : "";
+        $tellersContent = count($tellers) == 0 ? "Geen tellers<br>" : "";
+        $zaalwachtersContent = count($zaalwachters) == 0 ? "Geen zaalwacht<br>" : "";
+        $barcieContent = count($barcieLeden) == 0 ? "Geen barcieleden<br>" : "";
         foreach ($wedstrijden as $wedstrijd) {
             $wedstrijdScheidsrechter = $this->GetScheidsrechterFromList($scheidsrechters, $wedstrijd);
             if ($wedstrijdScheidsrechter) {
@@ -200,10 +229,15 @@ class SendWeeklyEmails implements IInteractor
             $zaalwachtersContent .= $zaalwachter['naam'] . " (" . $zaalwachter['email'] . ")<br>";
         }
 
+        foreach ($barcieLeden as $barcieLid) {
+            $barcieContent .= $barcieLid['naam'] . " (" . $barcieLid['email'] . ")<br>";
+        }
+
         $body = str_replace("{{scheidsco}}", $this->scheidsco['naam'], $body);
         $body = str_replace("{{scheidsrechters}}", $scheidsrechtersContent, $body);
         $body = str_replace("{{tellers}}", $tellersContent, $body);
         $body = str_replace("{{zaalwachters}}", $zaalwachtersContent, $body);
+        $body = str_replace("{{barcieleden}}", $barcieContent, $body);
 
         $title = "Samenvatting fluit/tel/zaalwacht mails " . date("j-M-Y");
 

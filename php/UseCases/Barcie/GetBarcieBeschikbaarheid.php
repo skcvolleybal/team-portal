@@ -38,15 +38,15 @@ class GetBarcieBeschikbaarheid extends GetNevoboMatchByDate implements IInteract
         $response = [];
         foreach ($barcieDagen as $barcieDag) {
             $date = $barcieDag['date'];
-            $eigenWedstrijden = array_filter($alleWedstrijden, function ($wedstrijd) use ($barcieDag, $date) {
+            $eigenWedstrijden = array_filter($alleWedstrijden, function ($wedstrijd) use ($date) {
                 return $wedstrijd['timestamp'] && $wedstrijd['timestamp']->format("Y-m-d") == $date;
             });
 
-            $coachWedstrijden = array_filter($alleCoachWedstrijden, function ($wedstrijd) use ($barcieDag, $date) {
+            $coachWedstrijden = array_filter($alleCoachWedstrijden, function ($wedstrijd) use ($date) {
                 return $wedstrijd['timestamp'] && $wedstrijd['timestamp']->format("Y-m-d") == $date;
             });
 
-            $wedstrijden = $this->MapToUsecase(array_merge($eigenWedstrijden, $coachWedstrijden), $team, $coachTeam);
+            $wedstrijden = array_merge($eigenWedstrijden, $coachWedstrijden);
 
             $beschikbaarheid = $this->GetBeschikbaarheid($beschikbaarheden, $date);
 
@@ -54,8 +54,8 @@ class GetBarcieBeschikbaarheid extends GetNevoboMatchByDate implements IInteract
                 "datum" => GetDutchDate(new DateTime($date)),
                 "date" => $barcieDag['date'],
                 "beschikbaarheid" => $beschikbaarheid,
-                "eigenWedstrijden" => $wedstrijden,
-                "isMogelijk" => $this->isMogelijk($wedstrijden) ? "Ja" : "Nee",
+                "eigenWedstrijden" => $this->MapToUsecase($wedstrijden, $team, $coachTeam),
+                "isMogelijk" => $this->isMogelijk($wedstrijden),
             ];
         }
 
@@ -64,23 +64,26 @@ class GetBarcieBeschikbaarheid extends GetNevoboMatchByDate implements IInteract
 
     private function IsMogelijk($wedstrijden)
     {
+        if (count($wedstrijden) == 0) {
+            return "Nee";
+        }
+
+        $bestResult = "Ja";
         foreach ($wedstrijden as $wedstrijd) {
-            if ($wedstrijd['isTeam1'] || $wedstrijd['isTeam2']) {
-                if (IsThuis($wedstrijd['locatie'])) {
-                    return true;
-                } else {
-                    return false;
-                }
+            if (!IsThuis($wedstrijd['locatie'])) {
+                return "Nee";
             }
-            if ($wedstrijd['isCoachTeam1'] || $wedstrijd['isCoachTeam2']) {
-                if (IsThuis($wedstrijd['locatie'])) {
-                    return true;
+            if ($wedstrijd['timestamp']) {
+                $time = $wedstrijd['timestamp']->format('H:i');
+                if ($time == "19:30" || $time == "16:00") {
+                    $bestResult = $bestResult == "Ja" ? "Ja" : "Onbekend";
                 } else {
-                    return false;
+                    $bestResult = "Onbekend";
                 }
             }
         }
-        return true;
+
+        return $bestResult;
     }
 
     private function MapToUsecase($wedstrijden, $team, $coachTeam)

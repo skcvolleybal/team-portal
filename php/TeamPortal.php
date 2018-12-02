@@ -208,6 +208,13 @@ class TeamPortal
         print_r($interactor->Execute());
     }
 
+    public function SetAllBarcieBeschikbaarheden()
+    {
+        include_once 'UseCases' . DIRECTORY_SEPARATOR . 'ScheduledTasks' . DIRECTORY_SEPARATOR . 'SetAllBarcieBeschikbaarheden.php';
+        $interactor = new SetAllBarcieBeschikbaarheden($this->database);
+        print_r($interactor->Execute());
+    }
+
     public function GenerateTeamstanden()
     {
         include_once 'UseCases' . DIRECTORY_SEPARATOR . 'ScheduledTasks' . DIRECTORY_SEPARATOR . 'GenerateTeamstanden.php';

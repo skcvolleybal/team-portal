@@ -1,9 +1,10 @@
 <?php
 include_once 'IInteractor.php';
-include_once 'TelFluitGateway.php';
+include_once 'BarcieGateway.php';
 include_once 'NevoboGateway.php';
+include_once 'JoomlaGateway.php';
 
-class SetAllFluitbeschikbaarheden implements IInteractor
+class SetAllBarcieBeschikbaarheden implements IInteractor
 {
 
     public function __construct($database)
@@ -25,28 +26,36 @@ class SetAllFluitbeschikbaarheden implements IInteractor
             $coachTeam = $this->joomlaGateway->GetCoachTeam($barcieLidId);
             $eigenWedstrijden = $this->nevoboGateway->GetProgrammaForTeam($team);
             $coachWedstrijden = $this->nevoboGateway->GetProgrammaForTeam($coachTeam);
-            $beschikbaarheden = $this->barcieGateway->GetBarcieBeschikbaarheid($barcieLidId);
+            $beschikbaarheden = $this->barcieGateway->GetBeschikbaarheden($barcieLidId);
             foreach ($barcieDagen as $barcieDag) {
                 $date = $barcieDag['date'];
                 $beschikbaarheid = $this->GetBeschikbaarheid($beschikbaarheden, $date);
                 if ($beschikbaarheid === null) {
-                    $eigenWedstrijd = GetWedstrijdWithDate($eigenWedstrijden, $date);
-                    $coachWedstrijd = GetWedstrijdWithDate($coachWedstrijden, $date);
+                    $eigenWedstrijd = $this->GetWedstrijdWithDate($eigenWedstrijden, $date);
+                    $coachWedstrijd = $this->GetWedstrijdWithDate($coachWedstrijden, $date);
 
                     $wedstrijden = array_filter([$eigenWedstrijd, $coachWedstrijd], function ($value) {return $value !== null;});
 
-                    $beschikbaarheid = $this->fluitBeschikbaarheidHelper->isMogelijk($wedstrijden);
-                    $this->barcieGateway->UpdateBeschikbaarheid($barcieLidId, $date, $beschikbaarheid);
+                    $beschikbaarheid = $this->isMogelijk($wedstrijden);
+                    $dayId = $this->barcieGateway->GetDateId($date);
+                    if ($dayId !== null) {
+                        $this->barcieGateway->InsertBeschikbaarheid($barcieLidId, $dayId, $beschikbaarheid);
+                        $numberOfAddedBeschikbaarheden++;
+                    }
                 }
             }
         }
+
+        return [
+            "numberOfAddedBeschikbaarheden" => $numberOfAddedBeschikbaarheden,
+        ];
     }
 
-    private function GetWedstrijdWithDate($eigenWedstrijden, $date)
+    private function GetWedstrijdWithDate($wedstrijden, $date)
     {
-        foreach ($beschikbaarheden as $beschikbaarheid) {
-            if ($beschikbaarheid['date'] == $date) {
-                return $beschikbaarheid['beschikbaarheid'];
+        foreach ($wedstrijden as $wedstrijd) {
+            if ($wedstrijd['timestamp'] && $wedstrijd['timestamp']->format("Y-m-d") == $date) {
+                return $wedstrijd;
             }
         }
         return null;
@@ -62,17 +71,27 @@ class SetAllFluitbeschikbaarheden implements IInteractor
         return null;
     }
 
-    private function isMogelijk($wedstrijden)
+    private function IsMogelijk($wedstrijden)
     {
+        if (count($wedstrijden) == 0) {
+            return "Nee";
+        }
+
+        $bestResult = "Ja";
         foreach ($wedstrijden as $wedstrijd) {
             if (!IsThuis($wedstrijd['locatie'])) {
                 return "Nee";
             }
-            if ($wedstrijd['timestamp'] && $wedstrijd['timestamp']->format('G:H:s') == "19:30:00") {
-                return "Ja";
+            if ($wedstrijd['timestamp']) {
+                $time = $wedstrijd['timestamp']->format('H:i');
+                if ($time == "19:30" || $time == "16:00") {
+                    $bestResult = $bestResult == "Ja" ? "Ja" : "Onbekend";
+                } else {
+                    $bestResult = "Onbekend";
+                }
             }
         }
 
-        return "Onbekend";
+        return $bestResult;
     }
 }
