@@ -27,10 +27,10 @@ class StatistiekenGateway
                   ) T2
                   LEFT JOIN (
                     SELECT C.id, U.name as naam, C.cb_rugnummer as rugnummer
-                    FROM j3_users U
-                    INNER JOIN j3_user_usergroup_map M ON U.id = M.user_id
-                    INNER JOIN j3_usergroups G on M.group_id = G.id
-                    INNER JOIN j3_comprofiler C ON U.id = C.user_id
+                    FROM J3_users U
+                    INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
+                    INNER JOIN J3_usergroups G on M.group_id = G.id
+                    INNER JOIN J3_comprofiler C ON U.id = C.user_id
                     where G.title = :skcTeam
                   ) R ON T2.rugnummer = R.rugnummer";
         $params = [
