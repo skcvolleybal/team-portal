@@ -9,7 +9,7 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "scan": "sonar-scanner.bat -Dsonar.projectKey=jonathanneuteboom_team-portal -Dsonar.organization=jonathanneuteboom-github -Dsonar.sources=. -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=24239f9c30d5a3e6c3519c4fba60f5778f98af7b"
+    "scan": "sonar-scanner.bat -Dsonar.projectKey=jonathanneuteboom_team-portal -Dsonar.organization=jonathanneuteboom-github -Dsonar.sources=. -Dsonar.host.url=https://sonarcloud.io"
   },
   "private": true,
   "dependencies": {
