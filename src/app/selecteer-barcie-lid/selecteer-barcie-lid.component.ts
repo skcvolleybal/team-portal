@@ -1,15 +1,13 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-// tslint:disable-next-line:no-implicit-dependencies
-import { environment } from 'src/environments/environment';
+import { RequestService } from '../services/RequestService';
 
 @Component({
   selector: 'app-selecteer-barcie-lid',
   templateUrl: './selecteer-barcie-lid.component.html',
   styleUrls: ['./selecteer-barcie-lid.component.scss']
 })
-export class SelecteerBarcieLidComponent implements OnInit {
+export class SelecteerBarcielidComponent implements OnInit {
   static date: string;
   static shift: number;
   static datum: string;
@@ -21,54 +19,38 @@ export class SelecteerBarcieLidComponent implements OnInit {
   barcieLedenLoading: boolean;
   errorMessage: string;
 
-  constructor(public modal: NgbActiveModal, private httpClient: HttpClient) {}
+  constructor(
+    public modal: NgbActiveModal,
+    private requestService: RequestService
+  ) {}
 
   ngOnInit() {
-    this.date = SelecteerBarcieLidComponent.date;
-    this.datum = SelecteerBarcieLidComponent.datum;
-    this.shift = SelecteerBarcieLidComponent.shift;
+    this.date = SelecteerBarcielidComponent.date;
+    this.datum = SelecteerBarcielidComponent.datum;
+    this.shift = SelecteerBarcielidComponent.shift;
     this.GetBarcieLeden();
   }
 
   GetBarcieLeden() {
     this.barcieLedenLoading = true;
-    this.httpClient
-      .get<any>(environment.baseUrl, {
-        params: {
-          action: 'GetBarcieLeden',
-          date: this.date
-        }
-      })
-      .subscribe(
-        response => {
-          this.barcieLedenLoading = false;
-          this.barcieLeden = response.barcieLeden;
-        },
-        response => {
-          this.barcieLedenLoading = false;
-          this.errorMessage = response.error;
-        }
-      );
+    this.requestService.GetBarcieleden(this.date).subscribe(
+      response => {
+        this.barcieLedenLoading = false;
+        this.barcieLeden = response.barcieLeden;
+      },
+      response => {
+        this.barcieLedenLoading = false;
+        this.errorMessage = response.error;
+      }
+    );
   }
 
-  AddBarcieAanwezigheid(barcieLid) {
-    this.httpClient
-      .post<any>(
-        environment.baseUrl,
-        {
-          date: this.date,
-          shift: this.shift,
-          barcieLidId: barcieLid.id
-        },
-        {
-          params: {
-            action: 'AddBarcieAanwezigheid'
-          }
-        }
-      )
+  AddBarcieAanwezigheid(barcielid) {
+    this.requestService
+      .AddBarcieAanwezigheid(this.date, this.shift, barcielid)
       .subscribe(
         () => {
-          this.modal.close(barcieLid);
+          this.modal.close(barcielid);
         },
         response => {
           this.errorMessage = response.error;

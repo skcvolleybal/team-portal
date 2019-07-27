@@ -8,9 +8,8 @@ describe('SelecteerScheidsrechterComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ SelecteerScheidsrechterComponent ]
-    })
-    .compileComponents();
+      declarations: [SelecteerScheidsrechterComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

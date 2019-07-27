@@ -1,4 +1,3 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { faHeart as heartRegular } from '@fortawesome/free-regular-svg-icons';
@@ -8,9 +7,8 @@ import {
   faTrashAlt
 } from '@fortawesome/free-solid-svg-icons';
 import { NgbDate, NgbModal } from '@ng-bootstrap/ng-bootstrap';
-// tslint:disable-next-line:no-implicit-dependencies
-import { environment } from 'src/environments/environment';
-import { SelecteerBarcieLidComponent } from '../selecteer-barcie-lid/selecteer-barcie-lid.component';
+import { SelecteerBarcielidComponent } from '../selecteer-barcie-lid/selecteer-barcie-lid.component';
+import { RequestService } from '../services/RequestService';
 
 @Component({
   selector: 'app-barcie-indeling',
@@ -28,7 +26,10 @@ export class BarcieIndelingComponent implements OnInit {
   roosterLoading: boolean;
   errorMessage: string;
 
-  constructor(private httpClient: HttpClient, private modalService: NgbModal) {}
+  constructor(
+    private requestService: RequestService,
+    private modalService: NgbModal
+  ) {}
 
   ngOnInit() {
     this.newDate = new FormGroup({
@@ -39,61 +40,25 @@ export class BarcieIndelingComponent implements OnInit {
 
   onDateSelection(date: NgbDate) {
     this.errorMessage = null;
-    this.httpClient
-      .post<any>(
-        environment.baseUrl,
-        {
-          date: `${date.year}-${date.month}-${date.day}`
-        },
-        {
-          params: {
-            action: 'AddBarcieDag'
-          }
-        }
-      )
-      .subscribe(
-        () => {
-          this.GetBarcieRooster();
-        },
-        response => {
-          this.errorMessage = response.error;
-        }
-      );
+    this.requestService.AddBarcieDag(date).subscribe(
+      () => {
+        this.GetBarcieRooster();
+      },
+      response => {
+        this.errorMessage = response.error;
+      }
+    );
   }
 
   DeleteBarcieDate(date) {
-    this.httpClient
-      .post<any>(
-        environment.baseUrl,
-        {
-          date
-        },
-        {
-          params: {
-            action: 'DeleteBarcieDag'
-          }
-        }
-      )
-      .subscribe(() => {
-        this.GetBarcieRooster();
-      });
+    this.requestService.DeleteBarcieDag(date).subscribe(() => {
+      this.GetBarcieRooster();
+    });
   }
 
   ToggleBhv(selectedBarcieDag, selectedBarcieLid, shift) {
-    this.httpClient
-      .post<any>(
-        environment.baseUrl,
-        {
-          date: selectedBarcieDag.date,
-          barcieLidId: selectedBarcieLid.id,
-          shift
-        },
-        {
-          params: {
-            action: 'ToggleBhv'
-          }
-        }
-      )
+    this.requestService
+      .ToggleBhv(selectedBarcieDag, selectedBarcieLid.naam, shift)
       .subscribe(() => {
         this.barcieDagen.forEach(barcieDag => {
           if (barcieDag.date === selectedBarcieDag.date) {
@@ -109,19 +74,11 @@ export class BarcieIndelingComponent implements OnInit {
   }
 
   DeleteAanwezigheid(selectedBarcieDag, selectedBarcieLid, shift) {
-    this.httpClient
-      .post<any>(
-        environment.baseUrl,
-        {
-          date: selectedBarcieDag.date,
-          barcieLidId: selectedBarcieLid.id,
-          shift
-        },
-        {
-          params: {
-            action: 'DeleteBarcieAanwezigheid'
-          }
-        }
+    this.requestService
+      .DeleteBarcieAanwezigheid(
+        selectedBarcieDag,
+        selectedBarcieLid.naam,
+        shift
       )
       .subscribe(() => {
         this.barcieDagen.forEach(barcieDag => {
@@ -146,22 +103,16 @@ export class BarcieIndelingComponent implements OnInit {
 
   GetBarcieRooster() {
     this.roosterLoading = true;
-    this.httpClient
-      .get<any>(environment.baseUrl, {
-        params: {
-          action: 'GetBarcieRooster'
-        }
-      })
-      .subscribe(
-        response => {
-          this.roosterLoading = false;
-          this.barcieDagen = response.barcieDagen;
-        },
-        response => {
-          this.roosterLoading = true;
-          this.errorMessage = response.error;
-        }
-      );
+    this.requestService.GetBarcieRooster().subscribe(
+      response => {
+        this.roosterLoading = false;
+        this.barcieDagen = response.barcieDagen;
+      },
+      response => {
+        this.roosterLoading = true;
+        this.errorMessage = response.error;
+      }
+    );
   }
 
   AddShift(date) {
@@ -176,7 +127,7 @@ export class BarcieIndelingComponent implements OnInit {
   }
 
   SelecteerBarcieLid(geselecteerdeBarcieDag, shift: number) {
-    const component = SelecteerBarcieLidComponent;
+    const component = SelecteerBarcielidComponent;
     component.date = geselecteerdeBarcieDag.date;
     component.datum = geselecteerdeBarcieDag.datum;
     component.shift = shift;

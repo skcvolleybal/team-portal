@@ -1,7 +1,5 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-// tslint:disable-next-line:no-implicit-dependencies
-import { environment } from 'src/environments/environment';
+import { RequestService } from '../services/RequestService';
 
 @Component({
   selector: 'app-barcie-beschikbaarheid',
@@ -13,46 +11,31 @@ export class BarcieBeschikbaarheidComponent implements OnInit {
   speeldagen: any[];
   errorMessage: string;
 
-  constructor(private httpClient: HttpClient) {}
+  constructor(private requestService: RequestService) {}
 
   ngOnInit() {
     this.getBarcieBeschikbaarheid();
   }
 
   UpdateBarcieBeschikbaarheid(beschikbaarheid, date) {
-    this.httpClient
-      .post(
-        environment.baseUrl,
-        {
-          date,
-          beschikbaarheid
-        },
-        {
-          params: { action: 'UpdateBarcieBeschikbaarheid' }
-        }
-      )
+    this.requestService
+      .UpdateBarcieBeschikbaarheid(date, beschikbaarheid)
       .subscribe();
   }
 
   getBarcieBeschikbaarheid() {
     this.loading = true;
-    this.httpClient
-      .get<any[]>(environment.baseUrl, {
-        params: {
-          action: 'GetBarcieBeschikbaarheid'
-        }
-      })
-      .subscribe(
-        speeldagen => {
-          this.speeldagen = speeldagen;
+    this.requestService.GetBarcieBeschikbaarheid().subscribe(
+      speeldagen => {
+        this.speeldagen = speeldagen;
+        this.loading = false;
+      },
+      error => {
+        if (error.status === 500) {
+          this.errorMessage = error.error;
           this.loading = false;
-        },
-        error => {
-          if (error.status === 500) {
-            this.errorMessage = error.error;
-            this.loading = false;
-          }
         }
-      );
+      }
+    );
   }
 }

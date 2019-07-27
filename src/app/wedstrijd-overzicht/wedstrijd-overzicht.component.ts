@@ -1,8 +1,5 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { Observable } from 'rxjs/internal/Observable';
-// tslint:disable-next-line:no-implicit-dependencies
-import { environment } from 'src/environments/environment';
+import { RequestService } from '../services/RequestService';
 
 @Component({
   selector: 'app-wedstrijd-overzicht',
@@ -14,38 +11,19 @@ export class WedstrijdOverzichtComponent implements OnInit {
   loading: boolean;
   errorMessage: string;
 
-  constructor(private httpClient: HttpClient) {}
+  constructor(private requestService: RequestService) {}
 
-  getWedstrijdOverzicht(): Observable<any[]> {
-    return this.httpClient.get<any[]>(environment.baseUrl, {
-      params: {
-        action: 'GetWedstrijdOverzicht'
-      }
-    });
-  }
-
-  AddAanwezigheid(speler, matchId) {
-    this.httpClient
-      .post<any>(
-        environment.baseUrl,
-        {
-          matchId,
-          spelerId: speler.id,
-          aanwezigheid: 'Ja'
-        },
-        {
-          params: {
-            action: 'UpdateAanwezigheid'
-          }
-        }
-      )
+  UpdateAanwezigheid(matchId, speler, aanwezigheid) {
+    this.requestService
+      .UpdateAanwezigheid(matchId, speler.id, aanwezigheid)
       .subscribe(() => {
         this.wedstrijden.forEach(wedstrijd => {
           if (wedstrijd.id === matchId) {
             if (
-              !wedstrijd.aanwezigen.find(
+              wedstrijd.aanwezigen.find(
                 aanwezige => aanwezige.id === speler.id
-              )
+              ) &&
+              aanwezigheid === 'Ja'
             ) {
               const newSpeler = {
                 id: speler.id,
@@ -53,38 +31,12 @@ export class WedstrijdOverzichtComponent implements OnInit {
                 isInvaller: true
               };
               wedstrijd.aanwezigen.push(newSpeler);
-            }
-            return;
-          }
-        });
-      });
-  }
-
-  DeleteAanwezigheid(spelerId, matchId) {
-    this.httpClient
-      .post<any>(
-        environment.baseUrl,
-        {
-          matchId,
-          spelerId,
-          aanwezigheid: 'Onbekend'
-        },
-        {
-          params: {
-            action: 'UpdateAanwezigheid'
-          }
-        }
-      )
-      .subscribe(() => {
-        this.wedstrijden.forEach(wedstrijd => {
-          if (wedstrijd.id === matchId) {
-            if (
-              wedstrijd.aanwezigen.find(aanwezige => aanwezige.id === spelerId)
-            ) {
+            } else if (aanwezigheid === 'Nee') {
               wedstrijd.aanwezigen = wedstrijd.aanwezigen.filter(
-                aanwezige => aanwezige.id !== spelerId
+                aanwezige => aanwezige.id !== speler.id
               );
             }
+
             return;
           }
         });
@@ -93,7 +45,7 @@ export class WedstrijdOverzichtComponent implements OnInit {
 
   ngOnInit() {
     this.loading = true;
-    this.getWedstrijdOverzicht().subscribe(
+    this.requestService.GetWedstrijdOverzicht().subscribe(
       wedstrijden => {
         this.wedstrijden = wedstrijden;
         this.loading = false;

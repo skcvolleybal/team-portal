@@ -1,13 +1,11 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, Injector, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
 import { NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
 import { Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
-// tslint:disable-next-line:no-implicit-dependencies
-import { environment } from 'src/environments/environment';
 import { LoginModalComponent } from './login-modal/login-modal.component';
+import { RequestService } from './services/RequestService';
 import { StateService } from './services/state.service';
 
 @Component({
@@ -21,7 +19,7 @@ export class AppComponent implements OnInit {
     private injector: Injector,
     private modalService: NgbModal,
     private stateService: StateService,
-    private httpClient: HttpClient,
+    private requestService: RequestService,
     config: NgbModalConfig
   ) {
     config.backdrop = 'static';
@@ -60,13 +58,9 @@ export class AppComponent implements OnInit {
       );
     });
 
-    this.httpClient
-      .get<boolean>(environment.baseUrl, {
-        params: { action: 'GetGroups' }
-      })
-      .subscribe(response => {
-        this.ShowMenuItems(response);
-      });
+    this.requestService.GetGroupsOfUser().subscribe(response => {
+      this.ShowMenuItems(response);
+    });
   }
 
   ShowMenuItems(groups) {
@@ -93,19 +87,7 @@ export class AppComponent implements OnInit {
     text.pipe(
       debounceTime(300),
       distinctUntilChanged(),
-      switchMap(term =>
-        this.httpClient.post(
-          environment.baseUrl,
-          {
-            name: `${term}`
-          },
-          {
-            params: {
-              action: 'GetUsers'
-            }
-          }
-        )
-      )
+      switchMap(term => this.requestService.GetUsers(term))
       // tslint:disable-next-line:semicolon
     );
 

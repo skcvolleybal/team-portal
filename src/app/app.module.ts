@@ -19,9 +19,11 @@ import { LoginModalComponent } from './login-modal/login-modal.component';
 import { MijnOverzichtComponent } from './mijn-overzicht/mijn-overzicht.component';
 import { ScheidscoComponent } from './scheidsco/scheidsco.component';
 import { ScheidsrechterComponent } from './scheidsrechter/scheidsrechter.component';
+import { SelecteerBarcielidComponent } from './selecteer-barcie-lid/selecteer-barcie-lid.component';
 import { SelecteerScheidsrechterComponent } from './selecteer-scheidsrechter/selecteer-scheidsrechter.component';
 import { SelecteerTellersComponent } from './selecteer-tellers/selecteer-tellers.component';
 import { SelecteerZaalwachtComponent } from './selecteer-zaalwacht/selecteer-zaalwacht.component';
+import { RequestService } from './services/RequestService';
 import { StateService } from './services/state.service';
 import { SpelersLijstComponent } from './spelers-lijst/spelers-lijst.component';
 import { SpinnerComponent } from './spinner/spinner.component';
@@ -31,7 +33,6 @@ import { WedstrijdOverzichtComponent } from './wedstrijd-overzicht/wedstrijd-ove
 import { WedstrijdComponent } from './wedstrijd/wedstrijd.component';
 import { WedstrijdenCardComponent } from './wedstrijden-card/wedstrijden-card.component';
 import { WedstrijdenComponent } from './wedstrijden/wedstrijden.component';
-import { SelecteerBarcieLidComponent } from './selecteer-barcie-lid/selecteer-barcie-lid.component';
 
 export const appRoutes: Routes = [
   { path: '', redirectTo: 'mijn-overzicht', pathMatch: 'full' },
@@ -88,7 +89,7 @@ export const appRoutes: Routes = [
     SelecteerZaalwachtComponent,
     SelecteerTellersComponent,
     SelecteerScheidsrechterComponent,
-    SelecteerBarcieLidComponent
+    SelecteerBarcielidComponent
   ],
   declarations: [
     AppComponent,
@@ -113,7 +114,7 @@ export const appRoutes: Routes = [
     SelecteerZaalwachtComponent,
     BarcieBeschikbaarheidComponent,
     BarcieIndelingComponent,
-    SelecteerBarcieLidComponent
+    SelecteerBarcielidComponent
   ],
   imports: [
     FormsModule,
@@ -129,6 +130,7 @@ export const appRoutes: Routes = [
   exports: [],
   providers: [
     StateService,
+    RequestService,
     { provide: 'appRoutes', useValue: appRoutes },
     {
       provide: HTTP_INTERCEPTORS,

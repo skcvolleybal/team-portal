@@ -1,8 +1,7 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { FormBuilder, Validators } from '@angular/forms';
 import { NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
-// tslint:disable-next-line:no-implicit-dependencies
-import { environment } from 'src/environments/environment';
+import { RequestService } from '../services/RequestService';
 
 @Component({
   selector: 'app-login-modal',
@@ -10,36 +9,26 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./login-modal.component.scss'],
   providers: [NgbModalConfig, NgbModal]
 })
-export class LoginModalComponent implements OnInit {
-  constructor(private httpClient: HttpClient) {}
-
+export class LoginModalComponent {
+  loginForm: any;
   errorMessage: string;
-  username: string;
-  password: string;
+
+  constructor(private fb: FormBuilder, private requestService: RequestService) {
+    this.loginForm = this.fb.group({
+      username: ['', Validators.required],
+      password: ['', Validators.required]
+    });
+  }
 
   login() {
     this.errorMessage = null;
-
-    this.httpClient
-      .post<any>(
-        environment.baseUrl,
-        {
-          username: this.username,
-          password: this.password
-        },
-        {
-          params: {
-            action: 'Login'
-          }
-        }
-      )
-      .subscribe(
-        () => window.location.reload(),
-        error => {
-          this.errorMessage = error.error;
-        }
-      );
+    const username = this.loginForm.get('username').value;
+    const password = this.loginForm.get('password').value;
+    this.requestService.Login(username, password).subscribe(
+      () => window.location.reload(),
+      error => {
+        this.errorMessage = error.error;
+      }
+    );
   }
-
-  ngOnInit() {}
 }

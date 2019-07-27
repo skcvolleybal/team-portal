@@ -1,8 +1,6 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-// tslint:disable-next-line:no-implicit-dependencies
-import { environment } from 'src/environments/environment';
+import { RequestService } from '../services/RequestService';
 
 @Component({
   selector: 'app-selecteer-scheidsrechter',
@@ -15,13 +13,19 @@ export class SelecteerScheidsrechterComponent implements OnInit {
 
   scheidsrechterOptiesLoading: boolean;
   errorMessage: string;
-  spelendeScheidsrechters: any;
-  overigeScheidsrechters: any;
+  scheidsrechters: any[];
+
+  scheidsrechtertypes = ['spelendeScheidsrechters', 'overigeScheidsrechters'];
+  keuzes = ['Ja', 'Onbekend', 'Nee'];
+
   wedstrijd: any;
   teams: string;
   tijd: string;
 
-  constructor(private httpClient: HttpClient, public modal: NgbActiveModal) {}
+  constructor(
+    private requestService: RequestService,
+    public modal: NgbActiveModal
+  ) {}
 
   ngOnInit() {
     this.wedstrijd = SelecteerScheidsrechterComponent.wedstrijd;
@@ -30,30 +34,25 @@ export class SelecteerScheidsrechterComponent implements OnInit {
     this.getScheidsrechterOpties(this.wedstrijd.id);
   }
 
-  getScheidsrechterOpties(matchId) {
+  getScheidsrechterOpties(matchId: string) {
     this.scheidsrechterOptiesLoading = true;
 
-    this.httpClient
-      .post<any>(
-        environment.baseUrl,
-        { matchId },
-        {
-          params: { action: 'GetScheidsrechters' }
-        }
-      )
-      .subscribe(
-        result => {
-          this.spelendeScheidsrechters = result.spelendeScheidsrechters;
-          this.overigeScheidsrechters = result.overigeScheidsrechters;
+    this.requestService.GetScheidsrechtersForMatch(matchId).subscribe(
+      result => {
+        this.scheidsrechters = result;
+        this.scheidsrechterOptiesLoading = false;
+      },
+      error => {
+        if (error.status === 500) {
+          this.errorMessage = error.error;
           this.scheidsrechterOptiesLoading = false;
-        },
-        error => {
-          if (error.status === 500) {
-            this.errorMessage = error.error;
-            this.scheidsrechterOptiesLoading = false;
-          }
         }
-      );
+      }
+    );
+  }
+
+  getScheidsrechtersByKeuze(scheidsrechterstype: string, keuze: string) {
+    return this.scheidsrechters[scheidsrechterstype][keuze];
   }
 
   GetScheidsrechterText(scheidsrechter) {
@@ -77,19 +76,8 @@ export class SelecteerScheidsrechterComponent implements OnInit {
   }
 
   UpdateScheidsrechter(scheidsrechter) {
-    this.httpClient
-      .post<any>(
-        environment.baseUrl,
-        {
-          matchId: this.wedstrijd.id,
-          scheidsrechter
-        },
-        {
-          params: {
-            action: 'UpdateScheidsrechter'
-          }
-        }
-      )
+    this.requestService
+      .UpdateScheidsrechter(this.wedstrijd.id, scheidsrechter)
       .subscribe(() => {
         this.modal.close(scheidsrechter);
       });

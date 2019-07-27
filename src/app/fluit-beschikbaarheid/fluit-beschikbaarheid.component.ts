@@ -1,6 +1,5 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { environment } from '../../environments/environment';
+import { RequestService } from '../services/RequestService';
 
 @Component({
   selector: 'app-fluit-beschikbaarheid',
@@ -12,47 +11,31 @@ export class FluitBeschikbaarheidComponent implements OnInit {
   speeldagen: any[];
   errorMessage: string;
 
-  constructor(private httpClient: HttpClient) {}
+  constructor(private requestService: RequestService) {}
 
   ngOnInit() {
     this.getFluitBeschikbaarheid();
   }
 
   UpdateFluitBeschikbaarheid(beschikbaarheid, datum, tijd) {
-    this.httpClient
-      .post(
-        environment.baseUrl,
-        {
-          datum,
-          tijd,
-          beschikbaarheid
-        },
-        {
-          params: { action: 'UpdateFluitBeschikbaarheid' }
-        }
-      )
+    this.requestService
+      .UpdateFluitBeschikbaarheid(datum, tijd, beschikbaarheid)
       .subscribe();
   }
 
   getFluitBeschikbaarheid() {
     this.loading = true;
-    this.httpClient
-      .get<any[]>(environment.baseUrl, {
-        params: {
-          action: 'GetFluitOverzicht'
-        }
-      })
-      .subscribe(
-        speeldagen => {
-          this.speeldagen = speeldagen;
+    this.requestService.GetFluitBeschikbaarheid().subscribe(
+      speeldagen => {
+        this.speeldagen = speeldagen;
+        this.loading = false;
+      },
+      error => {
+        if (error.status === 500) {
+          this.errorMessage = error.error;
           this.loading = false;
-        },
-        error => {
-          if (error.status === 500) {
-            this.errorMessage = error.error;
-            this.loading = false;
-          }
         }
-      );
+      }
+    );
   }
 }

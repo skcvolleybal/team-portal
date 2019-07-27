@@ -1,16 +1,15 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import {
   faCalendarCheck,
   faPeopleCarry,
+  faTimes,
   faUser
 } from '@fortawesome/free-solid-svg-icons';
-
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { environment } from '../../environments/environment';
 import { SelecteerScheidsrechterComponent } from '../selecteer-scheidsrechter/selecteer-scheidsrechter.component';
 import { SelecteerTellersComponent } from '../selecteer-tellers/selecteer-tellers.component';
 import { SelecteerZaalwachtComponent } from '../selecteer-zaalwacht/selecteer-zaalwacht.component';
+import { RequestService } from '../services/RequestService';
 
 @Component({
   selector: 'app-scheidsco',
@@ -18,46 +17,38 @@ import { SelecteerZaalwachtComponent } from '../selecteer-zaalwacht/selecteer-za
   styleUrls: ['./scheidsco.component.scss']
 })
 export class ScheidscoComponent implements OnInit {
-  scheidsrechterIcon = faUser;
-  teamIcon = faCalendarCheck;
-  zaalwacht = faPeopleCarry;
-  scheidsrechterType = 'niveau';
+  icons = {
+    scheidsrechter: faUser,
+    tellers: faCalendarCheck,
+    zaalwacht: faPeopleCarry,
+    verwijderen: faTimes
+  };
 
   scheidsrechters: any[];
-  scheidsrechtersGroepen: any[];
-
   speeldagen: any[];
-  teams: any[];
-
-  scheidsrechterLoading: boolean;
+  taken = ['scheidsrechter', 'tellers'];
   overzichtLoading: boolean;
-  teamsLoading: boolean;
-
   errorMessage: any;
 
-  constructor(private httpClient: HttpClient, private modalService: NgbModal) {}
+  constructor(
+    private requestService: RequestService,
+    private modalService: NgbModal
+  ) {}
 
   getScheidscoOverzicht() {
     this.overzichtLoading = true;
-
-    this.httpClient
-      .get<any[]>(environment.baseUrl, {
-        params: {
-          action: 'GetScheidscoOverzicht'
-        }
-      })
-      .subscribe(
-        speeldagen => {
-          this.speeldagen = speeldagen;
+    this.requestService.GetScheidscoOverzicht().subscribe(
+      speeldagen => {
+        this.speeldagen = speeldagen;
+        this.overzichtLoading = false;
+      },
+      error => {
+        if (error.status === 500) {
+          this.errorMessage = error.error;
           this.overzichtLoading = false;
-        },
-        error => {
-          if (error.status === 500) {
-            this.errorMessage = error.error;
-            this.overzichtLoading = false;
-          }
         }
-      );
+      }
+    );
   }
 
   ngOnInit() {
@@ -84,18 +75,22 @@ export class ScheidscoComponent implements OnInit {
       .catch(() => {});
   }
 
-  SelecteerTellers(geselecteerdeWedstrijd, tijd) {
-    const component = SelecteerTellersComponent;
+  SelecteerUitvoerderVanTaak(taak, geselecteerdeWedstrijd, tijd) {
+    const component =
+      taak === 'scheidsrechter'
+        ? SelecteerScheidsrechterComponent
+        : SelecteerTellersComponent;
     component.wedstrijd = geselecteerdeWedstrijd;
     component.tijd = tijd;
     this.modalService
       .open(component)
-      .result.then(tellers => {
+      .result.then(uitvoerder => {
         this.speeldagen.forEach(speeldag => {
           speeldag.speeltijden.forEach(speeltijd => {
             speeltijd.wedstrijden.forEach(wedstrijd => {
               if (wedstrijd.id === geselecteerdeWedstrijd.id) {
-                wedstrijd.tellers = tellers;
+                wedstrijd[taak] = uitvoerder;
+                return;
               }
             });
           });
@@ -104,24 +99,21 @@ export class ScheidscoComponent implements OnInit {
       .catch(() => {});
   }
 
-  SelecteerScheidsrechter(geselecteerdeWedstrijd, tijd) {
-    const component = SelecteerScheidsrechterComponent;
-    component.wedstrijd = geselecteerdeWedstrijd;
-    component.tijd = tijd;
-    this.modalService
-      .open(component)
-      .result.then(scheidsrechter => {
-        this.speeldagen.forEach(speeldag => {
-          speeldag.speeltijden.forEach(speeltijd => {
-            speeltijd.wedstrijden.forEach(wedstrijd => {
-              if (wedstrijd.id === geselecteerdeWedstrijd.id) {
-                wedstrijd.scheidsrechter = scheidsrechter;
-                return;
-              }
-            });
-          });
-        });
-      })
-      .catch(() => {});
+  DeleteTaak(taak, matchId) {
+    switch (taak) {
+      case 'tellers':
+        this.requestService.UpdateTellers(matchId, null);
+        break;
+      case 'scheidsrechter':
+        this.requestService.UpdateScheidsrechter(matchId, null);
+        break;
+    }
+  }
+
+  GetClassForTaak(taak, wedstrijd) {
+    return {
+      'btn-danger': wedstrijd[taak] === null,
+      'btn-success': wedstrijd.scheidsrechter
+    };
   }
 }

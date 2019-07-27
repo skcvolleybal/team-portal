@@ -21,7 +21,7 @@ class CompleteDailyTasks implements IInteractor
         $result[] = $setAllFluitbeschikbaarhedenInteractor->Execute();
 
         $setAllBarcieBeschikbaarhedenInteractor = new SetAllBarcieBeschikbaarheden($this->database);
-        $result[] = $setAllFluitbeschikbaarhedenInteractor->Execute();
+        $result[] = $setAllBarcieBeschikbaarhedenInteractor->Execute();
 
         $generateTeamstandenInteractor = new GenerateTeamstanden();
         $result[] = $generateTeamstandenInteractor->Execute();

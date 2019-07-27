@@ -1,86 +1,52 @@
 <div class="modal-header">
-  <h6>{{teams}}, {{tijd}}</h6>
-  <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+  <h6>{{ teams }}, {{ tijd }}</h6>
+  <button
+    type="button"
+    class="close"
+    aria-label="Close"
+    (click)="modal.dismiss()"
+  >
     <span aria-hidden="true">&times;</span>
   </button>
 </div>
 
 <div class="modal-body" style="min-height: 500px;">
   <div class="alert alert-danger" role="alert" *ngIf="errorMessage">
-    {{errorMessage}}
+    {{ errorMessage }}
   </div>
   <app-spinner *ngIf="scheidsrechterOptiesLoading"></app-spinner>
 
   <div *ngIf="scheidsrechterOptiesLoading == false">
-    <div class="card mb-3">
+    <div
+      class="card mb-3"
+      *ngFor="let scheidsrechterstype of scheidsrechtertypes"
+    >
       <div class="card-header">
-        Spelende Scheidsrechter
+        {{ scheidsrechterstype }}
       </div>
-      <ul class="list-group list-group-flush">
-        <li class="list-group-item">Ja</li>
+      <ul class="list-group list-group-flush" *ngFor="let keuze of keuzes">
+        <li class="list-group-item">{{ keuze }}</li>
         <li class="list-group-item">
-          <div class="input-group mb-3" *ngFor="let scheidsrechter of spelendeScheidsrechters.Ja">
-            <button type="button" (click)="UpdateScheidsrechter(scheidsrechter.naam)" class="btn btn-block" [ngClass]="GetClass(scheidsrechter)">
-              {{GetScheidsrechterText(scheidsrechter)}}
-            </button>
-          </div>
-        </li>
-        <li class="list-group-item">Onbekend</li>
-        <li class="list-group-item">
-          <div class="input-group mb-3" *ngFor="let scheidsrechter of spelendeScheidsrechters.Onbekend">
-            <button type="button" (click)="UpdateScheidsrechter(scheidsrechter.naam)" class="btn btn-block" [ngClass]="GetClass(scheidsrechter)">
-              {{GetScheidsrechterText(scheidsrechter)}}
-            </button>
-          </div>
-        </li>
-        <li class="list-group-item">Nee</li>
-        <li class="list-group-item">
-          <div class="input-group mb-3" *ngFor="let scheidsrechter of spelendeScheidsrechters.Nee">
-            <button type="button" (click)="UpdateScheidsrechter(scheidsrechter.naam)" class="btn btn-block" [ngClass]="GetClass(scheidsrechter)">
-              {{GetScheidsrechterText(scheidsrechter)}}
+          <div
+            class="input-group mb-3"
+            *ngFor="
+              let scheidsrechter of getScheidsrechtersByKeuze(
+                scheidsrechterstype,
+                keuze
+              )
+            "
+          >
+            <button
+              type="button"
+              (click)="UpdateScheidsrechter(scheidsrechter.naam)"
+              class="btn btn-block"
+              [ngClass]="GetClass(scheidsrechter)"
+            >
+              {{ GetScheidsrechterText(scheidsrechter) }}
             </button>
           </div>
         </li>
       </ul>
     </div>
-
-    <div class="card mb-3">
-      <div class="card-header">
-        Overige Scheidsrechter
-      </div>
-
-      <ul class="list-group list-group-flush">
-        <li class="list-group-item">Ja</li>
-        <li class="list-group-item">
-          <div class="input-group mb-3" *ngFor="let scheidsrechter of overigeScheidsrechters.Ja">
-            <button type="button" (click)="UpdateScheidsrechter(scheidsrechter.naam)" class="btn btn-block" [ngClass]="GetClass(scheidsrechter)">
-              {{GetScheidsrechterTextWithoutTime(scheidsrechter)}}
-            </button>
-          </div>
-        </li>
-        <li class="list-group-item">Onbekend</li>
-        <li class="list-group-item">
-          <div class="input-group mb-3" *ngFor="let scheidsrechter of overigeScheidsrechters.Onbekend">
-            <button type="button" (click)="UpdateScheidsrechter(scheidsrechter.naam)" class="btn btn-block" [ngClass]="GetClass(scheidsrechter)">
-              {{GetScheidsrechterTextWithoutTime(scheidsrechter)}}
-            </button>
-          </div>
-        </li>
-        <li class="list-group-item">Nee</li>
-        <li class="list-group-item">
-          <div class="input-group mb-3" *ngFor="let scheidsrechter of overigeScheidsrechters.Nee">
-            <button type="button" (click)="UpdateScheidsrechter(scheidsrechter.naam)" class="btn btn-block" [ngClass]="GetClass(scheidsrechter)">
-              {{GetScheidsrechterTextWithoutTime(scheidsrechter)}}
-            </button>
-          </div>
-        </li>
-      </ul>
-    </div>
-    <button type="button" (click)="UpdateScheidsrechter(null)" class="btn btn-danger btn-lg btn-block">Geen
-      Scheidsrechter</button>
   </div>
-</div>
-
-<div class="modal-footer">
-  <button type="button" class="btn btn-light" (click)="modal.close()">Close</button>
 </div>

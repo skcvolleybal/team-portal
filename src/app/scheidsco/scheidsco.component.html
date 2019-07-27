@@ -4,20 +4,32 @@
       <th colspan="2">
         <div class="row">
           <div class="col-auto mr-auto" style="line-height: 38px;">
-            {{speeldag.datum}}
+            {{ speeldag.datum }}
           </div>
           <div class="col-auto">
             <div class="input-group col col-md-auto">
               <div class="input-group-prepend">
                 <label class="input-group-text">
-                  <fa-icon [icon]="zaalwacht"></fa-icon>
+                  <fa-icon [icon]="icons.zaalwacht"></fa-icon>
                 </label>
               </div>
               <div class="input-group-append">
-                <button class="btn" (click)="SelecteerZaalwacht(speeldag.datum, speeldag.date)" [ngClass]="{'btn-danger': speeldag.zaalwacht === null, 'btn-success': speeldag.zaalwacht}"
-                  type="button">
-                  {{speeldag.zaalwacht === null ? "..." : speeldag.zaalwacht}}
+                <button
+                  class="btn"
+                  (click)="SelecteerZaalwacht(speeldag.datum, speeldag.date)"
+                  [ngClass]="{
+                    'btn-danger': speeldag.zaalwacht === null,
+                    'btn-success': speeldag.zaalwacht
+                  }"
+                  type="button"
+                >
+                  {{ speeldag.zaalwacht === null ? '...' : speeldag.zaalwacht }}
                 </button>
+              </div>
+              <div class="input-group-append" *ngIf="speeldag.zaalwacht">
+                <label class="input-group-text">
+                  <fa-icon [icon]="icons.verwijderen"></fa-icon>
+                </label>
               </div>
             </div>
           </div>
@@ -28,36 +40,51 @@
   <tbody>
     <tr *ngFor="let speeltijd of speeldag.speeltijden">
       <td class="align-middle">
-        {{speeltijd.tijd}}
+        {{ speeltijd.tijd }}
         <ul class="list-group">
-          <li class="list-group-item" *ngFor="let wedstrijd of speeltijd.wedstrijden">
-            <h5 class="card-title">{{wedstrijd.teams}}</h5>
-            <div class="row m-1">
+          <li
+            class="list-group-item"
+            *ngFor="let wedstrijd of speeltijd.wedstrijden"
+          >
+            <h5 class="card-title">{{ wedstrijd.teams }}</h5>
+            <div class="row m-1" *ngFor="let taak of taken">
               <div class="input-group">
                 <div class="input-group-prepend">
                   <label class="input-group-text">
-                    <fa-icon [icon]="scheidsrechterIcon"></fa-icon>
+                    <fa-icon [icon]="icons[taak]"></fa-icon>
                   </label>
                 </div>
                 <div class="input-group-append">
-                  <button class="btn" (click)="SelecteerScheidsrechter(wedstrijd, speeltijd.tijd)" [ngClass]="{'btn-danger': wedstrijd.scheidsrechter === null, 'btn-success': wedstrijd.scheidsrechter}"
-                    type="button">
-                    {{wedstrijd.scheidsrechter === null ? "Kiezen..." : wedstrijd.scheidsrechter}}
+                  <button
+                    class="btn"
+                    (click)="
+                      SelecteerUitvoerderVanTaak(
+                        taak,
+                        wedstrijd,
+                        speeltijd.tijd
+                      )
+                    "
+                    [ngClass]="{
+                      'btn-danger': wedstrijd[taak] === null,
+                      'btn-success': wedstrijd[taak]
+                    }"
+                    type="button"
+                  >
+                    {{
+                      wedstrijd[taak] === null ? 'Kiezen...' : wedstrijd[taak]
+                    }}
                   </button>
                 </div>
-              </div>
-            </div>
-            <div class="row m-1">
-              <div class="input-group">
-                <div class="input-group-prepend">
-                  <label class="input-group-text">
-                    <fa-icon [icon]="teamIcon"></fa-icon>
-                  </label>
-                </div>
-                <div class="input-group-append">
-                  <button class="btn" (click)="SelecteerTellers(wedstrijd, speeltijd.tijd)" [ngClass]="{'btn-danger': wedstrijd.tellers === null, 'btn-success': wedstrijd.tellers}"
-                    type="button">
-                    {{wedstrijd.tellers === null ? "Kiezen..." : wedstrijd.tellers}}
+                <div
+                  class="input-group-append"
+                  *ngIf="wedstrijd.scheidsrechter"
+                >
+                  <button
+                    class="btn input-group-text"
+                    (click)="DeleteTaak(wedstrijd, taak)"
+                    type="button"
+                  >
+                    <fa-icon [icon]="icons.verwijderen"></fa-icon>
                   </button>
                 </div>
               </div>
@@ -69,6 +96,6 @@
   </tbody>
 </table>
 <div class="alert alert-danger" role="alert" *ngIf="errorMessage">
-  {{errorMessage}}
+  {{ errorMessage }}
 </div>
-<app-spinner *ngIf="scheidsrechterLoading || overzichtLoading || teamsLoading"></app-spinner>
+<app-spinner *ngIf="overzichtLoading"></app-spinner>

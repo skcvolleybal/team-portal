@@ -1,14 +1,11 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import {
   faCalendarCheck,
-  faMinusSquare,
   faPlusSquare,
   faUser
 } from '@fortawesome/free-solid-svg-icons';
 import { Observable } from 'rxjs/internal/Observable';
-// tslint:disable-next-line:no-implicit-dependencies
-import { environment } from 'src/environments/environment';
+import { RequestService } from '../services/RequestService';
 
 @Component({
   selector: 'app-mijn-overzicht',
@@ -23,19 +20,11 @@ export class MijnOverzichtComponent implements OnInit {
   dagen: any[];
   errorMessage: string;
 
-  constructor(private http: HttpClient) {}
-
-  getMijnOverzicht(): Observable<any> {
-    return this.http.get(environment.baseUrl, {
-      params: {
-        action: 'GetMijnOverzicht'
-      }
-    });
-  }
+  constructor(private requestService: RequestService) {}
 
   ngOnInit() {
     this.loading = true;
-    this.getMijnOverzicht().subscribe(
+    this.requestService.GetMijnOverzicht().subscribe(
       response => {
         this.dagen = response;
         this.loading = false;

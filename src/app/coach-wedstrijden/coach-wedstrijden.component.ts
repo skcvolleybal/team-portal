@@ -1,4 +1,3 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import {
   faCalendarCheck,
@@ -7,8 +6,7 @@ import {
   faTimes,
   faUser
 } from '@fortawesome/free-solid-svg-icons';
-// tslint:disable-next-line:no-implicit-dependencies
-import { environment } from 'src/environments/environment';
+import { RequestService } from '../services/RequestService';
 
 @Component({
   selector: 'app-coach-wedstrijden',
@@ -26,46 +24,31 @@ export class CoachWedstrijdenComponent implements OnInit {
   errorMessage: string;
   wedstrijden: any[];
 
-  constructor(private httpClient: HttpClient) {}
+  constructor(private requestService: RequestService) {}
 
   ngOnInit() {
     this.getCoachAanwezigheid();
   }
 
   UpdateCoachAanwezigheid(aanwezigheid, matchId) {
-    this.httpClient
-      .post(
-        environment.baseUrl,
-        {
-          matchId,
-          aanwezigheid
-        },
-        {
-          params: { action: 'UpdateCoachAanwezigheid' }
-        }
-      )
+    this.requestService
+      .UpdateCoachAanwezigheid(matchId, aanwezigheid)
       .subscribe();
   }
 
   getCoachAanwezigheid() {
     this.loading = true;
-    this.httpClient
-      .get<any>(environment.baseUrl, {
-        params: {
-          action: 'GetCoachAanwezigheid'
-        }
-      })
-      .subscribe(
-        response => {
-          this.wedstrijden = response.wedstrijden;
+    this.requestService.GetCoachAanwezigheid().subscribe(
+      response => {
+        this.wedstrijden = response.wedstrijden;
+        this.loading = false;
+      },
+      error => {
+        if (error.status === 500) {
+          this.errorMessage = error.error;
           this.loading = false;
-        },
-        error => {
-          if (error.status === 500) {
-            this.errorMessage = error.error;
-            this.loading = false;
-          }
         }
-      );
+      }
+    );
   }
 }

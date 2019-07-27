@@ -20,13 +20,13 @@ class SetAllBarcieBeschikbaarheden implements IInteractor
         $numberOfAddedBeschikbaarheden = 0;
         $barcieDagen = $this->barcieGateway->GetBarcieDagen();
 
-        foreach ($barcieLeden as $barcieLid) {
-            $barcieLidId = $barcieLid['id'];
-            $team = $this->joomlaGateway->GetTeam($barcieLidId);
-            $coachTeam = $this->joomlaGateway->GetCoachTeam($barcieLidId);
+        foreach ($barcieLeden as $barcielid) {
+            $barcielidId = $barcielid['id'];
+            $team = $this->joomlaGateway->GetTeam($barcielidId);
+            $coachTeam = $this->joomlaGateway->GetCoachTeam($barcielidId);
             $eigenWedstrijden = $this->nevoboGateway->GetProgrammaForTeam($team);
             $coachWedstrijden = $this->nevoboGateway->GetProgrammaForTeam($coachTeam);
-            $beschikbaarheden = $this->barcieGateway->GetBeschikbaarheden($barcieLidId);
+            $beschikbaarheden = $this->barcieGateway->GetBeschikbaarheden($barcielidId);
             foreach ($barcieDagen as $barcieDag) {
                 $date = $barcieDag['date'];
                 $beschikbaarheid = $this->GetBeschikbaarheid($beschikbaarheden, $date);
@@ -39,7 +39,7 @@ class SetAllBarcieBeschikbaarheden implements IInteractor
                     $beschikbaarheid = $this->isMogelijk($wedstrijden);
                     $dayId = $this->barcieGateway->GetDateId($date);
                     if ($dayId !== null) {
-                        $this->barcieGateway->InsertBeschikbaarheid($barcieLidId, $dayId, $beschikbaarheid);
+                        $this->barcieGateway->InsertBeschikbaarheid($barcielidId, $dayId, $beschikbaarheid);
                         $numberOfAddedBeschikbaarheden++;
                     }
                 }

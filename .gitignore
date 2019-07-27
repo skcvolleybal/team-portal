@@ -48,3 +48,4 @@ php/UseCases/Teamstanden/teamstanden.json
 dist/php/UseCases/WedstrijdOverzicht/rooster.json
 dist/php/UseCases/Teamstanden/teamoverzichten.json
 dist/php/UseCases/Teamstanden/teamstanden.json
+dist

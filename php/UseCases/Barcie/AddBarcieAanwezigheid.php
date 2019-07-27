@@ -18,12 +18,12 @@ class AddBarcieAanwezigheid implements IInteractorWithData
             InternalServerError("Je bent geen scheidsco");
         }
 
-        $barcieLidId = $data->barcieLidId ?? null;
+        $naam = $data->naam ?? null;
         $date = $data->date ?? null;
         $shift = $data->shift ?? null;
 
-        if ($barcieLidId === null) {
-            InternalServerError("Barcielid is leeg");
+        if ($naam === null) {
+            InternalServerError("Naam is leeg");
         }
         if ($date === null) {
             InternalServerError("Date is leeg");
@@ -36,10 +36,14 @@ class AddBarcieAanwezigheid implements IInteractorWithData
         if ($dayId === null) {
             InternalServerError("Er bestaat geen barciedag $date");
         }
+        $barcielid = $this->barcieGateway->GetBarcielidByName($date);
+        if ($barcielid === null) {
+            InternalServerError("Barcielid met naam $naam bestaat niet");
+        }
 
-        $aanwezigheid = $this->barcieGateway->GetAanwezigheid($dayId, $barcieLidId, $shift);
+        $aanwezigheid = $this->barcieGateway->GetAanwezigheid($dayId, $barcielid["id"], $shift);
         if ($aanwezigheid === null) {
-            $this->barcieGateway->InsertAanwezigheid($dayId, $barcieLidId, $shift);
+            $this->barcieGateway->InsertAanwezigheid($dayId, $barcielid["id"], $shift);
         } else {
             InternalServerError("Aanwezigheid bestaat al");
         }

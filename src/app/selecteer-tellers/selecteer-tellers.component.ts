@@ -1,8 +1,6 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-// tslint:disable-next-line:no-implicit-dependencies
-import { environment } from 'src/environments/environment';
+import { RequestService } from '../services/RequestService';
 
 @Component({
   selector: 'app-selecteer-tellers',
@@ -21,7 +19,10 @@ export class SelecteerTellersComponent implements OnInit {
   teams: string;
   tijd: string;
 
-  constructor(private httpClient: HttpClient, public modal: NgbActiveModal) {}
+  constructor(
+    public modal: NgbActiveModal,
+    private requestService: RequestService
+  ) {}
 
   ngOnInit() {
     this.wedstrijd = SelecteerTellersComponent.wedstrijd;
@@ -33,45 +34,24 @@ export class SelecteerTellersComponent implements OnInit {
   getTelTeams(matchId) {
     this.tellersOptiesLoading = true;
 
-    this.httpClient
-      .post<any>(
-        environment.baseUrl,
-        { matchId },
-        {
-          params: {
-            action: 'GetTelTeams'
-          }
-        }
-      )
-      .subscribe(
-        zaalwachtopties => {
-          this.spelendeTeams = zaalwachtopties.spelendeTeams;
-          this.overigeTeams = zaalwachtopties.overigeTeams;
+    this.requestService.GetTelTeams(matchId).subscribe(
+      zaalwachtopties => {
+        this.spelendeTeams = zaalwachtopties.spelendeTeams;
+        this.overigeTeams = zaalwachtopties.overigeTeams;
+        this.tellersOptiesLoading = false;
+      },
+      error => {
+        if (error.status === 500) {
+          this.errorMessage = error.error;
           this.tellersOptiesLoading = false;
-        },
-        error => {
-          if (error.status === 500) {
-            this.errorMessage = error.error;
-            this.tellersOptiesLoading = false;
-          }
         }
-      );
+      }
+    );
   }
 
   UpdateTellers(tellers) {
-    this.httpClient
-      .post<any>(
-        environment.baseUrl,
-        {
-          matchId: this.wedstrijd.id,
-          tellers
-        },
-        {
-          params: {
-            action: 'UpdateTellers'
-          }
-        }
-      )
+    this.requestService
+      .UpdateTellers(this.wedstrijd.id, tellers)
       .subscribe(() => this.modal.close(tellers));
   }
 }

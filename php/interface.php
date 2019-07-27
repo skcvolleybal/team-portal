@@ -14,7 +14,7 @@ if (!defined('JPATH_BASE')) {
     if (DIRECTORY_SEPARATOR == '/') {
         define('JPATH_BASE', '/home/deb105013n2/domains/skcvolleybal.nl/public_html/');
     } else {
-        define('JPATH_BASE', "C:\\skc-website\\");
+        define('JPATH_BASE', "C:\\Users\\jonat\\joomla-website");
     }
 }
 
