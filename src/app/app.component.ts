@@ -1,10 +1,11 @@
-import { Component, Injector, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
 import { NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
 import { Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { LoginModalComponent } from './login-modal/login-modal.component';
+import { appRoutes } from './route.config';
 import { RequestService } from './services/request.service';
 import { StateService } from './services/state.service';
 
@@ -14,9 +15,15 @@ import { StateService } from './services/state.service';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
+  isWebcie = false;
+  isNavbarHidden = true;
+  rightIcon = faAngleRight;
+  loginModal = false;
+  impersonatedUser: any;
+  appRoutes: any;
+
   constructor(
     private activatedRoute: ActivatedRoute,
-    private injector: Injector,
     private modalService: NgbModal,
     private stateService: StateService,
     private requestService: RequestService,
@@ -25,17 +32,8 @@ export class AppComponent implements OnInit {
     config.backdrop = 'static';
     config.keyboard = false;
 
-    this.appRoutes = this.injector
-      .get('appRoutes')
-      .filter(appRoute => appRoute.path !== '');
+    this.appRoutes = appRoutes.filter(appRoute => appRoute.path !== '');
   }
-
-  isWebcie = false;
-  isNavbarHidden = true;
-  rightIcon = faAngleRight;
-  appRoutes;
-  loginModal = false;
-  impersonatedUser: any;
 
   onLinkClick() {
     this.isNavbarHidden = true;

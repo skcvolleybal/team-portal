@@ -17,6 +17,7 @@ import { HTTPListener } from './interceptors/is-authorized.interceptor';
 import { InvalTeamsComponent } from './inval-teams/inval-teams.component';
 import { LoginModalComponent } from './login-modal/login-modal.component';
 import { MijnOverzichtComponent } from './mijn-overzicht/mijn-overzicht.component';
+import { appRoutes } from './route.config';
 import { ScheidscoComponent } from './scheidsco/scheidsco.component';
 import { ScheidsrechterComponent } from './scheidsrechter/scheidsrechter.component';
 import { SelecteerBarcielidComponent } from './selecteer-barcie-lid/selecteer-barcie-lid.component';
@@ -38,55 +39,6 @@ import { WedstrijdOverzichtComponent } from './wedstrijd-overzicht/wedstrijd-ove
 import { WedstrijdComponent } from './wedstrijd/wedstrijd.component';
 import { WedstrijdenCardComponent } from './wedstrijden-card/wedstrijden-card.component';
 import { WedstrijdenComponent } from './wedstrijden/wedstrijden.component';
-
-export const appRoutes: Routes = [
-  { path: '', redirectTo: 'mijn-overzicht', pathMatch: 'full' },
-  {
-    path: 'mijn-overzicht',
-    component: MijnOverzichtComponent,
-    data: { title: 'Mijn Overzicht' }
-  },
-  {
-    path: 'wedstrijd-aanwezigheid',
-    component: WedstrijdenComponent,
-    data: { title: 'Wedstrijd Aanwezigheid' }
-  },
-  {
-    path: 'wedstrijd-overzicht',
-    component: WedstrijdOverzichtComponent,
-    data: { title: 'Wedstrijd Overzicht' }
-  },
-  {
-    path: 'coach-aanwezigheid',
-    component: CoachWedstrijdenComponent,
-    data: { title: 'Coach Aanwezigheid', groups: ['coach'] }
-  },
-  {
-    path: 'fluit-beschikbaarheid',
-    component: FluitBeschikbaarheidComponent,
-    data: { title: 'Fluit Beschikbaarheid', groups: ['scheidsrechter'] }
-  },
-  {
-    path: 'barcie-beschikbaarheid',
-    component: BarcieBeschikbaarheidComponent,
-    data: { title: 'Barcie Beschikbaarheid', groups: ['barcie', 'webcie'] }
-  },
-  {
-    path: 'scheidsco',
-    component: ScheidscoComponent,
-    data: { title: 'Scheidsco', groups: ['Scheidsco', 'webcie'] }
-  },
-  {
-    path: 'Barco',
-    component: BarcieIndelingComponent,
-    data: { title: 'Barco', groups: ['Scheidsco', 'webcie'] }
-  },
-  {
-    path: 'statistieken',
-    component: StatistiekenComponent,
-    data: { title: 'Statistieken' }
-  }
-];
 
 @NgModule({
   entryComponents: [
@@ -141,7 +93,6 @@ export const appRoutes: Routes = [
     BeschikbaarheidService,
     ScheidscoService,
     StatistiekService,
-    { provide: 'appRoutes', useValue: appRoutes },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: CustomInterceptor,
