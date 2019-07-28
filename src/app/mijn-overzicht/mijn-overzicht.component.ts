@@ -5,7 +5,7 @@ import {
   faUser
 } from '@fortawesome/free-solid-svg-icons';
 import { Observable } from 'rxjs/internal/Observable';
-import { RequestService } from '../services/RequestService';
+import { RequestService } from '../services/request.service';
 
 @Component({
   selector: 'app-mijn-overzicht',

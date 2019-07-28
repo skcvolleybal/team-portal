@@ -13,8 +13,6 @@ class UpdateAanwezigheid implements IInteractorWithData
         $this->aanwezigheidGateway = new AanwezigheidGateway($database);
     }
 
-    private $nevoboGateway;
-
     public function Execute($data)
     {
         $userId = $this->joomlaGateway->GetUserId();
@@ -28,6 +26,5 @@ class UpdateAanwezigheid implements IInteractorWithData
         $aanwezigheid = $data->aanwezigheid;
 
         $this->aanwezigheidGateway->UpdateAanwezigheid($userIdForMatch, $matchId, $aanwezigheid);
-        exit;
     }
 }

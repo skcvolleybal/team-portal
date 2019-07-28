@@ -4,8 +4,7 @@ import {
   faQuestion,
   faTimes
 } from '@fortawesome/free-solid-svg-icons';
-import { environment } from 'src/environments/environment';
-import { RequestService } from '../services/RequestService';
+import { AanwezigheidService } from '../services/aanwezigheid.service';
 
 @Component({
   templateUrl: './wedstrijden.component.html',
@@ -20,10 +19,10 @@ export class WedstrijdenComponent implements OnInit {
   loading: boolean;
   errorMessage: any;
 
-  constructor(private requestService: RequestService) {}
+  constructor(private aanwezigheidService: AanwezigheidService) {}
 
   getWedstrijdAanwezigheid() {
-    this.requestService.GetWedstrijdAanwezigheid().subscribe(
+    this.aanwezigheidService.GetWedstrijdAanwezigheid().subscribe(
       wedstrijden => {
         this.wedstrijden = wedstrijden;
         this.loading = false;
@@ -37,10 +36,12 @@ export class WedstrijdenComponent implements OnInit {
     );
   }
 
-  updateAanwezigheid(aanwezigheid, matchId) {
-    this.requestService
-      .UpdateAanwezigheid(matchId, null, aanwezigheid)
-      .subscribe();
+  updateAanwezigheid(aanwezigheid, wedstrijd) {
+    this.aanwezigheidService.UpdateAanwezigheid(
+      wedstrijd.id,
+      null,
+      aanwezigheid
+    );
   }
 
   ngOnInit() {

@@ -8,7 +8,8 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { NgbDate, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { SelecteerBarcielidComponent } from '../selecteer-barcie-lid/selecteer-barcie-lid.component';
-import { RequestService } from '../services/RequestService';
+import { AanwezigheidService } from '../services/aanwezigheid.service';
+import { BarcoService } from '../services/barco.service';
 
 @Component({
   selector: 'app-barcie-indeling',
@@ -27,7 +28,8 @@ export class BarcieIndelingComponent implements OnInit {
   errorMessage: string;
 
   constructor(
-    private requestService: RequestService,
+    private barcoService: BarcoService,
+    private aanwezigheidService: AanwezigheidService,
     private modalService: NgbModal
   ) {}
 
@@ -40,7 +42,7 @@ export class BarcieIndelingComponent implements OnInit {
 
   onDateSelection(date: NgbDate) {
     this.errorMessage = null;
-    this.requestService.AddBarcieDag(date).subscribe(
+    this.barcoService.AddBarcieDag(date).subscribe(
       () => {
         this.GetBarcieRooster();
       },
@@ -51,34 +53,36 @@ export class BarcieIndelingComponent implements OnInit {
   }
 
   DeleteBarcieDate(date) {
-    this.requestService.DeleteBarcieDag(date).subscribe(() => {
+    this.barcoService.DeleteBarcieDag(date).subscribe(() => {
       this.GetBarcieRooster();
     });
   }
 
-  ToggleBhv(selectedBarcieDag, selectedBarcieLid, shift) {
-    this.requestService
-      .ToggleBhv(selectedBarcieDag, selectedBarcieLid.naam, shift)
-      .subscribe(() => {
-        this.barcieDagen.forEach(barcieDag => {
-          if (barcieDag.date === selectedBarcieDag.date) {
-            barcieDag.shifts[shift - 1].barcieLeden.forEach(barcieLid => {
-              if (selectedBarcieLid.id === barcieLid.id) {
-                barcieLid.isBhv = !barcieLid.isBhv;
-                return;
-              }
-            });
+  ToggleBhv(selectedBarcieDag, selectedBarcielid, shift) {
+    this.barcoService.ToggleBhv(
+      selectedBarcieDag.date,
+      shift,
+      selectedBarcielid.id
+    );
+
+    this.barcieDagen.forEach(barcieDag => {
+      if (barcieDag.date === selectedBarcieDag.date) {
+        barcieDag.shifts[shift - 1].barcieLeden.forEach(barcieLid => {
+          if (selectedBarcielid.id === barcieLid.id) {
+            barcieLid.isBhv = !barcieLid.isBhv;
+            return;
           }
         });
-      });
+      }
+    });
   }
 
-  DeleteAanwezigheid(selectedBarcieDag, selectedBarcieLid, shift) {
-    this.requestService
+  DeleteAanwezigheid(selectedBarcieDag, selectedBarcielid, shift) {
+    this.aanwezigheidService
       .DeleteBarcieAanwezigheid(
-        selectedBarcieDag,
-        selectedBarcieLid.naam,
-        shift
+        selectedBarcieDag.date,
+        shift,
+        selectedBarcielid.id
       )
       .subscribe(() => {
         this.barcieDagen.forEach(barcieDag => {
@@ -89,7 +93,7 @@ export class BarcieIndelingComponent implements OnInit {
               i++
             ) {
               if (
-                selectedBarcieLid.id ===
+                selectedBarcielid.id ===
                 barcieDag.shifts[shift - 1].barcieLeden[i].id
               ) {
                 barcieDag.shifts[shift - 1].barcieLeden.splice(i, 1);
@@ -103,7 +107,7 @@ export class BarcieIndelingComponent implements OnInit {
 
   GetBarcieRooster() {
     this.roosterLoading = true;
-    this.requestService.GetBarcieRooster().subscribe(
+    this.barcoService.GetBarcieRooster().subscribe(
       response => {
         this.roosterLoading = false;
         this.barcieDagen = response.barcieDagen;

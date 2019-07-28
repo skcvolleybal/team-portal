@@ -2,7 +2,7 @@
   <thead>
     <tr>
       <th colspan="3" scope="col">
-        {{wedstrijd.datum}}, {{wedstrijd.tijd}}
+        {{ wedstrijd.datum }}, {{ wedstrijd.tijd }}
       </th>
     </tr>
   </thead>
@@ -11,8 +11,11 @@
       <td class="align-middle">
         <app-wedstrijd [wedstrijd]="wedstrijd"></app-wedstrijd>
       </td>
-      <td style="text-align:right"  class="align-middle">
-        <app-aanwezigheid [aanwezigheid]="wedstrijd.aanwezigheid" (updateAanwezigheid)="updateAanwezigheid($event, wedstrijd)"></app-aanwezigheid>
+      <td style="text-align:right" class="align-middle">
+        <app-aanwezigheid
+          [aanwezigheid]="wedstrijd.aanwezigheid"
+          (updateAanwezigheid)="updateAanwezigheid($event, wedstrijd)"
+        ></app-aanwezigheid>
       </td>
     </tr>
     <tr class="gray-background">
@@ -21,6 +24,6 @@
   </tbody>
 </table>
 <div class="alert alert-danger" role="alert" *ngIf="errorMessage">
-  {{errorMessage}}
+  {{ errorMessage }}
 </div>
 <app-spinner *ngIf="loading"></app-spinner>

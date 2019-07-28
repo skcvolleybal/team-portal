@@ -9,7 +9,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { SelecteerScheidsrechterComponent } from '../selecteer-scheidsrechter/selecteer-scheidsrechter.component';
 import { SelecteerTellersComponent } from '../selecteer-tellers/selecteer-tellers.component';
 import { SelecteerZaalwachtComponent } from '../selecteer-zaalwacht/selecteer-zaalwacht.component';
-import { RequestService } from '../services/RequestService';
+import { ScheidscoService } from '../services/scheidsco.service';
 
 @Component({
   selector: 'app-scheidsco',
@@ -31,13 +31,13 @@ export class ScheidscoComponent implements OnInit {
   errorMessage: any;
 
   constructor(
-    private requestService: RequestService,
+    private scheidscoService: ScheidscoService,
     private modalService: NgbModal
   ) {}
 
   getScheidscoOverzicht() {
     this.overzichtLoading = true;
-    this.requestService.GetScheidscoOverzicht().subscribe(
+    this.scheidscoService.GetScheidscoOverzicht().subscribe(
       speeldagen => {
         this.speeldagen = speeldagen;
         this.overzichtLoading = false;
@@ -85,35 +85,33 @@ export class ScheidscoComponent implements OnInit {
     this.modalService
       .open(component)
       .result.then(uitvoerder => {
-        this.speeldagen.forEach(speeldag => {
-          speeldag.speeltijden.forEach(speeltijd => {
-            speeltijd.wedstrijden.forEach(wedstrijd => {
-              if (wedstrijd.id === geselecteerdeWedstrijd.id) {
-                wedstrijd[taak] = uitvoerder;
-                return;
-              }
-            });
-          });
-        });
+        this.SetUitvoerderOnTaak(geselecteerdeWedstrijd.id, taak, uitvoerder);
       })
       .catch(() => {});
   }
 
-  DeleteTaak(taak, matchId) {
-    switch (taak) {
-      case 'tellers':
-        this.requestService.UpdateTellers(matchId, null);
-        break;
-      case 'scheidsrechter':
-        this.requestService.UpdateScheidsrechter(matchId, null);
-        break;
-    }
+  SetUitvoerderOnTaak(matchId, taak, uitvoerder) {
+    this.speeldagen.forEach(speeldag => {
+      speeldag.speeltijden.forEach(speeltijd => {
+        speeltijd.wedstrijden.forEach(wedstrijd => {
+          if (wedstrijd.id === matchId) {
+            wedstrijd[taak] = uitvoerder;
+            return;
+          }
+        });
+      });
+    });
   }
 
-  GetClassForTaak(taak, wedstrijd) {
-    return {
-      'btn-danger': wedstrijd[taak] === null,
-      'btn-success': wedstrijd.scheidsrechter
-    };
+  DeleteTaak(matchId: string, taak: string) {
+    switch (taak) {
+      case 'tellers':
+        this.scheidscoService.UpdateTellers(matchId, null).subscribe();
+        break;
+      case 'scheidsrechter':
+        this.scheidscoService.UpdateScheidsrechter(matchId, null).subscribe();
+        break;
+    }
+    this.SetUitvoerderOnTaak(matchId, taak, null);
   }
 }

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { RequestService } from '../services/RequestService';
+import { BeschikbaarheidService } from '../services/beschikbaarheid.service';
 
 @Component({
   selector: 'app-fluit-beschikbaarheid',
@@ -11,21 +11,21 @@ export class FluitBeschikbaarheidComponent implements OnInit {
   speeldagen: any[];
   errorMessage: string;
 
-  constructor(private requestService: RequestService) {}
+  constructor(private beschikbaarheidService: BeschikbaarheidService) {}
 
   ngOnInit() {
     this.getFluitBeschikbaarheid();
   }
 
   UpdateFluitBeschikbaarheid(beschikbaarheid, datum, tijd) {
-    this.requestService
+    this.beschikbaarheidService
       .UpdateFluitBeschikbaarheid(datum, tijd, beschikbaarheid)
       .subscribe();
   }
 
   getFluitBeschikbaarheid() {
     this.loading = true;
-    this.requestService.GetFluitBeschikbaarheid().subscribe(
+    this.beschikbaarheidService.GetFluitBeschikbaarheid().subscribe(
       speeldagen => {
         this.speeldagen = speeldagen;
         this.loading = false;

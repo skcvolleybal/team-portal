@@ -22,7 +22,7 @@
       *ngFor="let scheidsrechterstype of scheidsrechtertypes"
     >
       <div class="card-header">
-        {{ scheidsrechterstype }}
+        {{ GetRegularCasing(scheidsrechterstype) }}
       </div>
       <ul class="list-group list-group-flush" *ngFor="let keuze of keuzes">
         <li class="list-group-item">{{ keuze }}</li>

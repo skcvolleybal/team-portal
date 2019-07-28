@@ -73,7 +73,7 @@ class GetTelTeams implements IInteractorWithData
             "naam" => $team['naam'],
             "geteld" => $team['geteld'],
             "eigenTijd" => $eigenTijd,
-            "isMogelijk" => $isMogelijk,
+            "isMogelijk" => $isMogelijk === null ? "Onbekend" : $isMogelijk ? "Ja" : "Nee",
         ];
     }
 }

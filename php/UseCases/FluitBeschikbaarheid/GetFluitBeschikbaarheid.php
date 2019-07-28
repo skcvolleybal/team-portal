@@ -7,14 +7,7 @@ include_once 'shared' . DIRECTORY_SEPARATOR . 'FluitBeschikbaarheidHelper.php';
 
 class GetFluitBeschikbaarheid implements IInteractor
 {
-    private $joomlaGateway;
-    private $nevoboGateway;
-
     private $uscCode = 'LDNUN';
-
-    private $team;
-    private $coachTeam;
-    private $fluitBeschikbaarheid;
 
     public function __construct($database)
     {
@@ -37,7 +30,7 @@ class GetFluitBeschikbaarheid implements IInteractor
 
         $team = $this->joomlaGateway->GetTeam($userId);
         $coachTeam = $this->joomlaGateway->GetCoachTeam($userId);
-        $fluitBeschikbaarheden = $this->fluitBeschikbaarheidGateway->GetFluitBeschikbaarheid($userId);
+        $fluitBeschikbaarheden = $this->fluitBeschikbaarheidGateway->GetFluitBeschikbaarheden($userId);
 
         $programma = $this->nevoboGateway->GetProgrammaForTeam($team);
         $coachProgramma = [];
@@ -54,14 +47,16 @@ class GetFluitBeschikbaarheid implements IInteractor
             $date = $wedstrijdDag['date'];
             $speelWedstrijd = $this->fluitBeschikbaarheidHelper->GetWedstrijdWithDate($programma, $date);
             $coachWedstrijd = $this->fluitBeschikbaarheidHelper->GetWedstrijdWithDate($coachProgramma, $date);
-            $eigenWedstrijden = array_filter([$speelWedstrijd, $coachWedstrijd], function ($value) {return $value !== null;});
+            $eigenWedstrijden = array_filter([$speelWedstrijd, $coachWedstrijd], function ($value) {
+                return $value !== null;
+            });
 
             foreach ($wedstrijdDag['speeltijden'] as $tijdslot) {
                 $date = $wedstrijdDag['date'];
                 $time = $tijdslot['time'];
                 $i = $this->fluitBeschikbaarheidHelper->GetIndexOfTijd($wedstrijdDag['speeltijden'], $time);
 
-                $wedstrijdDag['speeltijden'][$i]['beschikbaarheid'] = $this->fluitBeschikbaarheidHelper->GetFluitBeschikbaarheid($fluitBeschikbaarheden, $date, $time);
+                $wedstrijdDag['speeltijden'][$i]['beschikbaarheid'] = $this->fluitBeschikbaarheidHelper->GetFluitBeschikbaarheid($fluitBeschikbaarheden, $date, $time) ?? "Onbekend";
                 $wedstrijdDag['speeltijden'][$i]['isMogelijk'] = $this->fluitBeschikbaarheidHelper->isMogelijk($eigenWedstrijden, $time);
             }
 

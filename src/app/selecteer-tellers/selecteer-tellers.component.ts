@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { RequestService } from '../services/RequestService';
+import { ScheidscoService } from '../services/scheidsco.service';
 
 @Component({
   selector: 'app-selecteer-tellers',
@@ -21,7 +21,7 @@ export class SelecteerTellersComponent implements OnInit {
 
   constructor(
     public modal: NgbActiveModal,
-    private requestService: RequestService
+    private scheidscoService: ScheidscoService
   ) {}
 
   ngOnInit() {
@@ -34,7 +34,7 @@ export class SelecteerTellersComponent implements OnInit {
   getTelTeams(matchId) {
     this.tellersOptiesLoading = true;
 
-    this.requestService.GetTelTeams(matchId).subscribe(
+    this.scheidscoService.GetTelTeams(matchId).subscribe(
       zaalwachtopties => {
         this.spelendeTeams = zaalwachtopties.spelendeTeams;
         this.overigeTeams = zaalwachtopties.overigeTeams;
@@ -50,7 +50,7 @@ export class SelecteerTellersComponent implements OnInit {
   }
 
   UpdateTellers(tellers) {
-    this.requestService
+    this.scheidscoService
       .UpdateTellers(this.wedstrijd.id, tellers)
       .subscribe(() => this.modal.close(tellers));
   }

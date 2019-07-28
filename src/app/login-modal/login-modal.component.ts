@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
-import { RequestService } from '../services/RequestService';
+import { RequestService } from '../services/request.service';
 
 @Component({
   selector: 'app-login-modal',

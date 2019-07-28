@@ -18,7 +18,7 @@ class FluitBeschikbaarheidHelper
             $format = 'Y-m-d H:i:s';
             $timestring = $wedstrijd['timestamp']->format('Y-m-d') . " " . $tijd;
             $fluitWedstrijd = [
-                "timestamp" => $date = DateTime::createFromFormat($format, $timestring),
+                "timestamp" => DateTime::createFromFormat($format, $timestring),
                 "locatie" => "Universitair SC",
             ];
             $isMogelijk = isMogelijk($wedstrijd, $fluitWedstrijd);

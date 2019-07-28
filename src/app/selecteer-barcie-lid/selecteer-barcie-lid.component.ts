@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { RequestService } from '../services/RequestService';
+import { AanwezigheidService } from '../services/aanwezigheid.service';
+import { BarcoService } from '../services/barco.service';
 
 @Component({
   selector: 'app-selecteer-barcie-lid',
@@ -21,7 +22,8 @@ export class SelecteerBarcielidComponent implements OnInit {
 
   constructor(
     public modal: NgbActiveModal,
-    private requestService: RequestService
+    private barcoService: BarcoService,
+    private aanwezigheidService: AanwezigheidService
   ) {}
 
   ngOnInit() {
@@ -33,7 +35,7 @@ export class SelecteerBarcielidComponent implements OnInit {
 
   GetBarcieLeden() {
     this.barcieLedenLoading = true;
-    this.requestService.GetBarcieleden(this.date).subscribe(
+    this.barcoService.GetBarcieleden(this.date).subscribe(
       response => {
         this.barcieLedenLoading = false;
         this.barcieLeden = response.barcieLeden;
@@ -46,8 +48,8 @@ export class SelecteerBarcielidComponent implements OnInit {
   }
 
   AddBarcieAanwezigheid(barcielid) {
-    this.requestService
-      .AddBarcieAanwezigheid(this.date, this.shift, barcielid)
+    this.aanwezigheidService
+      .AddBarcieAanwezigheid(this.date, this.shift, barcielid.id)
       .subscribe(
         () => {
           this.modal.close(barcielid);

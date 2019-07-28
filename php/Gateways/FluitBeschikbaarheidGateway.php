@@ -9,7 +9,7 @@ class FluitBeschikbaarheidGateway
         $this->database = $database;
     }
 
-    public function GetFluitBeschikbaarheid($userId)
+    public function GetFluitBeschikbaarheden($userId)
     {
         $query = "SELECT *
                   FROM TeamPortal_fluitbeschikbaarheid
@@ -19,7 +19,7 @@ class FluitBeschikbaarheidGateway
         return $this->database->Execute($query, $params);
     }
 
-    private function GetBeschikbaarheid($userId, $datum, $tijd)
+    public function GetFluitBeschikbaarheid($userId, $datum, $tijd)
     {
         $query = "SELECT *
                   FROM TeamPortal_fluitbeschikbaarheid
@@ -50,27 +50,7 @@ class FluitBeschikbaarheidGateway
         return $this->database->Execute($query, $params);
     }
 
-    public function UpdateBeschikbaarheid($userId, $datum, $tijd, $beschikbaarheid)
-    {
-        if (!$this->VerifyDate($datum)) {
-            InternalServerError("Unknown date: $datum");
-        }
-        if (!$this->VerifyTime($tijd)) {
-            InternalServerError("Unknown time: $tijd");
-        }
-        if (!in_array($beschikbaarheid, ["Ja", "Nee", "Onbekend"])) {
-            InternalServerError("Unknown beschikbaarheid: $beschikbaarheid");
-        }
-
-        $dbBeschikbaarheid = $this->GetBeschikbaarheid($userId, $datum, $tijd);
-        if ($dbBeschikbaarheid == null) {
-            $this->Insert($userId, $datum, $tijd, $beschikbaarheid);
-        } else {
-            $this->Update($dbBeschikbaarheid['id'], $beschikbaarheid);
-        }
-    }
-
-    private function Insert($userId, $datum, $tijd, $beschikbaarheid)
+    public function Insert($userId, $datum, $tijd, $beschikbaarheid)
     {
         $query = "INSERT TeamPortal_fluitbeschikbaarheid
                   SET user_id = :userId,
@@ -87,7 +67,7 @@ class FluitBeschikbaarheidGateway
         $this->database->Execute($query, $params);
     }
 
-    private function Update($id, $beschikbaarheid)
+    public function Update($id, $beschikbaarheid)
     {
         $query = "UPDATE TeamPortal_fluitbeschikbaarheid
                   SET beschikbaarheid = :beschikbaarheid
@@ -101,13 +81,13 @@ class FluitBeschikbaarheidGateway
         $this->database->Execute($query, $params);
     }
 
-    private function VerifyDate($date)
+    public function Delete($id)
     {
-        return DateTime::createFromFormat('Y-m-d', $date);
-    }
+        $query = "DELETE FROM TeamPortal_fluitbeschikbaarheid
+                  WHERE id = :id";
 
-    private function VerifyTime($time)
-    {
-        return DateTime::createFromFormat('H:i:s', $time);
+        $params = [new Param(":id", $id, PDO::PARAM_INT)];
+
+        $this->database->Execute($query, $params);
     }
 }

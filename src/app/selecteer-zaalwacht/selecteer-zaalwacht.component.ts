@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { RequestService } from '../services/RequestService';
+import { ScheidscoService } from '../services/scheidsco.service';
 
 @Component({
   selector: 'app-selecteer-zaalwacht',
@@ -10,7 +10,7 @@ import { RequestService } from '../services/RequestService';
 export class SelecteerZaalwachtComponent implements OnInit {
   constructor(
     public modal: NgbActiveModal,
-    private requestService: RequestService
+    private scheidscoService: ScheidscoService
   ) {}
 
   static date: string;
@@ -33,7 +33,7 @@ export class SelecteerZaalwachtComponent implements OnInit {
   getZaalwachtOpties(date) {
     this.zaalwachtoptiesLoading = true;
 
-    this.requestService.GetZaalwachtOpties(date).subscribe(
+    this.scheidscoService.GetZaalwachtOpties(date).subscribe(
       zaalwachtopties => {
         this.spelendeTeams = zaalwachtopties.spelendeTeams;
         this.overigeTeams = zaalwachtopties.overigeTeams;
@@ -49,7 +49,7 @@ export class SelecteerZaalwachtComponent implements OnInit {
   }
 
   UpdateZaalwacht(team) {
-    this.requestService
+    this.scheidscoService
       .UpdateZaalwacht(this.date, team)
       .subscribe(() => this.modal.close(team));
   }

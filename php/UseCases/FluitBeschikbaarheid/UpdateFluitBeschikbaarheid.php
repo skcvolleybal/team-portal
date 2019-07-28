@@ -28,7 +28,27 @@ class UpdateFluitBeschikbaarheid implements IInteractorWithData
         $tijd = $data->tijd;
         $beschikbaarheid = $data->beschikbaarheid;
 
-        $this->fluitBeschikbaarheidGateway->UpdateBeschikbaarheid($userId, $datum, $tijd, $beschikbaarheid);
+        if (!DateTime::createFromFormat('Y-m-d', $datum)) {
+            InternalServerError("Unknown date: $datum");
+        }
+        if (!DateTime::createFromFormat('H:i:s', $tijd)) {
+            InternalServerError("Unknown time: $tijd");
+        }
+        if (!in_array($beschikbaarheid, ["Ja", "Nee", "Onbekend"])) {
+            InternalServerError("Unknown beschikbaarheid: $beschikbaarheid");
+        }
+
+        $dbBeschikbaarheid = $this->fluitBeschikbaarheidGateway->GetFluitBeschikbaarheid($userId, $datum, $tijd);
+        if ($dbBeschikbaarheid == null) {
+            $this->fluitBeschikbaarheidGateway->Insert($userId, $datum, $tijd, $beschikbaarheid);
+        } else {
+            if ($beschikbaarheid == "Onbekend") {
+                $this->fluitBeschikbaarheidGateway->Delete($dbBeschikbaarheid['id']);
+            } else {
+                $this->fluitBeschikbaarheidGateway->Update($dbBeschikbaarheid['id'], $beschikbaarheid);
+            }
+        }
+
         exit();
     }
 }

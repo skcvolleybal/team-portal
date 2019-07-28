@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { RequestService } from '../services/RequestService';
+import { ScheidscoService } from '../services/scheidsco.service';
 
 @Component({
   selector: 'app-selecteer-scheidsrechter',
@@ -23,7 +23,7 @@ export class SelecteerScheidsrechterComponent implements OnInit {
   tijd: string;
 
   constructor(
-    private requestService: RequestService,
+    private scheidscoService: ScheidscoService,
     public modal: NgbActiveModal
   ) {}
 
@@ -37,7 +37,7 @@ export class SelecteerScheidsrechterComponent implements OnInit {
   getScheidsrechterOpties(matchId: string) {
     this.scheidsrechterOptiesLoading = true;
 
-    this.requestService.GetScheidsrechtersForMatch(matchId).subscribe(
+    this.scheidscoService.GetScheidsrechtersForMatch(matchId).subscribe(
       result => {
         this.scheidsrechters = result;
         this.scheidsrechterOptiesLoading = false;
@@ -56,18 +56,18 @@ export class SelecteerScheidsrechterComponent implements OnInit {
   }
 
   GetScheidsrechterText(scheidsrechter) {
-    return `${scheidsrechter.niveau}, ${scheidsrechter.naam} (${
-      scheidsrechter.gefloten
-    }), ${scheidsrechter.eigenTijd}`;
+    const result = [];
+    if (scheidsrechter.niveau) {
+      result.push(scheidsrechter.niveau);
+    }
+    result.push(`${scheidsrechter.naam} (${scheidsrechter.gefloten})`);
+    if (scheidsrechter.eigenTijd) {
+      result.push(scheidsrechter.eigenTijd);
+    }
+    return result.join(', ');
   }
 
-  GetScheidsrechterTextWithoutTime(scheidsrechter) {
-    return `${scheidsrechter.niveau}, ${scheidsrechter.naam} (${
-      scheidsrechter.gefloten
-    })`;
-  }
-
-  GetClass(scheidsrechter) {
+  GetClass(scheidsrechter: any) {
     return {
       'btn-danger': scheidsrechter.isMogelijk === 'Nee',
       'btn-success': scheidsrechter.isMogelijk === 'Ja',
@@ -75,8 +75,14 @@ export class SelecteerScheidsrechterComponent implements OnInit {
     };
   }
 
+  GetRegularCasing(text) {
+    return text
+      .replace(/([A-Z])/g, ' $1')
+      .replace(/^./, (str: string) => str.toUpperCase());
+  }
+
   UpdateScheidsrechter(scheidsrechter) {
-    this.requestService
+    this.scheidscoService
       .UpdateScheidsrechter(this.wedstrijd.id, scheidsrechter)
       .subscribe(() => {
         this.modal.close(scheidsrechter);

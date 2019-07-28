@@ -19,12 +19,12 @@ class DeleteBarcieAanwezigheid implements IInteractorWithData
             InternalServerError("Je bent geen scheidsco");
         }
 
-        $naam = $data->naam ?? null;
+        $barcielidId = $data->barcielidId ?? null;
         $date = $data->date ?? null;
         $shift = $data->shift ?? null;
 
-        if ($naam === null) {
-            InternalServerError("Naam is leeg");
+        if ($barcielidId === null) {
+            InternalServerError("barcielidId is leeg");
         }
         if ($date === null) {
             InternalServerError("Date is leeg");
@@ -37,12 +37,8 @@ class DeleteBarcieAanwezigheid implements IInteractorWithData
         if ($dayId === null) {
             InternalServerError("Er bestaat geen barciedag $date");
         }
-        $barcielid = $this->barcieGateway->GetBarcielidByName($date);
-        if ($barcielid === null) {
-            InternalServerError("Barcielid met naam $naam bestaat niet");
-        }
 
-        $aanwezigheid = $this->barcieGateway->GetAanwezigheid($dayId, $barcielid["id"], $shift);
+        $aanwezigheid = $this->barcieGateway->GetAanwezigheid($dayId, $barcielidId, $shift);
         if ($aanwezigheid) {
             $this->barcieGateway->DeleteAanwezigheid($aanwezigheid['id']);
         } else {

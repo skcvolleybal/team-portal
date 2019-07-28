@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Chart } from 'chart.js';
-import { RequestService } from '../services/RequestService';
+import { StatistiekService } from '../services/statistieken.service';
 
 @Component({
   selector: 'app-statistieken',
@@ -14,14 +14,14 @@ export class StatistiekenComponent implements OnInit {
   aantalSpelers: number;
   myChart: any;
 
-  constructor(private requestService: RequestService) {}
+  constructor(private statistiekService: StatistiekService) {}
 
   ngOnInit() {
     this.drawGespeeldePunten();
   }
 
   drawGespeeldePunten() {
-    this.requestService.GetGespeeldePunten().subscribe(spelers => {
+    this.statistiekService.GetGespeeldePunten().subscribe(spelers => {
       this.aantalSpelers = spelers.length;
 
       const backgroundColors = [

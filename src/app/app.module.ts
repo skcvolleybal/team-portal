@@ -23,8 +23,13 @@ import { SelecteerBarcielidComponent } from './selecteer-barcie-lid/selecteer-ba
 import { SelecteerScheidsrechterComponent } from './selecteer-scheidsrechter/selecteer-scheidsrechter.component';
 import { SelecteerTellersComponent } from './selecteer-tellers/selecteer-tellers.component';
 import { SelecteerZaalwachtComponent } from './selecteer-zaalwacht/selecteer-zaalwacht.component';
-import { RequestService } from './services/RequestService';
+import { AanwezigheidService } from './services/aanwezigheid.service';
+import { BarcoService } from './services/barco.service';
+import { BeschikbaarheidService } from './services/beschikbaarheid.service';
+import { RequestService } from './services/request.service';
+import { ScheidscoService } from './services/scheidsco.service';
 import { StateService } from './services/state.service';
+import { StatistiekService } from './services/statistieken.service';
 import { SpelersLijstComponent } from './spelers-lijst/spelers-lijst.component';
 import { SpinnerComponent } from './spinner/spinner.component';
 import { StatistiekenComponent } from './statistieken/statistieken.component';
@@ -131,6 +136,11 @@ export const appRoutes: Routes = [
   providers: [
     StateService,
     RequestService,
+    AanwezigheidService,
+    BarcoService,
+    BeschikbaarheidService,
+    ScheidscoService,
+    StatistiekService,
     { provide: 'appRoutes', useValue: appRoutes },
     {
       provide: HTTP_INTERCEPTORS,

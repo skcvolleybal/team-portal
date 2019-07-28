@@ -13,7 +13,7 @@
         <div>
           <app-spelers-lijst
             (deleteAanwezigheid)="
-              UpdateAanwezigheid(wedstrijd.id, $event, 'Nee')
+              UpdateAanwezigheid(wedstrijd.id, $event, 'Onbekend')
             "
             *ngIf="wedstrijd.aanwezigen.length > 0"
             [spelers]="wedstrijd.aanwezigen"

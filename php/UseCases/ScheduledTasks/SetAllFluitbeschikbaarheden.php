@@ -26,7 +26,7 @@ class SetAllFluitbeschikbaarheden implements IInteractor
             $scheidsrechterId = $scheidsrechter['id'];
             $team = $this->joomlaGateway->GetTeam($scheidsrechterId);
             $coachTeam = $this->joomlaGateway->GetCoachTeam($scheidsrechterId);
-            $fluitBeschikbaarheden = $this->fluitBeschikbaarheidGateway->GetFluitBeschikbaarheid($scheidsrechterId);
+            $fluitBeschikbaarheden = $this->fluitBeschikbaarheidGateway->GetFluitBeschikbaarheden($scheidsrechterId);
 
             $programma = $this->nevoboGateway->GetProgrammaForTeam($team);
             $coachProgramma = [];
@@ -42,7 +42,9 @@ class SetAllFluitbeschikbaarheden implements IInteractor
                 $date = $wedstrijdDag['date'];
                 $speelWedstrijd = $this->fluitBeschikbaarheidHelper->GetWedstrijdWithDate($programma, $date);
                 $coachWedstrijd = $this->fluitBeschikbaarheidHelper->GetWedstrijdWithDate($coachProgramma, $date);
-                $eigenWedstrijden = array_filter([$speelWedstrijd, $coachWedstrijd], function ($value) {return $value !== null;});
+                $eigenWedstrijden = array_filter([$speelWedstrijd, $coachWedstrijd], function ($value) {
+                    return $value !== null;
+                });
 
                 foreach ($wedstrijdDag['speeltijden'] as $tijdslot) {
                     $date = $wedstrijdDag['date'];

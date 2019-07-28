@@ -5,7 +5,7 @@ import { NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
 import { Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { LoginModalComponent } from './login-modal/login-modal.component';
-import { RequestService } from './services/RequestService';
+import { RequestService } from './services/request.service';
 import { StateService } from './services/state.service';
 
 @Component({

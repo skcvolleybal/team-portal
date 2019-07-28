@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { RequestService } from '../services/RequestService';
+import { BeschikbaarheidService } from '../services/beschikbaarheid.service';
 
 @Component({
   selector: 'app-barcie-beschikbaarheid',
@@ -11,21 +11,21 @@ export class BarcieBeschikbaarheidComponent implements OnInit {
   speeldagen: any[];
   errorMessage: string;
 
-  constructor(private requestService: RequestService) {}
+  constructor(private beschikbaarheidService: BeschikbaarheidService) {}
 
   ngOnInit() {
     this.getBarcieBeschikbaarheid();
   }
 
   UpdateBarcieBeschikbaarheid(beschikbaarheid, date) {
-    this.requestService
+    this.beschikbaarheidService
       .UpdateBarcieBeschikbaarheid(date, beschikbaarheid)
       .subscribe();
   }
 
   getBarcieBeschikbaarheid() {
     this.loading = true;
-    this.requestService.GetBarcieBeschikbaarheid().subscribe(
+    this.beschikbaarheidService.GetBarcieBeschikbaarheid().subscribe(
       speeldagen => {
         this.speeldagen = speeldagen;
         this.loading = false;

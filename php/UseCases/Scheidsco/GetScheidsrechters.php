@@ -65,7 +65,8 @@ class GetScheidsrechters implements IInteractorWithData
                 "Ja" => [],
                 "Onbekend" => [],
                 "Nee" => [],
-            ]];
+            ]
+        ];
         foreach ($scheidsrechters as $scheidsrechter) {
             $wedstrijd = GetWedstrijdOfTeam($wedstrijdenWithSameDate, $scheidsrechter['team']);
             $fluitBeschikbaarheid = $this->GetFluitbeschikbaarheid($scheidsrechter, $fluitBeschikbaarheden);
@@ -90,7 +91,7 @@ class GetScheidsrechters implements IInteractorWithData
     {
         return [
             "naam" => $scheidsrechter['naam'],
-            "niveau" => empty($scheidsrechter['niveau']) ? 'X' : $scheidsrechter['niveau'],
+            "niveau" => $scheidsrechter['niveau'],
             "gefloten" => $scheidsrechter['gefloten'],
             "team" => GetShortTeam($scheidsrechter['team']) ?? "Geen Team",
             "eigenTijd" => $wedstrijd['timestamp'] ? $wedstrijd['timestamp']->format("G:i") : null,

@@ -30,7 +30,7 @@ export class SpelersLijstComponent {
 
   constructor() {}
 
-  DeleteAanwezigheid(spelerId) {
-    this.deleteAanwezigheid.emit(spelerId);
+  DeleteAanwezigheid(speler) {
+    this.deleteAanwezigheid.emit(speler);
   }
 }

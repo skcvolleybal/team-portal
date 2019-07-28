@@ -6,7 +6,7 @@ import {
   faTimes,
   faUser
 } from '@fortawesome/free-solid-svg-icons';
-import { RequestService } from '../services/RequestService';
+import { AanwezigheidService } from '../services/aanwezigheid.service';
 
 @Component({
   selector: 'app-coach-wedstrijden',
@@ -24,21 +24,19 @@ export class CoachWedstrijdenComponent implements OnInit {
   errorMessage: string;
   wedstrijden: any[];
 
-  constructor(private requestService: RequestService) {}
+  constructor(private aanwezigheidService: AanwezigheidService) {}
 
   ngOnInit() {
     this.getCoachAanwezigheid();
   }
 
   UpdateCoachAanwezigheid(aanwezigheid, matchId) {
-    this.requestService
-      .UpdateCoachAanwezigheid(matchId, aanwezigheid)
-      .subscribe();
+    this.aanwezigheidService.UpdateCoachAanwezigheid(matchId, aanwezigheid);
   }
 
   getCoachAanwezigheid() {
     this.loading = true;
-    this.requestService.GetCoachAanwezigheid().subscribe(
+    this.aanwezigheidService.GetCoachAanwezigheid().subscribe(
       response => {
         this.wedstrijden = response.wedstrijden;
         this.loading = false;
