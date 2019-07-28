@@ -15,15 +15,10 @@ class GetWedstrijdOverzicht implements IInteractor
         $this->nevoboGateway = new NevoboGateway();
     }
 
-    private $aanwezigheidGateway;
-    private $joomlaGateway;
-    private $nevoboGateway;
-    private $invalTeams;
-
     public function Execute()
     {
-        $userId = $this->joomlaGateway->GetUserId();
 
+        $userId = $this->joomlaGateway->GetUserId();
         if ($userId === null) {
             UnauthorizedResult();
         }
@@ -33,8 +28,11 @@ class GetWedstrijdOverzicht implements IInteractor
         if (!$team) {
             InternalServerError("Je zit niet in een team");
         }
-        $spelers = $this->joomlaGateway->GetSpelers($team);
+
         $aanwezigheden = $this->aanwezigheidGateway->GetAanwezighedenForTeam($team);
+        usort($aanwezigheden, function ($a, $b) {
+            return $a["naam"] > $b["naam"];
+        });
         $coachAanwezigheden = $this->aanwezigheidGateway->GetCoachAanwezighedenForTeam(ToSkcName($team));
         $wedstrijden = $this->nevoboGateway->GetProgrammaForTeam($team);
         $aanwezigheidPerWedstrijd = $this->GetAanwezighedenPerWedstrijd($aanwezigheden);
@@ -62,8 +60,7 @@ class GetWedstrijdOverzicht implements IInteractor
             }
         }
 
-        echo json_encode($overzicht);
-        exit;
+        exit(json_encode($overzicht));
     }
 
     private function GetCoaches($coachAanwezigheden, $matchId)
@@ -82,17 +79,27 @@ class GetWedstrijdOverzicht implements IInteractor
 
     private function GetInvalTeamInfo($wedstrijd)
     {
-        foreach ($this->invalTeams as $nevobonaam => $invalTeam) {
-            $programma = $this->nevoboGateway->GetProgrammaForTeam($nevobonaam);
+        if ($wedstrijd["timestamp"] === null) {
+            return null;
+        }
+
+        $datumWedstrijd = $wedstrijd["timestamp"]->format("Y-m-d");
+        foreach ($this->invalTeams as $invalTeam) {
+            $nevobonaam = $invalTeam["nevobonaam"];
             $invalTeamWedstrijd = null;
-            foreach ($programma as $programmaItem) {
-                if ($programmaItem['timestamp'] == $wedstrijd['timestamp']) {
+            foreach ($invalTeam["programma"] as $programmaItem) {
+                if ($programmaItem["timestamp"] === null) {
+                    continue;
+                }
+
+                $datumInvalwedstrijd = $programmaItem["timestamp"]->format("Y-m-d");
+                if ($datumWedstrijd === $datumInvalwedstrijd) {
                     $invalTeamWedstrijd = [
                         "timestamp" => $programmaItem['timestamp'],
                         "tijd" => $programmaItem['timestamp']->format('G:i'),
                         "team1" => $programmaItem['team1'],
                         "team2" => $programmaItem['team2'],
-                        "locatie" => GetShortLocatie($programmaItem['locatie']),
+                        "locatie" => $programmaItem['locatie'],
                         "shortLocatie" => GetShortLocatie($programmaItem['locatie']),
                     ];
                     break;
@@ -103,51 +110,66 @@ class GetWedstrijdOverzicht implements IInteractor
                 "naam" => ToSkcName($nevobonaam),
                 "wedstrijd" => $invalTeamWedstrijd,
                 "isMogelijk" => IsMogelijk($wedstrijd, $invalTeamWedstrijd),
-                "spelers" => $this->invalTeams[$nevobonaam]['spelers'],
+                "spelers" => $invalTeam['spelers'],
             ];
         }
         return $invalTeams;
     }
 
-    private function GetAllInvalTeamsForTeam($team)
+    private function GetAllInvalTeamsForTeam($teamnaam)
     {
         $this->invalTeams = [];
-        $startSequences = [
-            "SKC DS 1" => 2,
-            "SKC DS 2" => 3,
-            "SKC DS 3" => 3,
-            "SKC DS 4" => 3,
-            "SKC DS 5" => 5,
-            "SKC DS 6" => 5,
-            "SKC DS 7" => 5,
-            "SKC DS 8" => 8,
-            "SKC DS 9" => 8,
-            "SKC DS 10" => 8,
-            "SKC DS 11" => 8,
-            "SKC DS 12" => 8,
-            "SKC DS 13" => 8,
-            "SKC DS 14" => 8,
-            "SKC DS 15" => 8,
-            "SKC HS 1" => 2,
-            "SKC HS 2" => 3,
-            "SKC HS 3" => 4,
-            "SKC HS 4" => 5,
-            "SKC HS 5" => 5,
-            "SKC HS 6" => 5,
-            "SKC HS 7" => 5,
-            "SKC HS 8" => 5,
+        $allTeams = [
+            "dames" => [
+                ["naam" => "SKC DS 1", "klasse" => 0],
+                ["naam" => "SKC DS 2", "klasse" => 1],
+                ["naam" => "SKC DS 3", "klasse" => 2],
+                ["naam" => "SKC DS 4", "klasse" => 2],
+                ["naam" => "SKC DS 5", "klasse" => 3],
+                ["naam" => "SKC DS 6", "klasse" => 3],
+                ["naam" => "SKC DS 7", "klasse" => 3],
+                ["naam" => "SKC DS 8", "klasse" => 3],
+                ["naam" => "SKC DS 9", "klasse" => 3],
+                ["naam" => "SKC DS 10", "klasse" => 4],
+                ["naam" => "SKC DS 11", "klasse" => 4],
+                ["naam" => "SKC DS 12", "klasse" => 4],
+                ["naam" => "SKC DS 13", "klasse" => 4],
+                ["naam" => "SKC DS 14", "klasse" => 4],
+                ["naam" => "SKC DS 15", "klasse" => 4],
+            ],
+            "heren" => [
+                ["naam" => "SKC HS 1", "klasse" => 1],
+                ["naam" => "SKC HS 2", "klasse" => 1],
+                ["naam" => "SKC HS 3", "klasse" => 2],
+                ["naam" => "SKC HS 4", "klasse" => 3],
+                ["naam" => "SKC HS 5", "klasse" => 3],
+                ["naam" => "SKC HS 6", "klasse" => 4],
+                ["naam" => "SKC HS 7", "klasse" => 4],
+                ["naam" => "SKC HS 8", "klasse" => 4],
+                ["naam" => "SKC HS 9", "klasse" => 4]
+            ]
         ];
-        if (!isset($startSequences[$team])) {
-            return [];
+
+        $eigenTeam = null;
+        $teams = substr($teamnaam, 4, 1) == "D" ? $allTeams["dames"] : $allTeams["heren"];
+        foreach ($teams as $team) {
+            if ($team["naam"] == $teamnaam) {
+                $eigenTeam = $team;
+                break;
+            }
         }
-        $startSequence = intval($startSequences[$team]);
-        $maxSequence = substr($team, 4, 1) == "D" ? 15 : 8;
-        for ($sequence = $startSequence; $sequence <= $maxSequence; $sequence++) {
-            $teamnaam = substr($team, 0, 7) . $sequence;
-            if ($team != $teamnaam) {
-                $this->invalTeams[$teamnaam] = [
-                    "naam" => ToSkcName($teamnaam),
-                    "spelers" => $this->joomlaGateway->GetSpelers($teamnaam),
+        if ($eigenTeam === null) {
+            return;
+        }
+
+        for ($i = 0; $i < count($teams); $i++) {
+            $team = $teams[$i];
+            if ($team["naam"] != $eigenTeam["naam"] && $team["klasse"] >= $eigenTeam["klasse"]) {
+                $this->invalTeams[] = [
+                    "nevobonaam" => $team["naam"],
+                    "naam" => ToSkcName($team["naam"]),
+                    "spelers" => $this->joomlaGateway->GetSpelers($team["naam"]),
+                    "programma" => $this->nevoboGateway->GetProgrammaForTeam($team["naam"])
                 ];
             }
 

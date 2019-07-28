@@ -154,7 +154,8 @@ class JoomlaGateway
                   FROM J3_users U
                   INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
                   INNER JOIN J3_usergroups G ON M.group_id = G.id
-                  WHERE G.title = :team";
+                  WHERE G.title = :team
+                  ORDER BY name";
         $params = [new Param(":team", $team, PDO::PARAM_STR)];
         return $this->database->Execute($query, $params);
     }
