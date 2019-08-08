@@ -21,20 +21,22 @@ class SetAllBarcieBeschikbaarheden implements IInteractor
         $barcieDagen = $this->barcieGateway->GetBarcieDagen();
 
         foreach ($barcieLeden as $barcielid) {
-            $barcielidId = $barcielid['id'];
+            $barcielidId = $barcielid->id;
             $team = $this->joomlaGateway->GetTeam($barcielidId);
             $coachTeam = $this->joomlaGateway->GetCoachTeam($barcielidId);
             $eigenWedstrijden = $this->nevoboGateway->GetProgrammaForTeam($team);
             $coachWedstrijden = $this->nevoboGateway->GetProgrammaForTeam($coachTeam);
             $beschikbaarheden = $this->barcieGateway->GetBeschikbaarheden($barcielidId);
             foreach ($barcieDagen as $barcieDag) {
-                $date = $barcieDag['date'];
+                $date = $barcieDag->date;
                 $beschikbaarheid = $this->GetBeschikbaarheid($beschikbaarheden, $date);
                 if ($beschikbaarheid === null) {
                     $eigenWedstrijd = $this->GetWedstrijdWithDate($eigenWedstrijden, $date);
                     $coachWedstrijd = $this->GetWedstrijdWithDate($coachWedstrijden, $date);
 
-                    $wedstrijden = array_filter([$eigenWedstrijd, $coachWedstrijd], function ($value) {return $value !== null;});
+                    $wedstrijden = array_filter([$eigenWedstrijd, $coachWedstrijd], function ($value) {
+                        return $value !== null;
+                    });
 
                     $beschikbaarheid = $this->isMogelijk($wedstrijden);
                     $dayId = $this->barcieGateway->GetDateId($date);
@@ -46,7 +48,7 @@ class SetAllBarcieBeschikbaarheden implements IInteractor
             }
         }
 
-        return [
+        return (object) [
             "numberOfAddedBeschikbaarheden" => $numberOfAddedBeschikbaarheden,
         ];
     }
@@ -54,7 +56,7 @@ class SetAllBarcieBeschikbaarheden implements IInteractor
     private function GetWedstrijdWithDate($wedstrijden, $date)
     {
         foreach ($wedstrijden as $wedstrijd) {
-            if ($wedstrijd['timestamp'] && $wedstrijd['timestamp']->format("Y-m-d") == $date) {
+            if ($wedstrijd->timestamp && $wedstrijd->timestamp->format("Y-m-d") == $date) {
                 return $wedstrijd;
             }
         }
@@ -64,8 +66,8 @@ class SetAllBarcieBeschikbaarheden implements IInteractor
     private function GetBeschikbaarheid($beschikbaarheden, $date)
     {
         foreach ($beschikbaarheden as $beschikbaarheid) {
-            if ($beschikbaarheid['date'] == $date) {
-                return $beschikbaarheid['beschikbaarheid'];
+            if ($beschikbaarheid->date == $date) {
+                return $beschikbaarheid->beschikbaarheid;
             }
         }
         return null;
@@ -79,11 +81,11 @@ class SetAllBarcieBeschikbaarheden implements IInteractor
 
         $bestResult = "Ja";
         foreach ($wedstrijden as $wedstrijd) {
-            if (!IsThuis($wedstrijd['locatie'])) {
+            if (!IsThuis($wedstrijd->locatie)) {
                 return "Nee";
             }
-            if ($wedstrijd['timestamp']) {
-                $time = $wedstrijd['timestamp']->format('H:i');
+            if ($wedstrijd->timestamp) {
+                $time = $wedstrijd->timestamp->format('H:i');
                 if ($time == "19:30" || $time == "16:00") {
                     $bestResult = $bestResult == "Ja" ? "Ja" : "Onbekend";
                 } else {

@@ -5,8 +5,6 @@ include_once 'Utilities.php';
 
 class JoomlaGateway
 {
-    private $database;
-
     public function __construct($database)
     {
         $this->database = $database;
@@ -38,27 +36,27 @@ class JoomlaGateway
             return null;
         }
 
-        $query = "SELECT U.id, name
+        $query = 'SELECT U.id, name
                   FROM J3_users U
                   INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
                   INNER JOIN J3_usergroups G ON M.group_id = G.id
                   WHERE U.name = :scheidsrechter and
-                        G.id in (SELECT id FROM J3_usergroups WHERE title = 'Scheidsrechters')";
+                        G.id in (SELECT id FROM J3_usergroups WHERE title = "Scheidsrechters")';
         $params = [
-            new Param(":scheidsrechter", $scheidsrechter, PDO::PARAM_STR),
+            new Param(':scheidsrechter', $scheidsrechter, PDO::PARAM_STR),
         ];
         $scheidsrechters = $this->database->Execute($query, $params);
         if (count($scheidsrechters) == 0) {
-            InternalServerError("Unknown scheidsrechter: $scheidsrechter");
+            throw new UnexpectedValueException('Unknown scheidsrechter: $scheidsrechter');
         };
         return $scheidsrechters[0];
     }
 
     public function GetTeamByNaam($naam)
     {
-        $query = "SELECT * FROM J3_usergroups
-                  WHERE title = :naam";
-        $params = [new Param(":naam", $naam, PDO::PARAM_STR)];
+        $query = 'SELECT * FROM J3_usergroups
+                  WHERE title = :naam';
+        $params = [new Param(':naam', $naam, PDO::PARAM_STR)];
         $teams = $this->database->Execute($query, $params);
         if (count($teams) == 0) {
             return null;
@@ -68,29 +66,29 @@ class JoomlaGateway
 
     public function DoesUserIdExist($userId)
     {
-        $query = "SELECT id FROM J3_users WHERE id = :userId";
-        $params = [new Param(":userId", $userId, PDO::PARAM_INT)];
+        $query = 'SELECT id FROM J3_users WHERE id = :userId';
+        $params = [new Param(Column::UserId, $userId, PDO::PARAM_INT)];
         $result = $this->database->Execute($query, $params);
         return count($result) > 0;
     }
 
     public function GetUsersWithName($name)
     {
-        $name = "%$name%";
-        $query = "SELECT * FROM J3_users where name like :name LIMIT 0, 5";
-        $params = [new Param(":name", $name, PDO::PARAM_STR)];
+        $name = '%$name%';
+        $query = 'SELECT * FROM J3_users where name like :name LIMIT 0, 5';
+        $params = [new Param(':name', $name, PDO::PARAM_STR)];
         return $this->database->Execute($query, $params);
     }
 
     private function IsUserInUsergroup($userId, $usergroup)
     {
-        $query = "SELECT *
+        $query = 'SELECT *
                   FROM J3_user_usergroup_map M
                   INNER JOIN J3_usergroups G ON M.group_id = G.id
-                  WHERE M.user_id = :userId and G.title = :usergroup";
+                  WHERE M.user_id = :userId and G.title = :usergroup';
         $params = [
-            new Param(":userId", $userId, PDO::PARAM_INT),
-            new Param(":usergroup", $usergroup, PDO::PARAM_STR),
+            new Param(Column::UserId, $userId, PDO::PARAM_INT),
+            new Param(':usergroup', $usergroup, PDO::PARAM_STR),
         ];
         $result = $this->database->Execute($query, $params);
         return count($result) > 0;
@@ -118,13 +116,13 @@ class JoomlaGateway
 
     public function IsCoach($userId)
     {
-        $query = "SELECT *
+        $query = 'SELECT *
                   FROM J3_user_usergroup_map M
                   INNER JOIN J3_usergroups G ON M.group_id = G.id
-                  WHERE M.user_id = :userId and G.title LIKE :usergroup";
+                  WHERE M.user_id = :userId and G.title LIKE :usergroup';
         $params = [
-            new Param(":userId", $userId, PDO::PARAM_INT),
-            new Param(":usergroup", "Coach %", PDO::PARAM_STR),
+            new Param(Column::UserId, $userId, PDO::PARAM_INT),
+            new Param(':usergroup', 'Coach %', PDO::PARAM_STR),
         ];
         $result = $this->database->Execute($query, $params);
         return count($result) > 0;
@@ -132,71 +130,71 @@ class JoomlaGateway
 
     public function GetTeam($userId)
     {
-        $query = "SELECT title as naam
+        $query = 'SELECT title as naam
                   FROM J3_users U
                   LEFT JOIN J3_user_usergroup_map M on U.id = M.user_id
                   LEFT JOIN J3_usergroups G on G.id = M.group_id
-                  WHERE M.user_id = :userId and G.parent_id in (select id from J3_usergroups where title = 'Teams')";
-        $params = [new Param(":userId", $userId, PDO::PARAM_INT)];
+                  WHERE M.user_id = :userId and G.parent_id in (select id from J3_usergroups where title = \'Teams\')';
+        $params = [new Param(Column::UserId, $userId, PDO::PARAM_INT)];
 
         $team = $this->database->Execute($query, $params);
         if (count($team) == 0) {
             return null;
         }
 
-        return ToNevoboName($team[0]['naam']);
+        return ToNevoboName($team[0]->naam);
     }
 
     public function GetSpelers($team)
     {
         $team = ToSkcName($team);
-        $query = "SELECT U.id, name as naam
+        $query = 'SELECT U.id, name as naam
                   FROM J3_users U
                   INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
                   INNER JOIN J3_usergroups G ON M.group_id = G.id
                   WHERE G.title = :team
-                  ORDER BY name";
-        $params = [new Param(":team", $team, PDO::PARAM_STR)];
+                  ORDER BY name';
+        $params = [new Param(':team', $team, PDO::PARAM_STR)];
         return $this->database->Execute($query, $params);
     }
 
     public function GetCoachTeam($userId)
     {
-        $query = "SELECT G.title as naam
+        $query = 'SELECT G.title as naam
                   FROM J3_usergroups G
                   INNER JOIN J3_user_usergroup_map M on G.id = M.group_id
-                  WHERE M.user_id = :userId and (G.title like 'Coach Dames %' or G.title like 'Coach Heren %')";
-        $params = [new Param(":userId", $userId, PDO::PARAM_INT)];
+                  WHERE M.user_id = :userId and G.title like \'Coach %\'';
+        $params = [new Param(Column::UserId, $userId, PDO::PARAM_INT)];
 
         $team = $this->database->Execute($query, $params);
         if (count($team) == 0) {
             return null;
         }
 
-        $coachTeam = substr($team[0]['naam'], 6);
+        $coachTeam = substr($team[0]->naam, 6);
         return ToNevoboName($coachTeam);
     }
 
     public function GetCoaches($teamnaam)
     {
-        return $this->GetUsersInGroup("Coach " . ToSkcName($teamnaam));
+        return $this->GetUsersInGroup('Coach ' . ToSkcName($teamnaam));
     }
 
     public function GetTrainers($teamnaam)
     {
-        return $this->GetUsersInGroup("Trainer " . ToSkcName($teamnaam));
+        return $this->GetUsersInGroup('Trainer ' . ToSkcName($teamnaam));
     }
 
     public function GetUsersInGroup($groupname)
     {
-        $query = "SELECT
+        $query = 'SELECT
                     U.id,
                     U.name as naam
                   FROM J3_users U
                   INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
                   INNER JOIN J3_usergroups G ON M.group_id = G.id
-                  WHERE G.title = :groupname";
-        $params = [new Param(":groupname", $groupname, PDO::PARAM_STR)];
+                  WHERE G.title = :groupname';
+        $params = [new Param(':groupname', $groupname, PDO::PARAM_STR)];
         return $this->database->Execute($query, $params);
     }
 
@@ -210,7 +208,7 @@ class JoomlaGateway
     {
         $this->InitJoomla();
 
-        $credentials = [
+        $credentials = (object) [
             'username' => $username,
             'password' => $password,
         ];
@@ -221,12 +219,12 @@ class JoomlaGateway
         $query = $db->getQuery(true)
             ->select('id, password')
             ->from('#__users')
-            ->where('username=' . $db->quote($credentials['username']));
+            ->where('username=' . $db->quote($credentials->username));
 
         $db->setQuery($query);
         $result = $db->loadObject();
         if ($result) {
-            $match = JUserHelper::verifyPassword($credentials['password'], $result->password, $result->id);
+            $match = JUserHelper::verifyPassword($credentials->password, $result->password, $result->id);
             if ($match === true) {
                 $joomlaApp->login($credentials);
                 return true;

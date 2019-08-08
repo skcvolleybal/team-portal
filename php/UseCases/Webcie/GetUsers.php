@@ -15,7 +15,7 @@ class GetUsers implements IInteractorWithData
         $userId = $this->joomlaGateway->GetUserId(false);
         $isWebcie = $this->joomlaGateway->IsWebcie($userId);
         if ($isWebcie === false) {
-            InternalServerError("Je bent geen webcie");
+            throw new UnexpectedValueException("Je bent geen webcie");
         }
 
         $name = $data->name ?? null;
@@ -24,9 +24,9 @@ class GetUsers implements IInteractorWithData
         if ($name && 3 <= strlen($name)) {
             $users = $this->joomlaGateway->GetUsersWithName($name);
             foreach ($users as $user) {
-                $result[] = [
+                $result[] = (object) [
                     "naam" => $user['name'],
-                    "id" => $user['id'],
+                    "id" => $user->id,
                 ];
             }
         }

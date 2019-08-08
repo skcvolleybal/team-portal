@@ -1,0 +1,48 @@
+<table class="table table-sm" *ngFor="let wedstrijd of wedstrijden">
+  <thead>
+    <tr>
+      <th scope="col" colspan="2">
+        {{wedstrijd.datum}}, {{wedstrijd.tijd}}
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="gray-background">
+      <td colspan="2">
+        <ul class="list-group">
+          <li *ngIf="wedstrijd.zaalwacht" class="list-group-item">
+            Zaalwacht: <span class="badge big-badge badge-success">{{wedstrijd.zaalwacht}}</span>
+          </li>
+          <li *ngFor="let eigenWedstrijd of wedstrijd.eigenWedstrijden" class="list-group-item" [ngClass]="{
+            'list-group-item-warning': eigenWedstrijd.isMogelijk == 'Onbekend', 
+            'list-group-item-danger': eigenWedstrijd.isMogelijk == 'Nee', 
+            'list-group-item-success': wedstrijd.isMogelijk == 'Ja'
+          }">
+            <teamportal-wedstrijd [wedstrijd]="eigenWedstrijd"></teamportal-wedstrijd>
+            <div style="font-size: 12px;" class="card-subtitle mb-2 text-muted">
+              {{eigenWedstrijd.tijd}}, {{eigenWedstrijd.locatie}}
+            </div>
+            <p class="card-text">
+              <teamportal-scheidsrechter [isScheidsrechter]="eigenWedstrijd.isScheidsrechter" [scheidsrechter]="eigenWedstrijd.scheidsrechter"></teamportal-scheidsrechter>
+              <teamportal-tellers [isTellers]="eigenWedstrijd.isTellers" [tellers]="eigenWedstrijd.tellers"></teamportal-tellers>
+            </p>
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td class="align-middle">
+        <teamportal-wedstrijd [wedstrijd]="wedstrijd"></teamportal-wedstrijd>
+      </td>
+      <td style="text-align:right" class="align-middle">
+        <teamportal-aanwezigheid [aanwezigheid]="wedstrijd.aanwezigheid" (updateAanwezigheid)="UpdateCoachAanwezigheid($event, wedstrijd.id)"></teamportal-aanwezigheid>
+      </td>
+    </tr>
+    <tr class="gray-background">
+      <td colspan="2"></td>
+    </tr>
+</table>
+<div class="alert alert-danger" role="alert" *ngIf="errorMessage">
+  {{errorMessage}}
+</div>
+<teamportal-spinner *ngIf="loading"></teamportal-spinner>

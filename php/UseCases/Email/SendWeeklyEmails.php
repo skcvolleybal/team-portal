@@ -8,15 +8,10 @@ include_once 'BarcieGateway.php';
 
 class SendWeeklyEmails implements IInteractor
 {
-    private $scheidsco = [
+    private $scheidsco = (object) [
         "email" => "scheids@skcvolleybal.nl",
-        "naam" => "Anne Vieveen",
+        "naam" => "Eline van den Bogaerdt",
     ];
-
-    private $nevoboGateway;
-    private $telFluitGateway;
-    private $zaalwachtGateway;
-    private $mailGateway;
 
     public function __construct($database)
     {
@@ -31,7 +26,7 @@ class SendWeeklyEmails implements IInteractor
     {
         $isServerRequest = $_SERVER['SERVER_ADDR'] === $_SERVER['REMOTE_ADDR'];
         if ($isServerRequest == false) {
-            InternalServerError("Dit is niet een publieke api...");
+            throw new UnexpectedValueException("Dit is niet een publieke api...");
         }
 
         $uscWedstrijden = $this->nevoboGateway->GetProgrammaForSporthal('LDNUN');
@@ -39,7 +34,7 @@ class SendWeeklyEmails implements IInteractor
         $wedstrijden = $this->GetWedstrijdenInPeriod($uscWedstrijden, 7);
         $wedstrijdIds = [];
         foreach ($wedstrijden as $wedstrijd) {
-            $wedstrijdIds[] = $wedstrijd['id'];
+            $wedstrijdIds[] = $wedstrijd->id;
         }
 
         $barcieLeden = $this->barcieGateway->GetBarcieRoosterForNextWeek();
@@ -75,7 +70,7 @@ class SendWeeklyEmails implements IInteractor
     {
         $result = [];
         foreach ($tellers as $teller) {
-            if ($teller['matchId'] == $wedstrijd['id']) {
+            if ($teller->matchId == $wedstrijd->id) {
                 $result[] = $teller;
             }
         }
@@ -85,7 +80,7 @@ class SendWeeklyEmails implements IInteractor
     private function GetScheidsrechterFromList($scheidsrechters, $wedstrijd)
     {
         foreach ($scheidsrechters as $scheidsrechter) {
-            if ($scheidsrechter['matchId'] == $wedstrijd['id']) {
+            if ($scheidsrechter->matchId == $wedstrijd->id) {
                 return $scheidsrechter;
             }
         }
@@ -98,9 +93,9 @@ class SendWeeklyEmails implements IInteractor
         $startDate = date("Y-m-d");
         $endDate = date("Y-m-d", strtotime("+$numberOfDays days"));
         foreach ($wedstrijden as $wedstrijd) {
-            if ($wedstrijd['timestamp']) {
-                $date = $wedstrijd['timestamp']->format('Y-m-d');
-                $wedstrijdId = $wedstrijd['id'];
+            if ($wedstrijd->timestamp) {
+                $date = $wedstrijd->timestamp->format('Y-m-d');
+                $wedstrijdId = $wedstrijd->id;
                 if ($startDate <= $date && $date <= $endDate && $wedstrijdId) {
                     $result[] = $wedstrijd;
                 }
@@ -114,14 +109,14 @@ class SendWeeklyEmails implements IInteractor
     {
         $body = file_get_contents("./UseCases/Email/templates/scheidsrechterTemplate.txt");
 
-        $datum = GetDutchDate($wedstrijd['timestamp']);
-        $tijd = $wedstrijd['timestamp']->format('G:i');
-        $naam = $scheidsrechter['naam'];
-        $spelendeTeams = $wedstrijd['team1'] . " - " . $wedstrijd['team2'];
-        $email = $scheidsrechter['email'];
+        $datum = GetDutchDate($wedstrijd->timestamp);
+        $tijd = $wedstrijd->timestamp->format('G:i');
+        $naam = $scheidsrechter->naam;
+        $spelendeTeams = $wedstrijd->team1 . " - " . $wedstrijd->team2;
+        $email = $scheidsrechter->email;
         $title = "Fluiten " . $spelendeTeams;
-        $userId = $scheidsrechter['userId'];
-        $team = $scheidsrechter['team'] ?? "je team";
+        $userId = $scheidsrechter->userId;
+        $team = $scheidsrechter->team ?? "je team";
 
         $body = str_replace("{{naam}}", $naam, $body);
         $body = str_replace("{{datum}}", $datum, $body);
@@ -129,23 +124,23 @@ class SendWeeklyEmails implements IInteractor
         $body = str_replace("{{userId}}", $userId, $body);
         $body = str_replace("{{team}}", $team, $body);
         $body = str_replace("{{teams}}", $spelendeTeams, $body);
-        $body = str_replace("{{afzender}}", $this->scheidsco['naam'], $body);
+        $body = str_replace("{{afzender}}", $this->scheidsco->naam, $body);
 
-        $this->mailGateway->SendMail($this->scheidsco['email'], $this->scheidsco['naam'], $email, $naam, $title, $body);
+        $this->mailGateway->SendMail($this->scheidsco->email, $this->scheidsco->naam, $email, $naam, $title, $body);
     }
 
     private function MailTeller($teller, $wedstrijd)
     {
         $body = file_get_contents("./UseCases/Email/templates/tellerTemplate.txt");
 
-        $datum = GetDutchDate($wedstrijd['timestamp']);
-        $tijd = $wedstrijd['timestamp']->format('G:i');
-        $naam = $teller['naam'];
-        $spelendeTeams = $wedstrijd['team1'] . " - " . $wedstrijd['team2'];
-        $email = $teller['email'];
+        $datum = GetDutchDate($wedstrijd->timestamp);
+        $tijd = $wedstrijd->timestamp->format('G:i');
+        $naam = $teller->naam;
+        $spelendeTeams = $wedstrijd->team1 . " - " . $wedstrijd->team2;
+        $email = $teller->email;
         $title = "Tellen " . $spelendeTeams;
-        $userId = $teller['userId'];
-        $team = $teller['tellers'];
+        $userId = $teller->userId;
+        $team = $teller->tellers;
 
         $body = str_replace("{{naam}}", $naam, $body);
         $body = str_replace("{{datum}}", $datum, $body);
@@ -153,18 +148,18 @@ class SendWeeklyEmails implements IInteractor
         $body = str_replace("{{userId}}", $userId, $body);
         $body = str_replace("{{teams}}", $spelendeTeams, $body);
         $body = str_replace("{{team}}", $team, $body);
-        $body = str_replace("{{afzender}}", $this->scheidsco['naam'], $body);
+        $body = str_replace("{{afzender}}", $this->scheidsco->naam, $body);
 
-        $this->mailGateway->SendMail($this->scheidsco['email'], $this->scheidsco['naam'], $email, $naam, $title, $body);
+        $this->mailGateway->SendMail($this->scheidsco->email, $this->scheidsco->naam, $email, $naam, $title, $body);
     }
 
     private function MailZaalwachter($zaalwachter)
     {
         $body = file_get_contents("./UseCases/Email/templates/zaalwachtTemplate.txt");
 
-        $email = $zaalwachter['email'];
-        $naam = $zaalwachter['naam'];
-        $date = $zaalwachter['date'];
+        $email = $zaalwachter->email;
+        $naam = $zaalwachter->naam;
+        $date = $zaalwachter->date;
         if (!IsDateValid($date)) {
             return;
         }
@@ -173,18 +168,18 @@ class SendWeeklyEmails implements IInteractor
 
         $body = str_replace("{{naam}}", $naam, $body);
         $body = str_replace("{{datum}}", $datum, $body);
-        $body = str_replace("{{afzender}}", $this->scheidsco['naam'], $body);
+        $body = str_replace("{{afzender}}", $this->scheidsco->naam, $body);
 
-        $this->mailGateway->SendMail($this->scheidsco['email'], $this->scheidsco['naam'], $email, $naam, $title, $body);
+        $this->mailGateway->SendMail($this->scheidsco->email, $this->scheidsco->naam, $email, $naam, $title, $body);
     }
 
     private function MailBarcieLid($barcieLid)
     {
         $body = file_get_contents("./UseCases/Email/templates/barcieTemplate.txt");
 
-        $email = $barcieLid['email'];
-        $naam = $barcieLid['naam'];
-        $datum = GetDutchDateLong(new DateTime($barcieLid['date']));
+        $email = $barcieLid->email;
+        $naam = $barcieLid->naam;
+        $datum = GetDutchDateLong(new DateTime($barcieLid->date));
         $shift = $barcieLid['shift'];
         $bhv = $barcieLid['isBhv'] == 1 ? "<br>Je bent BHV'er." : "";
         $title = "Barciedienst " . $datum;
@@ -194,9 +189,9 @@ class SendWeeklyEmails implements IInteractor
         $body = str_replace("{{datum}}", $datum, $body);
         $body = str_replace("{{shift}}", $shift, $body);
         $body = str_replace("{{bhv}}", $bhv, $body);
-        $body = str_replace("{{afzender}}", $this->scheidsco['naam'], $body);
+        $body = str_replace("{{afzender}}", $this->scheidsco->naam, $body);
 
-        $this->mailGateway->SendMail($this->scheidsco['email'], $this->scheidsco['naam'], $email, $naam, $title, $body);
+        $this->mailGateway->SendMail($this->scheidsco->email, $this->scheidsco->naam, $email, $naam, $title, $body);
     }
 
     private function MailSamenvatting($wedstrijden, $scheidsrechters, $tellers, $zaalwachters, $barcieLeden)
@@ -210,15 +205,15 @@ class SendWeeklyEmails implements IInteractor
         foreach ($wedstrijden as $wedstrijd) {
             $wedstrijdScheidsrechter = $this->GetScheidsrechterFromList($scheidsrechters, $wedstrijd);
             if ($wedstrijdScheidsrechter) {
-                $scheidsrechtersContent .= $wedstrijdScheidsrechter['naam'] . " (" . $wedstrijdScheidsrechter['email'] . ")<br>";
+                $scheidsrechtersContent .= $wedstrijdScheidsrechter->naam . " (" . $wedstrijdScheidsrechter->email . ")<br>";
             }
 
             $wedstrijdTellers = $this->GetTellersFromList($tellers, $wedstrijd);
             if (count($wedstrijdTellers) > 0) {
-                $tellersContent .= "<b>" . $wedstrijdTellers[0]['tellers'] . "</b><br>";
+                $tellersContent .= "<b>" . $wedstrijdTellers[0]->tellers . "</b><br>";
             }
             foreach ($wedstrijdTellers as $teller) {
-                $tellersContent .= $teller['naam'] . " (" . $teller['email'] . ")<br>";
+                $tellersContent .= $teller->naam . " (" . $teller->email . ")<br>";
             }
         }
 
@@ -226,14 +221,14 @@ class SendWeeklyEmails implements IInteractor
             $zaalwachtersContent .= "<b>" . $zaalwachters[0]['zaalwacht'] . "</b><br>";
         }
         foreach ($zaalwachters as $zaalwachter) {
-            $zaalwachtersContent .= $zaalwachter['naam'] . " (" . $zaalwachter['email'] . ")<br>";
+            $zaalwachtersContent .= $zaalwachter->naam . " (" . $zaalwachter->email . ")<br>";
         }
 
         foreach ($barcieLeden as $barcieLid) {
-            $barcieContent .= $barcieLid['naam'] . " (" . $barcieLid['email'] . ")<br>";
+            $barcieContent .= $barcieLid->naam . " (" . $barcieLid->email . ")<br>";
         }
 
-        $body = str_replace("{{scheidsco}}", $this->scheidsco['naam'], $body);
+        $body = str_replace("{{scheidsco}}", $this->scheidsco->naam, $body);
         $body = str_replace("{{scheidsrechters}}", $scheidsrechtersContent, $body);
         $body = str_replace("{{tellers}}", $tellersContent, $body);
         $body = str_replace("{{zaalwachters}}", $zaalwachtersContent, $body);
@@ -242,19 +237,21 @@ class SendWeeklyEmails implements IInteractor
         $title = "Samenvatting fluit/tel/zaalwacht mails " . date("j-M-Y");
 
         $this->mailGateway->SendMail(
-            $this->scheidsco['email'],
-            $this->scheidsco['naam'],
-            $this->scheidsco['email'],
-            $this->scheidsco['naam'],
+            $this->scheidsco->email,
+            $this->scheidsco->naam,
+            $this->scheidsco->email,
+            $this->scheidsco->naam,
             $title,
-            $body);
+            $body
+        );
 
         $this->mailGateway->SendMail(
-            $this->scheidsco['email'],
-            $this->scheidsco['naam'],
+            $this->scheidsco->email,
+            $this->scheidsco->naam,
             "jonathan.neuteboom@gmail.com",
             "Jonathan Neuteboom",
             $title,
-            $body);
+            $body
+        );
     }
 }

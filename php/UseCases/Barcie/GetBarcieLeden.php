@@ -16,30 +16,30 @@ class GetBarcieLeden implements IInteractorWithData
     {
         $userId = $this->joomlaGateway->GetUserId();
         if (!$this->joomlaGateway->IsScheidsco($userId)) {
-            InternalServerError("Je bent geen scheidsco");
+            throw new UnexpectedValueException("Je bent geen scheidsco");
         }
-        $date = $data['date'] ?? null;
+        $date = $data->date ?? null;
         if (!$date) {
-            InternalServerError("Date is leeg");
+            throw new InvalidArgumentException("Date is leeg");
         }
 
         $barcieLeden = $this->barcieGateway->GetBarcieLeden();
         $this->beschikbaarheden = $this->barcieGateway->GetBeschikbaarhedenForDate($date);
-        $beschikbaarheden = [
+        $beschikbaarheden = (object) [
             "Ja" => [],
             "Nee" => [],
             "Onbekend" => [],
         ];
         foreach ($barcieLeden as $barcieLid) {
-            $beschikbaarheid = $this->GetBeschikbaarheid($barcieLid['id']);
-            $beschikbaarheden[$beschikbaarheid][] = [
-                "id" => $barcieLid['id'],
-                "naam" => $barcieLid['naam'],
+            $beschikbaarheid = $this->GetBeschikbaarheid($barcieLid->id);
+            $beschikbaarheden[$beschikbaarheid][] = (object) [
+                "id" => $barcieLid->id,
+                "naam" => $barcieLid->naam,
                 "aantalDiensten" => $barcieLid['aantalDiensten'],
             ];
         }
 
-        return [
+        return (object) [
             "barcieLeden" => $beschikbaarheden,
         ];
     }
@@ -47,8 +47,8 @@ class GetBarcieLeden implements IInteractorWithData
     private function GetBeschikbaarheid($userId)
     {
         foreach ($this->beschikbaarheden as $beschikbaarheid) {
-            if ($beschikbaarheid['userId'] == $userId) {
-                return $beschikbaarheid['beschikbaarheid'];
+            if ($beschikbaarheid->userId == $userId) {
+                return $beschikbaarheid->beschikbaarheid;
             }
         }
         return "Onbekend";

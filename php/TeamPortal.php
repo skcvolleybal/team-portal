@@ -2,24 +2,32 @@
 
 include_once 'Database.php';
 include_once 'Utilities.php';
+include_once 'configuration.php';
 
 class TeamPortal
 {
-    private $database;
-
     public function __construct()
     {
-        $this->database = new Database();
+        $configs = include('configuration.php');
+        $config = $configs['database'];
+
+        $this->database = new Database(
+            $config->host,
+            $config->database,
+            $config->username,
+            $config->password,
+            $config->options
+        );
     }
 
     public function NoAction()
     {
-        InternalServerError("No action specified");
+        throw new UnexpectedValueException("No action specified");
     }
 
     public function UnknownAction($action)
     {
-        InternalServerError("Unknown function '$action'");
+        throw new UnexpectedValueException("Unknown function '$action'");
     }
 
     public function IsWebcie()

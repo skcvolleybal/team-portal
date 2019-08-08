@@ -5,9 +5,6 @@ include_once 'JoomlaGateway.php';
 
 class UpdateZaalwacht implements IInteractorWithData
 {
-    private $zaalwachtGateway;
-    private $joomlaGateway;
-
     public function __construct($database)
     {
         $this->zaalwachtGateway = new ZaalwachtGateway($database);
@@ -22,14 +19,14 @@ class UpdateZaalwacht implements IInteractorWithData
         }
 
         if (!$this->joomlaGateway->IsScheidsco($userId)) {
-            InternalServerError("Je bent (helaas) geen Scheidsco");
+            throw new UnexpectedValueException("Je bent (helaas) geen Scheidsco");
         }
 
         $datum = $data->date ?? null;
         $teamnaam = $data->team ?? null;
 
         if (IsDateValid($datum) == false) {
-            InternalServerError("Foute datum: $datum");
+            throw new UnexpectedValueException("Foute datum: $datum");
         }
 
         $zaalwacht = $this->zaalwachtGateway->GetZaalwacht($datum);

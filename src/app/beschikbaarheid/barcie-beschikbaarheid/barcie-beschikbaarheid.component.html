@@ -1,0 +1,37 @@
+<table class="table table-sm" *ngFor="let dag of speeldagen" style="margin-bottom: 0px;">
+  <thead>
+    <tr>
+      <th scope="col" colspan="3">{{dag.datum}}</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="gray-background">
+      <td colspan="3">
+        <teamportal-wedstrijden-card [wedstrijden]="dag.eigenWedstrijden"></teamportal-wedstrijden-card>
+      </td>
+    </tr>
+    <tr>
+      <ul class="list-group">
+        <li class="list-group-item" [ngClass]="{
+            'list-group-item-warning': dag.isMogelijk == 'Onbekend', 
+            'list-group-item-danger': dag.isMogelijk == 'Nee', 
+            'list-group-item-success': dag.isMogelijk == 'Ja'
+          }">
+          <form>
+            <div class="form-row justify-content-center">
+
+              <teamportal-aanwezigheid (updateAanwezigheid)="UpdateBarcieBeschikbaarheid($event, dag.date)" [aanwezigheid]="dag.beschikbaarheid"></teamportal-aanwezigheid>
+            </div>
+          </form>
+        </li>
+      </ul>
+    </tr>
+    <tr class="gray-background">
+      <td colspan="3"></td>
+    </tr>
+  </tbody>
+</table>
+<div class="alert alert-danger" role="alert" *ngIf="errorMessage">
+  {{errorMessage}}
+</div>
+<teamportal-spinner *ngIf="loading"></teamportal-spinner>

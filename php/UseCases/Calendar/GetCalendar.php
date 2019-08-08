@@ -23,11 +23,11 @@ class GetCalendar implements IInteractor
         $withTellen = GetQueryStringParamater('tellen');
 
         if (!$userId) {
-            InternalServerError("userid is not set");
+            throw new InvalidArgumentException("userid is not set");
         }
 
         if (!$this->joomlaGateway->DoesUserIdExist($userId)) {
-            InternalServerError();
+            throw new UnexpectedValueException();
         }
 
         $team = $this->joomlaGateway->GetTeam($userId);
@@ -55,11 +55,11 @@ class GetCalendar implements IInteractor
         if ($withTellen !== null) {
             $telbeurten = $this->telFluitGateway->GetTelbeurten($userId);
             foreach ($telbeurten as $telbeurt) {
-                $telWedstrijd = $this->GetMatchWithId($telbeurt['id']);
+                $telWedstrijd = $this->GetMatchWithId($telbeurt->id);
                 if ($telWedstrijd) {
-                    $start = $telWedstrijd['timestamp'];
+                    $start = $telWedstrijd->timestamp;
                     $end = (clone $start)->add(new DateInterval('PT2H'));
-                    $teams = $telWedstrijd['team1'] . ' ' . $telWedstrijd['team2'];
+                    $teams = $telWedstrijd->team1 . ' ' . $telWedstrijd->team2;
                     $this->AddEvent($start, $end, $uscLocatie, "Tellen", $teams);
                 }
             }
@@ -68,11 +68,11 @@ class GetCalendar implements IInteractor
         if ($withFluiten !== null) {
             $fluitbeurten = $this->telFluitGateway->GetFluitbeurten($userId);
             foreach ($fluitbeurten as $fluitbeurt) {
-                $fluitWedstrijd = $this->GetMatchWithId($fluitbeurt['id']);
+                $fluitWedstrijd = $this->GetMatchWithId($fluitbeurt->id);
                 if ($fluitWedstrijd) {
-                    $start = $fluitWedstrijd['timestamp'];
+                    $start = $fluitWedstrijd->timestamp;
                     $end = (clone $start)->add(new DateInterval('PT2H'));
-                    $teams = $fluitWedstrijd['team1'] . ' ' . $fluitWedstrijd['team2'];
+                    $teams = $fluitWedstrijd->team1 . ' ' . $fluitWedstrijd->team2;
                     $this->AddEvent($start, $end, $uscLocatie, "Tellen", $teams);
                 }
             }
@@ -84,7 +84,7 @@ class GetCalendar implements IInteractor
     private function GetMatchWithId($matchId)
     {
         foreach ($this->uscWedstrijden as $wedstrijd) {
-            if ($wedstrijd['id'] == $matchId) {
+            if ($wedstrijd->id == $matchId) {
                 return $wedstrijd;
             }
         }
@@ -95,25 +95,28 @@ class GetCalendar implements IInteractor
     {
         $wedstrijden = [];
         foreach ($this->uscWedstrijden as $wedstrijd) {
-            if ($wedstrijd['timestamp'] && $wedstrijd['timestamp']->format('Y-m-d') == $zaalwacht['date']) {
+            if ($wedstrijd->timestamp && $wedstrijd->timestamp->format('Y-m-d') == $zaalwacht->date) {
                 $wedstrijden[] = $wedstrijd;
             }
         }
         if (count($wedstrijden) == 0) {
-            InternalServerError();
+            throw new UnexpectedValueException();
         }
 
         $firstWedstrijd = $wedstrijden[0];
         $lastWedstrijd = $wedstrijden[0];
         foreach ($wedstrijden as $wedstrijd) {
-            if ($wedstrijd['timestamp'] < $firstWedstrijd['timestamp']) {
+            if ($wedstrijd->timestamp < $firstWedstrijd->timestamp) {
                 $firstWedstrijd = $wedstrijd;
             }
-            if ($lastWedstrijd['timestamp'] < $wedstrijd['timestamp']) {
+            if ($lastWedstrijd->timestamp < $wedstrijd->timestamp) {
                 $lastWedstrijd = $wedstrijd;
             }
         }
-        return [$firstWedstrijd['timestamp'], $lastWedstrijd['timestamp']->add(new DateInterval('PT2H'))];
+        return [
+            $firstWedstrijd->timestamp,
+            $lastWedstrijd->timestamp->add(new DateInterval('PT2H'))
+        ];
     }
 
     private function CreateCalendar($title)

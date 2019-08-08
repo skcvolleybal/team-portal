@@ -8,11 +8,6 @@ include_once 'ZaalwachtGateway.php';
 
 class GetMijnOverzichtInteractor implements IInteractor
 {
-    private $joomlaGateway;
-    private $nevoboGateway;
-    private $telFluitGateway;
-    private $zaalwachtGateway;
-
     public function __construct($database)
     {
         $this->joomlaGateway = new JoomlaGateway($database);
@@ -84,70 +79,70 @@ class GetMijnOverzichtInteractor implements IInteractor
 
     private function MapFromMatch($match, $allUscMatches, $team, $coachTeam, $userId)
     {
-        $uscMatch = $this->GetUscMatch($match['id'], $allUscMatches);
+        $uscMatch = $this->GetUscMatch($match->id, $allUscMatches);
         if ($uscMatch == null) {
             return null;
         }
-        return [
-            "id" => $uscMatch['id'],
+        return (object) [
+            "id" => $uscMatch->id,
             "type" => "wedstrijd",
-            "date" => $uscMatch['timestamp']->format('Y-m-d'),
-            "tijd" => $uscMatch['timestamp']->format('G:i'),
-            "team1" => $uscMatch['team1'],
-            "isTeam1" => $uscMatch['team1'] == $team,
-            "isCoachTeam1" => $uscMatch['team1'] == $coachTeam,
-            "team2" => $uscMatch['team2'],
-            "isTeam2" => $uscMatch['team2'] == $team,
-            "isCoachTeam2" => $uscMatch['team2'] == $coachTeam,
-            "scheidsrechter" => $match['scheidsrechter'] ?? null,
-            "isScheidsrechter" => ($match['scheidsrechterId'] ?? null) == $userId,
-            "tellers" => GetShortTeam(($match['tellers'] ?? null)),
-            "isTellers" => ($match['tellers'] ?? null) == $team,
-            "locatie" => $uscMatch['locatie'],
+            "date" => $uscMatch->timestamp->format('Y-m-d'),
+            "tijd" => $uscMatch->timestamp->format('G:i'),
+            "team1" => $uscMatch->team1,
+            "isTeam1" => $uscMatch->team1 == $team,
+            "isCoachTeam1" => $uscMatch->team1 == $coachTeam,
+            "team2" => $uscMatch->team2,
+            "isTeam2" => $uscMatch->team2 == $team,
+            "isCoachTeam2" => $uscMatch->team2 == $coachTeam,
+            "scheidsrechter" => $match->scheidsrechter ?? null,
+            "isScheidsrechter" => ($match->scheidsrechterId ?? null) == $userId,
+            "tellers" => GetShortTeam(($match->tellers ?? null)),
+            "isTellers" => ($match->tellers ?? null) == $team,
+            "locatie" => $uscMatch->locatie,
         ];
     }
 
     // private function MapFromNevoboMatch($match, $team, $coachTeam)
     // {
-    //     $uscMatch = $this->GetUscMatch($match['matchId'], $allUscMatches);
+    //     $uscMatch = $this->GetUscMatch($match->matchId, $allUscMatches);
     //     if ($uscMatch == null) {
     //         return null;
     //     }
     //     return [
-    //         "id" => $match['id'],
+    //         "id" => $match->id,
     //         "type" => "wedstrijd",
-    //         "date" => $match['timestamp']->format('Y-m-d'),
-    //         "tijd" => $match['timestamp']->format('G:i'),
-    //         "team1" => $match['team1'],
-    //         "isTeam1" => $match['team1'] == $team,
-    //         "isCoachTeam1" => $match['team1'] == $coachTeam,
-    //         "team2" => $match['team2'],
-    //         "isTeam2" => $match['team2'] == $team,
-    //         "isCoachTeam2" => $match['team2'] == $coachTeam,
-    //         "locatie" => $match['locatie'],
+    //         "date" => $match->timestamp->format('Y-m-d'),
+    //         "tijd" => $match->timestamp->format('G:i'),
+    //         "team1" => $match->team1,
+    //         "isTeam1" => $match->team1 == $team,
+    //         "isCoachTeam1" => $match->team1 == $coachTeam,
+    //         "team2" => $match->team2,
+    //         "isTeam2" => $match->team2 == $team,
+    //         "isCoachTeam2" => $match->team2 == $coachTeam,
+    //         "locatie" => $match->locatie,
     //     ];
     // }
 
     private function MapFromZaalwacht($match)
     {
-        return [
+        return (object) [
             "type" => "zaalwacht",
-            "date" => (new DateTime($match['date']))->format('Y-m-d'),
-            "team" => $match['team'],
+            "date" => (new DateTime($match->date))->format('Y-m-d'),
+            "team" => $match->team,
         ];
     }
 
     private function AddToOverzicht(&$overzicht, $newItem)
     {
-        $newItemDate = $newItem['date'];
+        $newItemDate = $newItem->date;
         $counter = 0;
         foreach ($overzicht as &$item) {
-            if ($newItemDate == $item['date']) {
-                $this->AddToTijdslot($item['tijdsloten'], $newItem);
+            if ($newItemDate == $item->date) {
+                $this->AddToTijdslot($item->tijdsloten, $newItem);
                 return;
             }
 
-            if ($newItemDate < $item['date']) {
+            if ($newItemDate < $item->date) {
                 $newDay = $this->GetNewDateItem($newItemDate, $newItem);
                 array_splice($overzicht, $counter, 0, [$newDay]);
                 return;
@@ -160,7 +155,7 @@ class GetMijnOverzichtInteractor implements IInteractor
     private function GetNewDateItem($date, $newItem)
     {
         $datetime = new DateTime($date);
-        return [
+        return (object) [
             "datum" => GetDutchDate($datetime),
             "date" => $datetime->format('Y-m-d'),
             "tijdsloten" => [$newItem],
@@ -169,13 +164,13 @@ class GetMijnOverzichtInteractor implements IInteractor
 
     private function AddToTijdslot(&$tijdsloten, $newItem)
     {
-        if ($newItem['type'] == "zaalwacht") {
+        if ($newItem->type == "zaalwacht") {
             array_splice($tijdsloten, 0, 0, $newItem);
             return;
         }
 
         $duplicates = array_filter($tijdsloten, function ($wedstrijd) use ($newItem) {
-            return $wedstrijd['type'] == "wedstrijd" && $wedstrijd['id'] == $newItem['id'];
+            return $wedstrijd->type == "wedstrijd" && $wedstrijd->id == $newItem->id;
         });
 
         if (count($duplicates) > 0) {
@@ -184,9 +179,9 @@ class GetMijnOverzichtInteractor implements IInteractor
 
         $counter = 0;
         foreach ($tijdsloten as $tijdslot) {
-            if ($tijdslot['type'] != 'zaalwacht') {
-                if ($newItem['tijd'] <= $tijdslot['tijd']) {
-                    if ($newItem['id'] != $tijdslot['id']) {
+            if ($tijdslot->type != 'zaalwacht') {
+                if ($newItem->tijd <= $tijdslot->tijd) {
+                    if ($newItem->id != $tijdslot->id) {
                         array_splice($tijdsloten, $counter, 0, [$newItem]);
                     }
                     return;
@@ -200,7 +195,7 @@ class GetMijnOverzichtInteractor implements IInteractor
     private function GetUscMatch($matchId, $allUscMatches)
     {
         foreach ($allUscMatches as $match) {
-            if ($match['id'] == $matchId) {
+            if ($match->id == $matchId) {
                 return $match;
             }
         }

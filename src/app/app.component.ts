@@ -4,13 +4,13 @@ import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
 import { NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
 import { Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
+import { RequestService } from './core/services/request.service';
+import { StateService } from './core/services/state.service';
 import { LoginModalComponent } from './login-modal/login-modal.component';
 import { appRoutes } from './route.config';
-import { RequestService } from './services/request.service';
-import { StateService } from './services/state.service';
 
 @Component({
-  selector: 'app-root',
+  selector: 'teamportal-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })

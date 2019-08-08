@@ -3,14 +3,11 @@
 include_once 'IInteractor.php';
 include_once 'NevoboGateway.php';
 include_once 'BarcieGateway.php';
+include_once 'JoomlaGateway.php';
 include_once 'GetNevoboMatchByDate.php';
 
 class GetBarcieBeschikbaarheid extends GetNevoboMatchByDate implements IInteractor
 {
-    private $nevoboGateway;
-    private $barcieGateway;
-    private $joomlaGateway;
-
     public function __construct($database)
     {
         $this->nevoboGateway = new NevoboGateway();
@@ -37,22 +34,22 @@ class GetBarcieBeschikbaarheid extends GetNevoboMatchByDate implements IInteract
 
         $response = [];
         foreach ($barcieDagen as $barcieDag) {
-            $date = $barcieDag['date'];
+            $date = $barcieDag->date;
             $eigenWedstrijden = array_filter($alleWedstrijden, function ($wedstrijd) use ($date) {
-                return $wedstrijd['timestamp'] && $wedstrijd['timestamp']->format("Y-m-d") == $date;
+                return $wedstrijd->timestamp && $wedstrijd->timestamp->format("Y-m-d") == $date;
             });
 
             $coachWedstrijden = array_filter($alleCoachWedstrijden, function ($wedstrijd) use ($date) {
-                return $wedstrijd['timestamp'] && $wedstrijd['timestamp']->format("Y-m-d") == $date;
+                return $wedstrijd->timestamp && $wedstrijd->timestamp->format("Y-m-d") == $date;
             });
 
             $wedstrijden = array_merge($eigenWedstrijden, $coachWedstrijden);
 
             $beschikbaarheid = $this->GetBeschikbaarheid($beschikbaarheden, $date);
 
-            $response[] = [
+            $response[] = (object) [
                 "datum" => GetDutchDate(new DateTime($date)),
-                "date" => $barcieDag['date'],
+                "date" => $barcieDag->date,
                 "beschikbaarheid" => $beschikbaarheid,
                 "eigenWedstrijden" => $this->MapToUsecase($wedstrijden, $team, $coachTeam),
                 "isMogelijk" => $this->isMogelijk($wedstrijden),
@@ -70,11 +67,11 @@ class GetBarcieBeschikbaarheid extends GetNevoboMatchByDate implements IInteract
 
         $bestResult = "Ja";
         foreach ($wedstrijden as $wedstrijd) {
-            if (!IsThuis($wedstrijd['locatie'])) {
+            if (!IsThuis($wedstrijd->locatie)) {
                 return "Nee";
             }
-            if ($wedstrijd['timestamp']) {
-                $time = $wedstrijd['timestamp']->format('H:i');
+            if ($wedstrijd->timestamp) {
+                $time = $wedstrijd->timestamp->format('H:i');
                 if ($time == "19:30" || $time == "16:00") {
                     $bestResult = $bestResult == "Ja" ? "Ja" : "Onbekend";
                 } else {
@@ -90,16 +87,16 @@ class GetBarcieBeschikbaarheid extends GetNevoboMatchByDate implements IInteract
     {
         $result = [];
         foreach ($wedstrijden as $wedstrijd) {
-            $result[] = [
-                "datum" => GetDutchDate($wedstrijd['timestamp']),
-                "tijd" => $wedstrijd['timestamp']->format('H:i'),
-                "team1" => $wedstrijd['team1'],
-                "isTeam1" => $wedstrijd['team1'] == $team,
-                "isCoachTeam1" => $wedstrijd['team1'] == $coachTeam,
-                "team2" => $wedstrijd['team2'],
-                "isTeam2" => $wedstrijd['team2'] == $team,
-                "isCoachTeam2" => $wedstrijd['team2'] == $coachTeam,
-                "locatie" => GetShortLocatie($wedstrijd['locatie']),
+            $result[] = (object) [
+                "datum" => GetDutchDate($wedstrijd->timestamp),
+                "tijd" => $wedstrijd->timestamp->format('H:i'),
+                "team1" => $wedstrijd->team1,
+                "isTeam1" => $wedstrijd->team1 == $team,
+                "isCoachTeam1" => $wedstrijd->team1 == $coachTeam,
+                "team2" => $wedstrijd->team2,
+                "isTeam2" => $wedstrijd->team2 == $team,
+                "isCoachTeam2" => $wedstrijd->team2 == $coachTeam,
+                "locatie" => GetShortLocatie($wedstrijd->locatie),
             ];
         }
         return $result;
@@ -108,8 +105,8 @@ class GetBarcieBeschikbaarheid extends GetNevoboMatchByDate implements IInteract
     private function GetBeschikbaarheid($beschikbaarheden, $date)
     {
         foreach ($beschikbaarheden as $beschikbaarheid) {
-            if ($beschikbaarheid['date'] == $date) {
-                return $beschikbaarheid['beschikbaarheid'];
+            if ($beschikbaarheid->date == $date) {
+                return $beschikbaarheid->beschikbaarheid;
             }
         }
 

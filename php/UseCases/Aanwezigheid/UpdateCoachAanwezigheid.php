@@ -22,10 +22,10 @@ class UpdateCoachAanwezigheid implements IInteractorWithData
         $keuze = $data->aanwezigheid ?? null;
         $matchId = $data->matchId ?? null;
         if (!$keuze) {
-            InternalServerError("Aanwezigheid niet gezet");
+            throw new InvalidArgumentException("Aanwezigheid niet gezet");
         }
         if (!$matchId) {
-            InternalServerError("matchId niet gezet");
+            throw new InvalidArgumentException("matchId niet gezet");
         }
 
         $aanwezigheid = $this->aanwezigheidGateway->GetCoachAanwezigheid($userId, $matchId);

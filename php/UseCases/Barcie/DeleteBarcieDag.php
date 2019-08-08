@@ -16,24 +16,24 @@ class DeleteBarcieDag implements IInteractorWithData
     {
         $userId = $this->joomlaGateway->GetUserId();
         if (!$this->joomlaGateway->IsScheidsco($userId)) {
-            InternalServerError("Je bent geen scheidsco");
+            throw new UnexpectedValueException("Je bent geen scheidsco");
         }
 
         $date = $data->date ?? null;
         if ($date === null) {
-            InternalServerError("Date is leeg");
+            throw new InvalidArgumentException("Date is leeg");
         }
 
         $dayId = $this->barcieGateway->GetDateId($date);
 
         $aanwezigheden = $this->barcieGateway->GetBarcieAanwezigheden();
         foreach ($aanwezigheden as $aanwezigheid) {
-            if ($aanwezigheid['date'] == $date && $aanwezigheid['userId']) {
-                InternalServerError("Datum heeft nog aanwezigheden");
+            if ($aanwezigheid->date == $date && $aanwezigheid->userId) {
+                throw new UnexpectedValueException("Datum heeft nog aanwezigheden");
             }
         }
         if ($dayId === null) {
-            InternalServerError("Dag bestaat niet");
+            throw new UnexpectedValueException("Dag bestaat niet");
         } else {
             $this->barcieGateway->DeleteBarcieDay($dayId);
         }

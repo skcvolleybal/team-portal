@@ -1,4 +1,5 @@
 <?php
+
 include_once 'IInteractor.php';
 include_once 'JoomlaGateway.php';
 include_once 'NevoboGateway.php';
@@ -7,12 +8,6 @@ include_once 'ZaalwachtGateway.php';
 
 class GetScheidscoOverzicht implements IInteractor
 {
-    private $nevoboGateway;
-    private $joomlaGateway;
-    private $fluitBeschikbaarheidGateway;
-    private $telFluitGateway;
-    private $zaalwachtGateway;
-
     public function __construct($database)
     {
         $this->joomlaGateway = new JoomlaGateway($database);
@@ -29,7 +24,7 @@ class GetScheidscoOverzicht implements IInteractor
         }
 
         if (!$this->joomlaGateway->IsScheidsco($userId)) {
-            InternalServerError("Je bent (helaas) geen Scheidsco");
+            throw new UnexpectedValueException("Je bent (helaas) geen Scheidsco");
         }
         $overzicht = [];
         $uscProgramma = $this->nevoboGateway->GetProgrammaForSporthal('LDNUN');
@@ -39,17 +34,17 @@ class GetScheidscoOverzicht implements IInteractor
         $zaalwachtIndeling = $this->zaalwachtGateway->GetZaalwachtIndeling();
 
         foreach ($uscProgramma as $wedstrijd) {
-            $matchId = $wedstrijd['id'];
-            $datum = GetDutchDate($wedstrijd['timestamp']);
-            $date = $wedstrijd['timestamp']->format('Y-m-d');
-            $tijd = $wedstrijd['timestamp']->format('G:i');
-            $time = $wedstrijd['timestamp']->format('G:i:s');
-            $team1 = $wedstrijd['team1'];
-            $team2 = $wedstrijd['team2'];
+            $matchId = $wedstrijd->id;
+            $datum = GetDutchDate($wedstrijd->timestamp);
+            $date = $wedstrijd->timestamp->format('Y-m-d');
+            $tijd = $wedstrijd->timestamp->format('G:i');
+            $time = $wedstrijd->timestamp->format('G:i:s');
+            $team1 = $wedstrijd->team1;
+            $team2 = $wedstrijd->team2;
 
             $i = $this->GetIndexOfDatum($overzicht, $datum);
             if ($i === null) {
-                $overzicht[] = [
+                $overzicht[] = (object) [
                     "datum" => $datum,
                     "date" => $date,
                     "speeltijden" => [],
@@ -57,17 +52,17 @@ class GetScheidscoOverzicht implements IInteractor
                 ];
                 $i = count($overzicht) - 1;
             }
-            $j = $this->GetIndexOfSpeeltijd($overzicht[$i]['speeltijden'], $tijd);
+            $j = $this->GetIndexOfSpeeltijd($overzicht[$i]->speeltijden, $tijd);
             if ($j === null) {
-                $overzicht[$i]['speeltijden'][] = [
+                $overzicht[$i]->speeltijden[] = (object) [
                     'tijd' => $tijd,
                     'time' => $time,
                     'wedstrijden' => [],
                 ];
-                $j = count($overzicht[$i]['speeltijden']) - 1;
+                $j = count($overzicht[$i]->speeltijden) - 1;
             }
 
-            $newWedstrijd = [
+            $newWedstrijd = (object) [
                 "id" => $matchId,
                 "teams" => $team1 . " - " . $team2,
                 "scheidsrechter" => null,
@@ -76,11 +71,11 @@ class GetScheidscoOverzicht implements IInteractor
 
             $wedstrijdIndeling = $this->GetWedstrijdIndeling($matchId, $indeling);
             if ($wedstrijdIndeling) {
-                $newWedstrijd['tellers'] = $wedstrijdIndeling['tellers'];
-                $newWedstrijd['scheidsrechter'] = $wedstrijdIndeling['scheidsrechter'];
+                $newWedstrijd->tellers = $wedstrijdIndeling->tellers;
+                $newWedstrijd->scheidsrechter = $wedstrijdIndeling->scheidsrechter;
             }
 
-            $overzicht[$i]['speeltijden'][$j]['wedstrijden'][] = $newWedstrijd;
+            $overzicht[$i]->speeltijden[$j]->wedstrijden[] = $newWedstrijd;
         }
 
         exit(json_encode($overzicht));
@@ -89,7 +84,7 @@ class GetScheidscoOverzicht implements IInteractor
     private function GetIndexOfDatum($rooster, $datum)
     {
         for ($i = count($rooster) - 1; $i >= 0; $i--) {
-            if ($rooster[$i]['datum'] == $datum) {
+            if ($rooster[$i]->datum == $datum) {
                 return $i;
             }
         }
@@ -99,7 +94,7 @@ class GetScheidscoOverzicht implements IInteractor
     private function GetIndexOfSpeeltijd($speeltijden, $tijd)
     {
         for ($i = count($speeltijden) - 1; $i >= 0; $i--) {
-            if ($speeltijden[$i]['tijd'] == $tijd) {
+            if ($speeltijden[$i]->tijd == $tijd) {
                 return $i;
             }
         }
@@ -109,8 +104,8 @@ class GetScheidscoOverzicht implements IInteractor
     private function GetZaalwachtForDatum($zaalwachtIndeling, $date)
     {
         foreach ($zaalwachtIndeling as $zaalwacht) {
-            if ($zaalwacht['date'] == $date) {
-                return $zaalwacht['team'];
+            if ($zaalwacht->date == $date) {
+                return $zaalwacht->team;
             }
         }
         return null;
@@ -119,7 +114,7 @@ class GetScheidscoOverzicht implements IInteractor
     private function GetWedstrijdIndeling($matchId, $indeling)
     {
         foreach ($indeling as $indelingItem) {
-            if ($indelingItem['matchId'] == $matchId) {
+            if ($indelingItem->matchId == $matchId) {
                 return $indelingItem;
             }
         }

@@ -3,26 +3,24 @@ include_once 'IInteractor.php';
 
 class GetVoorpaginaRooster implements IInteractor
 {
-    private $roosterFilename;
+  public function __construct()
+  {
+    $this->roosterFilename = dirname(__FILE__) . DIRECTORY_SEPARATOR . "rooster.json";
+  }
 
-    public function __construct()
-    {
-        $this->roosterFilename = dirname(__FILE__) . DIRECTORY_SEPARATOR . "rooster.json";
+  public function Execute()
+  {
+
+    if (!file_exists($this->roosterFilename)) {
+      exit("File bestaat niet");
     }
-
-    public function Execute()
-    {
-
-        if (!file_exists($this->roosterFilename)) {
-            exit("File bestaat niet");
-        }
-        $rooster = json_decode(file_get_contents($this->roosterFilename), true);
-        $result = "";
-        foreach ($rooster as $wedstrijdDagen) {
-            $zaalwacht = isset($wedstrijdDagen['zaalwacht']) ? " (Zaalwacht: " . $wedstrijdDagen["zaalwacht"] . ")" : "";
-            $result .= "
+    $rooster = json_decode(file_get_contents($this->roosterFilename), true);
+    $result = "";
+    foreach ($rooster as $wedstrijdDagen) {
+      $zaalwacht = isset($wedstrijdDagen['zaalwacht']) ? " (Zaalwacht: " . $wedstrijdDagen["zaalwacht"] . ")" : "";
+      $result .= "
             <div class='panel panel-primary'>
-              <div class='panel-heading'>" . ucwords($wedstrijdDagen['datum']) . $zaalwacht . "</div>
+              <div class='panel-heading'>" . ucwords($wedstrijdDagen->datum) . $zaalwacht . "</div>
               <table class='table'>
                 <thead>
                   <tr>
@@ -33,20 +31,20 @@ class GetVoorpaginaRooster implements IInteractor
                   </tr>
                 </thead>
                 <tbody>";
-            foreach ($wedstrijdDagen["wedstrijden"] as $wedstrijd) {
-                $result .= "
+      foreach ($wedstrijdDagen["wedstrijden"] as $wedstrijd) {
+        $result .= "
                     <tr>
                       <td>" . $wedstrijd["tijd"] . "</td>
                       <td>" . $wedstrijd["teams"] . "</td>
                       <td>" . $wedstrijd["scheidsrechter"] . "</td>
                       <td>" . $wedstrijd["tellers"] . "</td>
                     </tr>";
-            }
-            $result .= "
+      }
+      $result .= "
                 </tbody>
               </table>
             </div>";
-        }
-        echo $result;
     }
+    echo $result;
+  }
 }

@@ -1,13 +1,13 @@
 import { Routes } from '@angular/router';
-import { BarcieBeschikbaarheidComponent } from './barcie-beschikbaarheid/barcie-beschikbaarheid.component';
-import { BarcieIndelingComponent } from './barcie-indeling/barcie-indeling.component';
-import { CoachWedstrijdenComponent } from './coach-wedstrijden/coach-wedstrijden.component';
-import { FluitBeschikbaarheidComponent } from './fluit-beschikbaarheid/fluit-beschikbaarheid.component';
-import { MijnOverzichtComponent } from './mijn-overzicht/mijn-overzicht.component';
-import { ScheidscoComponent } from './scheidsco/scheidsco.component';
-import { StatistiekenComponent } from './statistieken/statistieken.component';
-import { WedstrijdOverzichtComponent } from './wedstrijd-overzicht/wedstrijd-overzicht.component';
-import { WedstrijdenComponent } from './wedstrijden/wedstrijden.component';
+import { CoachWedstrijdenComponent } from './aanwezigheid/coach-wedstrijden/coach-wedstrijden.component';
+import { BarcieIndelingComponent } from './barco/barcie-indeling/barcie-indeling.component';
+import { BarcieBeschikbaarheidComponent } from './beschikbaarheid/barcie-beschikbaarheid/barcie-beschikbaarheid.component';
+import { FluitBeschikbaarheidComponent } from './beschikbaarheid/fluit-beschikbaarheid/fluit-beschikbaarheid.component';
+import { MijnOverzichtComponent } from './mijn-overzicht/mijn-overzicht/mijn-overzicht.component';
+import { ScheidscoComponent } from './scheidsco/scheidsco/scheidsco.component';
+import { StatistiekenComponent } from './statistiek/statistieken/statistieken.component';
+import { WedstrijdOverzichtComponent } from './wedstrijd-overzicht/wedstrijd-overzicht/wedstrijd-overzicht.component';
+import { WedstrijdenComponent } from './wedstrijd-overzicht/wedstrijden/wedstrijden.component';
 
 export const appRoutes: Routes = [
   { path: '', redirectTo: 'mijn-overzicht', pathMatch: 'full' },
@@ -34,12 +34,18 @@ export const appRoutes: Routes = [
   {
     path: 'fluit-beschikbaarheid',
     component: FluitBeschikbaarheidComponent,
-    data: { title: 'Fluit Beschikbaarheid', groups: ['scheidsrechter'] }
+    data: {
+      title: 'Fluit Beschikbaarheid',
+      groups: ['scheidsrechter']
+    }
   },
   {
     path: 'barcie-beschikbaarheid',
     component: BarcieBeschikbaarheidComponent,
-    data: { title: 'Barcie Beschikbaarheid', groups: ['barcie', 'webcie'] }
+    data: {
+      title: 'Barcie Beschikbaarheid',
+      groups: ['barcie', 'webcie']
+    }
   },
   {
     path: 'scheidsco',

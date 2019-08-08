@@ -9,11 +9,6 @@ include_once 'ScheidscoFunctions.php';
 
 class GetScheidsrechters implements IInteractorWithData
 {
-    private $telFluitGateway;
-    private $joomlaGateway;
-    private $nevoboGateway;
-    private $fluitBeschikbaarheidGateway;
-
     public function __construct($database)
     {
         $this->joomlaGateway = new JoomlaGateway($database);
@@ -30,33 +25,33 @@ class GetScheidsrechters implements IInteractorWithData
         }
 
         if (!$this->joomlaGateway->IsScheidsco($userId)) {
-            InternalServerError("Je bent (helaas) geen Scheidsco");
+            throw new UnexpectedValueException("Je bent (helaas) geen Scheidsco");
         }
 
         $matchId = $data->matchId ?? null;
         if ($matchId == null) {
-            InternalServerError("MatchId niet gezet");
+            throw new InvalidArgumentException("MatchId niet gezet");
         }
 
         $fluitWedstrijd = null;
         $uscWedstrijden = $this->nevoboGateway->GetProgrammaForSporthal('LDNUN');
         foreach ($uscWedstrijden as $wedstrijd) {
-            if ($wedstrijd['id'] == $matchId) {
+            if ($wedstrijd->id == $matchId) {
                 $fluitWedstrijd = $wedstrijd;
             }
         }
         if ($fluitWedstrijd == null) {
-            InternalServerError("Wedstrijd met id $matchId niet gevonden");
+            throw new UnexpectedValueException("Wedstrijd met id $matchId niet gevonden");
         }
 
-        $date = $fluitWedstrijd['timestamp']->format('Y-m-d');
-        $time = $fluitWedstrijd['timestamp']->format('G:i:s');
+        $date = $fluitWedstrijd->timestamp->format('Y-m-d');
+        $time = $fluitWedstrijd->timestamp->format('G:i:s');
 
-        $wedstrijdenWithSameDate = GetWedstrijdenWithDate($uscWedstrijden, $fluitWedstrijd['timestamp']);
+        $wedstrijdenWithSameDate = GetWedstrijdenWithDate($uscWedstrijden, $fluitWedstrijd->timestamp);
         $fluitBeschikbaarheden = $this->fluitBeschikbaarheidGateway->GetAllBeschikbaarheid($date, $time);
         $scheidsrechters = $this->telFluitGateway->GetScheidsrechters();
 
-        $result = [
+        $result = (object) [
             "spelendeScheidsrechters" => [
                 "Ja" => [],
                 "Onbekend" => [],
@@ -68,7 +63,7 @@ class GetScheidsrechters implements IInteractorWithData
             ]
         ];
         foreach ($scheidsrechters as $scheidsrechter) {
-            $wedstrijd = GetWedstrijdOfTeam($wedstrijdenWithSameDate, $scheidsrechter['team']);
+            $wedstrijd = GetWedstrijdOfTeam($wedstrijdenWithSameDate, $scheidsrechter->team);
             $fluitBeschikbaarheid = $this->GetFluitbeschikbaarheid($scheidsrechter, $fluitBeschikbaarheden);
             $type = $wedstrijd ? "spelendeScheidsrechters" : "overigeScheidsrechters";
 
@@ -80,8 +75,8 @@ class GetScheidsrechters implements IInteractorWithData
     private function GetFluitbeschikbaarheid($scheidsrechter, $fluitBeschikbaarheden)
     {
         foreach ($fluitBeschikbaarheden as $fluitBeschikbaarheid) {
-            if ($fluitBeschikbaarheid['user_id'] == $scheidsrechter['id']) {
-                return $fluitBeschikbaarheid['beschikbaarheid'];
+            if ($fluitBeschikbaarheid->user_id == $scheidsrechter->id) {
+                return $fluitBeschikbaarheid->beschikbaarheid;
             }
         }
         return "Onbekend";
@@ -89,12 +84,12 @@ class GetScheidsrechters implements IInteractorWithData
 
     private function MapToUsecaseModel($scheidsrechter, $fluitBeschikbaarheid, $wedstrijd = null, $fluitWedstrijd = null)
     {
-        return [
-            "naam" => $scheidsrechter['naam'],
+        return (object) [
+            "naam" => $scheidsrechter->naam,
             "niveau" => $scheidsrechter['niveau'],
             "gefloten" => $scheidsrechter['gefloten'],
-            "team" => GetShortTeam($scheidsrechter['team']) ?? "Geen Team",
-            "eigenTijd" => $wedstrijd['timestamp'] ? $wedstrijd['timestamp']->format("G:i") : null,
+            "team" => GetShortTeam($scheidsrechter->team) ?? "Geen Team",
+            "eigenTijd" => $wedstrijd->timestamp ? $wedstrijd->timestamp->format("G:i") : null,
             "isMogelijk" => $fluitBeschikbaarheid,
         ];
     }

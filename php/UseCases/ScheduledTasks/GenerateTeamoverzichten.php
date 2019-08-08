@@ -21,12 +21,12 @@ class GenerateTeamoverzichten implements IInteractor
             $uitslagen = $this->nevoboGateway->GetUitslagenForTeam($team["naam"]);
             $programma = $this->nevoboGateway->GetProgrammaForTeam($team["naam"]);
 
-            $result[] = [
-                "naam" => $team['naam'],
+            $result[] = (object) [
+                "naam" => $team->naam,
                 "poule" => $team["poule"],
-                "trainer" => $this->joomlaGateway->GetTrainers($team['naam']),
+                "trainer" => $this->joomlaGateway->GetTrainers($team->naam),
                 "trainingstijden" => $team["trainingstijden"],
-                "coaches" => $this->joomlaGateway->GetCoaches($team['naam']),
+                "coaches" => $this->joomlaGateway->GetCoaches($team->naam),
                 "facebook" => $team["facebook"] ?? null,
                 "stand" => $ranking,
                 "uitslagen" => array_slice($uitslagen, 0, 3),
@@ -39,7 +39,7 @@ class GenerateTeamoverzichten implements IInteractor
             file_put_contents($filename, json_encode($result));
         }
 
-        return [
+        return (object) [
             "teamoverzichten" => $result,
         ];
     }

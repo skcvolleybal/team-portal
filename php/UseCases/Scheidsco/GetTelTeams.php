@@ -7,8 +7,6 @@ include_once 'ScheidscoFunctions.php';
 
 class GetTelTeams implements IInteractorWithData
 {
-    private $telFluitGateway;
-
     public function __construct($database)
     {
         $this->joomlaGateway = new JoomlaGateway($database);
@@ -24,32 +22,32 @@ class GetTelTeams implements IInteractorWithData
         }
 
         if (!$this->joomlaGateway->IsScheidsco($userId)) {
-            InternalServerError("Je bent (helaas) geen Scheidsco");
+            throw new UnexpectedValueException("Je bent (helaas) geen Scheidsco");
         }
         $result = [];
 
         $matchId = $data->matchId ?? null;
         if ($matchId == null) {
-            InternalServerError("MatchId niet gezet");
+            throw new InvalidArgumentException("MatchId niet gezet");
         }
         $telWedstrijd = null;
         $uscWedstrijden = $this->nevoboGateway->GetProgrammaForSporthal("LDNUN");
         foreach ($uscWedstrijden as $wedstrijd) {
-            if ($wedstrijd['id'] == $matchId) {
+            if ($wedstrijd->id == $matchId) {
                 $telWedstrijd = $wedstrijd;
                 break;
             }
         }
         if ($telWedstrijd == null) {
-            InternalServerError("Wedstrijd met $matchId niet bekend");
+            throw new UnexpectedValueException("Wedstrijd met $matchId niet bekend");
         }
 
         $telTeams = $this->telFluitGateway->GetTelTeams();
-        $wedstrijdenWithSameDate = GetWedstrijdenWithDate($uscWedstrijden, $telWedstrijd['timestamp']);
+        $wedstrijdenWithSameDate = GetWedstrijdenWithDate($uscWedstrijden, $telWedstrijd->timestamp);
 
         $result = ["spelendeTeams" => [], "overigeTeams" => []];
         foreach ($telTeams as $team) {
-            $wedstrijd = GetWedstrijdOfTeam($wedstrijdenWithSameDate, $team['naam']);
+            $wedstrijd = GetWedstrijdOfTeam($wedstrijdenWithSameDate, $team->naam);
             if ($wedstrijd) {
                 $result["spelendeTeams"][] = $this->MapToUsecaseModel($team, $wedstrijd, $telWedstrijd);
             } else {
@@ -63,14 +61,14 @@ class GetTelTeams implements IInteractorWithData
     {
         $eigenTijd = null;
         $isMogelijk = true;
-        if ($wedstrijd && $telWedstrijd && $wedstrijd['timestamp'] && $telWedstrijd['timestamp']) {
-            $interval = $wedstrijd['timestamp']->diff($telWedstrijd['timestamp']);
+        if ($wedstrijd && $telWedstrijd && $wedstrijd->timestamp && $telWedstrijd->timestamp) {
+            $interval = $wedstrijd->timestamp->diff($telWedstrijd->timestamp);
             $verschil = $interval->h;
             $isMogelijk = $verschil == 0 ? false : ($verschil == 2 ? true : null);
-            $eigenTijd = $wedstrijd['timestamp']->format("G:i");
+            $eigenTijd = $wedstrijd->timestamp->format("G:i");
         }
-        return [
-            "naam" => $team['naam'],
+        return (object) [
+            "naam" => $team->naam,
             "geteld" => $team['geteld'],
             "eigenTijd" => $eigenTijd,
             "isMogelijk" => $isMogelijk === null ? "Onbekend" : $isMogelijk ? "Ja" : "Nee",

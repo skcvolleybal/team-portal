@@ -5,7 +5,7 @@ abstract class GetNevoboMatchByDate
     {
         $result = [];
         foreach ($wedstrijden as $wedstrijd) {
-            if ($wedstrijd['timestamp'] && $wedstrijd['timestamp']->format("Y-m-d") == $date) {
+            if ($wedstrijd->timestamp && $wedstrijd->timestamp->format('Y-m-d') == $date) {
                 $result[] = $wedstrijd;
             }
         }

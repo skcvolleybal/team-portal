@@ -5,22 +5,16 @@ function IncludeInPath($folder)
     set_include_path(get_include_path() . PATH_SEPARATOR . $folder);
 }
 
-if (DIRECTORY_SEPARATOR != '/') {
+
+$configuration = include('configuration.php');
+if (isset($configuration["displayErrors"])) {
     error_reporting(E_ALL);
-    ini_set("display_errors", 1);
+    ini_set('display_errors', 1);
 }
 
-if (!defined('JPATH_BASE')) {
-    if (DIRECTORY_SEPARATOR == '/') {
-        define('JPATH_BASE', '/home/deb105013n2/domains/skcvolleybal.nl/public_html/');
-    } else {
-        define('JPATH_BASE', "C:\\Users\\jonat\\joomla-website");
-    }
-}
+define('JPATH_BASE', $configuration['JPATH_BASE']);
+define('_JEXEC', 1);
 
-if (!defined('_JEXEC')) {
-    define('_JEXEC', 1);
-}
 require_once JPATH_BASE . '/includes/defines.php';
 require_once JPATH_BASE . '/includes/framework.php';
 
@@ -30,25 +24,20 @@ IncludeInPath(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'DomainEntities');
 IncludeInPath(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Gateways');
 IncludeInPath(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'libs');
 
-$http_referer = $_SERVER['HTTP_REFERER'] ?? "http://localhost:4200/";
-if ($http_referer == "http://localhost:4200/") {
-    $origin = "http://localhost:4200";
-} else {
-    $origin = "https://www.skcvolleybal.nl";
-}
+$accessControlAllowOrigin = $configuration['Access-Control-Allow-Origin'];
 
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
-    $allowedHeaders = "Content-Type";
-    header("Access-Control-Allow-Origin: $origin");
-    header("Access-Control-Allow-Credentials: true");
+    $allowedHeaders = 'Content-Type';
+    header("Access-Control-Allow-Origin: $accessControlAllowOrigin");
+    header('Access-Control-Allow-Credentials: true');
     header("Access-Control-Allow-Headers: $allowedHeaders");
     exit;
 }
 
-header("Access-Control-Allow-Origin: $origin");
+header("Access-Control-Allow-Origin: $accessControlAllowOrigin");
 header('Access-Control-Allow-Credentials: true');
 
-require_once "TeamPortal.php";
+require_once 'TeamPortal.php';
 
 $app = new TeamPortal;
 

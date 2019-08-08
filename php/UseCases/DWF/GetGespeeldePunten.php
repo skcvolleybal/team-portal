@@ -21,15 +21,15 @@ class GetGespeeldePunten implements IInteractor
 
         $team = $this->joomlaGateway->GetTeam($userId);
         if (!$team) {
-            InternalServerError("Je zit niet in een team");
+            throw new UnexpectedValueException("Je zit niet in een team");
         }
         $gespeeldePunten = $this->statistiekenGateway->GetGespeeldePunten($team);
         $result = [];
         foreach ($gespeeldePunten as $row) {
-            if ($row['naam']) {
-                $result[] = [
-                    'naam' => implode("", array_map(function ($item) {return $item[0];}, explode(" ", $row['naam']))),
-                    "gespeeldePunten" => $row["gespeeldePunten"],
+            if ($row->naam) {
+                $result[] = (object) [
+                    'naam' => implode("", array_map(function ($item) {return $item[0];}, explode(" ", $row->naam))),
+                    "gespeeldePunten" => $row->gespeeldePunten,
                 ];
             }
         }

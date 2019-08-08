@@ -15,15 +15,15 @@ class MailGateway
         }
 
         $PHPMailer = new PHPMailer();
-        $PHPMailer->CharSet = "UTF-8";
+        $PHPMailer->CharSet = 'UTF-8';
         $PHPMailer->setFrom($fromAddress, $fromName);
         $PHPMailer->addAddress($toAddress, $toName);
         $PHPMailer->Subject = $title;
         $PHPMailer->msgHTML($body);
 
         if (!$PHPMailer->send()) {
-            echo "Mailer Error: " . $PHPMailer->ErrorInfo;
+            echo 'Mailer Error: ' . $PHPMailer->ErrorInfo;
         }
-        //echo $fromAddress . "<br>" . $fromName . "<br>" . $toAddress . "<br>" . $toName . "<br>" . $title . "<br>" . $body;
+        //echo $fromAddress . '<br>' . $fromName . '<br>' . $toAddress . '<br>' . $toName . '<br>' . $title . '<br>' . $body;
     }
 }

@@ -22,8 +22,8 @@ class WedstrijdenImporteren implements IInteractor
             }
 
             $this->gespeeldeWedstrijdenGateway->AddWedstrijd($wedstrijd);
-            $isThuisWedstrijd = strpos($wedstrijd['team1'], "SKC") !== false;
-            $wedstrijdVerloop = $this->dwfGateway->GetWedstrijdVerloop($wedstrijd['id']);
+            $isThuisWedstrijd = strpos($wedstrijd->team1, "SKC") !== false;
+            $wedstrijdVerloop = $this->dwfGateway->GetWedstrijdVerloop($wedstrijd->id);
             if ($wedstrijdVerloop != null) {
                 foreach ($wedstrijdVerloop as $setIndex => $set) {
                     $opstelling = $isThuisWedstrijd ? $set['thuis'] : $set['uit'];
@@ -64,7 +64,7 @@ class WedstrijdenImporteren implements IInteractor
     private function IsWedstrijdAlOpgeslagen($wedstrijd)
     {
         foreach ($this->opgeslagenWedstrijden as $gespeeldeWedstrijd) {
-            if ($wedstrijd['id'] == $gespeeldeWedstrijd['id']) {
+            if ($wedstrijd->id == $gespeeldeWedstrijd->id) {
                 return true;
             }
         }

@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
-import { RequestService } from '../services/request.service';
+import { RequestService } from '../core/services/request.service';
 
 @Component({
-  selector: 'app-login-modal',
+  selector: 'teamportal-login-modal',
   templateUrl: './login-modal.component.html',
   styleUrls: ['./login-modal.component.scss'],
   providers: [NgbModalConfig, NgbModal]

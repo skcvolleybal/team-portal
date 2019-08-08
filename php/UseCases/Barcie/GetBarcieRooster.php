@@ -16,18 +16,18 @@ class GetBarcieRooster implements IInteractor
     {
         $userId = $this->joomlaGateway->GetUserId();
         if (!$this->joomlaGateway->IsScheidsco($userId)) {
-            InternalServerError("Je bent geen scheidsco");
+            throw new UnexpectedValueException("Je bent geen scheidsco");
         }
 
         $aanwezigheden = $this->barcieGateway->GetBarcieAanwezigheden();
         $rooster = [];
         foreach ($aanwezigheden as $aanwezigheid) {
-            $date = $aanwezigheid['date'];
+            $date = $aanwezigheid->date;
 
-            $i = $this->GetDayIndex($rooster, $aanwezigheid['date']);
+            $i = $this->GetDayIndex($rooster, $aanwezigheid->date);
             if ($i === null) {
                 $datum = GetDutchDate(new DateTime($date));
-                $newDate = [
+                $newDate = (object) [
                     "date" => $date,
                     "datum" => $datum,
                     "shifts" => [[
@@ -37,28 +37,30 @@ class GetBarcieRooster implements IInteractor
                 $rooster[] = $newDate;
                 $i = count($rooster) - 1;
             }
-            if ($aanwezigheid['userId'] !== null) {
+            if ($aanwezigheid->userId !== null) {
                 $shift = intval($aanwezigheid['shift']) - 1;
                 for ($j = $shift; count($rooster[$i]['shifts']) <= $shift; $j++) {
-                    $rooster[$i]["shifts"][] = [
+                    $rooster[$i]["shifts"][] = (object) [
                         "barcieLeden" => [],
                     ];
                 }
-                $rooster[$i]["shifts"][$shift]["barcieLeden"][] = [
-                    "id" => $aanwezigheid['userId'],
-                    "naam" => $aanwezigheid['naam'],
+                $rooster[$i]["shifts"][$shift]["barcieLeden"][] = (object) [
+                    "id" => $aanwezigheid->userId,
+                    "naam" => $aanwezigheid->naam,
                     "isBhv" => $aanwezigheid['isBhv'] == "1",
                 ];
             }
         }
 
-        return ["barcieDagen" => $rooster];
+        return (object) [
+            "barcieDagen" => $rooster
+        ];
     }
 
     private function GetDayIndex($rooster, $date)
     {
         foreach ($rooster as $i => $item) {
-            if ($item['date'] == $date) {
+            if ($item->date == $date) {
                 return $i;
             }
         }
@@ -68,7 +70,7 @@ class GetBarcieRooster implements IInteractor
     private function GetShiftIndex($shifts, $shift)
     {
         foreach ($shifts as $i => $shiftItem) {
-            if ($item['date'] == $date) {
+            if ($item->date == $date) {
                 return $i;
             }
         }

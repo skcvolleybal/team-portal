@@ -4,7 +4,7 @@ class FluitBeschikbaarheidHelper
     public function GetWedstrijdWithDate($programma, $date)
     {
         foreach ($programma as $wedstrijd) {
-            if ($wedstrijd['timestamp'] && $wedstrijd['timestamp']->format("Y-m-d") == $date) {
+            if ($wedstrijd->timestamp && $wedstrijd->timestamp->format("Y-m-d") == $date) {
                 return $wedstrijd;
             }
         }
@@ -16,8 +16,8 @@ class FluitBeschikbaarheidHelper
         $bestResult = "Ja";
         foreach ($wedstrijden as $wedstrijd) {
             $format = 'Y-m-d H:i:s';
-            $timestring = $wedstrijd['timestamp']->format('Y-m-d') . " " . $tijd;
-            $fluitWedstrijd = [
+            $timestring = $wedstrijd->timestamp->format('Y-m-d') . " " . $tijd;
+            $fluitWedstrijd = (object) [
                 "timestamp" => DateTime::createFromFormat($format, $timestring),
                 "locatie" => "Universitair SC",
             ];
@@ -34,8 +34,8 @@ class FluitBeschikbaarheidHelper
     public function GetFluitBeschikbaarheid($fluitBeschikbaarheden, $datum, $tijd)
     {
         foreach ($fluitBeschikbaarheden as $fluitBeschikbaarheid) {
-            if ($fluitBeschikbaarheid['datum'] == $datum && $fluitBeschikbaarheid['tijd'] == $tijd) {
-                return $fluitBeschikbaarheid['beschikbaarheid'];
+            if ($fluitBeschikbaarheid->datum == $datum && $fluitBeschikbaarheid->tijd == $tijd) {
+                return $fluitBeschikbaarheid->beschikbaarheid;
             }
         }
         return null;
@@ -45,33 +45,33 @@ class FluitBeschikbaarheidHelper
     {
         $rooster = [];
         foreach ($skcProgramma as $wedstrijd) {
-            $datum = GetDutchDate($wedstrijd['timestamp']);
-            $date = $wedstrijd['timestamp']->format("Y-m-d");
-            $tijd = $wedstrijd['timestamp']->format("G:i");
-            $time = $wedstrijd['timestamp']->format("G:i:s");
-            $team1 = $wedstrijd['team1'];
-            $team2 = $wedstrijd['team2'];
+            $datum = GetDutchDate($wedstrijd->timestamp);
+            $date = $wedstrijd->timestamp->format("Y-m-d");
+            $tijd = $wedstrijd->timestamp->format("G:i");
+            $time = $wedstrijd->timestamp->format("G:i:s");
+            $team1 = $wedstrijd->team1;
+            $team2 = $wedstrijd->team2;
 
             $i = $this->GetIndexOfDatum($rooster, $datum);
             if ($i === null) {
-                $rooster[] = [
+                $rooster[] = (object) [
                     "datum" => $datum,
-                    "date" => $wedstrijd['timestamp']->format("Y-m-d"),
+                    "date" => $date,
                     "speeltijden" => [],
                 ];
                 $i = count($rooster) - 1;
             }
-            $j = $this->GetIndexOfTijd($rooster[$i]['speeltijden'], $time);
+            $j = $this->GetIndexOfTijd($rooster[$i]->speeltijden, $time);
             if ($j === null) {
-                $rooster[$i]['speeltijden'][] = [
+                $rooster[$i]->speeltijden[] = (object) [
                     "tijd" => $tijd,
                     "time" => $time,
                     "wedstrijden" => [],
                 ];
-                $j = count($rooster[$i]['speeltijden']) - 1;
+                $j = count($rooster[$i]->speeltijden) - 1;
             }
 
-            $rooster[$i]['speeltijden'][$j]['wedstrijden'][] = [
+            $rooster[$i]->speeltijden[$j]->wedstrijden[] = (object) [
                 "team1" => $team1,
                 "isTeam1" => $team == $team1,
                 "isCoachTeam1" => $coachTeam == $team1,
@@ -87,7 +87,7 @@ class FluitBeschikbaarheidHelper
     public function GetIndexOfDatum($rooster, $datum)
     {
         for ($i = count($rooster) - 1; $i >= 0; $i--) {
-            if ($rooster[$i]['datum'] == $datum) {
+            if ($rooster[$i]->datum == $datum) {
                 return $i;
             }
         }
@@ -97,7 +97,7 @@ class FluitBeschikbaarheidHelper
     public function GetIndexOfTijd($roosterDag, $time)
     {
         for ($i = count($roosterDag) - 1; $i >= 0; $i--) {
-            if ($roosterDag[$i]['time'] == $time) {
+            if ($roosterDag[$i]->time == $time) {
                 return $i;
             }
         }

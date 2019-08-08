@@ -24,12 +24,12 @@ class GenerateVoorpaginaRooster implements IInteractor
         foreach ($wedstrijden as $counter => $wedstrijd) {
             $i = $this->GetDateWithWedstrijden($result, $wedstrijd);
             if ($i !== null) {
-                $result[$i]['wedstrijden'][] = $this->MapWedstrijd($wedstrijd);
+                $result[$i]->wedstrijden[] = $this->MapWedstrijd($wedstrijd);
             } else {
-                $date = $wedstrijd['timestamp']->format('Y-m-d');
-                $result[] = [
+                $date = $wedstrijd->timestamp->format('Y-m-d');
+                $result[] = (object) [
                     "date" => $date,
-                    "datum" => GetDutchDate($wedstrijd['timestamp']),
+                    "datum" => GetDutchDate($wedstrijd->timestamp),
                     "zaalwacht" => $this->GetZaalwacht($date),
                     "wedstrijden" => [$this->MapWedstrijd($wedstrijd)],
                 ];
@@ -50,19 +50,19 @@ class GenerateVoorpaginaRooster implements IInteractor
 
     private function MapWedstrijd($wedstrijd)
     {
-        return [
-            "tijd" => $wedstrijd['timestamp']->format('H:i'),
-            "teams" => $wedstrijd['team1'] . " - " . $wedstrijd['team2'],
-            "scheidsrechter" => $this->GetScheidsrechterForWedstrijd($wedstrijd['id']),
-            "tellers" => $this->GetTellersForWedstrijd($wedstrijd['id']),
+        return (object) [
+            "tijd" => $wedstrijd->timestamp->format('H:i'),
+            "teams" => $wedstrijd->team1 . " - " . $wedstrijd->team2,
+            "scheidsrechter" => $this->GetScheidsrechterForWedstrijd($wedstrijd->id),
+            "tellers" => $this->GetTellersForWedstrijd($wedstrijd->id),
         ];
     }
 
     private function GetTellersForWedstrijd($matchId)
     {
         foreach ($this->telFluitBeurten as $telFluitBeurt) {
-            if ($telFluitBeurt['matchId'] == $matchId) {
-                return $telFluitBeurt['tellers'];
+            if ($telFluitBeurt->matchId == $matchId) {
+                return $telFluitBeurt->tellers;
             }
         }
         return null;
@@ -71,8 +71,8 @@ class GenerateVoorpaginaRooster implements IInteractor
     private function GetScheidsrechterForWedstrijd($matchId)
     {
         foreach ($this->telFluitBeurten as $telFluitBeurt) {
-            if ($telFluitBeurt['matchId'] == $matchId) {
-                return $telFluitBeurt['scheidsrechter'];
+            if ($telFluitBeurt->matchId == $matchId) {
+                return $telFluitBeurt->scheidsrechter;
             }
         }
         return null;
@@ -81,8 +81,8 @@ class GenerateVoorpaginaRooster implements IInteractor
     private function GetZaalwacht($date)
     {
         foreach ($this->zaalwachten as $zaalwacht) {
-            if ($zaalwacht['date'] == $date) {
-                return $zaalwacht['team'];
+            if ($zaalwacht->date == $date) {
+                return $zaalwacht->team;
             }
         }
         return null;
@@ -91,7 +91,7 @@ class GenerateVoorpaginaRooster implements IInteractor
     private function GetDateWithWedstrijden($result, $wedstrijd)
     {
         foreach ($result as $i => $dateWithWedstrijden) {
-            if ($wedstrijd['timestamp'] && $dateWithWedstrijden['date'] == $wedstrijd['timestamp']->format('Y-m-d')) {
+            if ($wedstrijd->timestamp && $dateWithWedstrijden->date == $wedstrijd->timestamp->format('Y-m-d')) {
                 return $i;
             }
         }

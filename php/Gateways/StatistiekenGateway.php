@@ -9,7 +9,7 @@ class StatistiekenGateway
     public function GetGespeeldePunten($team)
     {
         $skcTeam = ToSkcName($team);
-        $query = "SELECT R.naam, T2.rugnummer, T2.gespeeldePunten FROM (
+        $query = 'SELECT R.naam, T2.rugnummer, T2.gespeeldePunten FROM (
                     SELECT rugnummer, count(*) gespeeldePunten FROM (
                         SELECT ra as rugnummer FROM DWF_punten P inner join DWF_wedstrijden W on P.matchId = W.id where W.team1 = :team || W.team2 = :team
                         UNION ALL
@@ -32,10 +32,10 @@ class StatistiekenGateway
                     INNER JOIN J3_usergroups G on M.group_id = G.id
                     INNER JOIN J3_comprofiler C ON U.id = C.user_id
                     where G.title = :skcTeam
-                  ) R ON T2.rugnummer = R.rugnummer";
+                  ) R ON T2.rugnummer = R.rugnummer';
         $params = [
-            new Param(":team", $team, PDO::PARAM_STR),
-            new Param(":skcTeam", $skcTeam, PDO::PARAM_STR),
+            new Param(':team', $team, PDO::PARAM_STR),
+            new Param(':skcTeam', $skcTeam, PDO::PARAM_STR),
         ];
         return $this->database->Execute($query, $params);
     }

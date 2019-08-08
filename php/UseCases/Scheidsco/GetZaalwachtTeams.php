@@ -6,10 +6,6 @@ include_once 'NevoboGateway.php';
 
 class GetZaalwachtTeams implements IInteractorWithData
 {
-    private $telFluitGateway;
-    private $joomlaGateway;
-    private $nevoboGateway;
-
     public function __construct($database)
     {
         $this->zaalwachtGateway = new ZaalwachtGateway($database);
@@ -25,12 +21,12 @@ class GetZaalwachtTeams implements IInteractorWithData
         }
 
         if (!$this->joomlaGateway->IsScheidsco($userId)) {
-            InternalServerError("Je bent (helaas) geen Scheidsco");
+            throw new UnexpectedValueException("Je bent (helaas) geen Scheidsco");
         }
 
         $date = $data->date ?? null;
         if ($date == null) {
-            InternalServerError("Geen datum meegegeven");
+            throw new InvalidArgumentException("Geen datum meegegeven");
         }
 
         $uscWedstrijden = $this->nevoboGateway->GetProgrammaForSporthal("LDNUN");
@@ -39,7 +35,7 @@ class GetZaalwachtTeams implements IInteractorWithData
 
         $result = ["spelendeTeams" => [], "overigeTeams" => []];
         foreach ($zaalwachtTeams as $team) {
-            if (in_array($team['naam'], $spelendeTeams)) {
+            if (in_array($team->naam, $spelendeTeams)) {
                 $result["spelendeTeams"][] = $this->MapToUsecaseModel($team);
             } else {
                 $result["overigeTeams"][] = $this->MapToUsecaseModel($team);
@@ -52,9 +48,9 @@ class GetZaalwachtTeams implements IInteractorWithData
     {
         $result = [];
         foreach ($wedstrijden as $wedstrijd) {
-            $timestamp = $wedstrijd['timestamp'];
+            $timestamp = $wedstrijd->timestamp;
             if ($timestamp && $timestamp->format('Y-m-d') == $date) {
-                $result[] = ToSkcName($wedstrijd['team1']);
+                $result[] = ToSkcName($wedstrijd->team1);
             }
         }
         return $result;
@@ -62,8 +58,8 @@ class GetZaalwachtTeams implements IInteractorWithData
 
     private function MapToUsecaseModel($team)
     {
-        return [
-            "naam" => $team['naam'],
+        return (object) [
+            "naam" => $team->naam,
             "zaalwacht" => $team['zaalwacht'],
         ];
     }

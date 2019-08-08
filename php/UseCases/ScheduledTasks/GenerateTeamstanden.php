@@ -19,7 +19,7 @@ class GenerateTeamstanden implements IInteractor
 
             $team["numberOfTeams"] = count($rankings);
             foreach ($rankings as $ranking) {
-                if (strpos($ranking['team'], $team["naam"]) !== false) {
+                if (strpos($ranking->team, $team["naam"]) !== false) {
                     $team["stand"] = $ranking['nummer'];
                 }
             }
@@ -30,7 +30,7 @@ class GenerateTeamstanden implements IInteractor
             file_put_contents($filename, json_encode($teams));
         }
 
-        return [
+        return (object) [
             "teamstanden" => $teams,
         ];
     }

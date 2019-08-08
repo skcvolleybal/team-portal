@@ -11,9 +11,9 @@ class GetTeamoverzicht implements IInteractorWithData
 
     public function Execute($data)
     {
-        $teamnaam = $data['team'] ?? null;
+        $teamnaam = $data->team ?? null;
         if ($teamnaam == null) {
-            InternalServerError("Teamnaam is leeg");
+            throw new InvalidArgumentException("Teamnaam is leeg");
         }
 
         $filename = dirname(__FILE__) . DIRECTORY_SEPARATOR . "teamoverzichten.json";
@@ -29,7 +29,7 @@ class GetTeamoverzicht implements IInteractorWithData
         $klasse = GetKlasse($teamoverzicht['poule']);
         $trainers = [];
         foreach ($teamoverzicht['trainer'] as $trainer) {
-            $trainers[] = $trainer['naam'];
+            $trainers[] = $trainer->naam;
         }
 
         $stand = $teamoverzicht['stand'];
@@ -38,8 +38,8 @@ class GetTeamoverzicht implements IInteractorWithData
         $trainingstijden = $teamoverzicht['trainingstijden'];
 
         $coaches = [];
-        foreach ($teamoverzicht['coaches'] as $coach) {
-            $coaches[] = $coach['naam'];
+        foreach ($teamoverzicht->coaches as $coach) {
+            $coaches[] = $coach->naam;
         }
         $facebook = $teamoverzicht['facebook'];
 
@@ -90,7 +90,7 @@ class GetTeamoverzicht implements IInteractorWithData
         } else {
             $html = "";
             foreach ($programma as $wedstrijd) {
-                $dateTime = new DateTime($wedstrijd["timestamp"]['date']);
+                $dateTime = new DateTime($wedstrijd->timestamp->date);
                 $html .= "<tr>
                             <td>" . $dateTime->format("d-m-Y") . "</td>
                             <td>" . $dateTime->format("H:i") . "</td>
@@ -107,7 +107,7 @@ class GetTeamoverzicht implements IInteractorWithData
     private function GetTeamOverzicht($overzichten, $teamnaam)
     {
         foreach ($overzichten as $overzicht) {
-            if ($overzicht['naam'] == $teamnaam) {
+            if ($overzicht->naam == $teamnaam) {
                 return $overzicht;
             }
         }

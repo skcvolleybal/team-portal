@@ -23,8 +23,4 @@ class Param
     {
         return $this->type;
     }
-
-    private $name;
-    private $value;
-    private $type;
 }

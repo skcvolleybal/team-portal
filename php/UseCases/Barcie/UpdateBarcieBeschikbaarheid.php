@@ -20,7 +20,7 @@ class UpdateBarcieBeschikbaarheid implements IInteractorWithData
         }
 
         if (!$this->joomlaGateway->IsBarcie($userId)) {
-            InternalServerError("Je bent (helaas) geen Barcie lid");
+            throw new UnexpectedValueException("Je bent (helaas) geen Barcie lid");
         }
 
         $date = $data->date;
@@ -30,7 +30,7 @@ class UpdateBarcieBeschikbaarheid implements IInteractorWithData
 
         $dbBeschikbaarheid = $this->barcieGateway->GetBeschikbaarheid($userId, $dayId);
         if ($dbBeschikbaarheid) {
-            $this->barcieGateway->UpdateBeschikbaarheid($dbBeschikbaarheid['id'], $beschikbaarheid);
+            $this->barcieGateway->UpdateBeschikbaarheid($dbBeschikbaarheid->id, $beschikbaarheid);
         } else {
             $this->barcieGateway->InsertBeschikbaarheid($userId, $dayId, $beschikbaarheid);
         }

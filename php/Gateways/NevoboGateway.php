@@ -7,14 +7,11 @@ class NevoboGateway
     public $cacheLocation = './cache';
 
     private $pouleprogrammaUrl = 'https://api.nevobo.nl/export/poule/%s/%s/programma.%s';
-    private $pouleresultatenUrl = 'https://api.nevobo.nl/export/poule/%s/%s/resultaten.%s';
     private $poulestandUrl = 'https://api.nevobo.nl/export/poule/%s/%s/stand.%s';
     private $verenigingsprogrammaUrl = 'https://api.nevobo.nl/export/vereniging/%s/programma.%s';
-    private $verenigingsresultatenUrl = 'https://api.nevobo.nl/export/vereniging/%s/resultaten.%s';
     private $teamprogrammaUrl = 'https://api.nevobo.nl/export/team/%s/%s/%s/programma.%s';
     private $teamresultatenUrl = 'https://api.nevobo.nl/export/team/%s/%s/%s/resultaten.%s';
     private $sporthalprogrammaUrl = 'https://api.nevobo.nl/export/sporthal/%s/programma.%s';
-    private $sporthalResultatenUrl = 'https://api.nevobo.nl/export/sporthal/%s/resultaten.%s';
     private $xmlns = 'https://www.nevobo.nl/competitie/';
 
     private $verenigingscode;
@@ -22,9 +19,18 @@ class NevoboGateway
 
     private $exportType = 'rss';
     private $monthTranslations = [
-        'januari' => 'January', 'februari' => 'February', 'maart' => 'March', 'april' => 'April',
-        'mei' => 'May', 'juni' => 'June', 'juli' => 'July', 'augustus' => 'August',
-        'september' => 'September', 'oktober' => 'October', 'november' => 'November', 'december' => 'December',
+        'januari' => 'January',
+        'februari' => 'February',
+        'maart' => 'March',
+        'april' => 'April',
+        'mei' => 'May',
+        'juni' => 'June',
+        'juli' => 'July',
+        'augustus' => 'August',
+        'september' => 'September',
+        'oktober' => 'October',
+        'november' => 'November',
+        'december' => 'December',
     ];
 
     public function __construct($verenigingscode = 'CKL9R53', $regio = 'regio-west')
@@ -43,15 +49,15 @@ class NevoboGateway
         $results = [];
         foreach ($rankings as $ranking) {
             $nummer = $ranking['child'][$this->xmlns]['nummer'][0]['data'];
-            $team = $ranking['child'][$this->xmlns]['team'][0]['data'];
-            $wedstrijden = $ranking['child'][$this->xmlns]['wedstrijden'][0]['data'];
+            $team = $ranking['child'][$this->xmlns]->team[0]['data'];
+            $wedstrijden = $ranking['child'][$this->xmlns]->wedstrijden[0]['data'];
             $punten = $ranking['child'][$this->xmlns]['punten'][0]['data'];
             $setsVoor = $ranking['child'][$this->xmlns]['setsvoor'][0]['data'];
             $setsTegen = $ranking['child'][$this->xmlns]['setstegen'][0]['data'];
             $puntenVoor = $ranking['child'][$this->xmlns]['puntenvoor'][0]['data'];
             $puntenTegen = $ranking['child'][$this->xmlns]['puntentegen'][0]['data'];
 
-            $results[] = [
+            $results[] = (object) [
                 'nummer' => $nummer,
                 'team' => $team,
                 'wedstrijden' => $wedstrijden,
@@ -148,15 +154,15 @@ class NevoboGateway
 
     private function GetGender($team)
     {
-        if (substr($team, 4, 2) == "HS") {
+        if (substr($team, 4, 2) == 'HS') {
             return 'heren';
         }
 
-        if (substr($team, 4, 2) == "DS") {
+        if (substr($team, 4, 2) == 'DS') {
             return 'dames';
         }
 
-        throw new Exception("Unknown gender for team '$team'");
+        throw new Exception("Onbekend geslacht in team '$team'");
     }
 
     private function GetSequence($team)
@@ -183,23 +189,23 @@ class NevoboGateway
         $matches = $this->ParseFeed($url);
         $programma = [];
         foreach ($matches as $match) {
-            $title = addslashes($match['title']);
-            $description = addslashes($match['description']);
+            $title = addslashes($match->title);
+            $description = addslashes($match->description);
 
             if (strpos($title, 'Uitslag: ') !== false) {
                 continue;
             }
 
-            preg_match("/(.*): (.*) - (.*)/", $title, $titleMatches);
+            preg_match('/(.*): (.*) - (.*)/', $title, $titleMatches);
             $team1 = stripslashes($titleMatches[2]);
             $team2 = stripslashes($titleMatches[3]);
 
-            preg_match("/Wedstrijd: (.*), Datum: (.*), Speellocatie: (.*)/", $description, $descriptionMatches);
+            preg_match('/Wedstrijd: (.*), Datum: (.*), Speellocatie: (.*)/', $description, $descriptionMatches);
             $matchId = preg_replace('/\s+/', ' ', $descriptionMatches[1]);
             $date = $descriptionMatches[2];
             $locatie = preg_replace('/\s+/', ' ', stripslashes($descriptionMatches[3]));
 
-            $programma[] = [
+            $programma[] = (object) [
                 'team1' => $team1,
                 'team2' => $team2,
                 'id' => $matchId,
@@ -229,19 +235,19 @@ class NevoboGateway
             $title = addslashes($match['title']);
             $description = addslashes($match['description']);
 
-            preg_match("/(.*) - (.*), Uitslag: (.*)/", $title, $titleMatches);
+            preg_match('/(.*) - (.*), Uitslag: (.*)/', $title, $titleMatches);
             $team1 = stripslashes($titleMatches[1]);
             $team2 = stripslashes($titleMatches[2]);
             $uitslag = $titleMatches[3];
 
-            preg_match("/Wedstrijd: (.*), Uitslag: (.*), Setstanden: (.*)/", $description, $descriptionMatches);
+            preg_match('/Wedstrijd: (.*), Uitslag: (.*), Setstanden: (.*)/', $description, $descriptionMatches);
             $setstanden = $descriptionMatches[3];
 
-            $uitslagen[] = [
+            $uitslagen[] = (object) [
                 'team1' => $team1,
                 'team2' => $team2,
                 'uitslag' => $uitslag,
-                'setstanden' => explode(", ", $setstanden),
+                'setstanden' => explode(', ', $setstanden),
             ];
         }
 
@@ -256,8 +262,8 @@ class NevoboGateway
             return null;
         }
 
-        if (!preg_match("/(.*) (.*) (.*), (.*):(.*)/", $date, $dateMatches)) {
-            return "Unparseble date: $date";
+        if (!preg_match('/(.*) (.*) (.*), (.*):(.*)/', $date, $dateMatches)) {
+            return 'Unparseble date: $date';
         }
         $day = $dateMatches[2];
         $month = $dateMatches[3];
@@ -265,7 +271,7 @@ class NevoboGateway
         $minutes = $dateMatches[5];
 
         if (!array_key_exists(strtolower($month), $this->monthTranslations)) {
-            return "Unknown month: $month";
+            return 'Unknown month: $month';
         }
 
         $month = $this->monthTranslations[$month];
@@ -310,7 +316,7 @@ class NevoboGateway
 
         $result = [];
         for ($i = 0; $i < $feed->get_item_quantity(); $i++) {
-            $result[] = [
+            $result[] = (object) [
                 'title' => $feed->get_item($i)->get_title(),
                 'description' => $feed->get_item($i)->get_description(),
             ];

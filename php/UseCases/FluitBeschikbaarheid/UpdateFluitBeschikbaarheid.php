@@ -5,8 +5,6 @@ include_once 'FluitBeschikbaarheidGateway.php';
 
 class UpdateFluitBeschikbaarheid implements IInteractorWithData
 {
-    private $fluitBeschikbaarheidGateway;
-
     public function __construct($database)
     {
         $this->fluitBeschikbaarheidGateway = new FluitBeschikbaarheidGateway($database);
@@ -21,7 +19,7 @@ class UpdateFluitBeschikbaarheid implements IInteractorWithData
         }
 
         if (!$this->joomlaGateway->IsScheidsrechter($userId)) {
-            InternalServerError("Je bent (helaas) geen scheidsrechter");
+            throw new UnexpectedValueException("Je bent (helaas) geen scheidsrechter");
         }
 
         $datum = $data->datum;
@@ -29,13 +27,13 @@ class UpdateFluitBeschikbaarheid implements IInteractorWithData
         $beschikbaarheid = $data->beschikbaarheid;
 
         if (!DateTime::createFromFormat('Y-m-d', $datum)) {
-            InternalServerError("Unknown date: $datum");
+            throw new InvalidArgumentException("Unknown date: $datum");
         }
         if (!DateTime::createFromFormat('H:i:s', $tijd)) {
-            InternalServerError("Unknown time: $tijd");
+            throw new InvalidArgumentException("Unknown time: $tijd");
         }
         if (!in_array($beschikbaarheid, ["Ja", "Nee", "Onbekend"])) {
-            InternalServerError("Unknown beschikbaarheid: $beschikbaarheid");
+            throw new InvalidArgumentException("Unknown beschikbaarheid: $beschikbaarheid");
         }
 
         $dbBeschikbaarheid = $this->fluitBeschikbaarheidGateway->GetFluitBeschikbaarheid($userId, $datum, $tijd);
@@ -43,9 +41,9 @@ class UpdateFluitBeschikbaarheid implements IInteractorWithData
             $this->fluitBeschikbaarheidGateway->Insert($userId, $datum, $tijd, $beschikbaarheid);
         } else {
             if ($beschikbaarheid == "Onbekend") {
-                $this->fluitBeschikbaarheidGateway->Delete($dbBeschikbaarheid['id']);
+                $this->fluitBeschikbaarheidGateway->Delete($dbBeschikbaarheid->id);
             } else {
-                $this->fluitBeschikbaarheidGateway->Update($dbBeschikbaarheid['id'], $beschikbaarheid);
+                $this->fluitBeschikbaarheidGateway->Update($dbBeschikbaarheid->id, $beschikbaarheid);
             }
         }
 

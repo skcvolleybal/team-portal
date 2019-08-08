@@ -5,9 +5,6 @@ include_once 'JoomlaGateway.php';
 
 class UpdateTellers implements IInteractorWithData
 {
-    private $telFluitGateway;
-    private $joomlaGateway;
-
     public function __construct($database)
     {
         $this->telFluitGateway = new TelFluitGateway($database);
@@ -22,31 +19,31 @@ class UpdateTellers implements IInteractorWithData
         }
 
         if (!$this->joomlaGateway->IsScheidsco($userId)) {
-            InternalServerError("Je bent (helaas) geen Scheidsco");
+            throw new UnexpectedValueException("Je bent (helaas) geen Scheidsco");
         }
 
         $matchId = $data->matchId ?? null;
         $tellers = $data->tellers ?? null;
 
         if ($matchId == null) {
-            InternalServerError("matchId is null");
+            throw new InvalidArgumentException("matchId is null");
         }
 
         $team = $this->joomlaGateway->GetTeamByNaam($tellers);
         $wedstrijd = $this->telFluitGateway->GetWedstrijd($matchId);
         if ($wedstrijd == null) {
             if ($team) {
-                $this->telFluitGateway->Insert($matchId, null, $team['id']);
+                $this->telFluitGateway->Insert($matchId, null, $team->id);
             }
         } else {
             if ($team == null) {
-                if ($wedstrijd['scheidsrechterId'] == null) {
+                if ($wedstrijd->scheidsrechterId == null) {
                     $this->telFluitGateway->Delete($matchId);
                 } else {
-                    $this->telFluitGateway->Update($matchId, $wedstrijd['scheidsrechterId'], null);
+                    $this->telFluitGateway->Update($matchId, $wedstrijd->scheidsrechterId, null);
                 }
             } else {
-                $this->telFluitGateway->Update($matchId, $wedstrijd['scheidsrechterId'], $team['id']);
+                $this->telFluitGateway->Update($matchId, $wedstrijd->scheidsrechterId, $team->id);
             }
         }
 

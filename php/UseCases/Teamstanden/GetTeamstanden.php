@@ -18,7 +18,7 @@ class GetTeamstanden implements IInteractor
         $bordercolors = [];
         $backgroundcolor = [];
         foreach ($teams as $i => $team) {
-            $teamnames[] = '"' . GetShortTeam($team['naam']) . '"';
+            $teamnames[] = '"' . GetShortTeam($team->naam) . '"';
             $backgroundcolor[] = $i % 2 == 0 ? "'rgba(75, 192, 192, 0.2)'" : "'rgba(75, 192, 192, 0.2)'";
             $bordercolors[] = $i % 2 == 0 ? "'rgba(75, 192, 192, 1)'" : "'rgba(54, 162, 235, 1)'";
         }

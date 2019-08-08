@@ -1,15 +1,19 @@
 <?php
 
 include_once 'Param.php';
-include_once 'JoomlaGateway.php';
+include_once 'Column.php';
 
 class Database
 {
     private $dbc;
 
-    public function __construct()
+    public function __construct($host, $database, $user, $password, $options)
     {
-        $this->joomlaGateway = new JoomlaGateway($this);
+        $this->host = $host;
+        $this->database = $database;
+        $this->user = $user;
+        $this->password = $password;
+        $this->options = $options;
     }
 
     private function getDbConnection()
@@ -18,21 +22,14 @@ class Database
             return $this->dbc;
         }
 
-        $this->joomlaGateway->InitJoomla();
-
-        $config = JFactory::getConfig();
-        $host = $config->get('host');
-        $db = $config->get('db');
-        $user = $config->get('user');
-        $password = $config->get('password');
-        $this->dbc = new PDO("mysql:host=$host;dbname=$db", $user, $password, array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
+        $this->dbc = new PDO("mysql:host=$this->host;dbname=$this->database", $this->user, $this->password, $this->options);
         return $this->dbc;
     }
 
     public function Execute($query, $params = array())
     {
         if (empty($query)) {
-            $this->returnError("Query is empty");
+            $this->returnError('Query is empty');
         }
 
         $stmt = $this->getDbConnection()->prepare($query);
@@ -41,18 +38,18 @@ class Database
         }
 
         if (!$stmt->execute()) {
-            $message = "Fout bij het uitvoeren van query ( query:\n" .
-            print_r($query, true) .
-            "\n\nparams:\n" .
-            print_r($params, true) .
-            ") " .
-            print_r($stmt->errorInfo(), true) .
-            " om " .
-            date('H:i:s:(u) d-m-Y');
+            $message = 'Fout bij het uitvoeren van query ( query:\n' .
+                print_r($query, true) .
+                '\n\nparams:\n' .
+                print_r($params, true) .
+                ') ' .
+                print_r($stmt->errorInfo(), true) .
+                ' om ' .
+                date('H:i:s:(u) d-m-Y');
 
-            InternalServerError($message);
+            throw new mysqli_sql_exception($message);
         }
 
-        return $stmt->fetchAll();
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
 }

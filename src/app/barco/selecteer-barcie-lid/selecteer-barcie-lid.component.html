@@ -1,0 +1,51 @@
+<div class="modal-header">
+  <h6>{{datum}}, {{shift}}e shift</h6>
+  <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<div class="modal-body" style="min-height: 500px;">
+  <div class="alert alert-danger" role="alert" *ngIf="errorMessage">
+    {{errorMessage}}
+  </div>
+  <teamportal-spinner *ngIf="barcieLedenLoading"></teamportal-spinner>
+
+  <div *ngIf="barcieLedenLoading == false">
+    <div class="card mb-3">
+      <div class="card-header">
+        Barcieleden
+      </div>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item">Ja</li>
+        <li class="list-group-item">
+          <div class="input-group mb-3" *ngFor="let barcieLid of barcieLeden.Ja">
+            <button type="button" (click)="AddBarcieAanwezigheid(barcieLid)" class="btn btn-block btn-success">
+              {{barcieLid.naam}} ({{barcieLid.aantalDiensten}})
+            </button>
+          </div>
+        </li>
+        <li class="list-group-item">Onbekend</li>
+        <li class="list-group-item">
+          <div class="input-group mb-3" *ngFor="let barcieLid of barcieLeden.Onbekend">
+            <button type="button" (click)="AddBarcieAanwezigheid(barcieLid)" class="btn btn-block btn-warning">
+              {{barcieLid.naam}} ({{barcieLid.aantalDiensten}})
+            </button>
+          </div>
+        </li>
+        <li class="list-group-item">Nee</li>
+        <li class="list-group-item">
+          <div class="input-group mb-3" *ngFor="let barcieLid of barcieLeden.Nee">
+            <button type="button" (click)="AddBarcieAanwezigheid(barcieLid)" class="btn btn-block btn-danger">
+              {{barcieLid.naam}} ({{barcieLid.aantalDiensten}})
+            </button>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-light" (click)="modal.close()">Close</button>
+</div>

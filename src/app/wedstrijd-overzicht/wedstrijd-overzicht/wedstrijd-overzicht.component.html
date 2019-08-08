@@ -1,0 +1,57 @@
+<table class="table table-sm mb-0" *ngFor="let wedstrijd of wedstrijden">
+  <thead>
+    <tr>
+      <th scope="col" colspan="2">
+        {{ wedstrijd.datum }}, {{ wedstrijd.tijd }}
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        <teamportal-wedstrijd [wedstrijd]="wedstrijd"></teamportal-wedstrijd>
+        <div>
+          <teamportal-spelers-lijst
+            (deleteAanwezigheid)="
+              UpdateAanwezigheid(wedstrijd.id, $event, 'Onbekend')
+            "
+            *ngIf="wedstrijd.aanwezigen.length > 0"
+            [spelers]="wedstrijd.aanwezigen"
+            [coaches]="wedstrijd.coaches"
+            title="Aanwezigen"
+            class="alert-success"
+          ></teamportal-spelers-lijst>
+
+          <teamportal-spelers-lijst
+            *ngIf="wedstrijd.onbekend.length > 0"
+            [spelers]="wedstrijd.onbekend"
+            title="Onbekend"
+            class="alert-warning"
+          ></teamportal-spelers-lijst>
+
+          <teamportal-spelers-lijst
+            *ngIf="wedstrijd.afwezigen.length > 0"
+            [spelers]="wedstrijd.afwezigen"
+            title="Afwezigen"
+            class="alert-danger"
+          ></teamportal-spelers-lijst>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="3" style="padding: 0px;">
+        <teamportal-inval-teams
+          (addAanwezigheid)="UpdateAanwezigheid(wedstrijd.id, $event, 'Ja')"
+          [teams]="wedstrijd.invalTeams"
+        ></teamportal-inval-teams>
+      </td>
+    </tr>
+    <tr class="gray-background">
+      <td class="no-border"></td>
+    </tr>
+  </tbody>
+</table>
+<div class="alert alert-danger" role="alert" *ngIf="errorMessage">
+  {{ errorMessage }}
+</div>
+<teamportal-spinner *ngIf="loading"></teamportal-spinner>
