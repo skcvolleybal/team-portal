@@ -11,41 +11,12 @@ export class WedstrijdOverzichtComponent implements OnInit {
   wedstrijden: any[];
   loading: boolean;
   errorMessage: string;
+  user: any;
 
   constructor(
     private aanwezigheidService: AanwezigheidService,
     private requestService: RequestService
   ) {}
-
-  UpdateAanwezigheid(matchId, speler, aanwezigheid) {
-    this.aanwezigheidService.UpdateAanwezigheid(
-      matchId,
-      speler.id,
-      aanwezigheid
-    );
-
-    this.wedstrijden.forEach(wedstrijd => {
-      if (wedstrijd.id === matchId) {
-        wedstrijd.aanwezigen = wedstrijd.aanwezigen.filter(
-          aanwezige => aanwezige.id !== speler.id
-        );
-        if (aanwezigheid === 'Ja') {
-          const newSpeler = {
-            id: speler.id,
-            naam: speler.naam,
-            isInvaller: true
-          };
-          wedstrijd.aanwezigen.push(newSpeler);
-        }
-
-        wedstrijd.aanwezigen = wedstrijd.aanwezigen.sort((speler1, speler2) =>
-          speler1.naam > speler2.naam ? 1 : -1
-        );
-
-        return;
-      }
-    });
-  }
 
   ngOnInit() {
     this.loading = true;
@@ -61,5 +32,56 @@ export class WedstrijdOverzichtComponent implements OnInit {
         }
       }
     );
+
+    this.requestService.GetCurrentUser().subscribe(data => {
+      this.user = data;
+    });
+  }
+
+  UpdateAanwezigheid(matchId: number, aanwezigheid: string, speler: any) {
+    this.aanwezigheidService.UpdateAanwezigheid(
+      matchId,
+      aanwezigheid,
+      speler.id
+    );
+
+    this.wedstrijden.forEach(wedstrijd => {
+      if (wedstrijd.id === matchId) {
+        wedstrijd.afwezigen = wedstrijd.afwezigen.filter(
+          afwezige => afwezige.id !== speler.id
+        );
+        wedstrijd.aanwezigen = wedstrijd.aanwezigen.filter(
+          aanwezige => aanwezige.id !== speler.id
+        );
+        wedstrijd.onbekend = wedstrijd.onbekend.filter(
+          onbekende => onbekende.id !== speler.id
+        );
+        const newSpeler = {
+          id: speler.id,
+          naam: speler.naam,
+          isInvaller: speler.id !== this.user.id
+        };
+
+        const SortTeam = (speler1, speler2) =>
+          speler1.naam > speler2.naam ? 1 : -1;
+
+        switch (aanwezigheid) {
+          case 'Ja':
+            wedstrijd.aanwezigen.push(newSpeler);
+            wedstrijd.aanwezigen.sort(SortTeam);
+            break;
+          case 'Nee':
+            wedstrijd.afwezigen.push(newSpeler);
+            wedstrijd.afwezigen.sort(SortTeam);
+            break;
+          case 'Onbekend':
+            wedstrijd.onbekend.push(newSpeler);
+            wedstrijd.onbekend.sort(SortTeam);
+            break;
+        }
+
+        return;
+      }
+    });
   }
 }

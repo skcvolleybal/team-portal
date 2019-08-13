@@ -17,17 +17,17 @@ class GenerateTeamoverzichten implements IInteractor
         $teams = GetAllSkcTeams();
         $result = [];
         foreach ($teams as $team) {
-            $ranking = $this->nevoboGateway->GetStandForPoule($team["poule"]);
-            $uitslagen = $this->nevoboGateway->GetUitslagenForTeam($team["naam"]);
-            $programma = $this->nevoboGateway->GetProgrammaForTeam($team["naam"]);
+            $ranking = $this->nevoboGateway->GetStandForPoule($team->poule);
+            $uitslagen = $this->nevoboGateway->GetUitslagenForTeam($team->naam);
+            $programma = $this->nevoboGateway->GetProgrammaForTeam($team->naam);
 
             $result[] = (object) [
                 "naam" => $team->naam,
-                "poule" => $team["poule"],
+                "poule" => $team->poule,
                 "trainer" => $this->joomlaGateway->GetTrainers($team->naam),
-                "trainingstijden" => $team["trainingstijden"],
+                "trainingstijden" => $team->trainingstijden,
                 "coaches" => $this->joomlaGateway->GetCoaches($team->naam),
-                "facebook" => $team["facebook"] ?? null,
+                "facebook" => $team->facebook ?? null,
                 "stand" => $ranking,
                 "uitslagen" => array_slice($uitslagen, 0, 3),
                 "programma" => array_slice($programma, 0, 3),

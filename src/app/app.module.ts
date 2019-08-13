@@ -3,7 +3,6 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
 import { StoreModule } from '@ngrx/store';
-import { AanwezigheidModule } from './aanwezigheid/aanwezigheid.module';
 import { AppComponent } from './app.component';
 import { BarcoModule } from './barco/barco.module';
 import { BeschikbaarheidModule } from './beschikbaarheid/beschikbaarheid.module';
@@ -37,7 +36,6 @@ import { WedstrijdOverzichtModule } from './wedstrijd-overzicht/wedstrijd-overzi
     BrowserModule,
     MijnOverzichtModule,
     WedstrijdOverzichtModule,
-    AanwezigheidModule,
     BarcoModule,
     BeschikbaarheidModule,
     CoreModule,

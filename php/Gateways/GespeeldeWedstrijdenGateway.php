@@ -23,8 +23,8 @@ class GespeeldeWedstrijdenGateway
             new Param(':id', $wedstrijd->id, PDO::PARAM_STR),
             new Param(':team1', $wedstrijd->team1, PDO::PARAM_STR),
             new Param(':team2', $wedstrijd->team2, PDO::PARAM_STR),
-            new Param(':setsTeam1', $wedstrijd['setsTeam1'], PDO::PARAM_INT),
-            new Param(':setsTeam2', $wedstrijd['setsTeam2'], PDO::PARAM_INT),
+            new Param(':setsTeam1', $wedstrijd->setsTeam1, PDO::PARAM_INT),
+            new Param(':setsTeam2', $wedstrijd->setsTeam2, PDO::PARAM_INT),
         ];
         $this->database->Execute($query, $params);
     }

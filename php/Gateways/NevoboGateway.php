@@ -130,26 +130,27 @@ class NevoboGateway
 
     public function GetLowestTeamOf($gender)
     {
-        if ($gender == 'heren' || $gender == 'dames') {
-            $currentTeamExists = $this->DoesTeamExist($this->verenigingscode, $gender, 10);
-            if ($currentTeamExists) {
-                for ($i = 11; $i < 50; $i++) {
-                    $currentTeamExists = $this->DoesTeamExist($this->verenigingscode, $gender, $i);
-                    if (!$currentTeamExists) {
-                        return $i - 1;
-                    }
+        $gender = strtolower($gender);
+        if ($gender != 'heren' && $gender != 'dames') {
+            throw new InvalidArgumentException('Input mag alleen \'Heren\' of \'Dames\' zijn');
+        }
+
+        $currentTeamExists = $this->DoesTeamExist($this->verenigingscode, $gender, 10);
+        if ($currentTeamExists) {
+            for ($i = 11; $i < 50; $i++) {
+                $currentTeamExists = $this->DoesTeamExist($this->verenigingscode, $gender, $i);
+                if (!$currentTeamExists) {
+                    return $i - 1;
                 }
-            } else {
-                for ($i = 9; $i >= 1; $i--) {
-                    $currentTeamExists = $this->DoesTeamExist($this->verenigingscode, $gender, $i);
-                    if ($currentTeamExists) {
-                        return $i;
-                    }
+            }
+        } else {
+            for ($i = 9; $i >= 1; $i--) {
+                $currentTeamExists = $this->DoesTeamExist($this->verenigingscode, $gender, $i);
+                if ($currentTeamExists) {
+                    return $i;
                 }
             }
         }
-
-        return -1;
     }
 
     private function GetGender($team)
@@ -162,14 +163,14 @@ class NevoboGateway
             return 'dames';
         }
 
-        throw new Exception("Onbekend geslacht in team '$team'");
+        throw new InvalidArgumentException("Onbekend geslacht in team '$team'");
     }
 
     private function GetSequence($team)
     {
         $sequence = substr($team, 7);
         if (empty($sequence)) {
-            throw new Exception("Unknown sequence for team '$team'");
+            throw new InvalidArgumentException("Unknown sequence for team '$team'");
         }
 
         return $sequence;
@@ -232,8 +233,8 @@ class NevoboGateway
         $matches = $this->ParseFeed($url);
         $uitslagen = [];
         foreach ($matches as $match) {
-            $title = addslashes($match['title']);
-            $description = addslashes($match['description']);
+            $title = addslashes($match->title);
+            $description = addslashes($match->description);
 
             preg_match('/(.*) - (.*), Uitslag: (.*)/', $title, $titleMatches);
             $team1 = stripslashes($titleMatches[1]);
@@ -257,7 +258,6 @@ class NevoboGateway
     private function ConvertNevoboDate($date)
     {
         /* Voorbeeld: donderdag 20 september, 21:00 */
-
         if (empty($date)) {
             return null;
         }

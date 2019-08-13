@@ -38,13 +38,13 @@ class UpdateScheidsrechter implements IInteractorWithData
             }
         } else {
             if ($scheidsrechter == null) {
-                if ($wedstrijd['telteamId'] == null) {
+                if ($wedstrijd->telteamId == null) {
                     $this->telFluitGateway->Delete($matchId);
                 } else {
-                    $this->telFluitGateway->Update($matchId, null, $wedstrijd['telteamId']);
+                    $this->telFluitGateway->Update($matchId, null, $wedstrijd->telteamId);
                 }
             } else {
-                $this->telFluitGateway->Update($matchId, $scheidsrechter->id, $wedstrijd['telteamId']);
+                $this->telFluitGateway->Update($matchId, $scheidsrechter->id, $wedstrijd->telteamId);
             }
         }
 

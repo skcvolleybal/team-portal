@@ -47,7 +47,7 @@ class BarcieGateway
 
     public function GetBeschikbaarheden($userId)
     {
-        $query = 'SELECT D.date, A.beschikbaarheid
+        $query = 'SELECT D.date, A.is_beschikbaar
                   FROM barcie_availability A
                   INNER JOIN barcie_days D on A.day_id = D.id
                   WHERE A.user_id = :userId and D.date >= CURRENT_DATE()';
@@ -62,7 +62,7 @@ class BarcieGateway
     {
         $query = 'SELECT
                     A.user_id as userId,
-                    A.beschikbaarheid
+                    A.is_beschikbaar
                   FROM barcie_availability A
                   INNER JOIN barcie_days D on A.day_id = D.id
                   WHERE D.date = :date';
@@ -104,15 +104,15 @@ class BarcieGateway
         return $this->database->Execute($query, $params);
     }
 
-    public function InsertBeschikbaarheid($userId, $dayId, $beschikbaarheid)
+    public function InsertBeschikbaarheid($userId, $dayId, $isBeschikbaar)
     {
-        $this->CheckBeschikbaarheid($beschikbaarheid);
-        $query = 'INSERT INTO barcie_availability (day_id, user_id, beschikbaarheid)
-                  VALUES (:dayId, :userId, :beschikbaarheid)';
+        $this->CheckBeschikbaarheid($isBeschikbaar);
+        $query = 'INSERT INTO barcie_availability (day_id, user_id, is_beschikbaar)
+                  VALUES (:dayId, :userId, :isBeschikbaar)';
         $params = [
             new Param(Column::UserId, $userId, PDO::PARAM_INT),
-            new Param(Column::dayId, $dayId, PDO::PARAM_INT),
-            new Param(Column::IsBeschikbaar, $beschikbaarheid, PDO::PARAM_STR),
+            new Param(Column::DayId, $dayId, PDO::PARAM_INT),
+            new Param(Column::IsBeschikbaar, $isBeschikbaar, PDO::PARAM_STR),
         ];
 
         return $this->database->Execute($query, $params);

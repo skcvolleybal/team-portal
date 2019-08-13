@@ -25,7 +25,7 @@ class GetUsers implements IInteractorWithData
             $users = $this->joomlaGateway->GetUsersWithName($name);
             foreach ($users as $user) {
                 $result[] = (object) [
-                    "naam" => $user['name'],
+                    "naam" => $user->name,
                     "id" => $user->id,
                 ];
             }

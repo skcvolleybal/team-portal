@@ -109,6 +109,17 @@ function RemoveMatchesWithoutData($array)
     });
 }
 
+function WedstrijdenSortFunction($w1, $w2)
+{
+    if (!$w1->timestamp) {
+        return -1;
+    }
+    if (!$w2->timestamp) {
+        return 1;
+    }
+    return $w1->timestamp > $w2->timestamp;
+}
+
 function GetShortLocatie($locatie)
 {
     $firstPart = substr($locatie, 0, strpos($locatie, ','));

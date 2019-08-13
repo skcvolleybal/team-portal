@@ -1,0 +1,14 @@
+{
+    "sqltools.connections": [
+        {
+            "connectionTimeout": 30,
+            "database": "deb105013n2_skc",
+            "dialect": "MySQL",
+            "name": "localhost",
+            "password": "Jelmer1987",
+            "port": 3306,
+            "server": "127.0.0.1",
+            "username": "root"
+        }
+    ]
+}

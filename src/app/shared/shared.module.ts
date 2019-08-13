@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { AanwezigheidComponent } from './aanwezigheid/aanwezigheid.component';
+import { KeuzeComponent } from './keuze/keuze.component';
 import { ScheidsrechterComponent } from './scheidsrechter/scheidsrechter.component';
 import { SpinnerComponent } from './spinner/spinner.component';
 import { TellersComponent } from './tellers/tellers.component';
@@ -18,7 +18,7 @@ import { WedstrijdenCardComponent } from './wedstrijden-card/wedstrijden-card.co
     TellersComponent,
     SpinnerComponent,
     WedstrijdenCardComponent,
-    AanwezigheidComponent
+    KeuzeComponent
   ],
   exports: [
     FontAwesomeModule,
@@ -27,7 +27,7 @@ import { WedstrijdenCardComponent } from './wedstrijden-card/wedstrijden-card.co
     NgbModule,
     WedstrijdComponent,
     ScheidsrechterComponent,
-    AanwezigheidComponent,
+    KeuzeComponent,
     TellersComponent,
     SpinnerComponent,
     WedstrijdenCardComponent

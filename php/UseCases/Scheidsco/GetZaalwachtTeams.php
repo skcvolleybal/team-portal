@@ -36,9 +36,9 @@ class GetZaalwachtTeams implements IInteractorWithData
         $result = ["spelendeTeams" => [], "overigeTeams" => []];
         foreach ($zaalwachtTeams as $team) {
             if (in_array($team->naam, $spelendeTeams)) {
-                $result["spelendeTeams"][] = $this->MapToUsecaseModel($team);
+                $result->spelendeTeams[] = $this->MapToUsecaseModel($team);
             } else {
-                $result["overigeTeams"][] = $this->MapToUsecaseModel($team);
+                $result->overigeTeams[] = $this->MapToUsecaseModel($team);
             }
         }
         exit(json_encode($result));
@@ -60,7 +60,7 @@ class GetZaalwachtTeams implements IInteractorWithData
     {
         return (object) [
             "naam" => $team->naam,
-            "zaalwacht" => $team['zaalwacht'],
+            "zaalwacht" => $team->zaalwacht,
         ];
     }
 }

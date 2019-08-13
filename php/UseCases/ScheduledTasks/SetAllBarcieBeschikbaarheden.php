@@ -3,6 +3,7 @@ include_once 'IInteractor.php';
 include_once 'BarcieGateway.php';
 include_once 'NevoboGateway.php';
 include_once 'JoomlaGateway.php';
+include_once 'shared' . DIRECTORY_SEPARATOR . 'BarcieBeschikbaarheidHelper.php';
 
 class SetAllBarcieBeschikbaarheden implements IInteractor
 {
@@ -12,6 +13,7 @@ class SetAllBarcieBeschikbaarheden implements IInteractor
         $this->joomlaGateway = new JoomlaGateway($database);
         $this->nevoboGateway = new NevoboGateway();
         $this->barcieGateway = new BarcieGateway($database);
+        $this->barcieBeschikbaarheidHelper = new BarcieBeschikbaarheidHelper();
     }
 
     public function Execute()
@@ -38,9 +40,9 @@ class SetAllBarcieBeschikbaarheden implements IInteractor
                         return $value !== null;
                     });
 
-                    $beschikbaarheid = $this->isMogelijk($wedstrijden);
+                    $beschikbaarheid = $this->barcieBeschikbaarheidHelper->isMogelijk($wedstrijden);
                     $dayId = $this->barcieGateway->GetDateId($date);
-                    if ($dayId !== null) {
+                    if ($dayId !== null && $beschikbaarheid != "Onbekend") {
                         $this->barcieGateway->InsertBeschikbaarheid($barcielidId, $dayId, $beschikbaarheid);
                         $numberOfAddedBeschikbaarheden++;
                     }
@@ -67,33 +69,9 @@ class SetAllBarcieBeschikbaarheden implements IInteractor
     {
         foreach ($beschikbaarheden as $beschikbaarheid) {
             if ($beschikbaarheid->date == $date) {
-                return $beschikbaarheid->beschikbaarheid;
+                return $beschikbaarheid->is_beschikbaar;
             }
         }
         return null;
-    }
-
-    private function IsMogelijk($wedstrijden)
-    {
-        if (count($wedstrijden) == 0) {
-            return "Onbekend";
-        }
-
-        $bestResult = "Ja";
-        foreach ($wedstrijden as $wedstrijd) {
-            if (!IsThuis($wedstrijd->locatie)) {
-                return "Nee";
-            }
-            if ($wedstrijd->timestamp) {
-                $time = $wedstrijd->timestamp->format('H:i');
-                if ($time == "19:30" || $time == "16:00") {
-                    $bestResult = $bestResult == "Ja" ? "Ja" : "Onbekend";
-                } else {
-                    $bestResult = "Onbekend";
-                }
-            }
-        }
-
-        return $bestResult;
     }
 }

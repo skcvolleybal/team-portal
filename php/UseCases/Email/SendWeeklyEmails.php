@@ -25,7 +25,7 @@ class SendWeeklyEmails implements IInteractor
     public function Execute()
     {
         $isServerRequest = $_SERVER['SERVER_ADDR'] === $_SERVER['REMOTE_ADDR'];
-        if ($isServerRequest == false) {
+        if (!$isServerRequest) {
             throw new UnexpectedValueException("Dit is niet een publieke api...");
         }
 
@@ -180,8 +180,8 @@ class SendWeeklyEmails implements IInteractor
         $email = $barcieLid->email;
         $naam = $barcieLid->naam;
         $datum = GetDutchDateLong(new DateTime($barcieLid->date));
-        $shift = $barcieLid['shift'];
-        $bhv = $barcieLid['isBhv'] == 1 ? "<br>Je bent BHV'er." : "";
+        $shift = $barcieLid->shift;
+        $bhv = $barcieLid->isBhv == 1 ? "<br>Je bent BHV'er." : "";
         $title = "Barciedienst " . $datum;
 
         $body = str_replace("{{email}}", $email, $body);
@@ -218,7 +218,7 @@ class SendWeeklyEmails implements IInteractor
         }
 
         if (count($zaalwachters) > 0) {
-            $zaalwachtersContent .= "<b>" . $zaalwachters[0]['zaalwacht'] . "</b><br>";
+            $zaalwachtersContent .= "<b>" . $zaalwachters[0]->zaalwacht . "</b><br>";
         }
         foreach ($zaalwachters as $zaalwachter) {
             $zaalwachtersContent .= $zaalwachter->naam . " (" . $zaalwachter->email . ")<br>";

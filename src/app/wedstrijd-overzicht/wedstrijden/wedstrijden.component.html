@@ -12,10 +12,10 @@
         <teamportal-wedstrijd [wedstrijd]="wedstrijd"></teamportal-wedstrijd>
       </td>
       <td style="text-align:right" class="align-middle">
-        <teamportal-aanwezigheid
-          [aanwezigheid]="wedstrijd.aanwezigheid"
-          (updateAanwezigheid)="updateAanwezigheid($event, wedstrijd)"
-        ></teamportal-aanwezigheid>
+        <teamportal-keuze
+          [keuze]="wedstrijd.aanwezigheid"
+          (updateKeuze)="UpdateAanwezigheid(wedstrijd, $event)"
+        ></teamportal-keuze>
       </td>
     </tr>
     <tr class="gray-background">

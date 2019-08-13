@@ -1,7 +1,5 @@
 <?php
 
-use PHPMailer\PHPMailer\Exception;
-
 include_once 'IInteractor.php';
 include_once 'JoomlaGateway.php';
 include_once 'NevoboGateway.php';
@@ -33,18 +31,26 @@ class GetWedstrijdOverzicht implements IInteractor
             $this->nevoboGateway->GetProgrammaForTeam($team),
             $this->nevoboGateway->GetProgrammaForTeam($coachteam)
         );
-        usort($wedstrijden, function ($w1, $w2) {
-            return $w1->timestamp < $w2->timestamp;
-        });
+        usort($wedstrijden, "WedstrijdenSortFunction");
 
-        $aanwezigheden = $this->aanwezigheidGateway->GetAanwezighedenForTeam($team);
+        $aanwezigheden = $this->aanwezigheidGateway->GetAanwezighedenForTeams($team);
 
         $this->GetAllInvalTeamsForTeam($team);
         foreach ($wedstrijden as $wedstrijd) {
-            $invalTeamInfo = $this->GetInvalTeamInfo($wedstrijd);
             $matchId = $wedstrijd->id;
-            $aanwezighedenForMatch = $this->GetAanwezighedenForWedstrijd($matchId, $aanwezigheden);
-            $afwezigenForMatch = $this->GetAfwezigen($aanwezighedenForMatch, $spelers);
+            $isAanwezig = $this->IsAfwezigheid($aanwezigheden, $matchId, $userId);
+
+            $aanwezighedenForMatch = [];
+            $invalTeamInfo = null;
+            $onbekendForMatch = [];
+
+            $isEigenWedstrijd = $this->isEigenWedstrijd($wedstrijd, $team);
+            if ($isEigenWedstrijd) {
+                $aanwezighedenForMatch = $this->GetAanwezighedenForWedstrijd($matchId, $aanwezigheden);
+                $invalTeamInfo = $this->GetInvalTeamInfo($wedstrijd);
+                $onbekendForMatch = $this->GetOnbekenden($aanwezighedenForMatch, $spelers);
+            }
+
             if ($wedstrijd->timestamp) {
                 $overzicht[] = (object) [
                     'id' => $wedstrijd->id,
@@ -52,18 +58,27 @@ class GetWedstrijdOverzicht implements IInteractor
                     'tijd' => $wedstrijd->timestamp->format('G:i'),
                     'team1' => $wedstrijd->team1,
                     'isTeam1' => $wedstrijd->team1 == $team,
+                    'isCoachTeam1' => $wedstrijd->team1 == $coachteam,
                     'team2' => $wedstrijd->team2,
                     'isTeam2' => $wedstrijd->team2 == $team,
-                    'aanwezigen' => $aanwezighedenForMatch->aanwezigen,
-                    'afwezigen' => $aanwezighedenForMatch->afwezigen,
-                    'onbekend' => $aanwezighedenForMatch->onbekend,
-                    'coaches' => $aanwezighedenForMatch->coaches,
+                    'isCoachTeam2' => $wedstrijd->team2 == $coachteam,
+                    'aanwezigen' => $aanwezighedenForMatch != null ? $aanwezighedenForMatch->aanwezigen : [],
+                    'afwezigen' => $aanwezighedenForMatch != null ? $aanwezighedenForMatch->afwezigen : [],
+                    'onbekend' => $onbekendForMatch,
+                    'coaches' => $aanwezighedenForMatch != null ? $aanwezighedenForMatch->coaches : [],
                     'invalTeams' => $invalTeamInfo,
+                    'isEigenWedstrijd' => $isEigenWedstrijd,
+                    'isAanwezig' => $isAanwezig
                 ];
             }
         }
 
         exit(json_encode($overzicht));
+    }
+
+    private function isEigenWedstrijd($wedstrijd, $team)
+    {
+        return $wedstrijd->team1 == $team || $wedstrijd->team2 == $team;
     }
 
     private function GetInvalTeamInfo($wedstrijd)
@@ -108,41 +123,12 @@ class GetWedstrijdOverzicht implements IInteractor
     private function GetAllInvalTeamsForTeam($teamnaam)
     {
         $this->invalTeams = [];
-        $allTeams = (object) [
-            "dames" => [
-                ["naam" => "SKC DS 1", "klasse" => 0],
-                ["naam" => "SKC DS 2", "klasse" => 1],
-                ["naam" => "SKC DS 3", "klasse" => 2],
-                ["naam" => "SKC DS 4", "klasse" => 2],
-                ["naam" => "SKC DS 5", "klasse" => 3],
-                ["naam" => "SKC DS 6", "klasse" => 3],
-                ["naam" => "SKC DS 7", "klasse" => 3],
-                ["naam" => "SKC DS 8", "klasse" => 3],
-                ["naam" => "SKC DS 9", "klasse" => 3],
-                ["naam" => "SKC DS 10", "klasse" => 4],
-                ["naam" => "SKC DS 11", "klasse" => 4],
-                ["naam" => "SKC DS 12", "klasse" => 4],
-                ["naam" => "SKC DS 13", "klasse" => 4],
-                ["naam" => "SKC DS 14", "klasse" => 4],
-                ["naam" => "SKC DS 15", "klasse" => 4],
-            ],
-            "heren" => [
-                ["naam" => "SKC HS 1", "klasse" => 1],
-                ["naam" => "SKC HS 2", "klasse" => 1],
-                ["naam" => "SKC HS 3", "klasse" => 2],
-                ["naam" => "SKC HS 4", "klasse" => 3],
-                ["naam" => "SKC HS 5", "klasse" => 3],
-                ["naam" => "SKC HS 6", "klasse" => 4],
-                ["naam" => "SKC HS 7", "klasse" => 4],
-                ["naam" => "SKC HS 8", "klasse" => 4],
-                ["naam" => "SKC HS 9", "klasse" => 4]
-            ]
-        ];
+        $allTeams = include('AllTeams.php');
 
         $eigenTeam = null;
         $teams = substr($teamnaam, 4, 1) == "D" ? $allTeams->dames : $allTeams->heren;
         foreach ($teams as $team) {
-            if ($team["naam"] == $teamnaam) {
+            if ($team->naam == $teamnaam) {
                 $eigenTeam = $team;
                 break;
             }
@@ -153,12 +139,15 @@ class GetWedstrijdOverzicht implements IInteractor
 
         for ($i = 0; $i < count($teams); $i++) {
             $team = $teams[$i];
-            if ($team["naam"] != $eigenTeam["naam"] && $team["klasse"] >= $eigenTeam["klasse"]) {
+            if (
+                $team->naam != $eigenTeam->naam &&
+                $team->klasse >= $eigenTeam->klasse
+            ) {
                 $this->invalTeams[] = (object) [
-                    "nevobonaam" => $team["naam"],
-                    "naam" => ToSkcName($team["naam"]),
-                    "spelers" => $this->joomlaGateway->GetSpelers($team["naam"]),
-                    "programma" => $this->nevoboGateway->GetProgrammaForTeam($team["naam"])
+                    "nevobonaam" => $team->naam,
+                    "naam" => ToSkcName($team->naam),
+                    "spelers" => $this->joomlaGateway->GetSpelers($team->naam),
+                    "programma" => $this->nevoboGateway->GetProgrammaForTeam($team->naam)
                 ];
             }
 
@@ -178,39 +167,53 @@ class GetWedstrijdOverzicht implements IInteractor
         ];
         foreach ($aanwezigheden as $aanwezigheid) {
             if ($aanwezigheid->match_id == $matchId) {
-                $isCoach = $aanwezigheid->is_coach === "Y";
-                if ($isCoach) {
-                    $result->coaches[] = $aanwezigheid;
-                }
-
                 $isAanwezig = $aanwezigheid->is_aanwezig === "Y";
-                if ($isAanwezig) {
-                    $result->aanwezigen[] = $aanwezigheid;
+                if (substr($aanwezigheid->rol, 0, 5) === 'Coach') {
+                    $result->coaches[] = $aanwezigheid;
                 } else {
-                    $result->afwezigen[] = $aanwezigheid;
+                    $newAanwezigheid = (object) [
+                        "id" => $aanwezigheid->user_id,
+                        "naam" => $aanwezigheid->naam
+                    ];
+                    if ($isAanwezig) {
+                        $result->aanwezigen[] = $newAanwezigheid;
+                    } else {
+                        $result->afwezigen[] = $newAanwezigheid;
+                    }
                 }
             }
         }
         return $result;
     }
 
-    private function GetAfwezigen($aanwezigheden, $spelers)
+    private function GetOnbekenden($aanwezigheden, $spelers)
     {
-        $result = [];
         $bekendeAanwezigheden = array_merge($aanwezigheden->aanwezigen, $aanwezigheden->afwezigen);
         if (count($bekendeAanwezigheden) == 0 || $spelers == null || count($spelers) == 0) {
-            return $result;
+            return $spelers;
         }
 
-        $spelersIndex = 0;
         foreach ($bekendeAanwezigheden as $aanwezigheid) {
-            foreach ($spelers as $speler) {
-                if ($aanwezigheid->user_id === $speler->id) {
-                    $result[] = $speler;
+            for ($i = 0; $i < count($spelers); $i++) {
+                if ($aanwezigheid->id === $spelers[$i]->id) {
+                    array_splice($spelers, $i, 1);
                     break;
                 }
             }
         }
-        return $result;
+        return $spelers;
+    }
+
+    private function IsAfwezigheid($aanwezigheden, $matchId, $userId)
+    {
+        foreach ($aanwezigheden as $aanwezigheid) {
+            if (
+                $aanwezigheid->user_id === $userId &&
+                $aanwezigheid->match_id === $matchId
+            ) {
+                return $aanwezigheid->is_aanwezig === 'Y' ? "Ja" : "Nee";
+            }
+        }
+        return 'Onbekend';
     }
 }

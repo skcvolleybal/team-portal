@@ -2,14 +2,13 @@
 
 include_once 'Database.php';
 include_once 'Utilities.php';
-include_once 'configuration.php';
 
 class TeamPortal
 {
     public function __construct()
     {
         $configs = include('configuration.php');
-        $config = $configs['database'];
+        $config = $configs->database;
 
         $this->database = new Database(
             $config->host,
@@ -45,6 +44,14 @@ class TeamPortal
         $interactor->Execute($postData);
     }
 
+    public function GetCurrentUser()
+    {
+        include_once 'UseCases' . DIRECTORY_SEPARATOR . 'Inloggen' . DIRECTORY_SEPARATOR . 'GetCurrentUser.php';
+        $interactor = new GetCurrentUser($this->database);
+        $postData = GetPostValues();
+        $interactor->Execute($postData);
+    }
+
     public function GetMijnOverzicht()
     {
         include_once 'UseCases' . DIRECTORY_SEPARATOR . 'MijnOverzicht' . DIRECTORY_SEPARATOR . 'GetMijnOverzicht.php';
@@ -61,7 +68,7 @@ class TeamPortal
 
     public function GetWedstrijdOverzicht()
     {
-        include_once 'UseCases' . DIRECTORY_SEPARATOR . 'WedstrijdOverzicht' . DIRECTORY_SEPARATOR . 'GetWedstrijdOverzicht.php';
+        include_once 'UseCases' . DIRECTORY_SEPARATOR . 'Aanwezigheid' . DIRECTORY_SEPARATOR . 'GetWedstrijdOverzicht.php';
         $interactor = new GetWedstrijdOverzicht($this->database);
         $interactor->Execute();
     }

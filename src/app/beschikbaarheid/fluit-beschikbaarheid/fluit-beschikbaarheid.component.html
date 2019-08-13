@@ -1,31 +1,44 @@
 <table class="table table-sm" *ngFor="let speeldag of speeldagen">
   <thead>
     <tr>
-      <th scope="col" colspan="3">{{speeldag.datum}}</th>
+      <th scope="col" colspan="3">{{ speeldag.datum }}</th>
     </tr>
   </thead>
   <tbody>
     <tr class="gray-background">
       <td colspan="3">
-        <teamportal-wedstrijden-card [wedstrijden]="speeldag.eigenWedstrijden"></teamportal-wedstrijden-card>
+        <teamportal-wedstrijden-card
+          [wedstrijden]="speeldag.eigenWedstrijden"
+        ></teamportal-wedstrijden-card>
       </td>
     </tr>
     <tr>
       <ul class="list-group">
-        <li class="list-group-item" [ngClass]="{
-          'list-group-item-warning': speeltijd.isMogelijk == 'Onbekend', 
-          'list-group-item-danger': speeltijd.isMogelijk == 'Nee', 
-          'list-group-item-success': speeltijd.isMogelijk == 'Ja'
-        }"
-          *ngFor="let speeltijd of speeldag.speeltijden">
+        <li
+          class="list-group-item"
+          [ngClass]="{
+            'list-group-item-warning': speeltijd.isMogelijk == 'Onbekend',
+            'list-group-item-danger': speeltijd.isMogelijk == 'Nee',
+            'list-group-item-success': speeltijd.isMogelijk == 'Ja'
+          }"
+          *ngFor="let speeltijd of speeldag.speeltijden"
+        >
           <form>
             <div class="form-row">
               <div class="col" style="line-height: 38px;">
-                {{speeltijd.tijd}}
+                {{ speeltijd.tijd }}
               </div>
               <div class="col" style="max-width:115px;">
-                <teamportal-aanwezigheid (updateAanwezigheid)="UpdateFluitBeschikbaarheid($event, speeldag.date, speeltijd.time)"
-                  [aanwezigheid]="speeltijd.beschikbaarheid"></teamportal-aanwezigheid>
+                <teamportal-keuze
+                  (updateKeuze)="
+                    UpdateFluitBeschikbaarheid(
+                      $event,
+                      speeldag.date,
+                      speeltijd.time
+                    )
+                  "
+                  [keuze]="speeltijd.beschikbaarheid"
+                ></teamportal-keuze>
               </div>
             </div>
             <div>
@@ -33,7 +46,9 @@
                 <tbody>
                   <tr *ngFor="let wedstrijd of speeltijd.wedstrijden">
                     <td class="bg-light d-inline-flex text-dark rounded m-1">
-                      <teamportal-wedstrijd [wedstrijd]="wedstrijd"></teamportal-wedstrijd>
+                      <teamportal-wedstrijd
+                        [wedstrijd]="wedstrijd"
+                      ></teamportal-wedstrijd>
                     </td>
                   </tr>
                 </tbody>
@@ -49,6 +64,6 @@
   </tbody>
 </table>
 <div class="alert alert-danger" role="alert" *ngIf="errorMessage">
-  {{errorMessage}}
+  {{ errorMessage }}
 </div>
 <teamportal-spinner *ngIf="loading"></teamportal-spinner>

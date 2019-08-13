@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class RequestService {
   constructor(private httpClient: HttpClient) {}
@@ -56,6 +56,14 @@ export class RequestService {
     return this.httpClient.get<any[]>(environment.baseUrl, {
       params: {
         action: 'GetWedstrijdOverzicht'
+      }
+    });
+  }
+
+  GetCurrentUser(): Observable<any[]> {
+    return this.httpClient.get<any[]>(environment.baseUrl, {
+      params: {
+        action: 'GetCurrentUser'
       }
     });
   }

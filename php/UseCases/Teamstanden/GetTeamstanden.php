@@ -28,17 +28,17 @@ class GetTeamstanden implements IInteractor
         $rankingInLength = array();
         $maxNumberOfTeams = 0;
         foreach ($teams as $team) {
-            $numberOfTeams[] = $team["numberOfTeams"];
-            $rankings[] = $team["numberOfTeams"] - $team["stand"] + 1;
-            $actualRanks[] = $team["stand"];
-            if ($maxNumberOfTeams < $team["numberOfTeams"]) {
-                $maxNumberOfTeams = $team["numberOfTeams"];
+            $numberOfTeams[] = $team->numberOfTeams;
+            $rankings[] = $team->numberOfTeams - $team->stand + 1;
+            $actualRanks[] = $team->stand;
+            if ($maxNumberOfTeams < $team->numberOfTeams) {
+                $maxNumberOfTeams = $team->numberOfTeams;
             }
         }
 
         $blackBars = array();
         foreach ($teams as $team) {
-            $blackBars[] = $maxNumberOfTeams - $team["numberOfTeams"];
+            $blackBars[] = $maxNumberOfTeams - $team->numberOfTeams;
         }
 
         $template = file_get_contents("./UseCases/Teamstanden/templates/teamstanden.html");

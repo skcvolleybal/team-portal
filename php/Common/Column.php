@@ -7,5 +7,7 @@ class Column
     public const IsAanwezig = ':isAanwezig';
     public const Date = ':date';
     public const Time = ':time';
-    public const IsBeschikbaar = ':is_beschikbaar';
+    public const IsBeschikbaar = ':isBeschikbaar';
+    public const Id = ':id';
+    public const DayId = ':dayId';
 }

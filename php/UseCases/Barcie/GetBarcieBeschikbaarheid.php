@@ -5,6 +5,7 @@ include_once 'NevoboGateway.php';
 include_once 'BarcieGateway.php';
 include_once 'JoomlaGateway.php';
 include_once 'GetNevoboMatchByDate.php';
+include_once 'shared' . DIRECTORY_SEPARATOR . 'BarcieBeschikbaarheidHelper.php';
 
 class GetBarcieBeschikbaarheid extends GetNevoboMatchByDate implements IInteractor
 {
@@ -13,6 +14,7 @@ class GetBarcieBeschikbaarheid extends GetNevoboMatchByDate implements IInteract
         $this->nevoboGateway = new NevoboGateway();
         $this->barcieGateway = new BarcieGateway($database);
         $this->joomlaGateway = new JoomlaGateway($database);
+        $this->barcieBeschikbaarheidHelper = new BarcieBeschikbaarheidHelper();
     }
 
     public function Execute()
@@ -52,36 +54,14 @@ class GetBarcieBeschikbaarheid extends GetNevoboMatchByDate implements IInteract
                 "date" => $barcieDag->date,
                 "beschikbaarheid" => $beschikbaarheid,
                 "eigenWedstrijden" => $this->MapToUsecase($wedstrijden, $team, $coachTeam),
-                "isMogelijk" => $this->isMogelijk($wedstrijden),
+                "isMogelijk" => $this->barcieBeschikbaarheidHelper->isMogelijk($wedstrijden),
             ];
         }
 
         exit(json_encode($response));
     }
 
-    private function IsMogelijk($wedstrijden)
-    {
-        if (count($wedstrijden) == 0) {
-            return "Onbekend";
-        }
 
-        $bestResult = "Ja";
-        foreach ($wedstrijden as $wedstrijd) {
-            if (!IsThuis($wedstrijd->locatie)) {
-                return "Nee";
-            }
-            if ($wedstrijd->timestamp) {
-                $time = $wedstrijd->timestamp->format('H:i');
-                if ($time == "19:30" || $time == "16:00") {
-                    $bestResult = $bestResult == "Ja" ? "Ja" : "Onbekend";
-                } else {
-                    $bestResult = "Onbekend";
-                }
-            }
-        }
-
-        return $bestResult;
-    }
 
     private function MapToUsecase($wedstrijden, $team, $coachTeam)
     {

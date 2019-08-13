@@ -30,6 +30,19 @@ class JoomlaGateway
         return $user->id;
     }
 
+    public function GetUser($userId)
+    {
+        $query = 'SELECT * 
+                  FROM J3_users
+                  WHERE id = :id';
+        $params = [new Param(Column::Id, $userId, PDO::PARAM_INT)];
+        $users = $this->database->Execute($query, $params);
+        if (count($users) > 0) {
+            return $users[0];
+        }
+        return null;
+    }
+
     public function GetScheidsrechterByName($scheidsrechter)
     {
         if (empty($scheidsrechter)) {
@@ -226,7 +239,7 @@ class JoomlaGateway
         if ($result) {
             $match = JUserHelper::verifyPassword($credentials->password, $result->password, $result->id);
             if ($match === true) {
-                $joomlaApp->login($credentials);
+                $joomlaApp->login((array) $credentials);
                 return true;
             } else {
                 return false;

@@ -26,31 +26,31 @@ class WedstrijdenImporteren implements IInteractor
             $wedstrijdVerloop = $this->dwfGateway->GetWedstrijdVerloop($wedstrijd->id);
             if ($wedstrijdVerloop != null) {
                 foreach ($wedstrijdVerloop as $setIndex => $set) {
-                    $opstelling = $isThuisWedstrijd ? $set['thuis'] : $set['uit'];
-                    $punten = $wedstrijdVerloop[$setIndex]['punten'];
-                    $thuisServeert = $wedstrijdVerloop[$setIndex]['beginService'] == "thuis";
+                    $opstelling = $isThuisWedstrijd ? $set->thuis : $set->uit;
+                    $punten = $wedstrijdVerloop[$setIndex]->punten;
+                    $thuisServeert = $wedstrijdVerloop[$setIndex]->beginService == "thuis";
                     foreach ($punten as $punt) {
-                        switch ($punt["type"]) {
+                        switch ($punt->type) {
                             case "punt":
                                 $this->gespeeldeWedstrijdenGateway->AddPunt(
                                     $wedstrijd,
                                     $setIndex + 1,
                                     $opstelling,
                                     $thuisServeert == $isThuisWedstrijd,
-                                    $punt['isThuispunt'] == $isThuisWedstrijd,
-                                    $punt['stand']);
-                                if ($punt["isThuispunt"] == $isThuisWedstrijd && $thuisServeert == $isThuisWedstrijd) {
+                                    $punt->isThuispunt == $isThuisWedstrijd,
+                                    $punt->stand);
+                                if ($punt->isThuispunt == $isThuisWedstrijd && $thuisServeert == $isThuisWedstrijd) {
                                     $opstelling = $this->Doordraaien($opstelling);
                                 }
-                                $thuisServeert = $punt["isThuispunt"];
+                                $thuisServeert = $punt->isThuispunt;
                                 break;
                             case "wissel":
-                                if ($punt["isThuisWissel"] == $isThuisWedstrijd) {
+                                if ($punt->isThuisWissel == $isThuisWedstrijd) {
                                     $opstelling = $this->Wisselen($opstelling, $punt);
                                 }
                                 break;
                             default:
-                                echo "onbekend type " . $punt["type"];
+                                echo "onbekend type " . $punt->type;
                                 break;
                         }
                     }
@@ -74,8 +74,8 @@ class WedstrijdenImporteren implements IInteractor
     private function Wisselen($opstelling, $wissel)
     {
         foreach ($opstelling as $i => $positie) {
-            if ($wissel['uit'] == $positie) {
-                $opstelling[$i] = $wissel['in'];
+            if ($wissel->uit == $positie) {
+                $opstelling[$i] = $wissel->in;
                 return $opstelling;
             }
         }

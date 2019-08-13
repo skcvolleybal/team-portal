@@ -8,13 +8,13 @@ import { environment } from '../../../environments/environment';
 export class AanwezigheidService {
   constructor(private httpClient: HttpClient) {}
 
-  UpdateCoachAanwezigheid(matchId: string, aanwezigheid: string) {
+  UpdateCoachAanwezigheid(matchId: number, isAanwezig: string) {
     this.httpClient
       .post(
         environment.baseUrl,
         {
           matchId,
-          aanwezigheid
+          isAanwezig
         },
         {
           params: { action: 'UpdateCoachAanwezigheid' }
@@ -31,14 +31,14 @@ export class AanwezigheidService {
     });
   }
 
-  UpdateAanwezigheid(matchId: string, spelerId: string, aanwezigheid: string) {
+  UpdateAanwezigheid(matchId: number, isAanwezig: string, spelerId: string) {
     this.httpClient
       .post<any>(
         environment.baseUrl,
         {
           matchId,
           spelerId,
-          aanwezigheid
+          isAanwezig
         },
         {
           params: {

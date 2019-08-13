@@ -38,16 +38,16 @@ class GetBarcieRooster implements IInteractor
                 $i = count($rooster) - 1;
             }
             if ($aanwezigheid->userId !== null) {
-                $shift = intval($aanwezigheid['shift']) - 1;
-                for ($j = $shift; count($rooster[$i]['shifts']) <= $shift; $j++) {
-                    $rooster[$i]["shifts"][] = (object) [
+                $shift = intval($aanwezigheid->shift) - 1;
+                for ($j = $shift; count($rooster[$i]->shifts) <= $shift; $j++) {
+                    $rooster[$i]->shifts[] = (object) [
                         "barcieLeden" => [],
                     ];
                 }
-                $rooster[$i]["shifts"][$shift]["barcieLeden"][] = (object) [
+                $rooster[$i]->shifts[$shift]->barcieLeden[] = (object) [
                     "id" => $aanwezigheid->userId,
                     "naam" => $aanwezigheid->naam,
-                    "isBhv" => $aanwezigheid['isBhv'] == "1",
+                    "isBhv" => $aanwezigheid->isBhv == "1",
                 ];
             }
         }

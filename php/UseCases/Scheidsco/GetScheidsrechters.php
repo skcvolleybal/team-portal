@@ -86,8 +86,8 @@ class GetScheidsrechters implements IInteractorWithData
     {
         return (object) [
             "naam" => $scheidsrechter->naam,
-            "niveau" => $scheidsrechter['niveau'],
-            "gefloten" => $scheidsrechter['gefloten'],
+            "niveau" => $scheidsrechter->niveau,
+            "gefloten" => $scheidsrechter->gefloten,
             "team" => GetShortTeam($scheidsrechter->team) ?? "Geen Team",
             "eigenTijd" => $wedstrijd->timestamp ? $wedstrijd->timestamp->format("G:i") : null,
             "isMogelijk" => $fluitBeschikbaarheid,

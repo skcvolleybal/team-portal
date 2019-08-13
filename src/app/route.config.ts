@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { CoachWedstrijdenComponent } from './aanwezigheid/coach-wedstrijden/coach-wedstrijden.component';
 import { BarcieIndelingComponent } from './barco/barcie-indeling/barcie-indeling.component';
 import { BarcieBeschikbaarheidComponent } from './beschikbaarheid/barcie-beschikbaarheid/barcie-beschikbaarheid.component';
 import { FluitBeschikbaarheidComponent } from './beschikbaarheid/fluit-beschikbaarheid/fluit-beschikbaarheid.component';
@@ -7,7 +6,6 @@ import { MijnOverzichtComponent } from './mijn-overzicht/mijn-overzicht/mijn-ove
 import { ScheidscoComponent } from './scheidsco/scheidsco/scheidsco.component';
 import { StatistiekenComponent } from './statistiek/statistieken/statistieken.component';
 import { WedstrijdOverzichtComponent } from './wedstrijd-overzicht/wedstrijd-overzicht/wedstrijd-overzicht.component';
-import { WedstrijdenComponent } from './wedstrijd-overzicht/wedstrijden/wedstrijden.component';
 
 export const appRoutes: Routes = [
   { path: '', redirectTo: 'mijn-overzicht', pathMatch: 'full' },
@@ -17,19 +15,9 @@ export const appRoutes: Routes = [
     data: { title: 'Mijn Overzicht' }
   },
   {
-    path: 'wedstrijd-aanwezigheid',
-    component: WedstrijdenComponent,
-    data: { title: 'Wedstrijd Aanwezigheid' }
-  },
-  {
     path: 'wedstrijd-overzicht',
     component: WedstrijdOverzichtComponent,
     data: { title: 'Wedstrijd Overzicht' }
-  },
-  {
-    path: 'coach-aanwezigheid',
-    component: CoachWedstrijdenComponent,
-    data: { title: 'Coach Aanwezigheid', groups: ['coach'] }
   },
   {
     path: 'fluit-beschikbaarheid',

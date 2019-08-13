@@ -21,10 +21,21 @@ class UpdateAanwezigheid implements IInteractorWithData
             UnauthorizedResult();
         }
 
-        $userIdForMatch = $data->spelerId ?? $userId;
+        $playerId = $data->spelerId ?? $userId;
         $matchId = $data->matchId;
-        $aanwezigheid = $data->aanwezigheid;
+        $isAanwezig = $data->isAanwezig;
 
-        $this->aanwezigheidGateway->UpdateAanwezigheid($userIdForMatch, $matchId, $aanwezigheid);
+        $aanwezigheid = $this->aanwezigheidGateway->GetAanwezigheid($playerId, $matchId);
+        if ($aanwezigheid) {
+            if ($isAanwezig === 'Onbekend') {
+                $this->aanwezigheidGateway->Delete($playerId, $matchId);
+            } else {
+                $this->aanwezigheidGateway->Update($playerId, $matchId, $isAanwezig);
+            }
+        } else {
+            if ($isAanwezig !== 'Onbekend') {
+                $this->aanwezigheidGateway->Insert($playerId, $matchId, $isAanwezig);
+            }
+        }
     }
 }

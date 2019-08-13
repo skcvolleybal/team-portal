@@ -35,7 +35,7 @@ class GetBarcieLeden implements IInteractorWithData
             $beschikbaarheden[$beschikbaarheid][] = (object) [
                 "id" => $barcieLid->id,
                 "naam" => $barcieLid->naam,
-                "aantalDiensten" => $barcieLid['aantalDiensten'],
+                "aantalDiensten" => $barcieLid->aantalDiensten,
             ];
         }
 

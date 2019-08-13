@@ -49,9 +49,9 @@ class GetTelTeams implements IInteractorWithData
         foreach ($telTeams as $team) {
             $wedstrijd = GetWedstrijdOfTeam($wedstrijdenWithSameDate, $team->naam);
             if ($wedstrijd) {
-                $result["spelendeTeams"][] = $this->MapToUsecaseModel($team, $wedstrijd, $telWedstrijd);
+                $result->spelendeTeams[] = $this->MapToUsecaseModel($team, $wedstrijd, $telWedstrijd);
             } else {
-                $result["overigeTeams"][] = $this->MapToUsecaseModel($team);
+                $result->overigeTeams[] = $this->MapToUsecaseModel($team);
             }
         }
         exit(json_encode($result));
@@ -69,7 +69,7 @@ class GetTelTeams implements IInteractorWithData
         }
         return (object) [
             "naam" => $team->naam,
-            "geteld" => $team['geteld'],
+            "geteld" => $team->geteld,
             "eigenTijd" => $eigenTijd,
             "isMogelijk" => $isMogelijk === null ? "Onbekend" : $isMogelijk ? "Ja" : "Nee",
         ];

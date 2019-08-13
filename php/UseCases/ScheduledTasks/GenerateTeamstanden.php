@@ -15,12 +15,12 @@ class GenerateTeamstanden implements IInteractor
     {
         $teams = GetAllSkcTeams();
         foreach ($teams as &$team) {
-            $rankings = $this->nevoboGateway->GetStandForPoule($team['poule']);
+            $rankings = $this->nevoboGateway->GetStandForPoule($team->poule);
 
-            $team["numberOfTeams"] = count($rankings);
+            $team->numberOfTeams = count($rankings);
             foreach ($rankings as $ranking) {
-                if (strpos($ranking->team, $team["naam"]) !== false) {
-                    $team["stand"] = $ranking['nummer'];
+                if (strpos($ranking->team, $team->naam) !== false) {
+                    $team->stand = $ranking->nummer;
                 }
             }
         }

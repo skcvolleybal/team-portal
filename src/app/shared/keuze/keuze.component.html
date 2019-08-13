@@ -1,0 +1,14 @@
+<div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" [ngModel]="keuze">
+  <label ngbButtonLabel [ngClass]="{'btn-success': keuze === 'Ja', 'btn-light': keuze !== 'Ja'}">
+    <fa-icon [icon]="jaIcon"></fa-icon>
+    <input ngbButton type="radio" value="Ja" (click)="onClick('Ja')">
+  </label>
+  <label ngbButtonLabel [ngClass]="{'btn-warning': keuze === 'Onbekend', 'btn-light': keuze !== 'Onbekend'}">
+    <fa-icon [icon]="onbekendIcon"></fa-icon>
+    <input ngbButton type="radio" value="Onbekend" (click)="onClick('Onbekend')">
+  </label>
+  <label ngbButtonLabel [ngClass]="{'btn-danger': keuze === 'Nee', 'btn-light': keuze !== 'Nee'}">
+    <fa-icon [icon]="neeIcon"></fa-icon>
+    <input ngbButton type="radio" value="Nee" (click)="onClick('Nee')">
+  </label>
+</div>

@@ -32,16 +32,16 @@ class DwfGateway
             '_username' => GetConfigValue('dwfEmail'),
             '_password' => GetConfigValue('dwfPassword'),
         ];
-        $headers = ['Cookie: $sessionId'];
+        $headers = ["Cookie: $sessionId"];
         $url = 'https://login.nevobo.nl/login_check';
         $loginCheck = $this->SendHeadersRequest($url, $headers, $data);
 
         $location = $loginCheck['Location'];
         $sessionId = $this->GetCookieValueFromHeader($loginCheck['Set-Cookie']);
-        $codePage = $this->SendHeadersRequest($location, ['Cookie: $sessionId']);
+        $codePage = $this->SendHeadersRequest($location, ["Cookie: $sessionId"]);
 
         $location = $codePage['Location'];
-        $codePage = $this->SendHeadersRequest($location, ['Cookie: $this->WID']);
+        $codePage = $this->SendHeadersRequest($location, ["Cookie: $this->WID"]);
 
         $fp = fopen($this->cookieFilename, 'w');
         fwrite($fp, $this->WID);
@@ -60,7 +60,7 @@ class DwfGateway
             return false;
         }
 
-        $response = SendPost($this->dwfUrl, 'type=teamSelector', ['Cookie: $this->WID']);
+        $response = SendPost($this->dwfUrl, 'type=teamSelector', ["Cookie: $this->WID"]);
         $data = json_decode($response);
         return $data != null && $data->error->code === 0;
     }
@@ -119,13 +119,13 @@ class DwfGateway
 
     public function GetGespeeldeWedstrijden($aantal = 999)
     {
-        $body =(object)  [
+        $body = (object)  [
             'type' => 'matchResults',
             'team' => '',
             'limit' => $aantal,
         ];
         $headers = (object) [
-            'Cookie: $this->WID',
+            "Cookie: $this->WID",
         ];
         $response = SendPost($this->dwfUrl, $body, $headers);
         $data = json_decode($response);
@@ -160,7 +160,7 @@ class DwfGateway
     {
         $url = 'https://dwf.volleybal.nl/uitslagformulier/' . str_replace(' ', '%20%20%20', $matchId);
         $headers = (object) [
-            'Cookie: $this->WID',
+            "Cookie: $this->WID",
         ];
         $response = SendPost($url, null, $headers);
 
@@ -199,6 +199,10 @@ class DwfGateway
 
         $currentSetIndex = -1;
         $wissels = [];
+        $result = [];
+        $serverendTeam = 'NOT_YET_SET';
+        $homeIndex = 0;
+        $awayIndex = 0;
         $numberOfItems = count($data->results[0]->data);
         if ($numberOfItems <= 1) {
             return null;
@@ -208,11 +212,11 @@ class DwfGateway
             $type = $item->sLogType;
             if ($type == 'point') {
                 if ($item->iSetResultHomeTeam + $item->iSetResultOutTeam === 1) {
-                    $result[$currentSetIndex]['beginService'] = $item->sPreviousServiceFor == 'home' ? 'thuis' : 'uit';
+                    $result[$currentSetIndex]->beginService = $item->sPreviousServiceFor == 'home' ? 'thuis' : 'uit';
                 }
-                $result[$currentSetIndex]['punten'][] = (object) [
+                $result[$currentSetIndex]->punten[] = (object) [
                     'type' => 'punt',
-                    'stand' => $item->iSetResultHomeTeam . ' - ' . $item->iSetResultOutTeam,
+                    'stand' => "$item->iSetResultHomeTeam - $item->iSetResultOutTeam",
                     'isThuispunt' => $item->sTeam == 'home',
                 ];
 
@@ -225,11 +229,11 @@ class DwfGateway
                     $serverendTeam = $item->sPreviousServiceFor;
                 }
 
-                if ($item->sPreviousServiceFor == 'home' && $homeIndex < 6 && $result[$currentSetIndex]['thuis'][$homeIndex] == null) {
-                    $result[$currentSetIndex]['thuis'][$homeIndex] = $item->iPreviousServiceForShirtNr;
+                if ($item->sPreviousServiceFor == 'home' && $homeIndex < 6 && $result[$currentSetIndex]->thuis[$homeIndex] == null) {
+                    $result[$currentSetIndex]->thuis[$homeIndex] = $item->iPreviousServiceForShirtNr;
                 }
-                if ($item->sPreviousServiceFor == 'out' && $awayIndex < 6 && $result[$currentSetIndex]['uit'][$awayIndex] == null) {
-                    $result[$currentSetIndex]['uit'][$awayIndex] = $item->iPreviousServiceForShirtNr;
+                if ($item->sPreviousServiceFor == 'out' && $awayIndex < 6 && $result[$currentSetIndex]->uit[$awayIndex] == null) {
+                    $result[$currentSetIndex]->uit[$awayIndex] = $item->iPreviousServiceForShirtNr;
                 }
             } else if ($type == 'substitution') {
                 if (preg_match('/Spelerswissel: (\d*) voor (\d*) in het veld/', $item->sMessage, $output_array)) {
@@ -240,7 +244,7 @@ class DwfGateway
                     ];
                     $addWissel = true;
                     foreach ($wissels as $j => $wissel) {
-                        if ($wissel['isThuisWissel'] == $newWissel['isThuisWissel'] && $newWissel['in'] == $wissel['uit']) {
+                        if ($wissel->isThuisWissel == $newWissel->isThuisWissel && $newWissel->in == $wissel->uit) {
                             $addWissel = false;
                             unset($wissels[$j]);
                             break;
@@ -249,24 +253,24 @@ class DwfGateway
                     if ($addWissel) {
                         $wissels[] = $newWissel;
                     }
-                    $result[$currentSetIndex]['punten'][] = (object) [
+                    $result[$currentSetIndex]->punten[] = (object) [
                         'type' => 'wissel',
-                        'isThuisWissel' => $newWissel['isThuisWissel'],
-                        'in' => $newWissel['in'],
-                        'uit' => $newWissel['uit'],
+                        'isThuisWissel' => $newWissel->isThuisWissel,
+                        'in' => $newWissel->in,
+                        'uit' => $newWissel->uit,
                     ];
                 }
             } else if ($type == 'restartSet') {
                 foreach ($wissels as $wissel) {
                     for ($j = 0; $j < 6; $j++) {
-                        if ($wissel['isThuisWissel']) {
-                            if ($result[$currentSetIndex]['thuis'][$j] == $wissel['in'] || $result[$currentSetIndex]['thuis'][$j] == $wissel['uit']) {
-                                $result[$currentSetIndex]['thuis'][$j] = $wissel['uit'];
+                        if ($wissel->isThuisWissel) {
+                            if ($result[$currentSetIndex]->thuis[$j] == $wissel->in || $result[$currentSetIndex]->thuis[$j] == $wissel->uit) {
+                                $result[$currentSetIndex]->thuis[$j] = $wissel->uit;
                                 break;
                             }
                         } else {
-                            if ($result[$currentSetIndex]['uit'][$j] == $wissel['in'] || $result[$currentSetIndex]['uit'][$j] == $wissel['uit']) {
-                                $result[$currentSetIndex]['uit'][$j] = $wissel['uit'];
+                            if ($result[$currentSetIndex]->uit[$j] == $wissel->in || $result[$currentSetIndex]->uit[$j] == $wissel->uit) {
+                                $result[$currentSetIndex]->uit[$j] = $wissel->uit;
                                 break;
                             }
                         }
@@ -290,7 +294,9 @@ class DwfGateway
                     'uit' => [null, null, null, null, null, null],
                     'punten' => [],
                 ];
-            } else if ($type == 'timeOut') { } else {
+            } else if ($type == 'timeOut') {
+                // Do Nothing
+            } else {
                 echo '';
             }
         }
