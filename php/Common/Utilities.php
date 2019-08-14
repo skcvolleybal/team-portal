@@ -20,7 +20,7 @@ function GetPostValues()
 function GetQueryParameters()
 {
     parse_str($_SERVER['QUERY_STRING'], $query_array);
-    return $query_array;
+    return (object) $query_array;
 }
 
 function GetDutchDate($datetime)

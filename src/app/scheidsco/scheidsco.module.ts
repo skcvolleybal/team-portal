@@ -7,6 +7,11 @@ import { SelecteerTellersComponent } from './selecteer-tellers/selecteer-tellers
 import { SelecteerZaalwachtComponent } from './selecteer-zaalwacht/selecteer-zaalwacht.component';
 
 @NgModule({
+  entryComponents:[
+    SelecteerZaalwachtComponent,
+    SelecteerScheidsrechterComponent,
+    SelecteerTellersComponent
+  ],
   declarations: [
     ScheidscoComponent,
     SelecteerScheidsrechterComponent,

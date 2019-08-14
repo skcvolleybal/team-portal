@@ -27,7 +27,10 @@
                 </button>
               </div>
               <div class="input-group-append" *ngIf="speeldag.zaalwacht">
-                <label class="input-group-text">
+                <label
+                  class="input-group-text"
+                  (click)="DeleteZaalwacht(speeldag.date)"
+                >
                   <fa-icon [icon]="icons.verwijderen"></fa-icon>
                 </label>
               </div>

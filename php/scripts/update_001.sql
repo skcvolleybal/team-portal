@@ -14,3 +14,5 @@ ALTER TABLE
   `teamportal_aanwezigheden` DROP `is_coach`;
 ALTER TABLE
   `barcie_availability` CHANGE `beschikbaarheid` `is_beschikbaar` ENUM('Ja', 'Nee') CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL;
+ALTER TABLE
+  `barcie_availability` DROP `available`;

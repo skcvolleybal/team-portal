@@ -16,8 +16,8 @@ export class SelecteerBarcielidComponent implements OnInit {
   date: string;
   datum: string;
   shift: number;
-  barcieLeden: any[];
-  barcieLedenLoading: boolean;
+  beschikbaarheden: any;
+  isLoading: boolean;
   errorMessage: string;
 
   constructor(
@@ -34,14 +34,15 @@ export class SelecteerBarcielidComponent implements OnInit {
   }
 
   GetBarcieLeden() {
-    this.barcieLedenLoading = true;
-    this.barcoService.GetBarcieleden(this.date).subscribe(
+    this.isLoading = true;
+    this.barcoService.GetBarcieBeschikbaarheden(this.date).subscribe(
       response => {
-        this.barcieLedenLoading = false;
-        this.barcieLeden = response.barcieLeden;
+        this.isLoading = false;
+        this.beschikbaarheden = response;
+        console.log(this.beschikbaarheden);
       },
       response => {
-        this.barcieLedenLoading = false;
+        this.isLoading = false;
         this.errorMessage = response.error;
       }
     );

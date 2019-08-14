@@ -17,15 +17,15 @@ class FluitBeschikbaarheidGateway
         return $this->database->Execute($query, $params);
     }
 
-    public function GetFluitBeschikbaarheid($userId, $date, $tijd)
+    public function GetFluitBeschikbaarheid($userId, $date, $time)
     {
         $query = 'SELECT *
                   FROM TeamPortal_fluitbeschikbaarheid
-                  WHERE user_id = :userId and date = :date and tijd = :tijd';
+                  WHERE user_id = :userId and date = :date and time = :time';
         $params = [
             new Param(Column::UserId, $userId, PDO::PARAM_INT),
-            new Param(Column::Datum, $date, PDO::PARAM_STR),
-            new Param(Column::Tijd, $tijd, PDO::PARAM_STR),
+            new Param(Column::Date, $date, PDO::PARAM_STR),
+            new Param(Column::Time, $time, PDO::PARAM_STR),
         ];
 
         $result = $this->database->Execute($query, $params);
@@ -35,30 +35,30 @@ class FluitBeschikbaarheidGateway
         return null;
     }
 
-    public function GetAllBeschikbaarheid($date, $tijd)
+    public function GetAllBeschikbaarheid($date, $time)
     {
         $query = 'SELECT *
                   FROM TeamPortal_fluitbeschikbaarheid
-                  WHERE date = :date and tijd = :tijd';
+                  WHERE date = :date and time = :time';
         $params = [
-            new Param(Column::Datum, $date, PDO::PARAM_STR),
-            new Param(Column::Tijd, $tijd, PDO::PARAM_STR),
+            new Param(Column::Date, $date, PDO::PARAM_STR),
+            new Param(Column::Time, $time, PDO::PARAM_STR),
         ];
 
         return $this->database->Execute($query, $params);
     }
 
-    public function Insert($userId, $date, $tijd, $beschikbaarheid)
+    public function Insert($userId, $date, $time, $beschikbaarheid)
     {
         $query = 'INSERT TeamPortal_fluitbeschikbaarheid
                   SET user_id = :userId,
                       date = :date,
-                      tijd = :tijd,
+                      time = :time,
                       beschikbaarheid = :beschikbaarheid';
         $params = [
             new Param(Column::UserId, $userId, PDO::PARAM_INT),
-            new Param(Column::Datum, $date, PDO::PARAM_STR),
-            new Param(Column::Tijd, $tijd, PDO::PARAM_STR),
+            new Param(Column::Date, $date, PDO::PARAM_STR),
+            new Param(Column::Time, $time, PDO::PARAM_STR),
             new Param(Column::IsBeschikbaar, $beschikbaarheid, PDO::PARAM_STR),
         ];
 

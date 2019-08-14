@@ -18,11 +18,11 @@ class SetAllBarcieBeschikbaarheden implements IInteractor
 
     public function Execute()
     {
-        $barcieLeden = $this->barcieGateway->GetBarcieLeden();
+        $barcieleden = $this->barcieGateway->GetBarcieleden();
         $numberOfAddedBeschikbaarheden = 0;
         $barcieDagen = $this->barcieGateway->GetBarcieDagen();
 
-        foreach ($barcieLeden as $barcielid) {
+        foreach ($barcieleden as $barcielid) {
             $barcielidId = $barcielid->id;
             $team = $this->joomlaGateway->GetTeam($barcielidId);
             $coachTeam = $this->joomlaGateway->GetCoachTeam($barcielidId);

@@ -43,6 +43,9 @@ class GetScheidsrechters implements IInteractorWithData
         if ($fluitWedstrijd == null) {
             throw new UnexpectedValueException("Wedstrijd met id $matchId niet gevonden");
         }
+        if ($fluitWedstrijd->timestamp == null) {
+            throw new UnexpectedValueException("Wedstrijd met id $matchId heeft geen speeldatum");
+        }
 
         $date = $fluitWedstrijd->timestamp->format('Y-m-d');
         $time = $fluitWedstrijd->timestamp->format('G:i:s');
@@ -52,11 +55,11 @@ class GetScheidsrechters implements IInteractorWithData
         $scheidsrechters = $this->telFluitGateway->GetScheidsrechters();
 
         $result = (object) [
-            "spelendeScheidsrechters" => [
+            "spelendeScheidsrechters" => (object) [
                 "Ja" => [],
                 "Onbekend" => [],
                 "Nee" => [],
-            ], "overigeScheidsrechters" => [
+            ], "overigeScheidsrechters" => (object) [
                 "Ja" => [],
                 "Onbekend" => [],
                 "Nee" => [],
@@ -64,10 +67,10 @@ class GetScheidsrechters implements IInteractorWithData
         ];
         foreach ($scheidsrechters as $scheidsrechter) {
             $wedstrijd = GetWedstrijdOfTeam($wedstrijdenWithSameDate, $scheidsrechter->team);
-            $fluitBeschikbaarheid = $this->GetFluitbeschikbaarheid($scheidsrechter, $fluitBeschikbaarheden);
+            $isBeschikbaar = $this->GetFluitbeschikbaarheid($scheidsrechter, $fluitBeschikbaarheden);
             $type = $wedstrijd ? "spelendeScheidsrechters" : "overigeScheidsrechters";
 
-            $result[$type][$fluitBeschikbaarheid][] = $this->MapToUsecaseModel($scheidsrechter, $fluitBeschikbaarheid, $wedstrijd, $fluitWedstrijd);
+            $result->$type->$isBeschikbaar[] = $this->MapToUsecaseModel($scheidsrechter, $isBeschikbaar, $wedstrijd, $fluitWedstrijd);
         }
         exit(json_encode($result));
     }
@@ -82,15 +85,15 @@ class GetScheidsrechters implements IInteractorWithData
         return "Onbekend";
     }
 
-    private function MapToUsecaseModel($scheidsrechter, $fluitBeschikbaarheid, $wedstrijd = null, $fluitWedstrijd = null)
+    private function MapToUsecaseModel($scheidsrechter, $isBeschikbaar, $wedstrijd)
     {
         return (object) [
             "naam" => $scheidsrechter->naam,
             "niveau" => $scheidsrechter->niveau,
             "gefloten" => $scheidsrechter->gefloten,
             "team" => GetShortTeam($scheidsrechter->team) ?? "Geen Team",
-            "eigenTijd" => $wedstrijd->timestamp ? $wedstrijd->timestamp->format("G:i") : null,
-            "isMogelijk" => $fluitBeschikbaarheid,
+            "eigenTijd" => $wedstrijd && $wedstrijd->timestamp ? $wedstrijd->timestamp->format("G:i") : null,
+            "isMogelijk" => $isBeschikbaar,
         ];
     }
 }

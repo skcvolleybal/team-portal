@@ -62,17 +62,21 @@ export class ScheidscoComponent implements OnInit {
     this.modalService
       .open(component)
       .result.then(team => {
-        this.speeldagen.forEach(speeldag => {
-          if (speeldag.date === date) {
-            speeldag.zaalwacht =
-              team == null
-                ? null
-                : (speeldag.zaalwacht = `${team[0]}${team.substring(6)}`);
-            return;
-          }
-        });
+        this.SetZaalwacht(date, team);
       })
       .catch(() => {});
+  }
+
+  SetZaalwacht(date, team) {
+    this.speeldagen.forEach(speeldag => {
+      if (speeldag.date === date) {
+        speeldag.zaalwacht =
+          team == null
+            ? null
+            : (speeldag.zaalwacht = `${team[0]}${team.substring(6)}`);
+        return;
+      }
+    });
   }
 
   SelecteerUitvoerderVanTaak(taak, geselecteerdeWedstrijd, tijd) {
@@ -113,5 +117,10 @@ export class ScheidscoComponent implements OnInit {
         break;
     }
     this.SetUitvoerderOnTaak(matchId, taak, null);
+  }
+
+  DeleteZaalwacht(date: string) {
+    this.scheidscoService.UpdateZaalwacht(date, '').subscribe();
+    this.SetZaalwacht(date, null);
   }
 }

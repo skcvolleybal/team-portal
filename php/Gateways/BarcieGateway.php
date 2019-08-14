@@ -61,7 +61,7 @@ class BarcieGateway
     public function GetBeschikbaarhedenForDate($date)
     {
         $query = 'SELECT
-                    A.user_id as userId,
+                    A.user_id,
                     A.is_beschikbaar
                   FROM barcie_availability A
                   INNER JOIN barcie_days D on A.day_id = D.id
@@ -146,7 +146,7 @@ class BarcieGateway
                         user_id = :userId and
                         shift = :shift';
         $params = [
-            new Param(Column::dayId, $dayId, PDO::PARAM_INT),
+            new Param(Column::DayId, $dayId, PDO::PARAM_INT),
             new Param(Column::UserId, $userId, PDO::PARAM_INT),
             new Param(':shift', $shift, PDO::PARAM_INT),
         ];
@@ -198,7 +198,7 @@ class BarcieGateway
         return $this->database->Execute($query);
     }
 
-    public function GetBarcieLeden()
+    public function GetBarcieleden()
     {
         $query = 'SELECT
                     U.id,
@@ -236,8 +236,8 @@ class BarcieGateway
                   VALUES (:dayId, :userId, :shift)';
         $params = [
             new Param(Column::UserId, $userId, PDO::PARAM_INT),
-            new Param(Column::dayId, $dayId, PDO::PARAM_INT),
-            new Param(':shift', $shift, PDO::PARAM_INT),
+            new Param(Column::DayId, $dayId, PDO::PARAM_INT),
+            new Param(Column::Shift, $shift, PDO::PARAM_INT),
         ];
 
         return $this->database->Execute($query, $params);
@@ -248,7 +248,7 @@ class BarcieGateway
         $query = 'DELETE FROM barcie_schedule_map
                   WHERE id = :id';
         $params = [
-            new Param(':id', $id, PDO::PARAM_INT),
+            new Param(Column::Id, $id, PDO::PARAM_INT),
         ];
 
         $this->database->Execute($query, $params);

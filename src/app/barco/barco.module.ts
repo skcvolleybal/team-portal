@@ -5,6 +5,7 @@ import { BarcieIndelingComponent } from './barcie-indeling/barcie-indeling.compo
 import { SelecteerBarcielidComponent } from './selecteer-barcie-lid/selecteer-barcie-lid.component';
 
 @NgModule({
+  entryComponents: [SelecteerBarcielidComponent],
   declarations: [BarcieIndelingComponent, SelecteerBarcielidComponent],
   imports: [CommonModule, SharedModule]
 })

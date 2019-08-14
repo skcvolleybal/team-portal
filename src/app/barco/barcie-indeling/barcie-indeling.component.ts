@@ -23,8 +23,8 @@ export class BarcieIndelingComponent implements OnInit {
   delete = faTrashAlt;
   newDate: FormGroup;
 
-  barcieDagen = [];
-  roosterLoading: boolean;
+  barciedagen = [];
+  isLoading: boolean;
   errorMessage: string;
 
   constructor(
@@ -65,11 +65,11 @@ export class BarcieIndelingComponent implements OnInit {
       selectedBarcielid.id
     );
 
-    this.barcieDagen.forEach(barcieDag => {
-      if (barcieDag.date === selectedBarcieDag.date) {
-        barcieDag.shifts[shift - 1].barcieLeden.forEach(barcieLid => {
-          if (selectedBarcielid.id === barcieLid.id) {
-            barcieLid.isBhv = !barcieLid.isBhv;
+    this.barciedagen.forEach(barciedag => {
+      if (barciedag.date === selectedBarcieDag.date) {
+        barciedag.shifts[shift - 1].barcieleden.forEach(barcielid => {
+          if (selectedBarcielid.id === barcielid.id) {
+            barcielid.isBhv = !barcielid.isBhv;
             return;
           }
         });
@@ -85,18 +85,18 @@ export class BarcieIndelingComponent implements OnInit {
         selectedBarcielid.id
       )
       .subscribe(() => {
-        this.barcieDagen.forEach(barcieDag => {
-          if (barcieDag.date === selectedBarcieDag.date) {
+        this.barciedagen.forEach(barciedag => {
+          if (barciedag.date === selectedBarcieDag.date) {
             for (
               let i = 0;
-              i < barcieDag.shifts[shift - 1].barcieLeden.length;
+              i < barciedag.shifts[shift - 1].barcieleden.length;
               i++
             ) {
               if (
                 selectedBarcielid.id ===
-                barcieDag.shifts[shift - 1].barcieLeden[i].id
+                barciedag.shifts[shift - 1].barcieleden[i].id
               ) {
-                barcieDag.shifts[shift - 1].barcieLeden.splice(i, 1);
+                barciedag.shifts[shift - 1].barcieleden.splice(i, 1);
                 break;
               }
             }
@@ -106,24 +106,24 @@ export class BarcieIndelingComponent implements OnInit {
   }
 
   GetBarcieRooster() {
-    this.roosterLoading = true;
+    this.isLoading = true;
     this.barcoService.GetBarcieRooster().subscribe(
       response => {
-        this.roosterLoading = false;
-        this.barcieDagen = response.barcieDagen;
+        this.isLoading = false;
+        this.barciedagen = response;
       },
       response => {
-        this.roosterLoading = true;
+        this.isLoading = true;
         this.errorMessage = response.error;
       }
     );
   }
 
   AddShift(date) {
-    this.barcieDagen.forEach(barcieDag => {
-      if (barcieDag.date === date) {
-        barcieDag.shifts.push({
-          barcieLeden: []
+    this.barciedagen.forEach(barciedag => {
+      if (barciedag.date === date) {
+        barciedag.shifts.push({
+          barcieleden: []
         });
         return;
       }
@@ -137,8 +137,8 @@ export class BarcieIndelingComponent implements OnInit {
     component.shift = shift;
     this.modalService
       .open(component)
-      .result.then((barcieLid: { id: number; naam: string }) => {
-        if (!barcieLid) {
+      .result.then((barcielid: { id: number; naam: string }) => {
+        if (!barcielid) {
           return;
         }
         this.GetBarcieRooster();

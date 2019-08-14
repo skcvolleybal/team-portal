@@ -19,44 +19,44 @@
     <td></td>
   </tr>
 </table>
-<table class="table table-sm" *ngFor="let barcieDag of barcieDagen" style="margin-bottom: 0px;">
+<table class="table table-sm" *ngFor="let barciedag of barciedagen" style="margin-bottom: 0px;">
   <thead>
     <tr>
-      <th scope="col" colspan="3" style="border-bottom: 0px;">{{barcieDag.datum}}</th>
+      <th scope="col" colspan="3" style="border-bottom: 0px;">{{barciedag.datum}}</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <ul class="list-group">
-        <li class="list-group-item" *ngFor="let shift of barcieDag.shifts; index as i">
+        <li class="list-group-item" *ngFor="let shift of barciedag.shifts; index as i">
           <h5 class="card-title">Shift {{i + 1}}</h5>
-          <div class="row m-1" *ngFor="let barcieLid of shift.barcieLeden">
+          <div class="row m-1" *ngFor="let barcielid of shift.barcieleden">
             <div class="input-group">
               <div class="input-group-prepend">
-                <button class="input-group-text" (click)="ToggleBhv(barcieDag, barcieLid, i + 1)">
-                  <fa-icon [icon]="barcieLid.isBhv ? bhv: geenBhv"></fa-icon>
+                <button class="input-group-text" (click)="ToggleBhv(barciedag, barcielid, i + 1)">
+                  <fa-icon [icon]="barcielid.isBhv ? bhv: geenBhv"></fa-icon>
                 </button>
               </div>
               <div class="input-group-append">
                 <button class="btn btn-success" type="button">
-                  {{barcieLid.naam}}
+                  {{barcielid.naam}}
                 </button>
               </div>
               <div class="input-group-append">
-                <button class="input-group-text" (click)="DeleteAanwezigheid(barcieDag, barcieLid, i + 1)">
+                <button class="input-group-text" (click)="DeleteAanwezigheid(barciedag, barcielid, i + 1)">
                   <fa-icon [icon]="delete"></fa-icon>
                 </button>
               </div>
             </div>
           </div>
-          <button type="button" class="btn btn-primary btn-block" (click)="SelecteerBarcieLid(barcieDag, i + 1)">Barcielid
+          <button type="button" class="btn btn-primary btn-block" (click)="SelecteerBarcieLid(barciedag, i + 1)">Barcielid
             Toevoegen</button>
         </li>
         <li style="padding: 10px;">
-          <button type="button" class="btn btn-primary btn-block" (click)="AddShift(barcieDag.date)">Shift toevoegen</button>
+          <button type="button" class="btn btn-primary btn-block" (click)="AddShift(barciedag.date)">Shift toevoegen</button>
         </li>
-        <li style="padding: 10px;" *ngIf="barcieDag.shifts.length === 1 && barcieDag.shifts[0].barcieLeden.length === 0">
-          <button type="button" class="btn btn-danger btn-block" (click)="DeleteBarcieDate(barcieDag.date)">Dag
+        <li style="padding: 10px;" *ngIf="barciedag.shifts.length === 1 && barciedag.shifts[0].barcieleden.length === 0">
+          <button type="button" class="btn btn-danger btn-block" (click)="DeleteBarcieDate(barciedag.date)">Dag
             verwijderen</button>
         </li>
       </ul>
@@ -66,4 +66,4 @@
     </tr>
   </tbody>
 </table>
-<teamportal-spinner *ngIf="roosterLoading"></teamportal-spinner>
+<teamportal-spinner *ngIf="isLoading"></teamportal-spinner>

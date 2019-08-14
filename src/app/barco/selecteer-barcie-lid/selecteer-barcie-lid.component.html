@@ -1,17 +1,22 @@
 <div class="modal-header">
-  <h6>{{datum}}, {{shift}}e shift</h6>
-  <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+  <h6>{{ datum }}, {{ shift }}e shift</h6>
+  <button
+    type="button"
+    class="close"
+    aria-label="Close"
+    (click)="modal.dismiss()"
+  >
     <span aria-hidden="true">&times;</span>
   </button>
 </div>
 
 <div class="modal-body" style="min-height: 500px;">
   <div class="alert alert-danger" role="alert" *ngIf="errorMessage">
-    {{errorMessage}}
+    {{ errorMessage }}
   </div>
-  <teamportal-spinner *ngIf="barcieLedenLoading"></teamportal-spinner>
+  <teamportal-spinner *ngIf="isLoading"></teamportal-spinner>
 
-  <div *ngIf="barcieLedenLoading == false">
+  <div *ngIf="!isLoading">
     <div class="card mb-3">
       <div class="card-header">
         Barcieleden
@@ -19,25 +24,46 @@
       <ul class="list-group list-group-flush">
         <li class="list-group-item">Ja</li>
         <li class="list-group-item">
-          <div class="input-group mb-3" *ngFor="let barcieLid of barcieLeden.Ja">
-            <button type="button" (click)="AddBarcieAanwezigheid(barcieLid)" class="btn btn-block btn-success">
-              {{barcieLid.naam}} ({{barcieLid.aantalDiensten}})
+          <div
+            class="input-group mb-3"
+            *ngFor="let barcielid of beschikbaarheden.Ja"
+          >
+            <button
+              type="button"
+              (click)="AddBarcieAanwezigheid(barcielid)"
+              class="btn btn-block btn-success"
+            >
+              {{ barcielid.naam }} ({{ barcielid.aantalDiensten }})
             </button>
           </div>
         </li>
         <li class="list-group-item">Onbekend</li>
         <li class="list-group-item">
-          <div class="input-group mb-3" *ngFor="let barcieLid of barcieLeden.Onbekend">
-            <button type="button" (click)="AddBarcieAanwezigheid(barcieLid)" class="btn btn-block btn-warning">
-              {{barcieLid.naam}} ({{barcieLid.aantalDiensten}})
+          <div
+            class="input-group mb-3"
+            *ngFor="let barcielid of beschikbaarheden.Onbekend"
+          >
+            <button
+              type="button"
+              (click)="AddBarcieAanwezigheid(barcielid)"
+              class="btn btn-block btn-warning"
+            >
+              {{ barcielid.naam }} ({{ barcielid.aantalDiensten }})
             </button>
           </div>
         </li>
         <li class="list-group-item">Nee</li>
         <li class="list-group-item">
-          <div class="input-group mb-3" *ngFor="let barcieLid of barcieLeden.Nee">
-            <button type="button" (click)="AddBarcieAanwezigheid(barcieLid)" class="btn btn-block btn-danger">
-              {{barcieLid.naam}} ({{barcieLid.aantalDiensten}})
+          <div
+            class="input-group mb-3"
+            *ngFor="let barcielid of beschikbaarheden.Nee"
+          >
+            <button
+              type="button"
+              (click)="AddBarcieAanwezigheid(barcielid)"
+              class="btn btn-block btn-danger"
+            >
+              {{ barcielid.naam }} ({{ barcielid.aantalDiensten }})
             </button>
           </div>
         </li>
@@ -47,5 +73,7 @@
 </div>
 
 <div class="modal-footer">
-  <button type="button" class="btn btn-light" (click)="modal.close()">Close</button>
+  <button type="button" class="btn btn-light" (click)="modal.close()">
+    Close
+  </button>
 </div>

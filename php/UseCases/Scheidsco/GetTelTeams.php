@@ -45,7 +45,10 @@ class GetTelTeams implements IInteractorWithData
         $telTeams = $this->telFluitGateway->GetTelTeams();
         $wedstrijdenWithSameDate = GetWedstrijdenWithDate($uscWedstrijden, $telWedstrijd->timestamp);
 
-        $result = ["spelendeTeams" => [], "overigeTeams" => []];
+        $result = (object) [
+            "spelendeTeams" => [],
+            "overigeTeams" => []
+        ];
         foreach ($telTeams as $team) {
             $wedstrijd = GetWedstrijdOfTeam($wedstrijdenWithSameDate, $team->naam);
             if ($wedstrijd) {

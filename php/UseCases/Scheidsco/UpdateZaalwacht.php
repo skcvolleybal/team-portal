@@ -38,10 +38,8 @@ class UpdateZaalwacht implements IInteractorWithData
             } else {
                 $this->zaalwachtGateway->Update($zaalwacht, $team);
             }
-        } else {
-            if ($team) {
-                $this->zaalwachtGateway->Insert($datum, $team);
-            }
+        } else if ($team) {
+            $this->zaalwachtGateway->Insert($datum, $team);
         }
 
         exit();

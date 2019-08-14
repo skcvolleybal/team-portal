@@ -33,7 +33,10 @@ class GetZaalwachtTeams implements IInteractorWithData
         $zaalwachtTeams = $this->zaalwachtGateway->GetZaalwachtTeams();
         $spelendeTeams = $this->GetSpelendeTeamsForDate($uscWedstrijden, $date);
 
-        $result = ["spelendeTeams" => [], "overigeTeams" => []];
+        $result = (object) [
+            "spelendeTeams" => [],
+            "overigeTeams" => []
+        ];
         foreach ($zaalwachtTeams as $team) {
             if (in_array($team->naam, $spelendeTeams)) {
                 $result->spelendeTeams[] = $this->MapToUsecaseModel($team);

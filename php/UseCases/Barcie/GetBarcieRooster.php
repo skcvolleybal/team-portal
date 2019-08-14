@@ -1,4 +1,5 @@
 <?php
+
 include_once 'IInteractor.php';
 include_once 'JoomlaGateway.php';
 include_once 'BarcieGateway.php';
@@ -24,37 +25,38 @@ class GetBarcieRooster implements IInteractor
         foreach ($aanwezigheden as $aanwezigheid) {
             $date = $aanwezigheid->date;
 
-            $i = $this->GetDayIndex($rooster, $aanwezigheid->date);
+            $i = $this->GetDayIndex($rooster, $date);
             if ($i === null) {
                 $datum = GetDutchDate(new DateTime($date));
+
                 $newDate = (object) [
                     "date" => $date,
                     "datum" => $datum,
-                    "shifts" => [[
-                        "barcieLeden" => [],
-                    ]],
+                    "shifts" => [(object) [
+                        "barcieleden" => []
+                    ]]
                 ];
                 $rooster[] = $newDate;
                 $i = count($rooster) - 1;
             }
             if ($aanwezigheid->userId !== null) {
-                $shift = intval($aanwezigheid->shift) - 1;
-                for ($j = $shift; count($rooster[$i]->shifts) <= $shift; $j++) {
-                    $rooster[$i]->shifts[] = (object) [
-                        "barcieLeden" => [],
-                    ];
+                $shiftNumber = intval($aanwezigheid->shift);
+                for ($j = 0; $j < $shiftNumber; $j++) {
+                    if (!isset($rooster[$i]->shifts[$j])) {
+                        $rooster[$i]->shifts[] = (object) [
+                            "barcieleden" => []
+                        ];
+                    }
                 }
-                $rooster[$i]->shifts[$shift]->barcieLeden[] = (object) [
+                $rooster[$i]->shifts[$shiftNumber - 1]->barcieleden[] = (object) [
                     "id" => $aanwezigheid->userId,
                     "naam" => $aanwezigheid->naam,
-                    "isBhv" => $aanwezigheid->isBhv == "1",
+                    "isBhv" => $aanwezigheid->isBhv === "1",
                 ];
             }
         }
 
-        return (object) [
-            "barcieDagen" => $rooster
-        ];
+        exit(json_encode($rooster));
     }
 
     private function GetDayIndex($rooster, $date)

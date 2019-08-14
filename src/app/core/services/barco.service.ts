@@ -54,10 +54,10 @@ export class BarcoService {
       .subscribe();
   }
 
-  GetBarcieleden(date: string) {
+  GetBarcieBeschikbaarheden(date: string) {
     return this.httpClient.get<any>(environment.baseUrl, {
       params: {
-        action: 'GetBarcieLeden',
+        action: 'GetBarcieBeschikbaarheden',
         date
       }
     });

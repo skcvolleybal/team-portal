@@ -283,12 +283,12 @@ class TeamPortal
         $interactor->Execute();
     }
 
-    public function GetBarcieLeden()
+    public function GetBarcieBeschikbaarheden()
     {
-        include_once 'UseCases' . DIRECTORY_SEPARATOR . 'Barcie' . DIRECTORY_SEPARATOR . 'GetBarcieLeden.php';
+        include_once 'UseCases' . DIRECTORY_SEPARATOR . 'Barcie' . DIRECTORY_SEPARATOR . 'GetBarcieBeschikbaarheden.php';
         $queryParameters = GetQueryParameters();
-        $interactor = new GetBarcieLeden($this->database);
-        exit(json_encode($interactor->Execute($queryParameters)));
+        $interactor = new GetBarcieBeschikbaarheden($this->database);
+        $interactor->Execute($queryParameters);
     }
 
     public function AddBarcieAanwezigheid()
@@ -311,7 +311,7 @@ class TeamPortal
     {
         include_once 'UseCases' . DIRECTORY_SEPARATOR . 'Barcie' . DIRECTORY_SEPARATOR . 'GetBarcieRooster.php';
         $interactor = new GetBarcieRooster($this->database);
-        exit(json_encode($interactor->Execute()));
+        $interactor->Execute();
     }
 
     public function ToggleBhv()

@@ -37,7 +37,7 @@ class SendWeeklyEmails implements IInteractor
             $wedstrijdIds[] = $wedstrijd->id;
         }
 
-        $barcieLeden = $this->barcieGateway->GetBarcieRoosterForNextWeek();
+        $barcieleden = $this->barcieGateway->GetBarcieRoosterForNextWeek();
         $scheidsrechters = $this->telFluitGateway->GetScheidsrechtersForWedstrijdenWithMatchId($wedstrijdIds);
         $tellers = $this->telFluitGateway->GetTellersForWedstrijdenWithMatchId($wedstrijdIds);
         $zaalwachters = $this->zaalwachtGateway->GetZaalwachtersWithinPeriod(7);
@@ -57,11 +57,11 @@ class SendWeeklyEmails implements IInteractor
             $this->MailZaalwachter($zaalwachter);
         }
 
-        foreach ($barcieLeden as $barcieLid) {
-            $this->MailBarcieLid($barcieLid);
+        foreach ($barcieleden as $barcielid) {
+            $this->MailBarcielid($barcielid);
         }
 
-        $this->MailSamenvatting($wedstrijden, $scheidsrechters, $tellers, $zaalwachters, $barcieLeden);
+        $this->MailSamenvatting($wedstrijden, $scheidsrechters, $tellers, $zaalwachters, $barcieleden);
 
         exit("Verzonden");
     }
@@ -173,15 +173,15 @@ class SendWeeklyEmails implements IInteractor
         $this->mailGateway->SendMail($this->scheidsco->email, $this->scheidsco->naam, $email, $naam, $title, $body);
     }
 
-    private function MailBarcieLid($barcieLid)
+    private function MailBarcielid($barcielid)
     {
         $body = file_get_contents("./UseCases/Email/templates/barcieTemplate.txt");
 
-        $email = $barcieLid->email;
-        $naam = $barcieLid->naam;
-        $datum = GetDutchDateLong(new DateTime($barcieLid->date));
-        $shift = $barcieLid->shift;
-        $bhv = $barcieLid->isBhv == 1 ? "<br>Je bent BHV'er." : "";
+        $email = $barcielid->email;
+        $naam = $barcielid->naam;
+        $datum = GetDutchDateLong(new DateTime($barcielid->date));
+        $shift = $barcielid->shift;
+        $bhv = $barcielid->isBhv == 1 ? "<br>Je bent BHV'er." : "";
         $title = "Barciedienst " . $datum;
 
         $body = str_replace("{{email}}", $email, $body);
