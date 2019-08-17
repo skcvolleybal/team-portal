@@ -65,8 +65,8 @@ class AanwezigheidGateway
                     G.title as rol
                   FROM TeamPortal_aanwezigheden A
                   INNER JOIN J3_users U ON A.user_id = U.id
-                  INNER JOIN j3_user_usergroup_map M ON U.id = M.user_id
-                  INNER JOIN j3_usergroups G ON M.group_id = G.id
+                  INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
+                  INNER JOIN J3_usergroups G ON M.group_id = G.id
                   WHERE G.title = :team OR G.title = :coachteam
                   ORDER BY U.name';
         $params = [

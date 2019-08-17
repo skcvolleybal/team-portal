@@ -19,7 +19,7 @@ export class SpelersLijstComponent {
   class;
 
   @Output()
-  deleteAanwezigheid = new EventEmitter();
+  deleteSpeler = new EventEmitter();
 
   inklappen = faMinusSquare;
   uitklappen = faPlusSquare;
@@ -28,7 +28,7 @@ export class SpelersLijstComponent {
 
   constructor() {}
 
-  DeleteAanwezigheid(speler) {
-    this.deleteAanwezigheid.emit(speler);
+  DeleteSpeler(speler) {
+    this.deleteSpeler.emit(speler);
   }
 }
