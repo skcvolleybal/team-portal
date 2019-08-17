@@ -79,7 +79,7 @@ class GetScheidsrechters implements IInteractorWithData
     {
         foreach ($fluitBeschikbaarheden as $fluitBeschikbaarheid) {
             if ($fluitBeschikbaarheid->user_id == $scheidsrechter->id) {
-                return $fluitBeschikbaarheid->beschikbaarheid;
+                return $fluitBeschikbaarheid->is_beschikbaar;
             }
         }
         return "Onbekend";
