@@ -5,11 +5,8 @@ include_once 'Utilities.php';
 
 class TeamPortal
 {
-    public function __construct()
+    public function __construct($config)
     {
-        $configs = include('configuration.php');
-        $config = $configs->database;
-
         $this->database = new Database(
             $config->host,
             $config->database,

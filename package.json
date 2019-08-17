@@ -4,8 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
-    "build-prod": "ng build --prod --base-href /team-portal/ && xcopy php dist\\php\\ /E",
+    "build": "ng build --prod --base-href /team-portal/",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",

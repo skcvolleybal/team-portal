@@ -47,12 +47,12 @@ class GetBarcieBeschikbaarheid extends GetNevoboMatchByDate implements IInteract
 
             $wedstrijden = array_merge($eigenWedstrijden, $coachWedstrijden);
 
-            $beschikbaarheid = $this->GetBeschikbaarheid($beschikbaarheden, $date);
+            $isBeschikbaar = $this->GetBeschikbaarheid($beschikbaarheden, $date);
 
             $response[] = (object) [
                 "datum" => GetDutchDate(new DateTime($date)),
                 "date" => $barcieDag->date,
-                "beschikbaarheid" => $beschikbaarheid,
+                "beschikbaarheid" => $isBeschikbaar,
                 "eigenWedstrijden" => $this->MapToUsecase($wedstrijden, $team, $coachTeam),
                 "isMogelijk" => $this->barcieBeschikbaarheidHelper->isMogelijk($wedstrijden),
             ];
@@ -86,7 +86,7 @@ class GetBarcieBeschikbaarheid extends GetNevoboMatchByDate implements IInteract
     {
         foreach ($beschikbaarheden as $beschikbaarheid) {
             if ($beschikbaarheid->date == $date) {
-                return $beschikbaarheid->beschikbaarheid;
+                return $beschikbaarheid->is_beschikbaar;
             }
         }
 

@@ -43,7 +43,6 @@ class AanwezigheidGateway
 
     public function UpdateCoachAanwezigheid($userId, $matchId, $isAanwezig)
     {
-        $isAanwezig = $this->ToDatabaseBoolean($isAanwezig);
         $query = 'UPDATE TeamPortal_aanwezigheden
                   SET is_aanwezig = :isAanwezigheid
                   WHERE user_id = :userId and match_id = :matchId';
@@ -79,7 +78,6 @@ class AanwezigheidGateway
 
     public function Update($userId, $matchId, $isAanwezig)
     {
-        $isAanwezig = $this->ToDatabaseBoolean($isAanwezig);
         $query = 'UPDATE TeamPortal_aanwezigheden
                   set is_aanwezig = :isAanwezig
                   WHERE user_id = :userId and match_id = :matchId';
@@ -94,7 +92,6 @@ class AanwezigheidGateway
 
     public function Insert($userId, $matchId, $isAanwezig)
     {
-        $isAanwezig = $this->ToDatabaseBoolean($isAanwezig);
         $query = 'INSERT INTO TeamPortal_aanwezigheden (user_id, match_id, is_aanwezig)
                   VALUES (:userId, :matchId, :isAanwezig)';
         $params = [
@@ -115,19 +112,5 @@ class AanwezigheidGateway
             new Param(Column::MatchId, $matchId, PDO::PARAM_STR),
         ];
         $this->database->Execute($query, $params);
-    }
-
-    private function ToDatabaseBoolean($value)
-    {
-        $value = strtolower($value);
-        if (!in_array($value, ['ja', 'nee'])) {
-            throw new InvalidArgumentException("Onbekende boolean variable '$value'");
-        }
-
-        if ($value == 'ja') {
-            return 'Y';
-        } else {
-            return 'N';
-        }
     }
 }

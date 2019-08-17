@@ -31,11 +31,11 @@ class FluitBeschikbaarheidHelper
         return $bestResult;
     }
 
-    public function GetFluitBeschikbaarheid($fluitBeschikbaarheden, $datum, $tijd)
+    public function GetFluitBeschikbaarheid($fluitBeschikbaarheden, $date, $time)
     {
         foreach ($fluitBeschikbaarheden as $fluitBeschikbaarheid) {
-            if ($fluitBeschikbaarheid->datum == $datum && $fluitBeschikbaarheid->tijd == $tijd) {
-                return $fluitBeschikbaarheid->beschikbaarheid;
+            if ($fluitBeschikbaarheid->date == $date && $fluitBeschikbaarheid->time == $time) {
+                return $fluitBeschikbaarheid->is_beschikbaar;
             }
         }
         return null;

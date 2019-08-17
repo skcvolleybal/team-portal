@@ -7,7 +7,7 @@ function IncludeInPath($folder)
     set_include_path(get_include_path() . PATH_SEPARATOR . $folder);
 }
 
-$configuration = include('configuration.php');
+$configuration = include('./../configuration.php');
 if (isset($configuration->displayErrors)) {
     error_reporting(E_ALL);
     ini_set('display_errors', 1);
@@ -42,7 +42,7 @@ header('Access-Control-Allow-Credentials: true');
 require_once 'TeamPortal.php';
 
 try {
-    $app = new TeamPortal;
+    $app = new TeamPortal($configuration->database);
 
     $queryString = $_SERVER['QUERY_STRING'];
     if (empty($queryString)) {

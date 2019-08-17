@@ -80,7 +80,7 @@ class BarcieGateway
                   WHERE user_id = :userId and day_id = :dayId';
         $params = [
             new Param(Column::UserId, $userId, PDO::PARAM_INT),
-            new Param(Column::dayId, $dayId, PDO::PARAM_INT),
+            new Param(Column::DayId, $dayId, PDO::PARAM_INT),
         ];
 
         $result = $this->database->Execute($query, $params);
@@ -90,15 +90,15 @@ class BarcieGateway
         return $result[0];
     }
 
-    public function UpdateBeschikbaarheid($id, $beschikbaarheid)
+    public function UpdateBeschikbaarheid($id, $isBeschikbaar)
     {
-        $this->CheckBeschikbaarheid($beschikbaarheid);
+        $this->CheckBeschikbaarheid($isBeschikbaar);
         $query = 'UPDATE barcie_availability
-                  SET beschikbaarheid = :beschikbaarheid
+                  SET is_beschikbaar = :isBeschikbaarheid
                   WHERE id = :id';
         $params = [
             new Param(':id', $id, PDO::PARAM_INT),
-            new Param(Column::IsBeschikbaar, $beschikbaarheid, PDO::PARAM_STR),
+            new Param(Column::IsBeschikbaar, $isBeschikbaar, PDO::PARAM_STR),
         ];
 
         return $this->database->Execute($query, $params);

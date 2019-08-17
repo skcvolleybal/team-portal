@@ -38,7 +38,7 @@ class GetWedstrijdOverzicht implements IInteractor
         $this->GetAllInvalTeamsForTeam($team);
         foreach ($wedstrijden as $wedstrijd) {
             $matchId = $wedstrijd->id;
-            $isAanwezig = $this->IsAfwezigheid($aanwezigheden, $matchId, $userId);
+            $isAanwezig = $this->IsAanwezig($aanwezigheden, $matchId, $userId);
 
             $aanwezighedenForMatch = [];
             $invalTeamInfo = null;
@@ -167,7 +167,7 @@ class GetWedstrijdOverzicht implements IInteractor
         ];
         foreach ($aanwezigheden as $aanwezigheid) {
             if ($aanwezigheid->match_id == $matchId) {
-                $isAanwezig = $aanwezigheid->is_aanwezig === "Y";
+                $isAanwezig = $aanwezigheid->is_aanwezig === "Ja";
                 if (substr($aanwezigheid->rol, 0, 5) === 'Coach') {
                     $result->coaches[] = $aanwezigheid;
                 } else {
@@ -204,14 +204,14 @@ class GetWedstrijdOverzicht implements IInteractor
         return $spelers;
     }
 
-    private function IsAfwezigheid($aanwezigheden, $matchId, $userId)
+    private function IsAanwezig($aanwezigheden, $matchId, $userId)
     {
         foreach ($aanwezigheden as $aanwezigheid) {
             if (
                 $aanwezigheid->user_id === $userId &&
                 $aanwezigheid->match_id === $matchId
             ) {
-                return $aanwezigheid->is_aanwezig === 'Y' ? "Ja" : "Nee";
+                return $aanwezigheid->is_aanwezig === 'Ja' ? "Ja" : "Nee";
             }
         }
         return 'Onbekend';

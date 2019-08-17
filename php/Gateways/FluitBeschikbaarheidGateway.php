@@ -48,32 +48,29 @@ class FluitBeschikbaarheidGateway
         return $this->database->Execute($query, $params);
     }
 
-    public function Insert($userId, $date, $time, $beschikbaarheid)
+    public function Insert($userId, $date, $time, $isBeschikbaar)
     {
-        $query = 'INSERT TeamPortal_fluitbeschikbaarheid
-                  SET user_id = :userId,
-                      date = :date,
-                      time = :time,
-                      beschikbaarheid = :beschikbaarheid';
+        $query = 'INSERT INTO TeamPortal_fluitbeschikbaarheid (user_id, date, time, is_beschikbaar) 
+                  VALUES (:userId, :date, :time, :isBeschikbaar)';
         $params = [
             new Param(Column::UserId, $userId, PDO::PARAM_INT),
             new Param(Column::Date, $date, PDO::PARAM_STR),
             new Param(Column::Time, $time, PDO::PARAM_STR),
-            new Param(Column::IsBeschikbaar, $beschikbaarheid, PDO::PARAM_STR),
+            new Param(Column::IsBeschikbaar, $isBeschikbaar, PDO::PARAM_STR),
         ];
 
         $this->database->Execute($query, $params);
     }
 
-    public function Update($id, $beschikbaarheid)
+    public function Update($id, $isBeschikbaar)
     {
         $query = 'UPDATE TeamPortal_fluitbeschikbaarheid
-                  SET beschikbaarheid = :beschikbaarheid
+                  SET is_beschikbaar = :isBeschikbaar
                   WHERE id = :id';
 
         $params = [
             new Param(':id', $id, PDO::PARAM_INT),
-            new Param(Column::IsBeschikbaar, $beschikbaarheid, PDO::PARAM_STR),
+            new Param(Column::IsBeschikbaar, $isBeschikbaar, PDO::PARAM_STR),
         ];
 
         $this->database->Execute($query, $params);
