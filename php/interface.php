@@ -1,5 +1,7 @@
 <?php
 
+use PHPMailer\PHPMailer\Exception;
+
 function IncludeInPath($folder)
 {
     set_include_path(get_include_path() . PATH_SEPARATOR . $folder);
@@ -39,21 +41,26 @@ header('Access-Control-Allow-Credentials: true');
 
 require_once 'TeamPortal.php';
 
-$app = new TeamPortal;
+try {
+    $app = new TeamPortal;
 
-$queryString = $_SERVER['QUERY_STRING'];
-if (empty($queryString)) {
-    $app->NoAction();
-}
+    $queryString = $_SERVER['QUERY_STRING'];
+    if (empty($queryString)) {
+        $app->NoAction();
+    }
 
-parse_str($queryString, $parsedQueryString);
-if (!isset($parsedQueryString['action'])) {
-    $app->NoAction();
-}
-$action = $parsedQueryString['action'];
+    parse_str($queryString, $parsedQueryString);
+    if (!isset($parsedQueryString['action'])) {
+        $app->NoAction();
+    }
+    $action = $parsedQueryString['action'];
 
-if (method_exists($app, $action)) {
-    $app->{$action}();
-} else {
-    $app->unknownAction($action);
+    if (method_exists($app, $action)) {
+        $app->{$action}();
+    } else {
+        $app->unknownAction($action);
+    }
+} catch (Exception $e) {
+    // write to log
+    $asd = 123;
 }

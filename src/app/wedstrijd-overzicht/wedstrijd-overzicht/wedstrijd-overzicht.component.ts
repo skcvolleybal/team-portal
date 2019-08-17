@@ -38,10 +38,10 @@ export class WedstrijdOverzichtComponent implements OnInit {
     });
   }
 
-  UpdateAanwezigheid(matchId: number, aanwezigheid: string, speler: any) {
+  UpdateAanwezigheid(matchId: number, isAanwezig: string, speler: any) {
     this.aanwezigheidService.UpdateAanwezigheid(
       matchId,
-      aanwezigheid,
+      isAanwezig,
       speler.id
     );
 
@@ -56,16 +56,22 @@ export class WedstrijdOverzichtComponent implements OnInit {
         wedstrijd.onbekend = wedstrijd.onbekend.filter(
           onbekende => onbekende.id !== speler.id
         );
+
+        const isInvaller = speler.id !== this.user.id;
+        if (isInvaller && isAanwezig === 'Onbekend') {
+          return;
+        }
+
         const newSpeler = {
           id: speler.id,
           naam: speler.naam,
-          isInvaller: speler.id !== this.user.id
+          isInvaller
         };
 
         const SortTeam = (speler1, speler2) =>
           speler1.naam > speler2.naam ? 1 : -1;
 
-        switch (aanwezigheid) {
+        switch (isAanwezig) {
           case 'Ja':
             wedstrijd.aanwezigen.push(newSpeler);
             wedstrijd.aanwezigen.sort(SortTeam);
