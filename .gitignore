@@ -50,3 +50,4 @@ dist/php/UseCases/Teamstanden/teamoverzichten.json
 dist/php/UseCases/Teamstanden/teamstanden.json
 dist
 configuration.php
+errors

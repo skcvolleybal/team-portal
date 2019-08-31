@@ -7,6 +7,22 @@ function IncludeInPath($folder)
     set_include_path(get_include_path() . PATH_SEPARATOR . $folder);
 }
 
+function ExceptionHandler($error)
+{
+    $currentTime = (new DateTime())->format('Y-m-d H.i.s.u');
+    if (!file_exists('errors')) {
+        mkdir('errors');
+    }
+    $line = $error->getLine();
+    $file = $error->getFile();
+    $message = $error->getMessage();
+    $output = "File (line $line): $file\nMessage: $message";
+    file_put_contents("errors/$currentTime.txt", $output);
+
+    header('HTTP/1.1 500 Internal Server Error');
+    echo $message;
+}
+
 $configuration = include('./../configuration.php');
 if (isset($configuration->displayErrors)) {
     error_reporting(E_ALL);
@@ -41,26 +57,24 @@ header('Access-Control-Allow-Credentials: true');
 
 require_once 'TeamPortal.php';
 
-try {
-    $app = new TeamPortal($configuration->database);
+set_exception_handler('ExceptionHandler');
 
-    $queryString = $_SERVER['QUERY_STRING'];
-    if (empty($queryString)) {
-        $app->NoAction();
-    }
 
-    parse_str($queryString, $parsedQueryString);
-    if (!isset($parsedQueryString['action'])) {
-        $app->NoAction();
-    }
-    $action = $parsedQueryString['action'];
+$app = new TeamPortal($configuration->database);
 
-    if (method_exists($app, $action)) {
-        $app->{$action}();
-    } else {
-        $app->unknownAction($action);
-    }
-} catch (Exception $e) {
-    // write to log
-    $asd = 123;
+$queryString = $_SERVER['QUERY_STRING'];
+if (empty($queryString)) {
+    $app->NoAction();
+}
+
+parse_str($queryString, $parsedQueryString);
+if (!isset($parsedQueryString['action'])) {
+    $app->NoAction();
+}
+$action = $parsedQueryString['action'];
+
+if (method_exists($app, $action)) {
+    $app->{$action}();
+} else {
+    $app->unknownAction($action);
 }
