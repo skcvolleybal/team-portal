@@ -305,6 +305,9 @@ class NevoboGateway
         $feed->enable_order_by_date(false);
         $feed->handle_content_type();
         $feed->set_cache_duration($this->cacheDuration);
+        if (!file_exists($this->cacheLocation)) {
+            mkdir($this->cacheLocation);
+        }
         $feed->set_cache_location($this->cacheLocation);
         $feed->init();
         return $feed;
