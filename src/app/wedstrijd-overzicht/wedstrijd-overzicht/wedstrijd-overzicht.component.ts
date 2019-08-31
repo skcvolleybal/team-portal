@@ -38,11 +38,23 @@ export class WedstrijdOverzichtComponent implements OnInit {
     });
   }
 
-  UpdateAanwezigheid(matchId: number, isAanwezig: string, speler: any) {
+  GetCoaches(aanwezigheden: any[]) {
+    const coaches = aanwezigheden
+      .map(aanwezigheid => aanwezigheid.naam)
+      .join(', ');
+
+    const firstWord = aanwezigheden.length === 1 ? 'Coach' : 'Coaches';
+    return `${firstWord}: ${coaches}`;
+  }
+
+  UpdateAanwezigheid(currentWedstrijd: any, isAanwezig: string, speler: any) {
+    const matchId = currentWedstrijd.id;
+    const rol = currentWedstrijd.isEigenWedstrijd ? 'speler' : 'coach';
     this.aanwezigheidService.UpdateAanwezigheid(
       matchId,
       isAanwezig,
-      speler.id
+      speler.id,
+      rol
     );
 
     this.wedstrijden.forEach(wedstrijd => {

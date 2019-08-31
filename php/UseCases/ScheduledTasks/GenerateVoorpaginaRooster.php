@@ -41,7 +41,7 @@ class GenerateVoorpaginaRooster implements IInteractor
         }
 
         if (count($result) > 0) {
-            $filename = dirname(__FILE__) . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "WedstrijdOverzicht" . DIRECTORY_SEPARATOR . "rooster.json";
+            $filename = dirname(__FILE__) . '/../WedstrijdOverzicht/rooster.json';
             file_put_contents($filename, json_encode($result));
         }
 

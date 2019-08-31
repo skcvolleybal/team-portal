@@ -20,8 +20,8 @@ class ToggleBhv implements IInteractorWithData
             UnauthorizedResult();
         }
 
-        if (!$this->joomlaGateway->IsScheidsco($userId)) {
-            throw new UnexpectedValueException("Je bent geen scheidsco");
+        if (!$this->joomlaGateway->IsTeamcoordinator($userId)) {
+            throw new UnexpectedValueException("Je bent geen teamcoordinator");
         }
 
         $barcielidId = $data->barcielidId ?? null;

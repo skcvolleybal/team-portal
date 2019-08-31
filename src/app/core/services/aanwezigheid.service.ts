@@ -31,14 +31,20 @@ export class AanwezigheidService {
     });
   }
 
-  UpdateAanwezigheid(matchId: number, isAanwezig: string, spelerId: string) {
+  UpdateAanwezigheid(
+    matchId: number,
+    isAanwezig: string,
+    spelerId: string,
+    rol: string
+  ) {
     this.httpClient
       .post<any>(
         environment.baseUrl,
         {
           matchId,
           spelerId,
-          isAanwezig
+          isAanwezig,
+          rol
         },
         {
           params: {

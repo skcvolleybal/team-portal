@@ -24,8 +24,8 @@ class GetScheidsrechters implements IInteractorWithData
             UnauthorizedResult();
         }
 
-        if (!$this->joomlaGateway->IsScheidsco($userId)) {
-            throw new UnexpectedValueException("Je bent (helaas) geen Scheidsco");
+        if (!$this->joomlaGateway->IsTeamcoordinator($userId)) {
+            throw new UnexpectedValueException("Je bent (helaas) geen teamcoordinator");
         }
 
         $matchId = $data->matchId ?? null;

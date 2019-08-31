@@ -23,8 +23,8 @@ class GetScheidscoOverzicht implements IInteractor
             UnauthorizedResult();
         }
 
-        if (!$this->joomlaGateway->IsScheidsco($userId)) {
-            throw new UnexpectedValueException("Je bent (helaas) geen Scheidsco");
+        if (!$this->joomlaGateway->IsTeamcoordinator($userId)) {
+            throw new UnexpectedValueException("Je bent (helaas) geen teamcoordinator");
         }
         $overzicht = [];
         $uscProgramma = $this->nevoboGateway->GetProgrammaForSporthal('LDNUN');

@@ -3,7 +3,7 @@ include_once 'IInteractor.php';
 include_once 'NevoboGateway.php';
 include_once 'JoomlaGateway.php';
 include_once 'FluitBeschikbaarheidGateway.php';
-include_once 'shared' . DIRECTORY_SEPARATOR . 'FluitBeschikbaarheidHelper.php';
+include_once 'shared/FluitBeschikbaarheidHelper.php';
 
 class GetFluitBeschikbaarheid implements IInteractor
 {

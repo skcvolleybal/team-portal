@@ -1,23 +1,30 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-
   <div class="left">
     <a class="navbar-brand" (click)="toggleNavbar()" style="color: white;">
       <div style="display: flex;">
         TeamPortal
-        <div style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">
+        <div
+          style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden;"
+        >
           <span class="show-title">
-            <fa-icon [icon]="rightIcon"></fa-icon> {{GetNavigationTitle()}}
+            <fa-icon [icon]="rightIcon"></fa-icon> {{ GetNavigationTitle() }}
           </span>
         </div>
-
       </div>
     </a>
   </div>
 
   <div class="right">
-    <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarColor02"
-      aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation" (click)="toggleNavbar()">
-
+    <button
+      class="navbar-toggler collapsed"
+      type="button"
+      data-toggle="collapse"
+      data-target="#navbarColor02"
+      aria-controls="navbarColor02"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+      (click)="toggleNavbar()"
+    >
       <span class="navbar-toggler-icon"></span>
     </button>
   </div>
@@ -26,18 +33,38 @@
     <ngb-highlight [result]="r.naam" [term]="t"></ngb-highlight>
   </ng-template>
 
-  <div [ngbCollapse]="isNavbarHidden" class="navbar-collapse collapse" id="navbarColor02">
+  <div
+    [ngbCollapse]="isNavbarHidden"
+    class="navbar-collapse collapse"
+    id="navbarColor02"
+  >
     <ul class="navbar-nav mr-auto">
-      <li class="nav-item" routerLinkActive="active" *ngFor="let appRoute of appRoutes" (click)="onLinkClick()"
-        [ngClass]="{'hidden': appRoute.data.isHidden}">
-        <a class="nav-link" [routerLink]="appRoute.path">{{appRoute.data.title}}</a>
+      <li
+        class="nav-item"
+        routerLinkActive="active"
+        *ngFor="let appRoute of appRoutes"
+        (click)="onLinkClick()"
+        [class.hidden]="appRoute.isHidden"
+      >
+        <a class="nav-link" [routerLink]="appRoute.path">{{
+          appRoute.data.title
+        }}</a>
       </li>
       <li *ngIf="isWebcie">
         <div class="form-group">
-          <input (change)="setImpersonation()" class="form-control" [(ngModel)]="impersonatedUser" [inputFormatter]="formatter"
-            [ngbTypeahead]="searchUsers" placeholder="gebruiker" [resultTemplate]="rt" />
+          <input
+            (change)="setImpersonation()"
+            class="form-control"
+            [(ngModel)]="impersonatedUser"
+            [inputFormatter]="formatter"
+            [ngbTypeahead]="searchUsers"
+            placeholder="gebruiker"
+            [resultTemplate]="rt"
+          />
           <span *ngIf="searching">searching...</span>
-          <div class="invalid-feedback" *ngIf="searchFailed">Sorry, suggestions could not be loaded.</div>
+          <div class="invalid-feedback" *ngIf="searchFailed">
+            Sorry, suggestions could not be loaded.
+          </div>
         </div>
       </li>
     </ul>

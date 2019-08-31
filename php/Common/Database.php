@@ -52,4 +52,28 @@ class Database
 
         return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
+
+    public function Execute2($query, $params)
+    {
+        if (empty($query)) {
+            $this->returnError('Query is empty');
+        }
+
+        $stmt = $this->getDbConnection()->prepare($query);
+
+        if (!$stmt->execute($params)) {
+            $message = 'Fout bij het uitvoeren van query ( query:\\n' .
+                print_r($query, true) .
+                '\\n\\nparams:\n' .
+                print_r($params, true) .
+                ') ' .
+                print_r($stmt->errorInfo(), true) .
+                ' om ' .
+                date('H:i:s:(u) d-m-Y');
+
+            throw new mysqli_sql_exception($message);
+        }
+
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
+    }
 }

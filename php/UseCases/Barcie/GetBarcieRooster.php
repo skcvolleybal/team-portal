@@ -16,8 +16,8 @@ class GetBarcieRooster implements IInteractor
     public function Execute()
     {
         $userId = $this->joomlaGateway->GetUserId();
-        if (!$this->joomlaGateway->IsScheidsco($userId)) {
-            throw new UnexpectedValueException("Je bent geen scheidsco");
+        if (!$this->joomlaGateway->IsTeamcoordinator($userId)) {
+            throw new UnexpectedValueException("Je bent geen teamcoordinator");
         }
 
         $aanwezigheden = $this->barcieGateway->GetBarcieAanwezigheden();

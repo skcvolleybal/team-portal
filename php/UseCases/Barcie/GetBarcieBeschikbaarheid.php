@@ -5,7 +5,7 @@ include_once 'NevoboGateway.php';
 include_once 'BarcieGateway.php';
 include_once 'JoomlaGateway.php';
 include_once 'GetNevoboMatchByDate.php';
-include_once 'shared' . DIRECTORY_SEPARATOR . 'BarcieBeschikbaarheidHelper.php';
+include_once 'shared/BarcieBeschikbaarheidHelper.php';
 
 class GetBarcieBeschikbaarheid extends GetNevoboMatchByDate implements IInteractor
 {

@@ -19,8 +19,8 @@ class GetBarcieBeschikbaarheden implements IInteractorWithData
             UnauthorizedResult();
         }
 
-        if (!$this->joomlaGateway->IsScheidsco($userId)) {
-            throw new UnexpectedValueException("Je bent geen scheidsco");
+        if (!$this->joomlaGateway->IsTeamcoordinator($userId)) {
+            throw new UnexpectedValueException("Je bent geen (helaas) geen teamcoordinator");
         }
         $date = $data->date ?? null;
         if (!$date) {

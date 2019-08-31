@@ -37,10 +37,12 @@ export class WedstrijdenComponent implements OnInit {
   }
 
   updateAanwezigheid(aanwezigheid, wedstrijd) {
+    const rol = wedstrijd.isEigenWedstrijd ? 'speler' : 'coach';
     this.aanwezigheidService.UpdateAanwezigheid(
       wedstrijd.id,
       null,
-      aanwezigheid
+      aanwezigheid,
+      rol
     );
   }
 

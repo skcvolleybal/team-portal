@@ -35,7 +35,7 @@ class GenerateTeamoverzichten implements IInteractor
         }
 
         if (count($result) > 0) {
-            $filename = dirname(__FILE__) . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "Teamstanden" . DIRECTORY_SEPARATOR . "teamoverzichten.json";
+            $filename = dirname(__FILE__) . "/../Teamstanden/teamoverzichten.json";
             file_put_contents($filename, json_encode($result));
         }
 

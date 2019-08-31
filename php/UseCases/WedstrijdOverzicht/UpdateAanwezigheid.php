@@ -24,17 +24,18 @@ class UpdateAanwezigheid implements IInteractorWithData
         $playerId = $data->spelerId ?? $userId;
         $matchId = $data->matchId;
         $isAanwezig = $data->isAanwezig;
+        $rol = $data->rol;
 
-        $aanwezigheid = $this->aanwezigheidGateway->GetAanwezigheid($playerId, $matchId);
+        $aanwezigheid = $this->aanwezigheidGateway->GetAanwezigheid($playerId, $matchId, $rol);
         if ($aanwezigheid) {
             if ($isAanwezig === 'Onbekend') {
-                $this->aanwezigheidGateway->Delete($playerId, $matchId);
+                $this->aanwezigheidGateway->Delete($aanwezigheid->id);
             } else {
-                $this->aanwezigheidGateway->Update($playerId, $matchId, $isAanwezig);
+                $this->aanwezigheidGateway->Update($aanwezigheid->id, $isAanwezig);
             }
         } else {
             if ($isAanwezig !== 'Onbekend') {
-                $this->aanwezigheidGateway->Insert($playerId, $matchId, $isAanwezig);
+                $this->aanwezigheidGateway->Insert($playerId, $matchId, $isAanwezig, $rol);
             }
         }
     }

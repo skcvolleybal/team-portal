@@ -19,12 +19,12 @@ define('_JEXEC', 1);
 require_once JPATH_BASE . '/includes/defines.php';
 require_once JPATH_BASE . '/includes/framework.php';
 
-IncludeInPath(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'UseCases');
-IncludeInPath(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Common');
-IncludeInPath(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'DomainEntities');
-IncludeInPath(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Gateways');
-IncludeInPath(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'libs');
-IncludeInPath(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'shared');
+IncludeInPath(dirname(__FILE__) . '/UseCases');
+IncludeInPath(dirname(__FILE__) . '/Common');
+IncludeInPath(dirname(__FILE__) . '/DomainEntities');
+IncludeInPath(dirname(__FILE__) . '/Gateways');
+IncludeInPath(dirname(__FILE__) . '/libs');
+IncludeInPath(dirname(__FILE__) . '/shared');
 
 $accessControlAllowOrigin = $configuration->accessControlAllowOrigin;
 

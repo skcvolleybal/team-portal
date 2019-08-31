@@ -5,7 +5,7 @@ class GetVoorpaginaRooster implements IInteractor
 {
   public function __construct()
   {
-    $this->roosterFilename = dirname(__FILE__) . DIRECTORY_SEPARATOR . "rooster.json";
+    $this->roosterFilename = dirname(__FILE__) . '/rooster.json';
   }
 
   public function Execute()

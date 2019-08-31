@@ -17,16 +17,13 @@ class GetGroups implements IInteractor
             UnauthorizedResult();
         }
         $response = [];
-        if ($this->joomlaGateway->IsCoach($userId)) {
-            $response[] = "coach";
-        }
         if ($this->joomlaGateway->IsScheidsrechter($userId)) {
             $response[] = "scheidsrechter";
         }
         if ($this->joomlaGateway->IsBarcie($userId)) {
             $response[] = "barcie";
         }
-        if ($this->joomlaGateway->IsScheidsco($userId)) {
+        if ($this->joomlaGateway->IsTeamcoordinator($userId)) {
             $response[] = "scheidsco";
         }
         if ($this->joomlaGateway->IsWebcie($userId)) {

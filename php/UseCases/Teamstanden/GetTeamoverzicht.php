@@ -3,12 +3,6 @@ include 'IInteractorWithData.php';
 
 class GetTeamoverzicht implements IInteractorWithData
 {
-
-    public function __construct()
-    {
-
-    }
-
     public function Execute($data)
     {
         $teamnaam = $data->team ?? null;
@@ -16,7 +10,7 @@ class GetTeamoverzicht implements IInteractorWithData
             throw new InvalidArgumentException("Teamnaam is leeg");
         }
 
-        $filename = dirname(__FILE__) . DIRECTORY_SEPARATOR . "teamoverzichten.json";
+        $filename = dirname(__FILE__) . '/teamoverzichten.json';
         if (!file_exists($filename)) {
             exit("Overzichtsbestand bestaat niet");
         }
