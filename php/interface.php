@@ -24,7 +24,7 @@ function ExceptionHandler($error)
 }
 
 $configuration = include('./../configuration.php');
-if (isset($configuration->displayErrors)) {
+if (isset($configuration->displayErrors) && $configuration->displayErrors) {
     error_reporting(E_ALL);
     ini_set('display_errors', 1);
 }
