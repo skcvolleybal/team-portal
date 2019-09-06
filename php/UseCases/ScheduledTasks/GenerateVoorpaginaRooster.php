@@ -40,11 +40,6 @@ class GenerateVoorpaginaRooster implements IInteractor
             }
         }
 
-        if (count($result) > 0) {
-            $filename = dirname(__FILE__) . '/../WedstrijdOverzicht/rooster.json';
-            file_put_contents($filename, json_encode($result));
-        }
-
         return $result;
     }
 

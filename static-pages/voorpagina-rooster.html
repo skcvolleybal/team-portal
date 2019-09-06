@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.0"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js"></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="voorpagina-rooster">
+      <div class="panel panel-primary" v-for="dag in dagen">
+        <div class="panel-heading">{{ dag.datum }} {{ dag.zaalwacht }}</div>
+        <table class="table">
+          <caption></caption>
+          <thead>
+            <tr>
+              <th scope="col">Tijd</th>
+              <th scope="col">Teams</th>
+              <th scope="col">Fluiten</th>
+              <th scope="col">Tellen</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="wedstrijd in dag.wedstrijden">
+              <td>{{ wedstrijd.tijd }}</td>
+              <td>{{ wedstrijd.teams }}</td>
+              <td>{{ wedstrijd.scheidsrechter }}</td>
+              <td>{{ wedstrijd.tellers }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <script>
+      axios(
+        'https://www.skcvolleybal.nl/team-portal/php/interface.php?action=GenerateVoorpaginaRooster'
+      ).then(function(response) {
+        new Vue({
+          el: '#voorpagina-rooster',
+          data() {
+            return {
+              dagen: response.data
+            };
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

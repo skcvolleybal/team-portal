@@ -48,18 +48,20 @@ class NevoboGateway
 
         $results = [];
         foreach ($rankings as $ranking) {
-            $nummer = $ranking['child'][$this->xmlns]['nummer'][0]['data'];
-            $team = $ranking['child'][$this->xmlns]->team[0]['data'];
-            $wedstrijden = $ranking['child'][$this->xmlns]->wedstrijden[0]['data'];
-            $punten = $ranking['child'][$this->xmlns]['punten'][0]['data'];
-            $setsVoor = $ranking['child'][$this->xmlns]['setsvoor'][0]['data'];
-            $setsTegen = $ranking['child'][$this->xmlns]['setstegen'][0]['data'];
-            $puntenVoor = $ranking['child'][$this->xmlns]['puntenvoor'][0]['data'];
-            $puntenTegen = $ranking['child'][$this->xmlns]['puntentegen'][0]['data'];
+            $team = $ranking['child'][$this->xmlns];
+            
+            $nummer = $team['nummer'][0]['data'];
+            $teamnaam = $team['team'][0]['data'];
+            $wedstrijden = $team['wedstrijden'][0]['data'];
+            $punten = $team['punten'][0]['data'];
+            $setsVoor = $team['setsvoor'][0]['data'];
+            $setsTegen = $team['setstegen'][0]['data'];
+            $puntenVoor = $team['puntenvoor'][0]['data'];
+            $puntenTegen = $team['puntentegen'][0]['data'];
 
             $results[] = (object) [
                 'nummer' => $nummer,
-                'team' => $team,
+                'team' => $teamnaam,
                 'wedstrijden' => $wedstrijden,
                 'punten' => $punten,
                 'setsVoor' => $setsVoor,

@@ -8,7 +8,7 @@
 /out-tsc
 
 # dependencies
-/node_modules
+node_modules
 
 # IDEs and editors
 /.idea
@@ -42,12 +42,32 @@ Thumbs.db
 **/*.spc
 build-wrapper-win-x86-64.exe
 php/cookie.txt
-php/UseCases/WedstrijdOverzicht/rooster.json
-php/UseCases/Teamstanden/teamoverzichten.json
-php/UseCases/Teamstanden/teamstanden.json
-dist/php/UseCases/WedstrijdOverzicht/rooster.json
-dist/php/UseCases/Teamstanden/teamoverzichten.json
-dist/php/UseCases/Teamstanden/teamstanden.json
+
+rooster.json
+teamoverzichten.json
+teamstanden.json
 dist
 configuration.php
 errors
+
+.DS_Store
+node_modules
+/dist
+
+# local env files
+.env.local
+.env.*.local
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

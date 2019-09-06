@@ -210,7 +210,7 @@ class TeamPortal
     {
         include_once 'UseCases/ScheduledTasks/GenerateVoorpaginaRooster.php';
         $interactor = new GenerateVoorpaginaRooster($this->database);
-        print_r($interactor->Execute());
+        exit(json_encode($interactor->Execute()));
     }
 
     public function SetAllFluitBeschikbaarheden()

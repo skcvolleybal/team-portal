@@ -3,7 +3,7 @@ include_once 'IInteractor.php';
 include_once 'TelFluitGateway.php';
 include_once 'NevoboGateway.php';
 include_once 'FluitBeschikbaarheidGateway.php';
-include_once 'FluitBeschikbaarheid/shared/FluitBeschikbaarheidHelper.php';
+include_once 'FluitBeschikbaarheidHelper.php';
 
 class SetAllFluitbeschikbaarheden implements IInteractor
 {
@@ -53,7 +53,7 @@ class SetAllFluitbeschikbaarheden implements IInteractor
                     $fluitBeschikbaarheid = $this->fluitBeschikbaarheidHelper->GetFluitBeschikbaarheid($fluitBeschikbaarheden, $date, $time);
                     if ($fluitBeschikbaarheid === null) {
                         $fluitBeschikbaarheid = $this->fluitBeschikbaarheidHelper->isMogelijk($eigenWedstrijden, $time);
-                        $this->fluitBeschikbaarheidGateway->UpdateBeschikbaarheid($scheidsrechterId, $date, $time, $fluitBeschikbaarheid);
+                        $this->fluitBeschikbaarheidGateway->Insert($scheidsrechterId, $date, $time, $fluitBeschikbaarheid);
                         $numberOfAddedBeschikbaarheden++;
                     }
                 }
