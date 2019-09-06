@@ -15,8 +15,8 @@ class GetTeamoverzicht implements IInteractorWithData
             exit("Overzichtsbestand bestaat niet");
         }
 
-        $overzichten = json_decode(file_get_contents($filename), true);
-        $teamoverzicht = $this->GetTeamOverzicht($overzichten, $teamnaam);
+        $overzichten = json_decode(file_get_contents($filename));
+        $teamoverzicht = $this->GetOverzichtForTeam($overzichten, $teamnaam);
 
         $poule = GetKlasse($teamoverzicht->poule);
         $klasseUrl = "https://www.volleybal.nl/competitie/poule/" . $teamoverzicht->poule . "/regio-west";
@@ -84,6 +84,9 @@ class GetTeamoverzicht implements IInteractorWithData
         } else {
             $html = "";
             foreach ($programma as $wedstrijd) {
+                if (!$wedstrijd->timestamp){
+                    continue;
+                }
                 $dateTime = new DateTime($wedstrijd->timestamp->date);
                 $html .= "<tr>
                             <td>" . $dateTime->format("d-m-Y") . "</td>
@@ -98,7 +101,7 @@ class GetTeamoverzicht implements IInteractorWithData
         exit($template);
     }
 
-    private function GetTeamOverzicht($overzichten, $teamnaam)
+    private function GetOverzichtForTeam($overzichten, $teamnaam)
     {
         foreach ($overzichten as $overzicht) {
             if ($overzicht->naam == $teamnaam) {
