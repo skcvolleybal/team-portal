@@ -11,7 +11,12 @@
   <body>
     <div id="voorpagina-rooster">
       <div class="panel panel-primary" v-for="dag in dagen">
-        <div class="panel-heading">{{ dag.datum }} {{ dag.zaalwacht }}</div>
+        <div class="panel-heading">
+          {{ dag.datum }}
+          <span style="margin-left: 10px;" v-if="dag.zaalwacht"
+            >(Zaalwacht: {{ dag.zaalwacht }})</span
+          >
+        </div>
         <table class="table">
           <caption></caption>
           <thead>
