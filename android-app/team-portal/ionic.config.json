@@ -1,0 +1,7 @@
+{
+  "name": "team-portal",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "angular"
+}

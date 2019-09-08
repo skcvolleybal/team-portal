@@ -10,7 +10,7 @@ export class RequestService {
   constructor(private httpClient: HttpClient) {}
 
   GetGroupsOfUser() {
-    return this.httpClient.get<boolean>(environment.baseUrl, {
+    return this.httpClient.get<string[]>(environment.baseUrl, {
       params: { action: 'GetGroups' }
     });
   }

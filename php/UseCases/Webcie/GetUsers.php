@@ -18,7 +18,7 @@ class GetUsers implements IInteractorWithData
             throw new UnexpectedValueException("Je bent geen webcie");
         }
 
-        $name = $data->name ?? null;
+        $name = $data->naam ?? null;
         $result = [];
 
         if ($name && 3 <= strlen($name)) {

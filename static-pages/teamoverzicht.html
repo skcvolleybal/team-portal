@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Teamoverzicht</title>
+  </head>
+  <body>
+    <div id="team-overzicht">
+      <div class="list-group">
+        <div href="#" class="list-group-item active" style="display: flex;">
+          <h4>{{ team.naam }}</h4>
+        </div>
+        <div href="#" class="list-group-item">
+          Niveau:
+          <a
+            rel="noopener noreferrer"
+            target="_blank"
+            v-bind:[href]="team.klassUrl"
+            >team.niveau</a
+          >
+        </div>
+        <div href="#" class="list-group-item">Trainer: {{ team.trainer }}</div>
+        <div href="#" class="list-group-item">
+          Trainingstijden: {{ team.trainingstijden }}
+        </div>
+        <div href="#" class="list-group-item">Coaches: {{ team.coaches }}</div>
+        <div href="#" class="list-group-item">
+          <a
+            style="color: #337ab7;"
+            target="_blank"
+            v-bind:[href]="team.facebook"
+            ><i class="fa fa-2x fa-facebook-official"></i
+          ></a>
+        </div>
+      </div>
+      <div id="one">
+        <div class="panel panel-primary">
+          <div class="panel-heading">Stand ({{ team.poule }})</div>
+          <table class="table">
+            <caption></caption>
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Team</th>
+                <th scope="col">W</th>
+                <th scope="col">P</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-if="team.standen">
+                Nog geen uitslagen
+              </tr>
+              <tr v-for="stand in team.standen">
+                <td>{{ stand.nummer }}</td>
+                <td>{{ stand.team }}</td>
+                <td>{{ stand.wedstrijden }}</td>
+                <td>{{ stand.punten }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div id="two">
+        <div class="panel panel-primary">
+          <div class="panel-heading">Uitslagen</div>
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Wedstrijd</th>
+                <th scope="col">Uitslag</th>
+                <th scope="col">Setstanden</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-if="team.uitslagen">
+                Nog geen uitslagen
+              </tr>
+              <tr v-for="wedstrijd in team.uitslagen">
+                <td>{{ wedstrijd.team1 . " - " . wedstrijd.team2 }}</td>
+                <td>{{ wedstrijd.uitslag }}</td>
+                <td>{{ wedstrijd.setstanden.join(", "))}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="panel panel-primary">
+          <div class="panel-heading">Programma</div>
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Dag</th>
+                <th scope="col">Tijd</th>
+                <th scope="col">Wedstrijd</th>
+                <th scope="col">Locatie</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-if="team.programma == null">
+                Geen programma
+              </tr>
+              <tr v-for="wedstrijd in team.programma">
+                <td>{{ wedstrijd.dag }}</td>
+                <td>{{ wedstrijd.tijd }}</td>
+                <td>{{ wedstrijd.team1 + ' - ' + wedstrijd.team2 }}</td>
+                <td>{{ wedstrijd.locatie }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

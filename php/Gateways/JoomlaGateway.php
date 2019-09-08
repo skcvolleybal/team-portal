@@ -87,7 +87,7 @@ class JoomlaGateway
 
     public function GetUsersWithName($name)
     {
-        $name = '%$name%';
+        $name = "%$name%";
         $query = 'SELECT * FROM J3_users where name like :name LIMIT 0, 5';
         $params = [new Param(':name', $name, PDO::PARAM_STR)];
         return $this->database->Execute($query, $params);

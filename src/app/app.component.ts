@@ -58,6 +58,8 @@ export class AppComponent implements OnInit {
 
     this.requestService.GetGroupsOfUser().subscribe(response => {
       this.ShowMenuItems(response);
+      this.isWebcie = response.findIndex(group => group === 'webcie') !== -1;
+      this.stateService.isWebcie = this.isWebcie;
     });
   }
 
