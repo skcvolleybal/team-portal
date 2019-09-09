@@ -24,7 +24,7 @@ class GetGroups implements IInteractor
             $response[] = "barcie";
         }
         if ($this->joomlaGateway->IsTeamcoordinator($userId)) {
-            $response[] = "scheidsco";
+            $response[] = "teamcoordinator";
         }
         if ($this->joomlaGateway->IsWebcie($userId)) {
             $response[] = "webcie";
