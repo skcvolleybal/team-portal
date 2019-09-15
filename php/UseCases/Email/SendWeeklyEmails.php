@@ -8,11 +8,6 @@ include_once 'BarcieGateway.php';
 
 class SendWeeklyEmails implements IInteractor
 {
-    private $scheidsco = (object) [
-        "email" => "scheids@skcvolleybal.nl",
-        "naam" => "Eline van den Bogaerdt",
-    ];
-
     public function __construct($database)
     {
         $this->nevoboGateway = new NevoboGateway();
@@ -20,6 +15,11 @@ class SendWeeklyEmails implements IInteractor
         $this->zaalwachtGateway = new ZaalwachtGateway($database);
         $this->mailGateway = new MailGateway();
         $this->barcieGateway = new BarcieGateway($database);
+
+        $this->scheidsco = (object) [
+            "email" => "scheids@skcvolleybal.nl",
+            "naam" => "Eline van den Bogaerdt",
+        ];
     }
 
     public function Execute()

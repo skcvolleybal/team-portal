@@ -6,10 +6,11 @@ Beste {{naam}},<br>
 Aanstaande {{datum}} moet jouw team een wedstrijd tellen om {{tijd}}.<br>
 Jullie zullen de wedstrijd {{teams}} gaan tellen.<br>
 <br>
-Agenda's Importeren:<br>
+Voor vragen stuur een mail naar scheids@skcvolleybal.nl of stuur een appje naar 0681215527. <br>
+<br>
+Tip: Agenda's Importeren:<br>
 <a target="_blank" href="https://www.google.com/calendar/render?cid=http%3A%2F%2Fwww.skcvolleybal.nl%2Fteam-portal%2Fphp%2Finterface.php%3Faction%3DGetCalendar%26userid%3D{{userId}}%26tellen%3Dtrue">Google Calendar: Tellen & Zaalwacht</a><br>
 <br>
-Als je dit importeert worden alle wedstrijden automatisch in je google calendar gezet en ben je in 1 keer van al jouw wedstrijden op de hoogte.<br>
 (het kan even duren voordat je agenda wordt gesynchroniseerd...)<br>
 <br>
 Met vriendelijke groet,<br>
