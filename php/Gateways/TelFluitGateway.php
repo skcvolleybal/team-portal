@@ -124,7 +124,7 @@ class TelFluitGateway
     {
         $matchQuery = $this->GetSaveMatchQuery($matchIds);
 
-        $query = 'SELECT
+        $query = "SELECT
                     W.match_id as matchId,
                     U.id as userId,
                     U.name as naam,
@@ -134,7 +134,7 @@ class TelFluitGateway
                   INNER JOIN ($matchQuery) matchIds ON matchIds.id = W.match_id
                   INNER JOIN J3_user_usergroup_map M ON M.group_id = W.telteam_id
                   INNER JOIN J3_usergroups G ON G.id = M.group_id
-                  INNER JOIN J3_users U ON M.user_id = U.id';
+                  INNER JOIN J3_users U ON M.user_id = U.id";
         $params = [];
         $counter = 0;
         foreach ($matchIds as $matchId) {
@@ -147,7 +147,7 @@ class TelFluitGateway
     {
         $matchQuery = $this->GetSaveMatchQuery($matchIds);
 
-        $query = 'SELECT
+        $query = "SELECT
                     W.match_id as matchId,
                     U.id as userId,
                     U.name as naam,
@@ -162,10 +162,10 @@ class TelFluitGateway
                       INNER JOIN J3_usergroups G ON G.id = M.group_id
                       WHERE G.id in (
                         SELECT id FROM J3_usergroups WHERE parent_id = (
-                          SELECT id FROM J3_usergroups WHERE title = \'Teams\'
+                          SELECT id FROM J3_usergroups WHERE title = 'Teams'
                         )
                       )
-                  ) as G ON G.user_id = U.id';
+                  ) as G ON G.user_id = U.id";
         $params = [];
         $counter = 0;
         foreach ($matchIds as $matchId) {
