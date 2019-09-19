@@ -10,7 +10,6 @@ Voor vragen stuur een mail naar scheids@skcvolleybal.nl of stuur een appje naar 
 <br>
 Tip: Agenda's Importeren:<br>
 <a target="_blank" href="https://www.google.com/calendar/render?cid=http%3A%2F%2Fwww.skcvolleybal.nl%2Fteam-portal%2Fphp%2Finterface.php%3Faction%3DGetCalendar%26userid%3D{{userId}}%26tellen%3Dtrue">Google Calendar: Tellen & Zaalwacht</a><br>
-<br>
 (het kan even duren voordat je agenda wordt gesynchroniseerd...)<br>
 <br>
 Met vriendelijke groet,<br>
