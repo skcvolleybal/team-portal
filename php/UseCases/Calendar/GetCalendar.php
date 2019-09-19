@@ -4,6 +4,7 @@ require_once 'iCalcreator/autoload.php';
 include_once 'ZaalwachtGateway.php';
 include_once 'NevoboGateway.php';
 include_once 'TelFluitGateway.php';
+include_once 'JoomlaGateway.php';
 
 class GetCalendar implements IInteractor
 {
