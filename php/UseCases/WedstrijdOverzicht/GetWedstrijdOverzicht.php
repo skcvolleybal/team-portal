@@ -40,9 +40,10 @@ class GetWedstrijdOverzicht implements IInteractor
         }, $teamprogramma);
         $coachMatchIds = array_map(function ($wedstrijd) {
             return $wedstrijd->id;
-        }, $teamprogramma);
+        }, $coachProgramma);
+        $allMatchIds = array_merge($teamMatchIds, $coachMatchIds);
 
-        $aanwezigheden = $this->aanwezigheidGateway->GetAanwezighedenForMatchIds($teamMatchIds);
+        $aanwezigheden = $this->aanwezigheidGateway->GetAanwezighedenForMatchIds($allMatchIds);
 
         $this->GetAllInvalTeamsForTeam($team);
         foreach ($wedstrijden as $wedstrijd) {
