@@ -5,17 +5,24 @@ function IncludeInPath($folder)
     set_include_path(get_include_path() . PATH_SEPARATOR . $folder);
 }
 
+function WriteToErrorLog($file, $message)
+{
+    $dir = "errors";
+    if (!file_exists($dir)) {
+        mkdir($dir);
+    }
+    file_put_contents("$dir/$file", $message);
+}
+
+
 function ExceptionHandler($error)
 {
     $currentTime = (new DateTime())->format('Y-m-d H.i.s.u');
-    if (!file_exists('errors')) {
-        mkdir('errors');
-    }
     $line = $error->getLine();
     $file = $error->getFile();
     $message = $error->getMessage();
     $output = "File (line $line): $file\nMessage: $message";
-    file_put_contents("errors/$currentTime.txt", $output);
+    WriteToErrorLog("$currentTime.txt", $output);
 
     header('HTTP/1.1 500 Internal Server Error');
     echo $message;

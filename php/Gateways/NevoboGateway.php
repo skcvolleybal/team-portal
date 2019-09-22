@@ -49,7 +49,7 @@ class NevoboGateway
         $results = [];
         foreach ($rankings as $ranking) {
             $team = $ranking['child'][$this->xmlns];
-            
+
             $nummer = $team['nummer'][0]['data'];
             $teamnaam = $team['team'][0]['data'];
             $wedstrijden = $team['wedstrijden'][0]['data'];
@@ -203,19 +203,23 @@ class NevoboGateway
             $team1 = stripslashes($titleMatches[2]);
             $team2 = stripslashes($titleMatches[3]);
 
-            preg_match('/Wedstrijd: (.*), Datum: (.*), Speellocatie: (.*)/', $description, $descriptionMatches);
-            $matchId = preg_replace('/\s+/', ' ', $descriptionMatches[1]);
-            $date = $descriptionMatches[2];
-            $locatie = preg_replace('/\s+/', ' ', stripslashes($descriptionMatches[3]));
+            if (preg_match('/Wedstrijd: (.*), Datum: (.*), Speellocatie: (.*)/', $description, $descriptionMatches)) {
+                $matchId = preg_replace('/\s+/', ' ', $descriptionMatches[1]);
+                $date = $descriptionMatches[2];
+                $locatie = preg_replace('/\s+/', ' ', stripslashes($descriptionMatches[3]));
 
-            $programma[] = (object) [
-                'team1' => $team1,
-                'team2' => $team2,
-                'id' => $matchId,
-                'poule' => substr($matchId, 4, 3),
-                'timestamp' => $this->ConvertNevoboDate($date),
-                'locatie' => $locatie,
-            ];
+                $programma[] = (object) [
+                    'team1' => $team1,
+                    'team2' => $team2,
+                    'id' => $matchId,
+                    'poule' => substr($matchId, 4, 3),
+                    'timestamp' => $this->ConvertNevoboDate($date),
+                    'locatie' => $locatie,
+                ];
+            } else {
+                $currentTime = (new DateTime())->format('Y-m-d H.i.s.u');
+                WriteToErrorLog($currentTime, "Deze wedstrijd kon niet geparsed worden:\n$description");
+            }
         }
 
         return $programma;
