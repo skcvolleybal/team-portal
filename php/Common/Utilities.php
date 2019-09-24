@@ -82,13 +82,18 @@ function isSkcFormat($naam)
 
 function ToSkcName($naam)
 {
+    if (empty($naam)) {
+        return null;
+    }
+
     if (isSkcFormat($naam)) {
         return $naam;
     }
-    if (!isNevoboFormat($naam)) {
-        throw new InvalidArgumentException("Iets fout met het team: '$naam'");
+    if (isNevoboFormat($naam)) {
+        return ($naam[4] == 'D' ? 'Dames ' : 'Heren ') . substr($naam, 7);
     }
-    return ($naam[4] == 'D' ? 'Dames ' : 'Heren ') . substr($naam, 7);
+
+    throw new InvalidArgumentException("Iets fout met het team: '$naam'");
 }
 
 function ToNevoboName($naam)
