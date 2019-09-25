@@ -37,6 +37,10 @@ class GetBarcieBeschikbaarheden implements IInteractorWithData
 
         foreach ($beschikbaarheden as $beschikbaarheid) {
             $barcielid = $this->GetBarcielidById($barcieleden, $beschikbaarheid->user_id);
+            if ($barcielid === null) {
+                continue;
+            }
+            
             $newBeschikbaarheid = (object) [
                 "id" => $barcielid->id,
                 "naam" => $barcielid->naam,
