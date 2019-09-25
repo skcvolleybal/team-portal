@@ -187,6 +187,10 @@ class NevoboGateway
         20 sep. 21:00: VCS HS 5 - SKC HS 7
         [description] =>
         Wedstrijd: 3000H4G BK, Datum: donderdag 20 september, 21:00, Speellocatie: Wasbeek, Van Alkemadelaan 12, 2171DH SASSENHEIM
+
+
+        OF:
+        Vervallen wedstrijd: 3000D4G   KJ, Datum: vrijdag 24 januari, 21:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  LEIDEN
          */
 
         $matches = $this->ParseFeed($url);
@@ -216,6 +220,8 @@ class NevoboGateway
                     'timestamp' => $this->ConvertNevoboDate($date),
                     'locatie' => $locatie,
                 ];
+            } else if (preg_match('/Vervallen wedstrijd: (.*), Datum: (.*), (.*), Speellocatie: (.*), (.*)/', $description, $descriptionMatches)) {
+                // Nothing
             } else {
                 $currentTime = (new DateTime())->format('Y-m-d H.i.s.u');
                 WriteToErrorLog($currentTime, "Deze wedstrijd kon niet geparsed worden:\n$description");
