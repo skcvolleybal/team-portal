@@ -7,7 +7,9 @@ class WedstrijdenImporteren implements IInteractor
 {
     public function __construct($database)
     {
-        $this->dwfGateway = new DwfGateway();
+        $configuration = include('./../configuration.php');
+
+        $this->dwfGateway = new DwfGateway($configuration->dwfUsername, $configuration->dwfPassword);
         $this->gespeeldeWedstrijdenGateway = new GespeeldeWedstrijdenGateway($database);
     }
 
@@ -15,46 +17,56 @@ class WedstrijdenImporteren implements IInteractor
     {
         $this->gespeeldeWedstrijden = $this->dwfGateway->GetGespeeldeWedstrijden();
         $this->opgeslagenWedstrijden = $this->gespeeldeWedstrijdenGateway->GetGespeeldeWedstrijden();
-      
-        foreach ($this->gespeeldeWedstrijden as $counter => $wedstrijd) {
+
+        foreach ($this->gespeeldeWedstrijden as $wedstrijd) {
             if ($this->IsWedstrijdAlOpgeslagen($wedstrijd)) {
                 continue;
             }
 
-            $this->gespeeldeWedstrijdenGateway->AddWedstrijd($wedstrijd);
-            $isThuisWedstrijd = strpos($wedstrijd->team1, "SKC") !== false;
             $wedstrijdVerloop = $this->dwfGateway->GetWedstrijdVerloop($wedstrijd->id);
             if ($wedstrijdVerloop != null) {
-                foreach ($wedstrijdVerloop as $setIndex => $set) {
-                    $opstelling = $isThuisWedstrijd ? $set->thuis : $set->uit;
-                    $punten = $wedstrijdVerloop[$setIndex]->punten;
-                    $thuisServeert = $wedstrijdVerloop[$setIndex]->beginService == "thuis";
-                    foreach ($punten as $punt) {
-                        switch ($punt->type) {
-                            case "punt":
-                                $this->gespeeldeWedstrijdenGateway->AddPunt(
-                                    $wedstrijd,
-                                    $setIndex + 1,
-                                    $opstelling,
-                                    $thuisServeert == $isThuisWedstrijd,
-                                    $punt->isThuispunt == $isThuisWedstrijd,
-                                    $punt->stand);
-                                if ($punt->isThuispunt == $isThuisWedstrijd && $thuisServeert == $isThuisWedstrijd) {
-                                    $opstelling = $this->Doordraaien($opstelling);
-                                }
-                                $thuisServeert = $punt->isThuispunt;
-                                break;
-                            case "wissel":
-                                if ($punt->isThuisWissel == $isThuisWedstrijd) {
-                                    $opstelling = $this->Wisselen($opstelling, $punt);
-                                }
-                                break;
-                            default:
-                                echo "onbekend type " . $punt->type;
-                                break;
+                foreach (["team1", "team2"] as $team) {
+                    if (strpos($wedstrijd->{$team}, "SKC ") !== 0) {
+                        continue;
+                    }
+
+                    $isThuisWedstrijd = $team === "team1";
+
+                    foreach ($wedstrijdVerloop as $setIndex => $set) {
+                        $opstelling = $isThuisWedstrijd ? $set->thuis : $set->uit;
+                        $punten = $wedstrijdVerloop[$setIndex]->punten;
+                        $thuisServeert = $wedstrijdVerloop[$setIndex]->beginService == "thuis";
+                        foreach ($punten as $punt) {
+                            switch ($punt->type) {
+                                case "punt":
+                                    $this->gespeeldeWedstrijdenGateway->AddPunt(
+                                        $wedstrijd,
+                                        $setIndex + 1,
+                                        $opstelling,
+                                        $thuisServeert,
+                                        $punt->isThuispunt,
+                                        $punt->puntenTeam1,
+                                        $punt->puntenTeam2
+                                    );
+                                    if ($punt->isThuispunt == $isThuisWedstrijd && $thuisServeert == $isThuisWedstrijd) {
+                                        $opstelling = $this->Doordraaien($opstelling);
+                                    }
+                                    $thuisServeert = $punt->isThuispunt;
+                                    break;
+                                case "wissel":
+                                    if ($punt->isThuisWissel == $isThuisWedstrijd) {
+                                        $opstelling = $this->Wisselen($opstelling, $punt);
+                                    }
+                                    break;
+                                default:
+                                    echo "onbekend type " . $punt->type;
+                                    break;
+                            }
                         }
                     }
                 }
+
+                $this->gespeeldeWedstrijdenGateway->AddWedstrijd($wedstrijd);
             }
         }
 

@@ -3,12 +3,15 @@
 class DwfGateway
 {
     private $dwfUrl = 'https://dwf.volleybal.nl/application/handlers/dwf/pull/';
-    private $dwfOuathUrl = 'https://dwf.volleybal.nl/application/handlers/dwf/oauth.php';
+    private $dwfOAuthUrl = 'https://dwf.volleybal.nl/application/handlers/dwf/oauth.php';
     private $cookieFilename = 'cookie.txt';
     private $WID;
 
-    public function __construct()
+    public function __construct($username, $password)
     {
+        $this->username = $username;
+        $this->password = $password;
+
         if (file_exists($this->cookieFilename)) {
             $this->WID = file_get_contents($this->cookieFilename);
         }
@@ -20,28 +23,27 @@ class DwfGateway
 
     private function Connect()
     {
-        $oauthPage = $this->SendHeadersRequest($this->dwfOuathUrl);
+        $oauthPage = $this->SendHeadersRequest($this->dwfOAuthUrl);
         $this->WID = $this->GetCookieValueFromHeader($oauthPage['Set-Cookie']);
 
         $location = SanitizeQueryString($oauthPage['Location']);
         $loginPage = $this->SendHeadersRequest($location);
 
         $sessionId = $this->GetCookieValueFromHeader($loginPage['Set-Cookie']);
-        $config = JFactory::getConfig();
         $data = (object) [
-            '_username' => GetConfigValue('dwfEmail'),
-            '_password' => GetConfigValue('dwfPassword'),
+            '_username' => $this->username,
+            '_password' => $this->password,
         ];
         $headers = ["Cookie: $sessionId"];
         $url = 'https://login.nevobo.nl/login_check';
         $loginCheck = $this->SendHeadersRequest($url, $headers, $data);
 
-        $location = $loginCheck['Location'];
+        $location = "https://login.nevobo.nl" . $loginCheck['Location'];
         $sessionId = $this->GetCookieValueFromHeader($loginCheck['Set-Cookie']);
         $codePage = $this->SendHeadersRequest($location, ["Cookie: $sessionId"]);
 
         $location = $codePage['Location'];
-        $codePage = $this->SendHeadersRequest($location, ["Cookie: $this->WID"]);
+        $this->SendHeadersRequest($location, ["Cookie: $this->WID"]);
 
         $fp = fopen($this->cookieFilename, 'w');
         fwrite($fp, $this->WID);
@@ -96,9 +98,9 @@ class DwfGateway
     {
         $headers = array();
 
-        $header_text = substr($response, 0, strpos($response, '\r\n\r\n'));
+        $header_text = substr($response, 0, strpos($response, "\r\n\r\n"));
 
-        foreach (explode('\r\n', $header_text) as $i => $line) {
+        foreach (explode("\r\n", $header_text) as $i => $line) {
             if ($i === 0) {
                 $headers['http_code'] = $line;
             } else {
@@ -131,7 +133,7 @@ class DwfGateway
         $data = json_decode($response);
 
         if (!isset($data->results[0]->type)) {
-            throw new UnexpectedValueException('Kan gespeelde wedstrijden niet ophalen: $response');
+            throw new UnexpectedValueException("Kan gespeelde wedstrijden niet ophalen: $response");
         }
 
         $wedstrijden = [];
@@ -179,7 +181,7 @@ class DwfGateway
             'iMatchFormId' => $this->GetMatchFormId($matchId),
         ];
         $headers = (object) [
-            'Cookie: $this->WID',
+            "Cookie: $this->WID",
         ];
         $response = SendPost($this->dwfUrl, $body, $headers);
         $data = json_decode($response);
@@ -216,7 +218,8 @@ class DwfGateway
                 }
                 $result[$currentSetIndex]->punten[] = (object) [
                     'type' => 'punt',
-                    'stand' => "$item->iSetResultHomeTeam - $item->iSetResultOutTeam",
+                    'puntenTeam1' => $item->iSetResultHomeTeam,
+                    'puntenTeam2' => $item->iSetResultOutTeam,
                     'isThuispunt' => $item->sTeam == 'home',
                 ];
 

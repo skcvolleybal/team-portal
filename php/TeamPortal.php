@@ -199,6 +199,14 @@ class TeamPortal
         $interactor->Execute();
     }
 
+    public function GetDwfPunten()
+    {
+        $data = GetQueryParameters();
+        include_once 'UseCases/DWF/GetDwfPunten.php';
+        $interactor = new GetDwfPunten($this->database);
+        exit(json_encode($interactor->Execute($data)));
+    }
+
     public function GetVoorpaginaRooster()
     {
         include_once 'UseCases/WedstrijdOverzicht/GetVoorpaginaRooster.php';

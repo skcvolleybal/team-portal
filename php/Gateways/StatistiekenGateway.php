@@ -39,4 +39,35 @@ class StatistiekenGateway
         ];
         return $this->database->Execute($query, $params);
     }
+
+    public function GetAllePuntenByTeam($team)
+    {
+        $query = 'SELECT * FROM DWF_punten P
+                  INNER JOIN DWF_wedstrijden W ON P.matchId = W.id
+                  WHERE W.team1 = :team1 or W.team2 = :team2
+                  ORDER BY P.id';
+        $params = [
+            new Param(':team1', $team, PDO::PARAM_STR),
+            new Param(':team2', $team, PDO::PARAM_STR),
+        ];
+        return $this->database->Execute($query, $params);
+    }
+
+    public function GetAllePuntenByMatchId($matchId)
+    {
+        $query = 'SELECT * FROM DWF_punten P
+                  INNER JOIN DWF_wedstrijden W ON P.matchId = W.id
+                  WHERE P.matchId = :matchId
+                  ORDER BY P.id';
+        $params = [new Param(':matchId', $matchId, PDO::PARAM_STR)];
+        return $this->database->Execute($query, $params);
+    }
+
+    public function GetAlleSkcPunten()
+    {
+        $query = 'SELECT * FROM DWF_punten P
+                  INNER JOIN DWF_wedstrijden W ON P.matchId = W.id
+                  ORDER BY P.id';
+        return $this->database->Execute($query);
+    }
 }
