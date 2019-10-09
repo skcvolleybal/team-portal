@@ -90,6 +90,6 @@ class GetBarcieBeschikbaarheid extends GetNevoboMatchByDate implements IInteract
             }
         }
 
-        return null;
+        return "Onbekend";
     }
 }

@@ -94,12 +94,20 @@ class BarcieGateway
     {
         $this->CheckBeschikbaarheid($isBeschikbaar);
         $query = 'UPDATE barcie_availability
-                  SET is_beschikbaar = :isBeschikbaarheid
+                  SET is_beschikbaar = :isBeschikbaar
                   WHERE id = :id';
         $params = [
             new Param(':id', $id, PDO::PARAM_INT),
             new Param(Column::IsBeschikbaar, $isBeschikbaar, PDO::PARAM_STR),
         ];
+
+        return $this->database->Execute($query, $params);
+    }
+
+    public function DeleteBeschikbaarheid($id)
+    {
+        $query = 'DELETE FROM barcie_availability WHERE id = :id';
+        $params = [new Param(':id', $id, PDO::PARAM_INT)];
 
         return $this->database->Execute($query, $params);
     }

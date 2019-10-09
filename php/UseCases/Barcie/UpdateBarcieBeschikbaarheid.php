@@ -30,7 +30,11 @@ class UpdateBarcieBeschikbaarheid implements IInteractorWithData
 
         $dbBeschikbaarheid = $this->barcieGateway->GetBeschikbaarheid($userId, $dayId);
         if ($dbBeschikbaarheid) {
-            $this->barcieGateway->UpdateBeschikbaarheid($dbBeschikbaarheid->id, $beschikbaarheid);
+            if ($beschikbaarheid == "Onbekend") {
+                $this->barcieGateway->DeleteBeschikbaarheid($dbBeschikbaarheid->id);
+            } else {
+                $this->barcieGateway->UpdateBeschikbaarheid($dbBeschikbaarheid->id, $beschikbaarheid);
+            }
         } else {
             $this->barcieGateway->InsertBeschikbaarheid($userId, $dayId, $beschikbaarheid);
         }
