@@ -36,27 +36,31 @@ class GetDwfPunten implements IInteractorWithData
         $result = [];
         foreach ($punten as $punt) {
             $result[] = (object) [
-                "id" =>  $punt->id,
                 "matchId" => $punt->matchId,
-                "set" =>  $punt->set,
+                "set" =>  intval($punt->set),
                 "skcTeam" => $punt->skcTeam,
                 "otherTeam" => $punt->otherTeam,
-                "setsSkcTeam" => $punt->setsSkcTeam,
-                "setsOtherTeam" => $punt->setsOtherTeam,
-                "isSkcService" =>  $punt->isSkcService,
-                "isSkcPunt" => $punt->isSkcPunt,
-                "puntenSkcTeam" => $punt->puntenSkcTeam,
-                "puntenOtherTeam" => $punt->puntenOtherTeam,
-                "ra" => $punt->ra,
-                "rv" =>  $punt->rv,
-                "mv" =>  $punt->mv,
-                "lv" =>  $punt->lv,
-                "la" =>  $punt->la,
-                "ma" =>  $punt->ma
+                "setsSkcTeam" => intval($punt->setsSkcTeam),
+                "setsOtherTeam" => intval($punt->setsOtherTeam),
+                "isSkcService" => $punt->isSkcService == "Y",
+                "isSkcPunt" => $punt->isSkcPunt == "Y",
+                "puntenSkcTeam" => intval($punt->puntenSkcTeam),
+                "puntenOtherTeam" => intval($punt->puntenOtherTeam),
+                "ra" => $this->ToInt($punt->ra),
+                "rv" => $this->ToInt($punt->rv),
+                "mv" => $this->ToInt($punt->mv),
+                "lv" => $this->ToInt($punt->lv),
+                "la" => $this->ToInt($punt->la),
+                "ma" => $this->ToInt($punt->ma)
             ];
         }
 
 
         return $result;
+    }
+
+    private function ToInt($getal)
+    {
+        return $getal ? intval($getal) : null;
     }
 }

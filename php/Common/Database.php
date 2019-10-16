@@ -53,7 +53,7 @@ class Database
         return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
 
-    public function Execute2($query, $params)
+    public function Execute2($query, $params = null)
     {
         if (empty($query)) {
             $this->returnError('Query is empty');
