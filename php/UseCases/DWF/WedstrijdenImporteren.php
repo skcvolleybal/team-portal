@@ -23,50 +23,78 @@ class WedstrijdenImporteren implements IInteractor
                 continue;
             }
 
-            $wedstrijdVerloop = $this->dwfGateway->GetWedstrijdVerloop($wedstrijd->id);
-            if ($wedstrijdVerloop != null) {
-                foreach (["team1", "team2"] as $team) {
-                    if (strpos($wedstrijd->{$team}, "SKC ") !== 0) {
-                        continue;
+            $wedstrijdverloop = $this->dwfGateway->GetWedstrijdVerloop($wedstrijd->id);
+            if ($wedstrijdverloop == null) {
+                continue;
+            }
+
+            $teams = [];
+            if (strpos($wedstrijd->team1, "SKC ", 0) === 0) {
+                $teams[] = "thuis";
+            }
+            if (strpos($wedstrijd->team2, "SKC ", 0) === 0) {
+                $teams[] = "uit";
+            }
+            foreach ($teams as $team) {
+                foreach ($wedstrijdverloop->sets as $currentSet => $set) {
+                    $opstelling = $set->beginopstellingen->{$team};
+                    if ($team == "thuis") {
+                        $skcTeam = $wedstrijd->team1;
+                        $otherTeam = $wedstrijd->team2;
+                        $setsSkcTeam = $wedstrijd->setsTeam1;
+                        $setsOtherTeam = $wedstrijd->setsTeam2;
+                    } else {
+                        $skcTeam = $wedstrijd->team2;
+                        $otherTeam = $wedstrijd->team1;
+                        $setsSkcTeam = $wedstrijd->setsTeam2;
+                        $setsOtherTeam = $wedstrijd->setsTeam1;
                     }
 
-                    $isThuisWedstrijd = $team === "team1";
+                    foreach ($set->punten as $punt) {
+                        switch ($punt->type) {
+                            case "punt":
+                                if ($team == "thuis") {
+                                    $skcPunten = $punt->puntenThuisTeam;
+                                    $tegenstandPunten  = $punt->puntenUitTeam;
+                                } else {
+                                    $skcPunten = $punt->puntenUitTeam;
+                                    $tegenstandPunten  = $punt->puntenThuisTeam;
+                                }
 
-                    foreach ($wedstrijdVerloop as $setIndex => $set) {
-                        $opstelling = $isThuisWedstrijd ? $set->thuis : $set->uit;
-                        $punten = $wedstrijdVerloop[$setIndex]->punten;
-                        $thuisServeert = $wedstrijdVerloop[$setIndex]->beginService == "thuis";
-                        foreach ($punten as $punt) {
-                            switch ($punt->type) {
-                                case "punt":
-                                    $this->gespeeldeWedstrijdenGateway->AddPunt(
-                                        $wedstrijd,
-                                        $setIndex + 1,
-                                        $opstelling,
-                                        $thuisServeert,
-                                        $punt->isThuispunt,
-                                        $punt->puntenTeam1,
-                                        $punt->puntenTeam2
-                                    );
-                                    if ($punt->isThuispunt == $isThuisWedstrijd && $thuisServeert == $isThuisWedstrijd) {
-                                        $opstelling = $this->Doordraaien($opstelling);
-                                    }
-                                    $thuisServeert = $punt->isThuispunt;
-                                    break;
-                                case "wissel":
-                                    if ($punt->isThuisWissel == $isThuisWedstrijd) {
-                                        $opstelling = $this->Wisselen($opstelling, $punt);
-                                    }
-                                    break;
-                                default:
-                                    echo "onbekend type " . $punt->type;
-                                    break;
-                            }
+                                $this->gespeeldeWedstrijdenGateway->AddPunt(
+                                    $wedstrijd->id,
+                                    $skcTeam,
+                                    $currentSet + 1,
+                                    $punt->serverendTeam == $team,
+                                    $punt->scorendTeam == $team,
+                                    $skcPunten,
+                                    $tegenstandPunten,
+                                    $opstelling
+                                );
+                                if ($punt->serverendTeam != $punt->scorendTeam && $punt->scorendTeam == $team) {
+                                    $opstelling = $this->Doordraaien($opstelling);
+                                }
+                                break;
+                            case "wissel":
+                                if ($punt->team == $team) {
+                                    $opstelling = $this->Wisselen($opstelling, $punt->spelerUit, $punt->spelerIn);
+                                }
+                                break;
+                            default:
+                                break;
                         }
                     }
                 }
 
-                $this->gespeeldeWedstrijdenGateway->AddWedstrijd($wedstrijd);
+                $newWedstrijd = (object) [
+                    "id" => $wedstrijd->id,
+                    "skcTeam" => $skcTeam,
+                    "otherTeam" => $otherTeam,
+                    "setsSkcTeam" => $setsSkcTeam,
+                    "setsOtherTeam" => $setsOtherTeam,
+                ];
+
+                $this->gespeeldeWedstrijdenGateway->AddWedstrijd($newWedstrijd);
             }
         }
 
@@ -83,11 +111,11 @@ class WedstrijdenImporteren implements IInteractor
         return false;
     }
 
-    private function Wisselen($opstelling, $wissel)
+    private function Wisselen($opstelling, $uit, $in)
     {
-        foreach ($opstelling as $i => $positie) {
-            if ($wissel->uit == $positie) {
-                $opstelling[$i] = $wissel->in;
+        foreach ($opstelling as $i => $speler) {
+            if ($speler == $uit) {
+                $opstelling[$i] = $in;
                 return $opstelling;
             }
         }
@@ -96,7 +124,7 @@ class WedstrijdenImporteren implements IInteractor
             return $opstelling;
         }
 
-        return $opstelling; //throw new Exception("Speler niet gevonden");
+        throw new Exception("Speler niet gevonden");
     }
 
     private function Doordraaien($opstelling)

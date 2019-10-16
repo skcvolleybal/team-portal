@@ -12,41 +12,42 @@ class GespeeldeWedstrijdenGateway
     public function GetGespeeldeWedstrijden()
     {
         $query = 'SELECT * FROM DWF_wedstrijden';
-        return $this->database->Execute($query);
+        return $this->database->Execute2($query);
     }
 
     public function AddWedstrijd($wedstrijd)
     {
-        $query = 'INSERT INTO DWF_wedstrijden (id, team1, team2, setsTeam1, setsTeam2)
-                  VALUES (:id, :team1, :team2, :setsTeam1, :setsTeam2)';
+        $query = 'INSERT INTO DWF_wedstrijden (id, skcTeam, otherTeam, setsSkcTeam, setsOtherTeam)
+                  VALUES (?, ?, ?, ?, ?)';
         $params = [
-            new Param(':id', $wedstrijd->id, PDO::PARAM_STR),
-            new Param(':team1', $wedstrijd->team1, PDO::PARAM_STR),
-            new Param(':team2', $wedstrijd->team2, PDO::PARAM_STR),
-            new Param(':setsTeam1', $wedstrijd->setsTeam1, PDO::PARAM_INT),
-            new Param(':setsTeam2', $wedstrijd->setsTeam2, PDO::PARAM_INT),
+            $wedstrijd->id,
+            $wedstrijd->skcTeam,
+            $wedstrijd->otherTeam,
+            $wedstrijd->setsSkcTeam,
+            $wedstrijd->setsOtherTeam
         ];
-        $this->database->Execute($query, $params);
+        $this->database->Execute2($query, $params);
     }
 
-    public function AddPunt($wedstrijd, $set, $opstelling, $isThuisService, $isThuisPunt, $puntenTeam1, $puntenTeam2)
+    public function AddPunt($wedstrijdId, $skcTeam, $set, $isSkcService, $isSkcPunt, $puntenSkcTeam, $puntenOtherTeam, $opstelling)
     {
-        $query = 'INSERT INTO DWF_punten (matchId, currentSet, isThuisService, isThuisPunt, puntenTeam1, puntenTeam2, ra, rv, mv, lv, la, ma)
-                  VALUES (:matchId, :currentSet, :isThuisService, :isThuisPunt, :puntenTeam1, :puntenTeam2, :ra, :rv, :mv, :lv, :la, :ma)';
+        $query = 'INSERT INTO DWF_punten (matchId, skcTeam, `set`, isSkcService, isSkcPunt, puntenSkcTeam, puntenOtherTeam, ra, rv, mv, lv, la, ma)
+                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
         $params = [
-            new Param(Column::MatchId, $wedstrijd->id, PDO::PARAM_STR),
-            new Param(':currentSet', $set, PDO::PARAM_INT),
-            new Param(':isThuisService', $isThuisService ? 'Y' : 'N', PDO::PARAM_STR),
-            new Param(':isThuisPunt', $isThuisPunt ? 'Y' : 'N', PDO::PARAM_STR),
-            new Param(':puntenTeam1', $puntenTeam1, PDO::PARAM_STR),
-            new Param(':puntenTeam2', $puntenTeam2, PDO::PARAM_STR),
-            new Param(':ra', $opstelling[0], PDO::PARAM_INT),
-            new Param(':rv', $opstelling[1], PDO::PARAM_INT),
-            new Param(':mv', $opstelling[2], PDO::PARAM_INT),
-            new Param(':lv', $opstelling[3], PDO::PARAM_INT),
-            new Param(':la', $opstelling[4], PDO::PARAM_INT),
-            new Param(':ma', $opstelling[5], PDO::PARAM_INT),
+            $wedstrijdId,
+            $skcTeam,
+            $set,
+            $isSkcService ? 'Y' : 'N',
+            $isSkcPunt ? 'Y' : 'N',
+            $puntenSkcTeam,
+            $puntenOtherTeam,
+            $opstelling[0],
+            $opstelling[1],
+            $opstelling[2],
+            $opstelling[3],
+            $opstelling[4],
+            $opstelling[5]
         ];
-        $this->database->Execute($query, $params);
+        $this->database->Execute2($query, $params);
     }
 }

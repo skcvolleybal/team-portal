@@ -12,15 +12,25 @@ class GetDwfPunten implements IInteractorWithData
     public function Execute($data)
     {
         $matchIdregex = "/3000(B){0,1}[H|D]\d[A-Z] [(\d{2})|[A-Z]{2}/";
-        $input = $data->input ?? null;
-        if (empty($input)) {
+        $team = $data->team ?? null;
+        $matchId = $data->matchId ?? null;
+
+        if ($matchId && !preg_match_all($matchIdregex, $matchId)) {
+            throw new UnexpectedValueException("Error: matchId: '$matchId', klopt niet. Bv: 3000 H4G DG");
+        }
+        if ($team && isSkcFormat($team)) {
+            throw new UnexpectedValueException("Error: team: '$team', klopt niet. Bv: SKC HS 2");
+        }
+
+        if (empty($team) && empty($matchId)) {
             $punten = $this->statistiekenGateway->GetAlleSkcPunten();
-        } else if (isNevoboFormat($input) || isSkcFormat($input)) {
-            $punten = $this->statistiekenGateway->GetAllePuntenByTeam($input);
-        } else if (preg_match_all($matchIdregex, $input)) {
-            $punten = $this->statistiekenGateway->GetAllePuntenByMatchId($input);
+        } else if (!empty($team) && !empty($matchId)) {
+            $punten = $this->statistiekenGateway->GetAllePuntenByMatchId($matchId, $team);
+        } else if (!empty($team)) {
+            $team = ToNevoboName($team);
+            $punten = $this->statistiekenGateway->GetAllePuntenByTeam($team);
         } else {
-            throw new UnexpectedValueException("Input is niets: $input");
+            throw new UnexpectedValueException("Error: team: '$matchId', '$team'");
         }
 
         $result = [];
@@ -28,15 +38,15 @@ class GetDwfPunten implements IInteractorWithData
             $result[] = (object) [
                 "id" =>  $punt->id,
                 "matchId" => $punt->matchId,
-                "currentSet" =>  $punt->currentSet,
-                "team1" => $punt->team1,
-                "team2" => $punt->team2,
-                "setsTeam1" => $punt->setsTeam1,
-                "setsTeam2" => $punt->setsTeam2,
-                "isThuisService" =>  $punt->isThuisService,
-                "isThuisPunt" => $punt->isThuisPunt,
-                "puntenTeam1" => $punt->puntenTeam1,
-                "puntenTeam2" => $punt->puntenTeam2,
+                "set" =>  $punt->set,
+                "skcTeam" => $punt->skcTeam,
+                "otherTeam" => $punt->otherTeam,
+                "setsSkcTeam" => $punt->setsSkcTeam,
+                "setsOtherTeam" => $punt->setsOtherTeam,
+                "isSkcService" =>  $punt->isSkcService,
+                "isSkcPunt" => $punt->isSkcPunt,
+                "puntenSkcTeam" => $punt->puntenSkcTeam,
+                "puntenOtherTeam" => $punt->puntenOtherTeam,
                 "ra" => $punt->ra,
                 "rv" =>  $punt->rv,
                 "mv" =>  $punt->mv,

@@ -189,121 +189,119 @@ class DwfGateway
             throw new UnexpectedValueException('Kan wedstrijd verloop niet ophalen: ' . print_r($data, 1));
         }
 
-        return $data;
+        $match = (object) [
+            "sets" => []
+        ];
+        $currentSet = -1;
+
+        $numberOfItems = count($data->results[0]->data);
+        for ($i = $numberOfItems - 2; $i >= 0; $i--) {
+            $point = $data->results[0]->data[$i]->data;
+            switch ($point->sLogType) {
+                case "restartSet":
+                    $match->sets[] = (object) [
+                        "wissels" => (object) [
+                            "thuis" => (object) [],
+                            "uit" => (object) []
+                        ],
+                        "beginopstellingen" => (object) [
+                            "thuis" => (object) [],
+                            "uit" => (object) []
+                        ],
+                        "punten" => []
+                    ];
+                    $currentSet++;
+                    break;
+                case "point":
+                    $match->sets[$currentSet]->punten[] = (object) [
+                        "type" => "punt",
+                        "scorendTeam" => $point->sTeam == "home" ? "thuis" : "uit",
+                        "puntenThuisTeam" => $point->iSetResultHomeTeam,
+                        "puntenUitTeam" => $point->iSetResultOutTeam,
+                        "serverendTeam" => $point->sPreviousServiceFor == "home" ? "thuis" : "uit",
+                        "serveerder" => $point->iPreviousServiceForShirtNr
+                    ];
+
+                    break;
+                case "timeOut":
+                    break;
+                case "substitution":
+                    if (preg_match('/^(Uitzonderlijke spelerswissel|Spelerswissel): (\d*) voor (\d*) in het veld$/', $point->sMessage, $output_array)) {
+                        $spelerIn = intval($output_array[2]);
+                        $spelerUit = intval($output_array[3]);
+                        $team = $point->sTeam == "home" ? "thuis" : "uit";
+                        $match->sets[$currentSet]->punten[] = (object) [
+                            "type" => "wissel",
+                            "spelerUit" => $spelerUit,
+                            "spelerIn" => $spelerIn,
+                            "team" => $team
+                        ];
+
+                        $isNewWissel = true;
+                        foreach ($match->sets[$currentSet]->wissels->{$team} as $uit => $in) {
+                            if ($spelerIn == $uit && $spelerUit == $in) {
+                                $isNewWissel = false;
+                                break;
+                            }
+                        }
+                        if ($isNewWissel) {
+                            $match->sets[$currentSet]->wissels->{$team}->{$spelerUit} = $spelerIn;
+                        }
+                    }
+                    break;
+                default:
+                    $var = 1;
+                    break;
+            }
+        }
+
+        return $match;
     }
 
-    public function GetWedstrijdVerloop($matchId)
+    private function DetermineBeginopstelling(&$wedstrijdverloop)
     {
-        $data = $this->GetWedstrijdVerloopData($matchId);
-        if (count($data->results[0]->data) == 0) {
-            return null;
-        }
-
-        $currentSetIndex = -1;
-        $wissels = [];
-        $result = [];
-        $serverendTeam = 'NOT_YET_SET';
-        $homeIndex = 0;
-        $awayIndex = 0;
-        $numberOfItems = count($data->results[0]->data);
-        if ($numberOfItems <= 1) {
-            return null;
-        }
-        for ($i = $numberOfItems - 2; $i >= 0; $i--) {
-            $item = $data->results[0]->data[$i]->data;
-            $type = $item->sLogType;
-            if ($type == 'point') {
-                if ($item->iSetResultHomeTeam + $item->iSetResultOutTeam === 1) {
-                    $result[$currentSetIndex]->beginService = $item->sPreviousServiceFor == 'home' ? 'thuis' : 'uit';
-                }
-                $result[$currentSetIndex]->punten[] = (object) [
-                    'type' => 'punt',
-                    'puntenTeam1' => $item->iSetResultHomeTeam,
-                    'puntenTeam2' => $item->iSetResultOutTeam,
-                    'isThuispunt' => $item->sTeam == 'home',
-                ];
-
-                if ($serverendTeam != $item->sPreviousServiceFor) {
-                    if ($serverendTeam == 'home') {
-                        $homeIndex++;
-                    } else {
-                        $awayIndex++;
+        foreach ($wedstrijdverloop->sets as $currenSet => $set) {
+            foreach (["thuis", "uit"] as $team) {
+                $opstelling = [null, null, null, null, null, null];
+                $serveerder = null;
+                $gespeeldePunten = 0;
+                $numberOfServeerders = 0;
+                foreach ($set->punten as $punt) {
+                    if ($punt->type == "punt" && $punt->serverendTeam == $team && $serveerder != $punt->serveerder) {
+                        $serveerder = $punt->serveerder;
+                        $opstelling[$numberOfServeerders++] = $serveerder;
                     }
-                    $serverendTeam = $item->sPreviousServiceFor;
-                }
-
-                if ($item->sPreviousServiceFor == 'home' && $homeIndex < 6 && $result[$currentSetIndex]->thuis[$homeIndex] == null) {
-                    $result[$currentSetIndex]->thuis[$homeIndex] = $item->iPreviousServiceForShirtNr;
-                }
-                if ($item->sPreviousServiceFor == 'out' && $awayIndex < 6 && $result[$currentSetIndex]->uit[$awayIndex] == null) {
-                    $result[$currentSetIndex]->uit[$awayIndex] = $item->iPreviousServiceForShirtNr;
-                }
-            } else if ($type == 'substitution') {
-                if (preg_match('/Spelerswissel: (\d*) voor (\d*) in het veld/', $item->sMessage, $output_array)) {
-                    $newWissel = (object) [
-                        'isThuisWissel' => $item->sTeam == 'home',
-                        'in' => intval($output_array[1]),
-                        'uit' => intval($output_array[2]),
-                    ];
-                    $addWissel = true;
-                    foreach ($wissels as $j => $wissel) {
-                        if ($wissel->isThuisWissel == $newWissel->isThuisWissel && $newWissel->in == $wissel->uit) {
-                            $addWissel = false;
-                            unset($wissels[$j]);
-                            break;
-                        }
-                    }
-                    if ($addWissel) {
-                        $wissels[] = $newWissel;
-                    }
-                    $result[$currentSetIndex]->punten[] = (object) [
-                        'type' => 'wissel',
-                        'isThuisWissel' => $newWissel->isThuisWissel,
-                        'in' => $newWissel->in,
-                        'uit' => $newWissel->uit,
-                    ];
-                }
-            } else if ($type == 'restartSet') {
-                foreach ($wissels as $wissel) {
-                    for ($j = 0; $j < 6; $j++) {
-                        if ($wissel->isThuisWissel) {
-                            if ($result[$currentSetIndex]->thuis[$j] == $wissel->in || $result[$currentSetIndex]->thuis[$j] == $wissel->uit) {
-                                $result[$currentSetIndex]->thuis[$j] = $wissel->uit;
-                                break;
-                            }
-                        } else {
-                            if ($result[$currentSetIndex]->uit[$j] == $wissel->in || $result[$currentSetIndex]->uit[$j] == $wissel->uit) {
-                                $result[$currentSetIndex]->uit[$j] = $wissel->uit;
-                                break;
-                            }
-                        }
-                    }
-                }
-                $wissels = [];
-
-                for ($j = $i - 1; $j >= 0; $j--) {
-                    $item = $data->results[0]->data[$j]->data;
-                    if ($item->sLogType == 'point') {
-                        $serverendTeam = $item->sPreviousServiceFor;
+                    $gespeeldePunten++;
+                    if ($numberOfServeerders == 6) {
                         break;
                     }
                 }
 
-                $homeIndex = 0;
-                $awayIndex = 0;
-                $currentSetIndex++;
-                $result[] = (object) [
-                    'thuis' => [null, null, null, null, null, null],
-                    'uit' => [null, null, null, null, null, null],
-                    'punten' => [],
-                ];
-            } else if ($type == 'timeOut') {
-                // Do Nothing
-            } else {
-                echo '';
+                for ($i = $gespeeldePunten - 1; $i >= 0; $i--) {
+                    $punt = $set->punten[$i];
+                    if ($punt->type == "wissel" && $punt->team == $team) {
+                        for ($j = 0; $j < 6; $j++) {
+                            if ($opstelling[$j] == $punt->spelerIn) {
+                                $opstelling[$j] = $punt->spelerUit;
+                                break;
+                            }
+                        }
+                    }
+                }
+                $wedstrijdverloop->sets[$currenSet]->beginopstellingen->{$team} = $opstelling;
             }
         }
+    }
 
-        return $result;
+    public function GetWedstrijdVerloop($matchId)
+    {
+        $wedstrijdverloop = $this->GetWedstrijdVerloopData($matchId);
+        if (count($wedstrijdverloop->sets) == 0) {
+            return null;
+        }
+
+        $this->DetermineBeginopstelling($wedstrijdverloop);
+
+        return $wedstrijdverloop;
     }
 }
