@@ -1,5 +1,5 @@
-DROP TABLE IF EXISTS `dwf_wedstrijden`;
-CREATE TABLE `dwf_wedstrijden` (
+DROP TABLE IF EXISTS `DWF_wedstrijden`;
+CREATE TABLE `DWF_wedstrijden` (
   `id` varchar(16) CHARACTER SET latin1 COLLATE latin1_general_cs NOT NULL,
   `skcTeam` varchar(64) NOT NULL,
   `otherTeam` varchar(64) NOT NULL,
@@ -7,11 +7,11 @@ CREATE TABLE `dwf_wedstrijden` (
   `setsOtherTeam` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-ALTER TABLE `dwf_wedstrijden`
+ALTER TABLE `DWF_wedstrijden`
   ADD KEY `id` (`id`) USING BTREE;
 
-DROP TABLE IF EXISTS `dwf_punten`;
-CREATE TABLE `dwf_punten` (
+DROP TABLE IF EXISTS `DWF_punten`;
+CREATE TABLE `DWF_punten` (
   `id` int(11) NOT NULL,
   `matchId` varchar(16) CHARACTER SET latin1 COLLATE latin1_general_cs NOT NULL,
   `skcTeam` varchar(9) CHARACTER SET latin1 COLLATE latin1_general_cs NOT NULL,
@@ -28,7 +28,7 @@ CREATE TABLE `dwf_punten` (
   `ma` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-ALTER TABLE `dwf_punten`
+ALTER TABLE `DWF_punten`
   ADD PRIMARY KEY (`id`),
   ADD KEY `DWF_punten_matchId` (`matchId`),
   ADD KEY `DWF_punten_ra` (`ra`),
@@ -38,5 +38,5 @@ ALTER TABLE `dwf_punten`
   ADD KEY `DWF_punten_la` (`la`),
   ADD KEY `DWF_punten_ma` (`ma`);
 
-ALTER TABLE `dwf_punten`
+ALTER TABLE `DWF_punten`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
