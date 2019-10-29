@@ -3,15 +3,9 @@ include_once 'IInteractor.php';
 
 class GetTeamstanden implements IInteractor
 {
-
-    public function __construct()
-    {
-
-    }
-
     public function Execute()
     {
-        $teams = json_decode(file_get_contents(dirname(__FILE__) . "/teamstanden.json"), true);
+        $teams = json_decode(file_get_contents(dirname(__FILE__) . "/teamstanden.json"), false);
         $numberOfSkcTeams = count($teams);
 
         $teamnames = [];
@@ -19,13 +13,17 @@ class GetTeamstanden implements IInteractor
         $backgroundcolor = [];
         foreach ($teams as $i => $team) {
             $teamnames[] = '"' . GetShortTeam($team->naam) . '"';
-            $backgroundcolor[] = $i % 2 == 0 ? "'rgba(75, 192, 192, 0.2)'" : "'rgba(75, 192, 192, 0.2)'";
-            $bordercolors[] = $i % 2 == 0 ? "'rgba(75, 192, 192, 1)'" : "'rgba(54, 162, 235, 1)'";
+            if ($i % 2 == 0) {
+                $backgroundcolor[] = "'rgba(75, 192, 192, 0.2)'";
+                $bordercolors[] = "'rgba(75, 192, 192, 1)'";
+            } else {
+                $backgroundcolor[] = "'rgba(75, 192, 192, 0.2)'";
+                $bordercolors[] = "'rgba(54, 162, 235, 1)'";
+            }
         }
 
         $rankings = array();
         $numberOfTeams = array();
-        $rankingInLength = array();
         $maxNumberOfTeams = 0;
         foreach ($teams as $team) {
             $numberOfTeams[] = $team->numberOfTeams;
