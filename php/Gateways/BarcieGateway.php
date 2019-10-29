@@ -284,4 +284,16 @@ class BarcieGateway
 
         $this->database->Execute($query, $params);
     }
+
+    public function GetBarciedienstenByUserId($userId)
+    {
+        $query = 'SELECT U.name, D.date, M.shift, M.is_bhv AS isBhv
+                  FROM J3_users U
+                  INNER JOIN barcie_schedule_map M ON M.user_id = U.id
+                  INNER JOIN barcie_days D ON M.day_id = D.id
+                  WHERE U.id = ? AND D.date >= NOW()';
+        $params = [$userId];
+
+        return $this->database->Execute2($query, $params);
+    }
 }

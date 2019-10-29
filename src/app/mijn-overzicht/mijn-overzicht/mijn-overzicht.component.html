@@ -19,6 +19,20 @@
           </td>
         </tr>
       </ng-container>
+      <ng-container *ngIf="tijdslot.type === 'bardienst'">
+        <tr class="gray-background">
+          <td>
+            {{ tijdslot.tijd }}
+          </td>
+          <td colspan="3">
+            Bardienst:
+            <span class="badge big-badge badge-success"
+              >Shift {{ tijdslot.shift }}
+              {{ (tijdslot.isBhv ? ' (BHV)' : '') }}</span
+            >
+          </td>
+        </tr>
+      </ng-container>
       <ng-container *ngIf="tijdslot.type === 'wedstrijd'">
         <tr>
           <td colspan="4">

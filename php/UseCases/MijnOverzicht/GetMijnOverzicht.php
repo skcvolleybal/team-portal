@@ -5,6 +5,7 @@ include_once 'JoomlaGateway.php';
 include_once 'NevoboGateway.php';
 include_once 'TelFluitGateway.php';
 include_once 'ZaalwachtGateway.php';
+include_once 'BarcieGateway.php';
 
 class GetMijnOverzichtInteractor implements IInteractor
 {
@@ -14,6 +15,7 @@ class GetMijnOverzichtInteractor implements IInteractor
         $this->nevoboGateway = new NevoboGateway();
         $this->telFluitGateway = new TelFluitGateway($database);
         $this->zaalwachtGateway = new ZaalwachtGateway($database);
+        $this->barcieGateway = new BarcieGateway($database);
     }
 
     public function Execute()
@@ -50,6 +52,14 @@ class GetMijnOverzichtInteractor implements IInteractor
         $fluitbeurten = $this->telFluitGateway->GetFluitbeurten($userId);
         foreach ($fluitbeurten as $fluitbeurt) {
             $overzichtItem = $this->MapFromMatch($fluitbeurt, $allUscMatches, $team, $coachTeam, $userId);
+            if ($overzichtItem) {
+                $this->AddToOverzicht($overzicht, $overzichtItem);
+            }
+        }
+
+        $bardiensten = $this->barcieGateway->GetBarciedienstenByUserId($userId);
+        foreach ($bardiensten as $dienst) {
+            $overzichtItem = $this->MapFromBarciedienst($dienst->date, $dienst->shift, $dienst->isBhv);
             if ($overzichtItem) {
                 $this->AddToOverzicht($overzicht, $overzichtItem);
             }
@@ -102,26 +112,15 @@ class GetMijnOverzichtInteractor implements IInteractor
         ];
     }
 
-    // private function MapFromNevoboMatch($match, $team, $coachTeam)
-    // {
-    //     $uscMatch = $this->GetUscMatch($match->matchId, $allUscMatches);
-    //     if ($uscMatch == null) {
-    //         return null;
-    //     }
-    //     return [
-    //         "id" => $match->id,
-    //         "type" => "wedstrijd",
-    //         "date" => $match->timestamp->format('Y-m-d'),
-    //         "tijd" => $match->timestamp->format('G:i'),
-    //         "team1" => $match->team1,
-    //         "isTeam1" => $match->team1 == $team,
-    //         "isCoachTeam1" => $match->team1 == $coachTeam,
-    //         "team2" => $match->team2,
-    //         "isTeam2" => $match->team2 == $team,
-    //         "isCoachTeam2" => $match->team2 == $coachTeam,
-    //         "locatie" => $match->locatie,
-    //     ];
-    // }
+    private function MapFromBarciedienst($date, $shift, $isBhv)
+    {
+        return (object) [
+            "type" => "bardienst",
+            "date" => $date,
+            "shift" => $shift,
+            "isBhv" => $isBhv
+        ];
+    }
 
     private function MapFromZaalwacht($match)
     {
@@ -179,13 +178,13 @@ class GetMijnOverzichtInteractor implements IInteractor
 
         $counter = 0;
         foreach ($tijdsloten as $tijdslot) {
-            if ($tijdslot->type != 'zaalwacht') {
-                if ($newItem->tijd <= $tijdslot->tijd) {
-                    if ($newItem->id != $tijdslot->id) {
-                        array_splice($tijdsloten, $counter, 0, [$newItem]);
-                    }
-                    return;
-                }
+            if (
+                !in_array($tijdslot->type, ['zaalwacht', 'bardienst']) &&
+                $newItem->tijd <= $tijdslot->tijd &&
+                $newItem->id != $tijdslot->id
+            ) {
+                array_splice($tijdsloten, $counter, 0, [$newItem]);
+                return;
             }
             $counter++;
         }
