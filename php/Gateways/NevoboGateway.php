@@ -9,6 +9,7 @@ class NevoboGateway
     private $pouleprogrammaUrl = 'https://api.nevobo.nl/export/poule/%s/%s/programma.%s';
     private $poulestandUrl = 'https://api.nevobo.nl/export/poule/%s/%s/stand.%s';
     private $verenigingsprogrammaUrl = 'https://api.nevobo.nl/export/vereniging/%s/programma.%s';
+    private $verenigingsuitslagenUrl = 'https://api.nevobo.nl/export/vereniging/%s/resultaten.rss';
     private $teamprogrammaUrl = 'https://api.nevobo.nl/export/team/%s/%s/%s/programma.%s';
     private $teamresultatenUrl = 'https://api.nevobo.nl/export/team/%s/%s/%s/resultaten.%s';
     private $sporthalprogrammaUrl = 'https://api.nevobo.nl/export/sporthal/%s/programma.%s';
@@ -86,9 +87,9 @@ class NevoboGateway
         return $this->GetProgramma($url);
     }
 
-    public function GetProgrammaForVereniging($vereniging)
+    public function GetProgrammaForVereniging()
     {
-        $url = sprintf($this->verenigingsprogrammaUrl, $vereniging, $this->exportType);
+        $url = sprintf($this->verenigingsprogrammaUrl, $this->verenigingscode, $this->exportType);
         return $this->GetProgramma($url);
     }
 
@@ -111,6 +112,12 @@ class NevoboGateway
         $gender = $this->GetGender($team);
         $sequence = $this->GetSequence($team);
         $url = sprintf($this->teamresultatenUrl, $this->verenigingscode, $gender, $sequence, $this->exportType);
+        return $this->GetUitslagen($url);
+    }
+
+    public function GetUitslagenForVereniging()
+    {
+        $url = sprintf($this->verenigingsuitslagenUrl, $this->verenigingscode, $this->exportType);
         return $this->GetUitslagen($url);
     }
 
@@ -248,20 +255,23 @@ class NevoboGateway
             $title = addslashes($match->title);
             $description = addslashes($match->description);
 
-            preg_match('/(.*) - (.*), Uitslag: (.*)/', $title, $titleMatches);
-            $team1 = stripslashes($titleMatches[1]);
-            $team2 = stripslashes($titleMatches[2]);
-            $uitslag = $titleMatches[3];
+            if (preg_match('/(.*) - (.*), Uitslag: (.*)/', $title, $titleMatches)) {
+                $team1 = stripslashes($titleMatches[1]);
+                $team2 = stripslashes($titleMatches[2]);
+                $uitslag = $titleMatches[3];
 
-            preg_match('/Wedstrijd: (.*), Uitslag: (.*), Setstanden: (.*)/', $description, $descriptionMatches);
-            $setstanden = $descriptionMatches[3];
+                preg_match('/Wedstrijd: (.*), Uitslag: (.*), Setstanden: (.*)/', $description, $descriptionMatches);
+                $setstanden = $descriptionMatches[3];
 
-            $uitslagen[] = (object) [
-                'team1' => $team1,
-                'team2' => $team2,
-                'uitslag' => $uitslag,
-                'setstanden' => explode(', ', $setstanden),
-            ];
+                $uitslagen[] = (object) [
+                    'team1' => $team1,
+                    'team2' => $team2,
+                    'uitslag' => $uitslag,
+                    'setstanden' => explode(', ', $setstanden),
+                ];
+            } else if (preg_match('/Vervallen wedstrijd: (.*), Datum: (.*), (.*), Speellocatie: (.*), (.*)/', $description, $descriptionMatches)) {
+                // Nothing
+            }
         }
 
         return $uitslagen;

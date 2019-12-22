@@ -81,7 +81,14 @@ class TeamPortal
     public function GetFluitOverzicht()
     {
         include_once 'UseCases/FluitBeschikbaarheid/GetFluitBeschikbaarheid.php';
-        $interactor = new GetFluitBeschikbaarheid($this->database);
+        $interactor = new GetFluitRooster($this->database);
+        $interactor->Execute();
+    }
+
+    public function GetFluitRooster()
+    {
+        include_once 'UseCases/FluitBeschikbaarheid/GetFluitRooster.php';
+        $interactor = new GetFluitRooster($this->database);
         $interactor->Execute();
     }
 
