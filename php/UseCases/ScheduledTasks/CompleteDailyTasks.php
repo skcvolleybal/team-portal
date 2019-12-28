@@ -15,11 +15,11 @@ class CompleteDailyTasks implements IInteractor
     public function Execute()
     {
         $result = [];
-        $setAllFluitbeschikbaarhedenInteractor = new SetAllFluitbeschikbaarheden($this->database);
-        $result[] = $setAllFluitbeschikbaarhedenInteractor->Execute();
+        // $setAllFluitbeschikbaarhedenInteractor = new SetAllFluitbeschikbaarheden($this->database);
+        // $result[] = $setAllFluitbeschikbaarhedenInteractor->Execute();
 
-        $setAllBarcieBeschikbaarhedenInteractor = new SetAllBarcieBeschikbaarheden($this->database);
-        $result[] = $setAllBarcieBeschikbaarhedenInteractor->Execute();
+        // $setAllBarcieBeschikbaarhedenInteractor = new SetAllBarcieBeschikbaarheden($this->database);
+        // $result[] = $setAllBarcieBeschikbaarhedenInteractor->Execute();
 
         $generateTeamstandenInteractor = new GenerateTeamstanden();
         $result[] = $generateTeamstandenInteractor->Execute();
