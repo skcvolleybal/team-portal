@@ -1,7 +1,5 @@
 <?php
 
-include_once 'NevoboGateway.php';
-
 class AanwezigheidGateway
 {
     public function __construct($database)

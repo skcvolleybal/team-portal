@@ -1,7 +1,5 @@
 <?php
 
-include_once "Team.php";
-
 class ZaalwachtGateway
 {
     public function __construct($database)

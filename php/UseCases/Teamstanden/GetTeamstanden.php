@@ -1,5 +1,4 @@
 <?php
-include_once 'IInteractor.php';
 
 class GetTeamstanden implements IInteractor
 {

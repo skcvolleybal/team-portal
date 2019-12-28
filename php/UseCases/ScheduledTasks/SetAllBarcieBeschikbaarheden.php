@@ -1,9 +1,4 @@
 <?php
-include_once 'IInteractor.php';
-include_once 'BarcieGateway.php';
-include_once 'NevoboGateway.php';
-include_once 'JoomlaGateway.php';
-include_once 'shared/BarcieBeschikbaarheidHelper.php';
 
 class SetAllBarcieBeschikbaarheden implements IInteractor
 {

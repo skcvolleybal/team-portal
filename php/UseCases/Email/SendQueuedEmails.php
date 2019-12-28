@@ -1,6 +1,4 @@
 <?php
-include_once 'IInteractor.php';
-include_once 'EmailGateway.php';
 
 class SendQueuedEmails implements IInteractor
 {

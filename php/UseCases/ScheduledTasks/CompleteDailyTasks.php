@@ -1,9 +1,4 @@
 <?php
-include_once 'IInteractor.php';
-include_once 'SetAllFluitbeschikbaarheden.php';
-include_once 'SetAllBarcieBeschikbaarheden.php';
-include_once 'GenerateTeamstanden.php';
-include_once 'GenerateTeamoverzichten.php';
 
 class CompleteDailyTasks implements IInteractor
 {

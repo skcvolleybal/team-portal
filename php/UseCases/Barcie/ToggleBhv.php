@@ -1,7 +1,4 @@
 <?php
-include 'IInteractorWithData.php';
-include_once 'BarcieGateway.php';
-include_once 'JoomlaGateway.php';
 
 class ToggleBhv implements IInteractorWithData
 {

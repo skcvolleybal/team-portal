@@ -2,12 +2,6 @@
 
 use PHPMailer\PHPMailer\PHPMailer;
 
-require 'PHPMailer/src/Exception.php';
-require 'PHPMailer/src/PHPMailer.php';
-require 'PHPMailer/src/SMTP.php';
-include_once "Persoon.php";
-include_once "Email.php";
-
 class EmailGateway
 {
     function __construct($database)

@@ -1,11 +1,5 @@
 <?php
 
-include_once 'IInteractorWithData.php';
-include_once 'JoomlaGateway.php';
-include_once 'FluitBeschikbaarheidGateway.php';
-include_once 'TelFluitGateway.php';
-include_once 'NevoboGateway.php';
-include_once 'ScheidscoFunctions.php';
 
 class GetScheidsrechters implements IInteractorWithData
 {

@@ -1,7 +1,5 @@
 <?php
 
-include_once 'IInteractorWithData.php';
-include_once 'JoomlaGateway.php';
 
 class Inloggen implements IInteractorWithData
 {

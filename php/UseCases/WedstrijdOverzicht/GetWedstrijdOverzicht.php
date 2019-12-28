@@ -1,10 +1,5 @@
 <?php
 
-include_once 'IInteractor.php';
-include_once 'JoomlaGateway.php';
-include_once 'NevoboGateway.php';
-include_once 'AanwezigheidGateway.php';
-include_once 'Utilities.php';
 
 class GetWedstrijdOverzicht implements IInteractor
 {

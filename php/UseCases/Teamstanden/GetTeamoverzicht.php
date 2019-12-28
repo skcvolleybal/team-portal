@@ -1,5 +1,4 @@
 <?php
-include 'IInteractorWithData.php';
 
 class GetTeamoverzicht implements IInteractorWithData
 {

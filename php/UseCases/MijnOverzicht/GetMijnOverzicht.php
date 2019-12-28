@@ -1,11 +1,5 @@
 <?php
 
-include_once 'IInteractor.php';
-include_once 'JoomlaGateway.php';
-include_once 'NevoboGateway.php';
-include_once 'TelFluitGateway.php';
-include_once 'ZaalwachtGateway.php';
-include_once 'BarcieGateway.php';
 
 class GetMijnOverzichtInteractor implements IInteractor
 {

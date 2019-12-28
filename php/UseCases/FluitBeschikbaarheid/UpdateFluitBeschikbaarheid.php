@@ -1,7 +1,4 @@
 <?php
-include_once 'IInteractorWithData.php';
-include_once 'JoomlaGateway.php';
-include_once 'FluitBeschikbaarheidGateway.php';
 
 class UpdateFluitBeschikbaarheid implements IInteractorWithData
 {

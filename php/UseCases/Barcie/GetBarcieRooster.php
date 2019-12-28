@@ -1,8 +1,5 @@
 <?php
 
-include_once 'IInteractor.php';
-include_once 'JoomlaGateway.php';
-include_once 'BarcieGateway.php';
 
 class GetBarcieRooster implements IInteractor
 {

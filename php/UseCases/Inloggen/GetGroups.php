@@ -1,6 +1,4 @@
 <?php
-include 'IInteractor.php';
-include_once 'JoomlaGateway.php';
 
 class GetGroups implements IInteractor
 {

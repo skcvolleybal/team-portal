@@ -1,7 +1,4 @@
 <?php
-include_once 'IInteractorWithData.php';
-include_once 'BarcieGateway.php';
-include_once 'JoomlaGateway.php';
 
 class AddBarcieDag implements IInteractorWithData
 {

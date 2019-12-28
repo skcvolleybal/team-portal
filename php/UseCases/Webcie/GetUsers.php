@@ -1,6 +1,4 @@
 <?php
-include_once 'IInteractorWithData.php';
-include_once 'JoomlaGateway.php';
 
 class GetUsers implements IInteractorWithData
 {

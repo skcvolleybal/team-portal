@@ -1,9 +1,4 @@
 <?php
-include_once 'IInteractor.php';
-include_once 'TelFluitGateway.php';
-include_once 'NevoboGateway.php';
-include_once 'FluitBeschikbaarheidGateway.php';
-include_once 'FluitBeschikbaarheidHelper.php';
 
 class SetAllFluitbeschikbaarheden implements IInteractor
 {

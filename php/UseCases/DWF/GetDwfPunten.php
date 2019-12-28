@@ -1,6 +1,4 @@
 <?php
-include_once 'IInteractorWithData.php';
-include_once 'StatistiekenGateway.php';
 
 class GetDwfPunten implements IInteractorWithData
 {

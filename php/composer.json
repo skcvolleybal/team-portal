@@ -1,0 +1,25 @@
+{
+  "name": "jonathanneuteboom/team-portal",
+  "authors": [
+    {
+      "name": "J.I. Neuteboom",
+      "email": "jonathan.neuteboom@gmail.com"
+    }
+  ],
+  "require": {
+    "kigkonsult/icalcreator": "^2.29",
+    "phpmailer/phpmailer": "^6.1",
+    "simplepie/simplepie": "^1.5",
+    "slim/slim": "^4.3"
+  },
+  "autoload": {
+    "classmap": [
+      "UseCases",
+      "Entities",
+      "Gateways",
+      "Common",
+      "TeamPortal.php"
+    ],
+    "files": ["Common/Utilities.php"]
+  }
+}

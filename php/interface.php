@@ -1,9 +1,6 @@
 <?php
 
-function IncludeInPath($folder)
-{
-    set_include_path(get_include_path() . PATH_SEPARATOR . $folder);
-}
+require("vendor/autoload.php");
 
 function WriteToErrorLog($file, $message)
 {
@@ -13,7 +10,6 @@ function WriteToErrorLog($file, $message)
     }
     file_put_contents("$dir/$file", $message);
 }
-
 
 function ExceptionHandler($error)
 {
@@ -40,14 +36,6 @@ define('_JEXEC', 1);
 require_once JPATH_BASE . '/includes/defines.php';
 require_once JPATH_BASE . '/includes/framework.php';
 
-IncludeInPath(dirname(__FILE__) . '/UseCases');
-IncludeInPath(dirname(__FILE__) . '/Common');
-IncludeInPath(dirname(__FILE__) . '/DomainEntities');
-IncludeInPath(dirname(__FILE__) . '/Gateways');
-IncludeInPath(dirname(__FILE__) . '/libs');
-IncludeInPath(dirname(__FILE__) . '/Entities');
-IncludeInPath(dirname(__FILE__) . '/UseCases/shared');
-
 $accessControlAllowOrigin = $configuration->accessControlAllowOrigin;
 
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
@@ -61,12 +49,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 header("Access-Control-Allow-Origin: $accessControlAllowOrigin");
 header('Access-Control-Allow-Credentials: true');
 
-require_once 'TeamPortal.php';
-
 set_exception_handler('ExceptionHandler');
 
 
-$app = new TeamPortal($configuration->database);
+$app = new \TeamPortal($configuration->database);
 
 $queryString = $_SERVER['QUERY_STRING'];
 if (empty($queryString)) {

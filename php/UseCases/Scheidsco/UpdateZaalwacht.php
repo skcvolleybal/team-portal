@@ -1,7 +1,4 @@
 <?php
-include_once 'IInteractorWithData.php';
-include_once 'ZaalwachtGateway.php';
-include_once 'JoomlaGateway.php';
 
 class UpdateZaalwacht implements IInteractorWithData
 {

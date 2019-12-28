@@ -1,7 +1,4 @@
 <?php
-include_once 'IInteractor.php';
-include_once 'NevoboGateway.php';
-include_once 'AllSkcTeams.php';
 
 class GenerateTeamoverzichten implements IInteractor
 {

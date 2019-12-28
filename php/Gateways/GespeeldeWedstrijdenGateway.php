@@ -1,6 +1,5 @@
 <?php
 
-include_once 'NevoboGateway.php';
 
 class GespeeldeWedstrijdenGateway
 {

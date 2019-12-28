@@ -1,10 +1,7 @@
 <?php
-include_once 'IInteractor.php';
-require_once 'iCalcreator/autoload.php';
-include_once 'ZaalwachtGateway.php';
-include_once 'NevoboGateway.php';
-include_once 'TelFluitGateway.php';
-include_once 'JoomlaGateway.php';
+
+use Kigkonsult\Icalcreator\Vcalendar;
+
 
 class GetCalendar implements IInteractor
 {
@@ -127,8 +124,8 @@ class GetCalendar implements IInteractor
             "UNIQUE_ID" => "https://www.skcvolleybal.nl/team-portal/",
             "TZID" => $timezone,
         );
-        $this->calendar = new kigkonsult\iCalcreator\vcalendar($config);
-        $this->calendar->setProperty(kigkonsult\iCalcreator\util\util::$METHOD, "PUBLISH");
+        $this->calendar = new Vcalendar($config);
+        $this->calendar->setProperty(\kigkonsult\iCalcreator\util\util::$METHOD, "PUBLISH");
         $this->calendar->setProperty("x-wr-calname", $title);
         $this->calendar->setProperty("X-WR-CALDESC", "Alle Fluit-, telwedstrijden of zaalwachtendiensten van jouw team");
         $this->calendar->setProperty("X-WR-TIMEZONE", $timezone);

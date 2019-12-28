@@ -1,8 +1,4 @@
 <?php
-include_once 'IInteractorWithData.php';
-include_once 'JoomlaGateway.php';
-include_once 'ZaalwachtGateway.php';
-include_once 'NevoboGateway.php';
 
 class GetZaalwachtTeams implements IInteractorWithData
 {

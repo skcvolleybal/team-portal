@@ -1,8 +1,5 @@
 <?php
 
-include_once 'Param.php';
-include_once 'Column.php';
-
 class Database
 {
     private $dbc;

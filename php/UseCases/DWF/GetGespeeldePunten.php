@@ -1,7 +1,4 @@
 <?php
-include_once 'IInteractor.php';
-include_once 'StatistiekenGateway.php';
-include_once 'JoomlaGateway.php';
 
 class GetGespeeldePunten implements IInteractor
 {

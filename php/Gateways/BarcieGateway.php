@@ -1,7 +1,5 @@
 <?php
 
-include_once 'NevoboGateway.php';
-include_once 'Barciedienst.php';
 
 class BarcieGateway
 {

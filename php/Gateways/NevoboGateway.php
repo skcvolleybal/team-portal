@@ -1,7 +1,4 @@
 <?php
-require_once 'simplepie-1.5/autoloader.php';
-require_once 'Wedstrijd.php';
-require_once 'Wedstrijddag.php';
 
 class NevoboGateway
 {
