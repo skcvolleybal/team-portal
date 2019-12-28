@@ -10,7 +10,7 @@ class Barciedienst
     public function __construct($date, $persoon, $shift, $isBhv)
     {
         $this->date = $date;
-        $this->date = $persoon;
+        $this->persoon = $persoon;
         $this->shift = $shift;
         $this->isBhv = $isBhv;
     }

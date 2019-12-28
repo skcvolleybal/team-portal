@@ -8,6 +8,7 @@ include_once 'BarcieGateway.php';
 include_once 'JoomlaGateway.php';
 include_once 'Email.php';
 
+
 class Template
 {
     public const NAAM = "{{naam}}";
@@ -17,7 +18,7 @@ class Template
     public const TEAM = "{{team}}";
     public const TEAMS = "{{teams}}";
     public const AFZENDER = "{{afzender}}";
-    public const SHIFT = "{{afzender}}";
+    public const SHIFT = "{{shift}}";
     public const BHV = "{{bhv}}";
     public const SCHEIDSRECHTERS = "{{scheidsrechters}}";
     public const TELLERS = "{{tellers}}";
@@ -50,9 +51,9 @@ class QueueWeeklyEmails implements IInteractor
         $this->scheidsco = $this->joomlaGateway->GetUser(2223); // E. vd B.
         $this->webcie = $this->joomlaGateway->GetUser(542);
 
-        $wedstrijddagen = $this->nevoboGateway->GetWedstrijddagenForSporthal('LDNUN');
+        $wedstrijddagen = $this->nevoboGateway->GetWedstrijddagenForSporthal('LDNUN', 31);
         foreach ($wedstrijddagen as $dag) {
-            $dag->barcieleden = $this->barcieGateway->GetBarciedienstenForDate($dag->date);
+            $dag->bardiensten = $this->barcieGateway->GetBarciedienstenForDate($dag->date);
             $dag->zaalwacht = $this->zaalwachtGateway->GetZaalwachtTeamForDate($dag->date);
             if ($dag->zaalwacht) {
                 $dag->zaalwacht->teamgenoten = $this->joomlaGateway->GetTeamgenoten($dag->zaalwacht->naam);
@@ -63,7 +64,7 @@ class QueueWeeklyEmails implements IInteractor
                 $wedstrijd->scheidsrechter = $scheidsrechter;
                 $wedstrijd->telteam = $telteam;
                 if ($wedstrijd->telteam) {
-                    $wedstrijd->telteam->spelers = $this->joomlaGateway->GetTeamgenoten($telteam->naam);
+                    $wedstrijd->telteam->teamgenoten = $this->joomlaGateway->GetTeamgenoten($telteam->naam);
                 }
             }
         }
@@ -84,7 +85,7 @@ class QueueWeeklyEmails implements IInteractor
                 }
 
                 if ($wedstrijd->telteam) {
-                    foreach ($wedstrijd->telteam->spelers as $teller) {
+                    foreach ($wedstrijd->telteam->teamgenoten as $teller) {
                         $emails[] = $this->CreateTellerMail($teller, $wedstrijd);
                     }
                 }
@@ -96,8 +97,8 @@ class QueueWeeklyEmails implements IInteractor
                 }
             }
 
-            foreach ($dag->barcieleden as $barcielid) {
-                $emails[] = $this->CreateBarcieMail($barcielid, $dag);
+            foreach ($dag->bardiensten as $bardienst) {
+                $emails[] = $this->CreateBarcieMail($bardienst, $dag);
             }
         }
 
@@ -186,12 +187,12 @@ class QueueWeeklyEmails implements IInteractor
         );
     }
 
-    private function CreateBarcieMail($barcielid, $dag)
+    private function CreateBarcieMail($bardienst, $dag)
     {
         $datum = GetDutchDateLong($dag->date);
-        $naam = $barcielid->naam;
-        $shift = $barcielid->shift;
-        $bhv = $barcielid->isBhv == 1 ? "<br>Je bent BHV'er." : "";
+        $naam = $bardienst->persoon->naam;
+        $shift = $bardienst->shift;
+        $bhv = $bardienst->isBhv == 1 ? "<br>Je bent BHV'er." : "";
 
         $template = file_get_contents("./UseCases/Email/templates/barcieTemplate.txt");
         $placeholders = [
@@ -206,7 +207,7 @@ class QueueWeeklyEmails implements IInteractor
         return new Email(
             "Barciedienst " . $datum,
             $body,
-            $barcielid,
+            $bardienst->persoon,
             $this->scheidsco
         );
     }
@@ -219,8 +220,8 @@ class QueueWeeklyEmails implements IInteractor
         $zaalwachtersContent = "";
 
         foreach ($wedstrijddagen as $dag) {
-            foreach ($dag->barcieleden as $barcielid) {
-                $barcieContent  .= $this->GetNaamAndEmail($barcielid->naam, $barcielid->email);
+            foreach ($dag->bardiensten as $bardienst) {
+                $barcieContent  .= $this->GetNaamAndEmail($bardienst->persoon);
             }
             if ($dag->zaalwacht) {
                 $zaalwachtersContent .= $this->GetBoldHeader($dag->zaalwacht->naam);
@@ -265,12 +266,12 @@ class QueueWeeklyEmails implements IInteractor
 
     private function GetNaamAndEmail($persoon)
     {
-        return $persoon->naam .  " (" . $persoon->email . ")<br>";
+        return $persoon->naam .  " (" . $persoon->email . ")" . $this->GetNewLine();
     }
 
     private function GetBoldHeader($titel)
     {
-        return "<b>" . $titel . "<br>";
+        return "<b>" . $titel . "</b>" . $this->GetNewLine();
     }
 
     private function GetNewLine()

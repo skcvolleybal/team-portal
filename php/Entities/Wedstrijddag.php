@@ -4,7 +4,7 @@ class Wedstrijddag
 {
     private $date;
     public $wedstrijden;
-    public $barcieleden;
+    public $bardiensten;
 
     public function __get($property)
     {
