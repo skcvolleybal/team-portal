@@ -71,7 +71,7 @@ class EmailGateway
         foreach ($emails as $email) {
             $sender = new Persoon(-1, $email->sender_naam, $email->sender_email);
             $receiver = new Persoon(-1, $email->receiver_naam, $email->receiver_email);
-            $newEmail = new Email($email->titel, $email->body, $sender, $receiver);
+            $newEmail = new Email($email->titel, $email->body, $receiver, $sender);
             if ($this->SendMail($newEmail)) {
                 $this->MarkEmailAsSent($email);
             }
