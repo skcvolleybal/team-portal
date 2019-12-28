@@ -1,5 +1,7 @@
 <?php
 require_once 'simplepie-1.5/autoloader.php';
+require_once 'Wedstrijd.php';
+require_once 'Wedstrijddag.php';
 
 class NevoboGateway
 {
@@ -85,6 +87,26 @@ class NevoboGateway
     {
         $url = sprintf($this->sporthalprogrammaUrl, $sporthal, $this->exportType);
         return $this->GetProgramma($url);
+    }
+
+    public function GetWedstrijddagenForSporthal($sporthal, $dagen = 7)
+    {
+        $endDate = new DateTime("+$dagen days");
+        $wedstrijden = $this->GetProgrammaForSporthal($sporthal);
+        usort($wedstrijden, "WedstrijdenSortFunction");
+        $wedstrijddagen = [];
+        $currentDag = null;
+        foreach ($wedstrijden as $wedstrijd) {
+            if ($wedstrijd->timestamp > $endDate) {
+                continue;
+            }
+            if ($currentDag != $wedstrijd->timestamp->format("Y-m-d")) {
+                $currentDag = $wedstrijd->timestamp->format("Y-m-d");
+                $wedstrijddagen[] = new Wedstrijddag(new DateTime($currentDag));
+            }
+            $wedstrijddagen[count($wedstrijddagen) - 1]->wedstrijden[] = $wedstrijd;
+        }
+        return $wedstrijddagen;
     }
 
     public function GetProgrammaForVereniging()
@@ -219,14 +241,14 @@ class NevoboGateway
                 $date = $descriptionMatches[2];
                 $locatie = preg_replace('/\s+/', ' ', stripslashes($descriptionMatches[3]));
 
-                $programma[] = (object) [
-                    'team1' => $team1,
-                    'team2' => $team2,
-                    'id' => $matchId,
-                    'poule' => substr($matchId, 4, 3),
-                    'timestamp' => $this->ConvertNevoboDate($date),
-                    'locatie' => $locatie,
-                ];
+                $programma[] = new Wedstrijd(
+                    $matchId,
+                    $team1,
+                    $team2,
+                    substr($matchId, 4, 3),
+                    $this->ConvertNevoboDate($date),
+                    $locatie
+                );
             } else if (preg_match('/Vervallen wedstrijd: (.*), Datum: (.*), (.*), Speellocatie: (.*), (.*)/', $description, $descriptionMatches)) {
                 // Nothing
             } else {

@@ -2,6 +2,7 @@
 
 include_once 'Param.php';
 include_once 'Utilities.php';
+include_once 'Persoon.php';
 
 class JoomlaGateway
 {
@@ -37,8 +38,8 @@ class JoomlaGateway
                   WHERE id = :id';
         $params = [new Param(Column::Id, $userId, PDO::PARAM_INT)];
         $users = $this->database->Execute($query, $params);
-        if (count($users) > 0) {
-            return $users[0];
+        if (count($users) == 1) {
+            return new Persoon($users[0]->id, $users[0]->name, $users[0]->email);
         }
         return null;
     }
@@ -87,10 +88,15 @@ class JoomlaGateway
 
     public function GetUsersWithName($name)
     {
-        $name = "%$name%";
-        $query = 'SELECT * FROM J3_users where name like :name LIMIT 0, 5';
-        $params = [new Param(':name', $name, PDO::PARAM_STR)];
-        return $this->database->Execute($query, $params);
+        $query = "SELECT * 
+                  FROM J3_users 
+                  WHERE name like '%$name%'
+                  ORDER BY 
+                  CASE 
+                    WHEN name LIKE '$name%' THEN 0 ELSE 1 end,
+                  name  
+                  LIMIT 0, 5";
+        return $this->database->Execute2($query);
     }
 
     private function IsUserInUsergroup($userId, $usergroup)
@@ -158,10 +164,13 @@ class JoomlaGateway
         return ToNevoboName($team[0]->naam);
     }
 
-    public function GetSpelers($team)
+    public function GetTeamgenoten($team)
     {
         $team = ToSkcName($team);
-        $query = 'SELECT U.id, name as naam
+        $query = 'SELECT 
+                    U.id, 
+                    name as naam,
+                    email
                   FROM J3_users U
                   INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
                   INNER JOIN J3_usergroups G ON M.group_id = G.id

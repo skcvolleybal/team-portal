@@ -4,9 +4,8 @@ include_once 'TelFluitGateway.php';
 include_once 'NevoboGateway.php';
 include_once 'ZaalwachtGateway.php';
 
-class GenerateVoorpaginaRooster implements IInteractor
+class GetVoorpaginaRooster implements IInteractor
 {
-
     public function __construct($database)
     {
         $this->telFluitGateway = new TelFluitGateway($database);

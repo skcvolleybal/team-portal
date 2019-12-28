@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class BeschikbaarheidService {
   constructor(private httpClient: HttpClient) {}
@@ -41,7 +41,7 @@ export class BeschikbaarheidService {
   GetFluitBeschikbaarheid() {
     return this.httpClient.get<any[]>(environment.baseUrl, {
       params: {
-        action: 'GetFluitOverzicht'
+        action: 'GetFluitBeschikbaarheid'
       }
     });
   }

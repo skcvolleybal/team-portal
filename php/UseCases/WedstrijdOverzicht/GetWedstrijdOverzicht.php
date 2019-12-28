@@ -24,7 +24,7 @@ class GetWedstrijdOverzicht implements IInteractor
 
         $overzicht = [];
         $team = $this->joomlaGateway->GetTeam($userId);
-        $spelers = $this->joomlaGateway->GetSpelers($team);
+        $spelers = $this->joomlaGateway->GetTeamgenoten($team);
         $coachteam = $this->joomlaGateway->GetCoachTeam($userId);
 
         $teamprogramma = $this->nevoboGateway->GetProgrammaForTeam($team);
@@ -156,7 +156,7 @@ class GetWedstrijdOverzicht implements IInteractor
                 $this->invalTeams[] = (object) [
                     "nevobonaam" => $team->naam,
                     "naam" => ToSkcName($team->naam),
-                    "spelers" => $this->joomlaGateway->GetSpelers($team->naam),
+                    "spelers" => $this->joomlaGateway->GetTeamgenoten($team->naam),
                     "programma" => $this->nevoboGateway->GetProgrammaForTeam($team->naam)
                 ];
             }

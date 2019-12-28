@@ -45,6 +45,7 @@ IncludeInPath(dirname(__FILE__) . '/Common');
 IncludeInPath(dirname(__FILE__) . '/DomainEntities');
 IncludeInPath(dirname(__FILE__) . '/Gateways');
 IncludeInPath(dirname(__FILE__) . '/libs');
+IncludeInPath(dirname(__FILE__) . '/Entities');
 IncludeInPath(dirname(__FILE__) . '/UseCases/shared');
 
 $accessControlAllowOrigin = $configuration->accessControlAllowOrigin;

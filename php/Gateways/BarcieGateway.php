@@ -206,6 +206,38 @@ class BarcieGateway
         return $this->database->Execute($query);
     }
 
+    public function GetBarciedienstenForDate($date)
+    {
+        $diensten = [];
+        $query = "SELECT
+                    D.date,
+                    U.id as userId,
+                    U.name as naam,
+                    U.email,
+                    shift,
+                    is_bhv as isBhv
+                  FROM barcie_schedule_map M
+                  INNER JOIN J3_users U ON M.user_id = U.id
+                  INNER JOIN barcie_days D ON M.day_id = D.id
+                  WHERE D.date = ?";
+        $params = [$date->format("Y-m-d")];
+        $result = $this->database->Execute2($query, $params);
+        foreach ($result as $dienst) {
+            $diensten[] = new Barciedienst(
+                $dienst->date,
+                new Persoon(
+                    $dienst->userId,
+                    $dienst->naam,
+                    $dienst->email
+                ),
+                $dienst->shift,
+                $dienst->isBhv
+            );
+        }
+        
+        return $diensten;
+    }
+
     public function GetBarcieleden()
     {
         $query = 'SELECT

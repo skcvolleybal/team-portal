@@ -37,6 +37,17 @@ function GetDutchDateLong($datetime)
     }
 }
 
+function GetYmdDate($timestamp = null)
+{
+    $timestamp = $timestamp ?? time();
+    return date("Y-m-d", $timestamp);
+}
+
+function IsNullOrEmpty($obj)
+{
+    return !$obj || empty($obj);
+}
+
 function UnauthorizedResult()
 {
     header('HTTP/1.1 401 Unauthorized');

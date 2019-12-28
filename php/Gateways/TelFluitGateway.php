@@ -59,7 +59,9 @@ class TelFluitGateway
         $params = [new Param(Column::UserId, $userId, PDO::PARAM_INT)];
         $result = $this->database->Execute($query, $params);
         foreach ($result as &$row) {
-            $row->tellers = ToNevoboName($row->tellers);
+            if ($row->tellers) {
+                $row->tellers = ToNevoboName($row->tellers);
+            }
         }
         return $result;
     }
@@ -120,31 +122,44 @@ class TelFluitGateway
         return $this->database->Execute($query);
     }
 
-    public function GetTellersForWedstrijdenWithMatchId($matchIds)
+    public function GetScheidsrechterAndTellersForWedstrijd($matchId)
     {
-        $matchQuery = $this->GetSaveMatchQuery($matchIds);
-
         $query = "SELECT
-                    W.match_id as matchId,
+                    W.match_id as matchId, 
+                    G.id as teamId,
+                    G.title as telteam,
                     U.id as userId,
                     U.name as naam,
-                    U.email,
-                    G.title as tellers
-                  FROM TeamPortal_wedstrijden W
-                  INNER JOIN ($matchQuery) matchIds ON matchIds.id = W.match_id
-                  INNER JOIN J3_user_usergroup_map M ON M.group_id = W.telteam_id
-                  INNER JOIN J3_usergroups G ON G.id = M.group_id
-                  INNER JOIN J3_users U ON M.user_id = U.id";
-        $params = [];
-        $counter = 0;
-        foreach ($matchIds as $matchId) {
-            $params[] = new Param(Column::MatchId . $counter++, $matchId, PDO::PARAM_STR);
+                    U.email
+                  FROM TeamPortal_wedstrijden W                  
+                  INNER JOIN J3_usergroups G ON G.id = W.telteam_id                  
+                  INNER JOIN J3_users U ON W.scheidsrechter_id = U.id
+                  WHERE W.match_id = '$matchId'";
+        $wedstrijd = $this->database->Execute2($query);
+        if (!$wedstrijd) {
+            return null;
         }
-        return $this->database->Execute($query, $params);
+
+        $wedstrijd = $wedstrijd[0];
+        return [
+            new Persoon(
+                $wedstrijd->userId,
+                $wedstrijd->naam,
+                $wedstrijd->email
+            ),
+            new Team(
+                $wedstrijd->teamId,
+                $wedstrijd->telteam
+            )
+        ];
     }
 
     public function GetScheidsrechtersForWedstrijdenWithMatchId($matchIds)
     {
+        if (empty($matchIds)) {
+            return [];
+        }
+
         $matchQuery = $this->GetSaveMatchQuery($matchIds);
 
         $query = "SELECT
@@ -198,7 +213,7 @@ class TelFluitGateway
         $wedstrijden = $this->database->Execute($query, $params);
         if (count($wedstrijden) == 0) {
             return null;
-        };
+        }
         return $wedstrijden[0];
     }
 

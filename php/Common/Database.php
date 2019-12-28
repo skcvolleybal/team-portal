@@ -29,7 +29,7 @@ class Database
     public function Execute($query, $params = array())
     {
         if (empty($query)) {
-            $this->returnError('Query is empty');
+            throw new UnexpectedValueException('Query is empty');
         }
 
         $stmt = $this->getDbConnection()->prepare($query);
@@ -56,7 +56,7 @@ class Database
     public function Execute2($query, $params = null)
     {
         if (empty($query)) {
-            $this->returnError('Query is empty');
+            throw new UnexpectedValueException('Query is empty');
         }
 
         $stmt = $this->getDbConnection()->prepare($query);

@@ -56,13 +56,6 @@ class TeamPortal
         $interactor->Execute();
     }
 
-    public function GetWedstrijdAanwezigheid()
-    {
-        include_once 'UseCases/WedstrijdOverzicht/GetWedstrijdAanwezigheid.php';
-        $interactor = new GetWedstrijdAanwezigheid($this->database);
-        $interactor->Execute();
-    }
-
     public function GetWedstrijdOverzicht()
     {
         include_once 'UseCases/WedstrijdOverzicht/GetWedstrijdOverzicht.php';
@@ -78,17 +71,10 @@ class TeamPortal
         $interactor->Execute($postData);
     }
 
-    public function GetFluitOverzicht()
+    public function GetFluitBeschikbaarheid()
     {
         include_once 'UseCases/FluitBeschikbaarheid/GetFluitBeschikbaarheid.php';
-        $interactor = new GetFluitRooster($this->database);
-        $interactor->Execute();
-    }
-
-    public function GetFluitRooster()
-    {
-        include_once 'UseCases/FluitBeschikbaarheid/GetFluitRooster.php';
-        $interactor = new GetFluitRooster($this->database);
+        $interactor = new GetFluitBeschikbaarheid($this->database);
         $interactor->Execute();
     }
 
@@ -163,10 +149,17 @@ class TeamPortal
         $interactor->Execute($postData);
     }
 
-    public function SendWeeklyEmails()
+    public function QueueWeeklyEmails()
     {
-        include_once 'UseCases/Email/SendWeeklyEmails.php';
-        $interactor = new SendWeeklyEmails($this->database);
+        include_once 'UseCases/Email/QueueWeeklyEmails.php';
+        $interactor = new QueueWeeklyEmails($this->database);
+        $interactor->Execute();
+    }
+
+    public function SendQueuedEmails()
+    {
+        include_once 'UseCases/Email/SendQueuedEmails.php';
+        $interactor = new SendQueuedEmails($this->database);
         $interactor->Execute();
     }
 
@@ -175,21 +168,6 @@ class TeamPortal
         include_once 'UseCases/Calendar/GetCalendar.php';
         $interactor = new GetCalendar($this->database);
         $interactor->Execute();
-    }
-
-    public function GetCoachAanwezigheid()
-    {
-        include_once 'UseCases/WedstrijdOverzicht/GetCoachAanwezigheid.php';
-        $interactor = new GetCoachAanwezigheid($this->database);
-        $interactor->Execute();
-    }
-
-    public function UpdateCoachAanwezigheid()
-    {
-        include_once 'UseCases/WedstrijdOverzicht/UpdateCoachAanwezigheid.php';
-        $interactor = new UpdateCoachAanwezigheid($this->database);
-        $postData = GetPostValues();
-        $interactor->Execute($postData);
     }
 
     public function GetBarcieBeschikbaarheid()
@@ -216,15 +194,8 @@ class TeamPortal
 
     public function GetVoorpaginaRooster()
     {
-        include_once 'UseCases/WedstrijdOverzicht/GetVoorpaginaRooster.php';
+        include_once 'UseCases/ScheduledTasks/GetVoorpaginaRooster.php';
         $interactor = new GetVoorpaginaRooster($this->database);
-        $interactor->Execute();
-    }
-
-    public function GenerateVoorpaginaRooster()
-    {
-        include_once 'UseCases/ScheduledTasks/GenerateVoorpaginaRooster.php';
-        $interactor = new GenerateVoorpaginaRooster($this->database);
         exit(json_encode($interactor->Execute()));
     }
 

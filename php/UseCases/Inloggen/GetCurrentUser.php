@@ -18,7 +18,7 @@ class GetCurrentUser implements IInteractor
 
         $user = $this->joomlaGateway->GetUser($userId);
         $result = (object) [
-            'naam' => $user->name,
+            'naam' => $user->naam,
             'id' => $user->id
         ];
 

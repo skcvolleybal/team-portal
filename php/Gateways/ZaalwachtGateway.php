@@ -1,5 +1,7 @@
 <?php
 
+include_once "Team.php";
+
 class ZaalwachtGateway
 {
     public function __construct($database)
@@ -39,13 +41,10 @@ class ZaalwachtGateway
     {
         $query = 'SELECT
                     Z.date,
-                    U.name as naam,
-                    U.email,
                     G.title as zaalwacht
                   FROM TeamPortal_zaalwacht Z
                   INNER JOIN J3_user_usergroup_map M ON Z.team_id = M.group_id
-                  INNER JOIN J3_usergroups G ON M.group_id = G.id
-                  INNER JOIN J3_users U ON M.user_id = U.id
+                  INNER JOIN J3_usergroups G ON M.group_id = G.id                  
                   WHERE date between CURRENT_DATE() AND DATE_ADD(CURRENT_DATE(), INTERVAL :dagen DAY)';
         $params = [new Param(':dagen', $dagen, PDO::PARAM_INT)];
         return $this->database->Execute($query, $params);
@@ -74,6 +73,26 @@ class ZaalwachtGateway
             return null;
         }
         return $zaalwachten[0];
+    }
+
+    public function GetZaalwachtTeamForDate($date)
+    {
+        $query = "SELECT
+                    team_id as teamId,
+                    G.title as naam
+                  FROM TeamPortal_zaalwacht Z
+                  INNER JOIN J3_usergroups G on Z.team_id = G.id
+                  WHERE date = ?";
+        $params = [$date->format("Y-m-d")];
+        $zaalwacht = $this->database->Execute2($query, $params);
+        if (count($zaalwacht) == 0) {
+            return null;
+        }
+
+        return new Team(
+            $zaalwacht[0]->teamId,
+            $zaalwacht[0]->naam
+        );
     }
 
     public function Update($zaalwacht, $team)
