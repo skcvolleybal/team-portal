@@ -30,6 +30,7 @@ class QueueWeeklyEmails implements IInteractor
 {
     private $scheidsco;
     private $webcie;
+    private $fromAddress;
 
     public function __construct($database)
     {
@@ -49,6 +50,7 @@ class QueueWeeklyEmails implements IInteractor
         }
 
         $this->scheidsco = $this->joomlaGateway->GetUser(2223); // E. vd B.
+        $this->fromAddress = new Persoon(-1, $this->scheidsco->naam, "scheids@skcvolleybal.nl");
         $this->webcie = $this->joomlaGateway->GetUser(542);
 
         $wedstrijddagen = $this->nevoboGateway->GetWedstrijddagenForSporthal('LDNUN');
@@ -136,7 +138,7 @@ class QueueWeeklyEmails implements IInteractor
             $titel,
             $body,
             $scheidsrechter,
-            $this->scheidsco
+            $this->fromAddress
         );
     }
 
@@ -161,7 +163,7 @@ class QueueWeeklyEmails implements IInteractor
             $titel,
             $body,
             $teller,
-            $this->scheidsco
+            $this->fromAddress
         );
     }
 
@@ -183,7 +185,7 @@ class QueueWeeklyEmails implements IInteractor
             $titel,
             $body,
             $zaalwachter,
-            $this->scheidsco
+            $this->fromAddress
         );
     }
 
@@ -208,7 +210,7 @@ class QueueWeeklyEmails implements IInteractor
             "Barciedienst " . $datum,
             $body,
             $bardienst->persoon,
-            $this->scheidsco
+            $this->fromAddress
         );
     }
 
