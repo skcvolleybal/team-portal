@@ -4,13 +4,13 @@ class Database
 {
     private $dbc;
 
-    public function __construct($host, $database, $user, $password, $options)
+    public function __construct(stdClass $config)
     {
-        $this->host = $host;
-        $this->database = $database;
-        $this->user = $user;
-        $this->password = $password;
-        $this->options = $options;
+        $this->host = $config->database->host;
+        $this->database = $config->database->database;
+        $this->username = $config->database->username;
+        $this->password = $config->database->password;
+        $this->options = $config->database->options;
     }
 
     private function getDbConnection()
@@ -19,7 +19,7 @@ class Database
             return $this->dbc;
         }
 
-        $this->dbc = new PDO("mysql:host=$this->host;dbname=$this->database", $this->user, $this->password, $this->options);
+        $this->dbc = new PDO("mysql:host=$this->host;dbname=$this->database", $this->username, $this->password, $this->options);
         return $this->dbc;
     }
 

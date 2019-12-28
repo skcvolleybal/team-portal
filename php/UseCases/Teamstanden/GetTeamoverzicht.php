@@ -6,7 +6,7 @@ class GetTeamoverzicht implements IInteractorWithData
     {
         $teamnaam = $data->team ?? null;
         if ($teamnaam == null) {
-            throw new InvalidArgumentException("Teamnaam is leeg");
+            throw new \InvalidArgumentException("Teamnaam is leeg");
         }
 
         $filename = dirname(__FILE__) . '/teamoverzichten.json';

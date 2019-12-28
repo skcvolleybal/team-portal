@@ -10,7 +10,10 @@
     "kigkonsult/icalcreator": "^2.29",
     "phpmailer/phpmailer": "^6.1",
     "simplepie/simplepie": "^1.5",
-    "slim/slim": "^4.3"
+    "slim/slim": "^4.3",
+    "guzzlehttp/psr7": "^1.6",
+    "http-interop/http-factory-guzzle": "^1.0",
+    "php-di/php-di": "^6.0"
   },
   "autoload": {
     "classmap": [
@@ -21,5 +24,8 @@
       "TeamPortal.php"
     ],
     "files": ["Common/Utilities.php"]
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^8.5"
   }
 }

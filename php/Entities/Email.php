@@ -69,7 +69,7 @@ class Email
             if (strpos($template, $placeholder) == -1) {
                 throw new UnexpectedValueException("Kan placeholder '$placeholder' niet vinden");
             }
-            $template = str_replace($placeholder, $value, $template);
+            $template = str_replace("{{$placeholder}}", $value, $template);
         }
 
         return $template;

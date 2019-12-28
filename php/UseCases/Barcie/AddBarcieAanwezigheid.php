@@ -2,10 +2,10 @@
 
 class AddBarcieAanwezigheid implements IInteractorWithData
 {
-    public function __construct($database)
+    public function __construct($configuration, $database)
     {
         $this->barcieGateway = new BarcieGateway($database);
-        $this->joomlaGateway = new JoomlaGateway($database);
+        $this->joomlaGateway = new JoomlaGateway($configuration, $database);
     }
 
     public function Execute($data)

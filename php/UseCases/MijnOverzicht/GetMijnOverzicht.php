@@ -1,18 +1,25 @@
 <?php
 
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
-class GetMijnOverzichtInteractor implements IInteractor
+class MijnOverzichtController
 {
-    public function __construct($database)
-    {
-        $this->joomlaGateway = new JoomlaGateway($database);
-        $this->nevoboGateway = new NevoboGateway();
-        $this->telFluitGateway = new TelFluitGateway($database);
-        $this->zaalwachtGateway = new ZaalwachtGateway($database);
-        $this->barcieGateway = new BarcieGateway($database);
+    public function __construct(
+        \JoomlaGateway $joomlaGateway,
+        \NevoboGateway $nevoboGateway,
+        \TelFluitGateway $telFluitGateway,
+        \ZaalwachtGateway $zaalwachtGateway,
+        \BarcieGateway $barcieGateway
+    ) {
+        $this->joomlaGateway = $joomlaGateway;
+        $this->nevoboGateway = $nevoboGateway;
+        $this->telFluitGateway = $telFluitGateway;
+        $this->zaalwachtGateway = $zaalwachtGateway;
+        $this->barcieGateway = $barcieGateway;
     }
 
-    public function Execute()
+    public function __invoke(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $userId = $this->joomlaGateway->GetUserId();
 
@@ -78,7 +85,7 @@ class GetMijnOverzichtInteractor implements IInteractor
         }
 
         echo json_encode($overzicht);
-        exit;
+        return $response;
     }
 
     private function MapFromMatch($match, $allUscMatches, $team, $coachTeam, $userId)

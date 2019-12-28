@@ -3,8 +3,9 @@
 
 class JoomlaGateway
 {
-    public function __construct($database)
+    public function __construct(stdClass $configuration, Database $database)
     {
+        $this->configuration = $configuration;
         $this->database = $database;
     }
 
@@ -219,6 +220,12 @@ class JoomlaGateway
 
     public function InitJoomla()
     {
+        define('JPATH_BASE', $this->configuration->JPATH_BASE);
+        define('_JEXEC', 1);
+
+        require_once JPATH_BASE . '/includes/defines.php';
+        require_once JPATH_BASE . '/includes/framework.php';
+
         $mainframe = JFactory::getApplication('site');
         $mainframe->initialise();
     }
