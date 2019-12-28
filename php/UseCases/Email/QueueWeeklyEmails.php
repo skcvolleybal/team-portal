@@ -51,7 +51,7 @@ class QueueWeeklyEmails implements IInteractor
         $this->scheidsco = $this->joomlaGateway->GetUser(2223); // E. vd B.
         $this->webcie = $this->joomlaGateway->GetUser(542);
 
-        $wedstrijddagen = $this->nevoboGateway->GetWedstrijddagenForSporthal('LDNUN', 31);
+        $wedstrijddagen = $this->nevoboGateway->GetWedstrijddagenForSporthal('LDNUN');
         foreach ($wedstrijddagen as $dag) {
             $dag->bardiensten = $this->barcieGateway->GetBarciedienstenForDate($dag->date);
             $dag->zaalwacht = $this->zaalwachtGateway->GetZaalwachtTeamForDate($dag->date);
