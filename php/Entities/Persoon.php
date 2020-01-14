@@ -2,11 +2,11 @@
 
 class Persoon
 {
-    public $id;
-    public $naam;
-    public $email;
+    public int $id;
+    public string $naam;
+    public ?string $email;
 
-    function __construct($id, $naam, $email)
+    function __construct(int $id, string $naam, $email = null)
     {
         $this->id = $id;
         $this->naam = $naam;

@@ -2,20 +2,99 @@
 
 class Wedstrijd
 {
-    public $id;
-    public $team1;
-    public $team2;
-    public $poule;
-    public $timestamp;
-    public $locatie;
+    public ?int $id;
+    public string $matchId;
+    public Team $team1;
+    public Team $team2;
+    public string $poule;
+    public DateTime $timestamp;
+    public string $locatie;
+    public ?Team $telteam = null;
+    public ?Persoon $scheidsrechter = null;
 
-    public function __construct($id, $team1, $team2, $poule, $timestamp, $locatie)
+    public function __construct($matchId, $id = null)
     {
         $this->id = $id;
-        $this->team1 = $team1;
-        $this->team2 = $team2;
-        $this->poule = $poule;
-        $this->timestamp = $timestamp;
-        $this->locatie = $locatie;
+        $this->matchId = $matchId;
+    }
+
+    static function Compare(Wedstrijd $wedstrijd1, Wedstrijd $wedstrijd2)
+    {
+        if (!$wedstrijd1->timestamp) {
+            return -1;
+        }
+        if (!$wedstrijd2->timestamp) {
+            return 1;
+        }
+        return $wedstrijd1->timestamp > $wedstrijd2->timestamp;
+    }
+
+    static function CreateFromNevoboWedstrijd(string $matchId, Team $team1, Team $team2, string $poule, DateTime $timestamp, string $locatie)
+    {
+        $newWedstrijd = new Wedstrijd($matchId);
+        $newWedstrijd->team1 = $team1;
+        $newWedstrijd->team2 = $team2;
+        $newWedstrijd->poule = $poule;
+        $newWedstrijd->timestamp = $timestamp;
+        $newWedstrijd->locatie = $locatie;
+        return $newWedstrijd;
+    }
+
+    function GetShortLocatie(): string
+    {
+        if (!$this->locatie) {
+            return null;
+        }
+
+        $firstPart = substr($this->locatie, 0, strpos($this->locatie, ','));
+        $lastPart = substr($this->locatie, strripos($this->locatie, ' ') + 1);
+        return $firstPart . ', ' . $lastPart;
+    }
+
+    function IsMogelijk($wedstrijd): bool
+    {
+        if (!$wedstrijd) {
+            return true;
+        }
+
+        $difference = $this->timestamp->diff($wedstrijd->timestamp, true);
+        if ($difference->days > 0) {
+            return true;
+        }
+
+        $isMogelijk = null;
+        $hourDifference = $difference->h + ($difference->i / 60);
+        if ($this->IsThuis($this->locatie) && $this->IsThuis($wedstrijd->locatie)) {
+            $isMogelijk = $hourDifference >= 2;
+        } else {
+            $isMogelijk = $hourDifference >= 4;
+        }
+
+        return $isMogelijk;
+    }
+
+    function IsThuis()
+    {
+        return strpos($this->locatie, 'Universitair SC') !== false;
+    }
+
+    function IsEigenWedstrijd(Team $team)
+    {
+        return $this->team1->naam === $team->naam || $this->team2->naam === $team->naam;
+    }
+
+    public function GetTeams(): string
+    {
+        return $this->team1->naam . " - " . $this->team2->naam;
+    }
+
+    static public function GetWedstrijdWithDate(array $programma, DateTime $date): ?Wedstrijd
+    {
+        foreach ($programma as $wedstrijd) {
+            if ($wedstrijd->timestamp && DateFunctions::GetYmdNotation($wedstrijd->timestamp) === DateFunctions::GetYmdNotation($date)) {
+                return $wedstrijd;
+            }
+        }
+        return null;
     }
 }

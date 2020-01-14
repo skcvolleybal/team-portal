@@ -2,17 +2,19 @@
 
 class UpdateZaalwacht implements IInteractorWithData
 {
-    public function __construct($database)
-    {
-        $this->zaalwachtGateway = new ZaalwachtGateway($database);
-        $this->joomlaGateway = new JoomlaGateway($database);
+    public function __construct(
+        ZaalwachtGateway $zaalwachtGateway,
+        JoomlaGateway $joomlaGateway
+    ) {
+        $this->zaalwachtGateway = $zaalwachtGateway;
+        $this->joomlaGateway = $joomlaGateway;
     }
 
     public function Execute($data)
     {
         $userId = $this->joomlaGateway->GetUserId();
         if ($userId === null) {
-            UnauthorizedResult();
+            throw new UnauthorizedException();
         }
 
         if (!$this->joomlaGateway->IsTeamcoordinator($userId)) {
@@ -21,24 +23,22 @@ class UpdateZaalwacht implements IInteractorWithData
 
         $datum = $data->date ?? null;
         $teamnaam = $data->team ?? null;
-
-        if (IsDateValid($datum) == false) {
+        $date = DateFunctions::CreateDateTime($datum);
+        if (!$date) {
             throw new UnexpectedValueException("Foute datum: $datum");
         }
 
-        $zaalwacht = $this->zaalwachtGateway->GetZaalwacht($datum);
-        $team = $this->joomlaGateway->GetTeamByNaam($teamnaam);
 
-        if ($zaalwacht) {
-            if ($team == null) {
+        $zaalwacht = $this->zaalwachtGateway->GetZaalwacht($date) ?? new Zaalwacht($date);
+        $zaalwacht->team = $this->joomlaGateway->GetTeamByNaam($teamnaam);
+        if ($zaalwacht->id === null) {
+            $this->zaalwachtGateway->Insert($zaalwacht);
+        } else {
+            if ($zaalwacht->team === null) {
                 $this->zaalwachtGateway->Delete($zaalwacht);
             } else {
-                $this->zaalwachtGateway->Update($zaalwacht, $team);
+                $this->zaalwachtGateway->Update($zaalwacht);
             }
-        } else if ($team) {
-            $this->zaalwachtGateway->Insert($datum, $team);
         }
-
-        exit();
     }
 }

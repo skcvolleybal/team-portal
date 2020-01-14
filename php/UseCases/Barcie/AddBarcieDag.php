@@ -3,25 +3,30 @@
 class AddBarcieDag implements IInteractorWithData
 {
 
-    public function __construct($database)
+    public function __construct(JoomlaGateway $joomlaGateway, BarcieGateway $barcieGateway)
     {
-        $this->joomlaGateway = new JoomlaGateway($database);
-        $this->barcieGateway = new BarcieGateway($database);
+        $this->joomlaGateway = $joomlaGateway;
+        $this->barcieGateway = $barcieGateway;
     }
 
     public function Execute($data)
     {
         $userId = $this->joomlaGateway->GetUserId();
+        if ($userId === null) {
+            throw new UnauthorizedException();
+        }
+
         if (!$this->joomlaGateway->IsTeamcoordinator($userId)) {
             throw new UnexpectedValueException("Je bent geen teamcoordinator");
         }
 
-        $date = $data->date ?? null;
+        $date = DateFunctions::CreateDateTime($data->date ?? null);
+
         if ($date === null) {
             throw new InvalidArgumentException("Date is leeg");
         }
 
-        if (new DateTime() > new DateTime($date)) {
+        if (new DateTime() > $date) {
             throw new UnexpectedValueException("Dag ligt in het verleden");
         }
 

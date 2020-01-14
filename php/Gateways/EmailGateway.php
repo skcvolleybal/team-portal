@@ -4,7 +4,7 @@ use PHPMailer\PHPMailer\PHPMailer;
 
 class EmailGateway
 {
-    function __construct($database)
+    function __construct(Database $database)
     {
         $this->database = $database;
     }
@@ -47,7 +47,7 @@ class EmailGateway
                 $email->body,
                 $email->signature
             ];
-            $this->database->Execute2($query, $params);
+            $this->database->Execute($query, $params);
             $this->PrintEmail($email);
         }
     }
@@ -55,7 +55,7 @@ class EmailGateway
     public function SendQueuedEmails()
     {
         $query = "SELECT * FROM teamportal_email WHERE send_date is null";
-        $emails = $this->database->Execute2($query);
+        $emails = $this->database->Execute($query);
 
         if (count($emails) == 0) {
             echo "Geen emails te verzenden";
@@ -76,7 +76,7 @@ class EmailGateway
     {
         $signature = $email->signature;
         $query = "SELECT id FROM teamportal_email WHERE signature = '$signature'";
-        $emails = $this->database->Execute2($query);
+        $emails = $this->database->Execute($query);
 
         return count($emails) > 0;
     }
@@ -85,7 +85,7 @@ class EmailGateway
     {
         $query = "UPDATE teamportal_email set send_date = NOW() where id = ?";
         $params = [$email->id];
-        $this->database->Execute2($query, $params);
+        $this->database->Execute($query, $params);
     }
 
     private function SendMail($email)

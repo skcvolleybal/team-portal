@@ -3,20 +3,15 @@
 class ToggleBhv implements IInteractorWithData
 {
 
-    public function __construct($database)
+    public function __construct(JoomlaGateway $joomlaGateway, BarcieGateway $barcieGateway)
     {
-        $this->joomlaGateway = new JoomlaGateway($database);
-        $this->barcieGateway = new BarcieGateway($database);
+        $this->joomlaGateway = $joomlaGateway;
+        $this->barcieGateway = $barcieGateway;
     }
 
     public function Execute($data)
     {
         $userId = $this->joomlaGateway->GetUserId();
-
-        if ($userId === null) {
-            UnauthorizedResult();
-        }
-
         if (!$this->joomlaGateway->IsTeamcoordinator($userId)) {
             throw new UnexpectedValueException("Je bent geen teamcoordinator");
         }

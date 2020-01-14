@@ -1,25 +1,23 @@
 <?php
 
-class GetCurrentUser implements IInteractor
+class GetCurrentUserInteractor implements IInteractor
 {
-    public function __construct($database)
+    public function __construct(JoomlaGateway $joomlaGateway)
     {
-        $this->joomlaGateway = new JoomlaGateway($database);
+        $this->joomlaGateway = $joomlaGateway;
     }
 
     public function Execute()
     {
         $userId = $this->joomlaGateway->GetUserId();
         if ($userId === null) {
-            UnauthorizedResult();
+            throw new UnauthorizedException();
         }
 
         $user = $this->joomlaGateway->GetUser($userId);
-        $result = (object) [
+        return (object) [
             'naam' => $user->naam,
             'id' => $user->id
         ];
-
-        exit(json_encode($result));
     }
 }

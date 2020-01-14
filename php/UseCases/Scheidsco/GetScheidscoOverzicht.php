@@ -1,118 +1,72 @@
 <?php
 
-
 class GetScheidscoOverzicht implements IInteractor
 {
-    public function __construct($database)
-    {
-        $this->joomlaGateway = new JoomlaGateway($database);
-        $this->telFluitGateway = new TelFluitGateway($database);
-        $this->nevoboGateway = new NevoboGateway();
-        $this->zaalwachtGateway = new ZaalwachtGateway($database);
+    public function __construct(
+        JoomlaGateway $joomlaGateway,
+        TelFluitGateway $telFluitGateway,
+        NevoboGateway $NevoboGateway,
+        ZaalwachtGateway $zaalwachtGateway
+    ) {
+        $this->joomlaGateway = $joomlaGateway;
+        $this->telFluitGateway = $telFluitGateway;
+        $this->nevoboGateway = $NevoboGateway;
+        $this->zaalwachtGateway = $zaalwachtGateway;
     }
 
-    public function Execute()
+    public function Execute(): array
     {
         $userId = $this->joomlaGateway->GetUserId();
         if ($userId === null) {
-            UnauthorizedResult();
+            throw new UnauthorizedException();
         }
 
         if (!$this->joomlaGateway->IsTeamcoordinator($userId)) {
             throw new UnexpectedValueException("Je bent (helaas) geen teamcoordinator");
         }
-        $overzicht = [];
-        $uscProgramma = $this->nevoboGateway->GetProgrammaForSporthal('LDNUN');
-        $uscProgramma = RemoveMatchesWithoutData($uscProgramma);
+        $result = [];
+        $wedstrijddagen = $this->nevoboGateway->GetWedstrijddagenForSporthal('LDNUN', 365);
 
-        $indeling = $this->telFluitGateway->GetIndeling();
-        $zaalwachtIndeling = $this->zaalwachtGateway->GetZaalwachtIndeling();
-
-        foreach ($uscProgramma as $wedstrijd) {
-            $matchId = $wedstrijd->id;
-            $datum = GetDutchDate($wedstrijd->timestamp);
-            $date = $wedstrijd->timestamp->format('Y-m-d');
-            $tijd = $wedstrijd->timestamp->format('G:i');
-            $time = $wedstrijd->timestamp->format('G:i:s');
-            $team1 = $wedstrijd->team1;
-            $team2 = $wedstrijd->team2;
-
-            $i = $this->GetIndexOfDatum($overzicht, $datum);
-            if ($i === null) {
-                $overzicht[] = (object) [
-                    "datum" => $datum,
-                    "date" => $date,
-                    "speeltijden" => [],
-                    "zaalwacht" => GetShortTeam($this->GetZaalwachtForDatum($zaalwachtIndeling, $date)),
-                ];
-                $i = count($overzicht) - 1;
-            }
-            $j = $this->GetIndexOfSpeeltijd($overzicht[$i]->speeltijden, $tijd);
-            if ($j === null) {
-                $overzicht[$i]->speeltijden[] = (object) [
-                    'tijd' => $tijd,
-                    'time' => $time,
-                    'wedstrijden' => [],
-                ];
-                $j = count($overzicht[$i]->speeltijden) - 1;
+        foreach ($wedstrijddagen as $dag) {
+            $zaalwacht = $this->zaalwachtGateway->GetZaalwacht($dag->date);
+            $dag->zaalwacht = $zaalwacht->team ?? null;
+            foreach ($dag->speeltijden as $speeltijd) {
+                foreach ($speeltijd->wedstrijden as &$wedstrijd) {
+                    $indeling = $this->telFluitGateway->GetWedstrijd($wedstrijd->matchId);
+                    $wedstrijd->scheidsrechter = $indeling->scheidsrechter ?? null;
+                    $wedstrijd->telteam = $indeling->telteam ?? null;
+                }
             }
 
-            $newWedstrijd = (object) [
-                "id" => $matchId,
-                "teams" => $team1 . " - " . $team2,
-                "scheidsrechter" => null,
-                "tellers" => null,
+
+            $result[] = $this->MapToUseCaseModel($dag);
+        }
+
+        return $result;
+    }
+
+    private function MapToUseCaseModel(Wedstrijddag $dag)
+    {
+        $result = (object) [
+            "datum" => DateFunctions::GetDutchDate($dag->date),
+            "date" => DateFunctions::GetYmdNotation($dag->date),
+            "speeltijden" => [],
+            "zaalwacht" => $dag->zaalwacht ? $dag->zaalwacht->GetShortNotation() : null
+        ];
+        foreach ($dag->speeltijden as $i => $speeltijd) {
+            $result->speeltijden[] = (object) [
+                'tijd' => DateFunctions::GetTime($speeltijd->time),
+                'wedstrijden' => [],
             ];
-
-            $wedstrijdIndeling = $this->GetWedstrijdIndeling($matchId, $indeling);
-            if ($wedstrijdIndeling) {
-                $newWedstrijd->tellers = $wedstrijdIndeling->tellers;
-                $newWedstrijd->scheidsrechter = $wedstrijdIndeling->scheidsrechter;
-            }
-
-            $overzicht[$i]->speeltijden[$j]->wedstrijden[] = $newWedstrijd;
-        }
-
-        exit(json_encode($overzicht));
-    }
-
-    private function GetIndexOfDatum($rooster, $datum)
-    {
-        for ($i = count($rooster) - 1; $i >= 0; $i--) {
-            if ($rooster[$i]->datum == $datum) {
-                return $i;
+            foreach ($speeltijd->wedstrijden as $wedstrijd) {
+                $result->speeltijden[$i]->wedstrijden[] = (object) [
+                    "id" => $wedstrijd->matchId,
+                    "teams" => $wedstrijd->team1->naam . " - " . $wedstrijd->team2->naam,
+                    "scheidsrechter" => $wedstrijd->scheidsrechter ? $wedstrijd->scheidsrechter->naam : null,
+                    "tellers" => $wedstrijd->telteam ? $wedstrijd->telteam->naam : null,
+                ];
             }
         }
-        return null;
-    }
-
-    private function GetIndexOfSpeeltijd($speeltijden, $tijd)
-    {
-        for ($i = count($speeltijden) - 1; $i >= 0; $i--) {
-            if ($speeltijden[$i]->tijd == $tijd) {
-                return $i;
-            }
-        }
-        return null;
-    }
-
-    private function GetZaalwachtForDatum($zaalwachtIndeling, $date)
-    {
-        foreach ($zaalwachtIndeling as $zaalwacht) {
-            if ($zaalwacht->date == $date) {
-                return $zaalwacht->team;
-            }
-        }
-        return null;
-    }
-
-    private function GetWedstrijdIndeling($matchId, $indeling)
-    {
-        foreach ($indeling as $indelingItem) {
-            if ($indelingItem->matchId == $matchId) {
-                return $indelingItem;
-            }
-        }
-        return null;
+        return $result;
     }
 }

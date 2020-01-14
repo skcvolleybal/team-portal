@@ -2,12 +2,12 @@
 
 class TelFluitGateway
 {
-    public function __construct($database)
+    public function __construct(Database $database)
     {
         $this->database = $database;
     }
 
-    public function GetAllFluitEnTelbeurten()
+    public function GetAllFluitEnTelbeurten(): iterable
     {
         $query = 'SELECT 
                     W.match_id as matchId,
@@ -19,12 +19,15 @@ class TelFluitGateway
         return $this->database->Execute($query);
     }
 
-    public function GetFluitEnTelbeurten($userId)
+    public function GetFluitEnTelbeurten($userId): iterable
     {
         $query = 'SELECT
+                    W.id,
                     W.match_id AS matchId,
                     W.scheidsrechter_id AS scheidsrechterId,
-                    G.team AS tellers,
+                    G.id as telteamId,
+                    G.team AS telteam,
+                    U.id as scheidsrechterId,
                     U.name AS scheidsrechter FROM TeamPortal_wedstrijden W
                   LEFT JOIN J3_users U ON W.scheidsrechter_id = U.id
                   LEFT JOIN (
@@ -32,61 +35,79 @@ class TelFluitGateway
                     INNER JOIN J3_usergroups G ON M.group_id = G.id
                     WHERE id IN (
                         SELECT id FROM J3_usergroups WHERE parent_id IN (
-                            SELECT id FROM J3_usergroups WHERE title = \'Teams\'
+                            SELECT id FROM J3_usergroups WHERE title = "Teams"
                         )
-                    ) AND user_id = :userId
+                    ) AND user_id = ?
                   ) G ON G.team_id = W.telteam_id
-                  WHERE W.scheidsrechter_id = :userId OR user_id = :userId';
-        $params = [new Param(Column::UserId, $userId, PDO::PARAM_INT)];
-        $result = $this->database->Execute($query, $params);
-        foreach ($result as &$row) {
-            $row->tellers = ToNevoboName($row->tellers);
+                  WHERE W.scheidsrechter_id = ? OR user_id = ?';
+        $params = [$userId];
+        $rows = $this->database->Execute($query, $params);
+        $result = [];
+        foreach ($rows as $row) {
+            $newWedstrijd = new Wedstrijd($row->matchId, $row->id);
+            $newWedstrijd->telteam = $row->telteamId ? new Team($row->telteam, $row->telteamId) : null;
+            $newWedstrijd->scheidsrechter = $row->scheidsrechterId ? new Persoon($row->scheidsrechterId, $row->scheidsrechter) : null;
+
+            $result[] = $newWedstrijd;
         }
         return $result;
     }
 
-    public function GetFluitbeurten($userId)
+    public function GetFluitbeurten($userId): iterable
     {
         $query = 'SELECT
-                    W.match_id as id,
+                    W.id,
+                    W.match_id as matchId,
                     W.scheidsrechter_id as scheidsrechterId,
-                    G.title as tellers,
+                    G.id as telteamId,
+                    G.title as telteam,
+                    U.id as scheidsrechterId,
                     U.name as scheidsrechter
                   FROM TeamPortal_wedstrijden W
                   LEFT JOIN J3_usergroups G on W.telteam_id = G.id
                   LEFT JOIN J3_users U on U.id = W.scheidsrechter_id
-                  WHERE W.scheidsrechter_id = :userId';
-        $params = [new Param(Column::UserId, $userId, PDO::PARAM_INT)];
-        $result = $this->database->Execute($query, $params);
-        foreach ($result as &$row) {
-            if ($row->tellers) {
-                $row->tellers = ToNevoboName($row->tellers);
-            }
+                  WHERE W.scheidsrechter_id = ?';
+        $params = [$userId];
+        $rows = $this->database->Execute($query, $params);
+        $result = [];
+        foreach ($rows as $row) {
+            $newWedstrijd = new Wedstrijd($row->matchId, $row->id);
+            $newWedstrijd->telteam = $row->telteamId ? new Team($row->telteam, $row->telteamId) : null;
+
+            $result[] = $newWedstrijd;
         }
         return $result;
     }
 
-    public function GetTelbeurten($userId)
+    public function GetTelbeurten($userId): iterable
     {
         $query = 'SELECT
-                    W.match_id as id,
+                    W.id,
+                    W.match_id as matchId,
                     W.scheidsrechter_id as scheidsrechterId,
-                    G.title as tellers,
+                    G.id as teamId,
+                    G.title as telteam,
+                    U.id as scheidsrechterId,
                     U.name as scheidsrechter
                   FROM TeamPortal_wedstrijden W
                   LEFT JOIN J3_usergroups G on W.telteam_id = G.id
                   INNER JOIN J3_user_usergroup_map M on W.telteam_id = M.group_id
                   LEFT JOIN J3_users U on U.id = W.scheidsrechter_id
-                  WHERE M.user_id = :userId';
-        $params = [new Param(Column::UserId, $userId, PDO::PARAM_INT)];
+                  WHERE M.user_id = ?';
+        $params = [$userId];
         $result = $this->database->Execute($query, $params);
+        $response = [];
         foreach ($result as &$row) {
-            $row->tellers = ToNevoboName($row->tellers);
+            $newWedstrijd = new Wedstrijd($row->matchId, $row->id);
+            $newWedstrijd->telteam = $row->teamId ? new Team($row->telteam, $row->teamId) : null;
+            $newWedstrijd->scheidsrechter = $row->scheidsrechterId ? new Persoon($row->scheidsrechterId, $row->scheidsrechter) : null;
+
+            $response[] = $newWedstrijd;
         }
-        return $result;
+        return $response;
     }
 
-    public function GetIndeling()
+    public function GetIndeling(): iterable
     {
         $query = 'SELECT
                     W.match_id as matchId,
@@ -98,19 +119,23 @@ class TelFluitGateway
         return $this->database->Execute($query);
     }
 
-    public function GetScheidsrechters()
+    public function GetScheidsrechters(): iterable
     {
         $query = 'SELECT
                     U.id,
                     U.name AS naam,
                     C.cb_scheidsrechterscode AS niveau,
                     COUNT(W.scheidsrechter_id) AS gefloten,
-                    team
+                    teamId,
+                    teamnaam
                   FROM J3_users U
                   INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
                   INNER JOIN J3_usergroups G ON M.group_id = G.id
                   LEFT JOIN (
-                    SELECT user_id, group_id, title as team
+                    SELECT 
+                      user_id, 
+                      group_id as teamId, 
+                      title as teamnaam
                     FROM J3_user_usergroup_map M
                     INNER JOIN J3_usergroups G ON M.group_id = G.id
                     WHERE G.parent_id = (SELECT id FROM J3_usergroups WHERE title = \'Teams\')) G2 ON U.id = G2.user_id
@@ -119,42 +144,17 @@ class TelFluitGateway
                   WHERE G.id IN (SELECT id FROM J3_usergroups WHERE title = "Scheidsrechters")
                   GROUP BY U.name
                   ORDER BY gefloten, naam';
-        return $this->database->Execute($query);
-    }
-
-    public function GetScheidsrechterAndTellersForWedstrijd($matchId)
-    {
-        $query = "SELECT
-                    W.match_id as matchId, 
-                    G.id as teamId,
-                    G.title as telteam,
-                    U.id as userId,
-                    U.name as naam,
-                    U.email
-                  FROM TeamPortal_wedstrijden W                  
-                  INNER JOIN J3_usergroups G ON G.id = W.telteam_id                  
-                  INNER JOIN J3_users U ON W.scheidsrechter_id = U.id
-                  WHERE W.match_id = '$matchId'";
-        $wedstrijd = $this->database->Execute2($query);
-        if (!$wedstrijd) {
-            return null;
+        $rows = $this->database->Execute($query);
+        $result = [];
+        foreach ($rows as $row) {
+            $scheidsrechter = new Scheidsrechter($row->id, $row->naam, $row->niveau, $row->gefloten);
+            $scheidsrechter->team = $row->teamId != null ? new Team($row->teamnaam, $row->teamId) : null;
+            $result[] = $scheidsrechter;
         }
-
-        $wedstrijd = $wedstrijd[0];
-        return [
-            new Persoon(
-                $wedstrijd->userId,
-                $wedstrijd->naam,
-                $wedstrijd->email
-            ),
-            new Team(
-                $wedstrijd->teamId,
-                $wedstrijd->telteam
-            )
-        ];
+        return $result;
     }
 
-    public function GetScheidsrechtersForWedstrijdenWithMatchId($matchIds)
+    public function GetScheidsrechtersForWedstrijdenWithMatchId($matchIds): array
     {
         if (empty($matchIds)) {
             return [];
@@ -182,14 +182,21 @@ class TelFluitGateway
                       )
                   ) as G ON G.user_id = U.id";
         $params = [];
-        $counter = 0;
         foreach ($matchIds as $matchId) {
-            $params[] = new Param(Column::MatchId . $counter++, $matchId, PDO::PARAM_STR);
+            $params[] = $matchId;
         }
-        return $this->database->Execute($query, $params);
+        $rows = $this->database->Execute($query, $params);
+        $result = [];
+        foreach ($rows as $row) {
+            $result[] = new Scheidsrechter(
+                $row->userId,
+                $row->naam
+            );
+        }
+        return $result;
     }
 
-    private function GetSaveMatchQuery($matchIds)
+    private function GetSaveMatchQuery(array $matchIds): string
     {
         $matchList = '';
         $counter = 0;
@@ -200,71 +207,83 @@ class TelFluitGateway
         return addslashes(substr($matchList, 7));
     }
 
-    public function GetWedstrijd($matchId)
+    public function GetWedstrijd(string $matchId): ?Wedstrijd
     {
         $query = 'SELECT
+                    W.id,
                     match_id as matchId,
-                    scheidsrechter_id as scheidsrechterId,
-                    telteam_id as telteamId
-                   FROM TeamPortal_wedstrijden WHERE match_id = :matchId';
-        $params = [
-            new Param(Column::MatchId, $matchId, PDO::PARAM_STR),
-        ];
-        $wedstrijden = $this->database->Execute($query, $params);
-        if (count($wedstrijden) == 0) {
+                    U.id as userId,
+                    U.name as naam,
+                    G.id as teamId,
+                    G.title as teamnaam
+                   FROM TeamPortal_wedstrijden W
+                   LEFT JOIN J3_users U ON W.scheidsrechter_id = U.id
+                   LEFT JOIN J3_usergroups G ON W.telteam_id = G.id
+                   WHERE W.match_id = ?';
+        $params = [$matchId];
+        $rows = $this->database->Execute($query, $params);
+        if (count($rows) != 1) {
             return null;
         }
-        return $wedstrijden[0];
+
+        $row = $rows[0];
+        $wedstrijd = new Wedstrijd($row->matchId, $row->id);
+        if ($row->userId) {
+            $wedstrijd->scheidsrechter = new Scheidsrechter($row->userId, $row->naam);
+        }
+        if ($row->teamId) {
+            $wedstrijd->telteam = new Team($row->teamnaam, $row->teamId);
+        }
+
+        return $wedstrijd;
     }
 
-    public function GetTelTeams()
+    public function GetTelTeams(): array
     {
         $query = 'SELECT
-                    G.title as naam,
+                    G.id as telteamId,
+                    G.title as teamnaam,
                     count(W.telteam_id) as geteld
                   FROM J3_usergroups G
                   LEFT JOIN TeamPortal_wedstrijden W ON W.telteam_id = G.id
                   WHERE G.id in (
                     SELECT id FROM J3_usergroups WHERE parent_id = (
-                      SELECT id FROM J3_usergroups WHERE title = \'Teams\'
+                      SELECT id FROM J3_usergroups WHERE title = "Teams"
                     )
                   )
                   GROUP BY G.title
-                  ORDER BY geteld, SUBSTRING(naam, 1, 1), LENGTH(naam), naam';
-        return $this->database->Execute($query);
+                  ORDER BY geteld, SUBSTRING(teamnaam, 1, 1), LENGTH(teamnaam), teamnaam';
+        $rows = $this->database->Execute($query);
+        $result = [];
+        foreach ($rows as $row) {
+            $team  = new Team($row->teamnaam, $row->telteamId);
+            $team->aantalKeerGeteld = $row->geteld;
+            $result[] = $team;
+        }
+        return $result;
     }
 
-    public function Insert($matchId, $scheidsrechterId, $telTeamId)
+    public function Insert(Wedstrijd $wedstrijd)
     {
         $query = 'INSERT INTO TeamPortal_wedstrijden (match_id, scheidsrechter_id, telteam_id)
-                  VALUES (:matchId, :scheidsrechterId, :telTeamId)';
-        $params = [
-            new Param(Column::MatchId, $matchId, PDO::PARAM_STR),
-            new Param(':scheidsrechterId', $scheidsrechterId, PDO::PARAM_INT),
-            new Param(':telTeamId', $telTeamId, PDO::PARAM_INT),
-        ];
+                  VALUES (?, ?, ?)';
+        $params = [$wedstrijd->matchId, $wedstrijd->scheidsrechter->id ?? null, $wedstrijd->telteam->id ?? null];
         $this->database->Execute($query, $params);
     }
 
-    public function Update($matchId, $scheidsrechterId, $telTeamId)
+    public function Update(Wedstrijd $wedstrijd)
     {
         $query = 'UPDATE TeamPortal_wedstrijden
-                  SET scheidsrechter_id = :scheidsrechterId, telteam_id = :telTeamId
-                  WHERE match_id = :matchId';
-        $params = [
-            new Param(Column::MatchId, $matchId, PDO::PARAM_STR),
-            new Param(':scheidsrechterId', $scheidsrechterId, PDO::PARAM_INT),
-            new Param(':telTeamId', $telTeamId, PDO::PARAM_INT),
-        ];
+                  SET scheidsrechter_id = ?, telteam_id = ?
+                  WHERE match_id = ?';
+        $params = [$wedstrijd->scheidsrechter->id ?? null, $wedstrijd->telteam->id ?? null, $wedstrijd->matchId];
         $this->database->Execute($query, $params);
     }
 
-    public function Delete($matchId)
+    public function Delete(Wedstrijd $wedstrijd)
     {
-        $query = 'DELETE FROM TeamPortal_wedstrijden WHERE match_id = :matchId';
-        $params = [
-            new Param(Column::MatchId, $matchId, PDO::PARAM_STR),
-        ];
+        $query = 'DELETE FROM TeamPortal_wedstrijden WHERE match_id = ?';
+        $params = [$wedstrijd->matchId];
         $this->database->Execute($query, $params);
     }
 }

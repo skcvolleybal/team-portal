@@ -52,8 +52,8 @@ export class SelecteerScheidsrechterComponent implements OnInit {
     );
   }
 
-  getScheidsrechtersByKeuze(scheidsrechterstype: string, keuze: string) {
-    return this.scheidsrechters[scheidsrechterstype][keuze];
+  getScheidsrechtersByKeuze(index: number, keuze: string) {
+    return this.scheidsrechters[index][keuze.toLowerCase()];
   }
 
   GetScheidsrechterText(scheidsrechter) {
@@ -70,9 +70,9 @@ export class SelecteerScheidsrechterComponent implements OnInit {
 
   GetClass(scheidsrechter: any) {
     return {
-      'btn-danger': scheidsrechter.isMogelijk === 'Nee',
-      'btn-success': scheidsrechter.isMogelijk === 'Ja',
-      'btn-warning': scheidsrechter.isMogelijk === 'Onbekend'
+      'btn-danger': scheidsrechter.isBeschikbaar === false,
+      'btn-success': scheidsrechter.isBeschikbaar === true,
+      'btn-warning': scheidsrechter.isBeschikbaar === null
     };
   }
 
@@ -84,9 +84,9 @@ export class SelecteerScheidsrechterComponent implements OnInit {
 
   UpdateScheidsrechter(scheidsrechter) {
     this.scheidscoService
-      .UpdateScheidsrechter(this.wedstrijd.id, scheidsrechter)
+      .UpdateScheidsrechter(this.wedstrijd.id, scheidsrechter.id)
       .subscribe(() => {
-        this.modal.close(scheidsrechter);
+        this.modal.close(scheidsrechter.naam);
       });
   }
 }

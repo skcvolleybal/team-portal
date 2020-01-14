@@ -29,6 +29,6 @@ class GetUsers implements IInteractorWithData
             }
         }
 
-        exit(json_encode($result));
+        return $result)
     }
 }

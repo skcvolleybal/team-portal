@@ -1,24 +1,23 @@
 <?php
 class BarcieBeschikbaarheidHelper
 {
-    function IsMogelijk($wedstrijden)
+    function IsMogelijk(array $wedstrijden): ?bool
     {
         if (count($wedstrijden) == 0) {
-            return "Onbekend";
+            return null;
         }
 
-        $bestResult = "Ja";
+        $bestResult = true;
         foreach ($wedstrijden as $wedstrijd) {
-            if (!IsThuis($wedstrijd->locatie)) {
-                return "Nee";
+            if (!$wedstrijd->IsThuis()) {
+                return false;
             }
-            if ($wedstrijd->timestamp) {
-                $time = $wedstrijd->timestamp->format('H:i');
-                if ($time == "19:30" || $time == "16:00") {
-                    $bestResult = $bestResult == "Ja" ? "Ja" : "Onbekend";
-                } else {
-                    $bestResult = "Onbekend";
-                }
+
+            $time = DateFunctions::GetTime($wedstrijd->timestamp);
+            if ($time == "19:30" || $time == "16:00") {
+                $bestResult = $bestResult ? true : null;
+            } else {
+                $bestResult = null;
             }
         }
 

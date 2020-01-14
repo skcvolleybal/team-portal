@@ -1,19 +1,17 @@
 <?php
 
-
 class JoomlaGateway
 {
-    public function __construct(stdClass $configuration, Database $database)
+    public function __construct(Configuration $configuration, Database $database)
     {
         $this->configuration = $configuration;
         $this->database = $database;
     }
 
-    public function GetUserId($forceImpersonation = true)
+    public function GetUserId(bool $forceImpersonation = true): ?int
     {
         $this->InitJoomla();
 
-        $session = JFactory::getSession();
         $user = JFactory::getUser();
         if ($user->guest) {
             return null;
@@ -29,12 +27,12 @@ class JoomlaGateway
         return $user->id;
     }
 
-    public function GetUser($userId)
+    public function GetUser(int $userId): Persoon
     {
         $query = 'SELECT * 
                   FROM J3_users
-                  WHERE id = :id';
-        $params = [new Param(Column::Id, $userId, PDO::PARAM_INT)];
+                  WHERE id = ?';
+        $params = [$userId];
         $users = $this->database->Execute($query, $params);
         if (count($users) == 1) {
             return new Persoon($users[0]->id, $users[0]->name, $users[0]->email);
@@ -42,49 +40,49 @@ class JoomlaGateway
         return null;
     }
 
-    public function GetScheidsrechterByName($scheidsrechter)
+    public function GetScheidsrechter(int $id): Scheidsrechter
     {
-        if (empty($scheidsrechter)) {
-            return null;
-        }
-
-        $query = 'SELECT U.id, name
+        $query = 'SELECT U.id, name, email
                   FROM J3_users U
                   INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
                   INNER JOIN J3_usergroups G ON M.group_id = G.id
-                  WHERE U.name = :scheidsrechter and
-                        G.id in (SELECT id FROM J3_usergroups WHERE title = "Scheidsrechters")';
-        $params = [
-            new Param(':scheidsrechter', $scheidsrechter, PDO::PARAM_STR),
-        ];
-        $scheidsrechters = $this->database->Execute($query, $params);
-        if (count($scheidsrechters) == 0) {
+                  WHERE U.id = ? and
+                        G.id in (
+                            SELECT id FROM J3_usergroups WHERE title = "Scheidsrechters"
+                        )';
+        $params = [$id];
+        $result = $this->database->Execute($query, $params);
+        if (count($result) != 1) {
             throw new UnexpectedValueException('Unknown scheidsrechter: $scheidsrechter');
         };
-        return $scheidsrechters[0];
+        return new Scheidsrechter($result[0]->id, $result[0]->name, $result[0]->email);
     }
 
-    public function GetTeamByNaam($naam)
+    public function GetTeamByNaam(?string $naam): ?Team
     {
-        $query = 'SELECT * FROM J3_usergroups
-                  WHERE title = :naam';
-        $params = [new Param(':naam', $naam, PDO::PARAM_STR)];
-        $teams = $this->database->Execute($query, $params);
-        if (count($teams) == 0) {
+        if (empty($naam)) {
             return null;
         }
-        return $teams[0];
+        $team = new Team($naam);
+        $query = 'SELECT * FROM J3_usergroups
+                  WHERE title = ?';
+        $params = [$team->GetSkcNaam()];
+        $result = $this->database->Execute($query, $params);
+        if (count($result) != 1) {
+            return null;
+        }
+        return new Team($result[0]->title, $result[0]->id);
     }
 
-    public function DoesUserIdExist($userId)
+    public function DoesUserIdExist(int $userId): bool
     {
-        $query = 'SELECT id FROM J3_users WHERE id = :userId';
-        $params = [new Param(Column::UserId, $userId, PDO::PARAM_INT)];
+        $query = 'SELECT id FROM J3_users WHERE id = ?';
+        $params = [$userId];
         $result = $this->database->Execute($query, $params);
         return count($result) > 0;
     }
 
-    public function GetUsersWithName($name)
+    public function GetUsersWithName(string $name): array
     {
         $query = "SELECT * 
                   FROM J3_users 
@@ -94,77 +92,72 @@ class JoomlaGateway
                     WHEN name LIKE '$name%' THEN 0 ELSE 1 end,
                   name  
                   LIMIT 0, 5";
-        return $this->database->Execute2($query);
+        return $this->database->Execute($query);
     }
 
-    private function IsUserInUsergroup($userId, $usergroup)
+    private function IsUserInUsergroup(int $userId, string $usergroup): bool
     {
         $query = 'SELECT *
                   FROM J3_user_usergroup_map M
                   INNER JOIN J3_usergroups G ON M.group_id = G.id
-                  WHERE M.user_id = :userId and G.title = :usergroup';
-        $params = [
-            new Param(Column::UserId, $userId, PDO::PARAM_INT),
-            new Param(':usergroup', $usergroup, PDO::PARAM_STR),
-        ];
+                  WHERE M.user_id = ? and G.title = ?';
+        $params = [$userId, $usergroup];
         $result = $this->database->Execute($query, $params);
         return count($result) > 0;
     }
 
-    public function IsScheidsrechter($userId)
+    public function IsScheidsrechter(int $userId): bool
     {
         return $this->IsUserInUsergroup($userId, 'Scheidsrechters');
     }
 
-    public function IsWebcie($userId)
+    public function IsWebcie(int $userId): bool
     {
         return $this->IsUserInUsergroup($userId, 'Super Users');
     }
 
-    public function IsTeamcoordinator($userId)
+    public function IsTeamcoordinator(int $userId): bool
     {
         return $this->IsUserInUsergroup($userId, 'Teamcoordinator');
     }
 
-    public function IsBarcie($userId)
+    public function IsBarcie(int $userId): bool
     {
         return $this->IsUserInUsergroup($userId, 'Barcie');
     }
 
-    public function IsCoach($userId)
+    public function IsCoach(int $userId): bool
     {
         $query = 'SELECT *
                   FROM J3_user_usergroup_map M
                   INNER JOIN J3_usergroups G ON M.group_id = G.id
-                  WHERE M.user_id = :userId and G.title LIKE :usergroup';
-        $params = [
-            new Param(Column::UserId, $userId, PDO::PARAM_INT),
-            new Param(':usergroup', 'Coach %', PDO::PARAM_STR),
-        ];
+                  WHERE M.user_id = ? and G.title LIKE "Coach %"';
+        $params = [$userId];
         $result = $this->database->Execute($query, $params);
         return count($result) > 0;
     }
 
-    public function GetTeam($userId)
+    public function GetTeam(int $userId): Team
     {
-        $query = 'SELECT title as naam
+        $query = 'SELECT 
+                    G.id,
+                    title as naam
                   FROM J3_users U
                   LEFT JOIN J3_user_usergroup_map M on U.id = M.user_id
                   LEFT JOIN J3_usergroups G on G.id = M.group_id
-                  WHERE M.user_id = :userId and G.parent_id in (select id from J3_usergroups where title = \'Teams\')';
-        $params = [new Param(Column::UserId, $userId, PDO::PARAM_INT)];
+                  WHERE M.user_id = ? and G.parent_id in (select id from J3_usergroups where title = \'Teams\')';
+        $params = [$userId];
 
         $team = $this->database->Execute($query, $params);
-        if (count($team) == 0) {
+        if (count($team) != 1) {
             return null;
         }
 
-        return ToNevoboName($team[0]->naam);
+        return new Team($team[0]->naam, $team[0]->id);
     }
 
-    public function GetTeamgenoten($team)
+    public function GetTeamgenoten(Team $team): array
     {
-        $team = ToSkcName($team);
         $query = 'SELECT 
                     U.id, 
                     name as naam,
@@ -172,40 +165,47 @@ class JoomlaGateway
                   FROM J3_users U
                   INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
                   INNER JOIN J3_usergroups G ON M.group_id = G.id
-                  WHERE G.title = :team
+                  WHERE G.title = ?
                   ORDER BY name';
-        $params = [new Param(':team', $team, PDO::PARAM_STR)];
-        return $this->database->Execute($query, $params);
+        $params = [$team->GetSkcNaam($team)];
+        $rows =  $this->database->Execute($query, $params);
+        $result = [];
+        foreach ($rows as $row) {
+            $result[] = new Persoon($row->id, $row->naam, $row->email);
+        }
+        return $result;
     }
 
-    public function GetCoachTeam($userId)
+    public function GetCoachTeam(int $userId): ?Team
     {
-        $query = 'SELECT G.title as naam
+        $query = 'SELECT 
+                    G2.id,
+                    G2.title as naam
                   FROM J3_usergroups G
                   INNER JOIN J3_user_usergroup_map M on G.id = M.group_id
-                  WHERE M.user_id = :userId and G.title like \'Coach %\'';
-        $params = [new Param(Column::UserId, $userId, PDO::PARAM_INT)];
+                  INNER JOIN J3_usergroups G2 on G2.title = SUBSTRING(G.title, 7)
+                  WHERE M.user_id = ? and G.title like \'Coach %\'';
+        $params = [$userId];
 
         $team = $this->database->Execute($query, $params);
-        if (count($team) == 0) {
+        if (count($team) != 1) {
             return null;
         }
 
-        $coachTeam = substr($team[0]->naam, 6);
-        return ToNevoboName($coachTeam);
+        return new Team($team[0]->naam, $team[0]->id);
     }
 
-    public function GetCoaches($teamnaam)
+    public function GetCoaches(Team $team): array
     {
-        return $this->GetUsersInGroup('Coach ' . ToSkcName($teamnaam));
+        return $this->GetUsersInGroup('Coach ' . $team->GetSkcNaam());
     }
 
-    public function GetTrainers($teamnaam)
+    public function GetTrainers(Team $team): array
     {
-        return $this->GetUsersInGroup('Trainer ' . ToSkcName($teamnaam));
+        return $this->GetUsersInGroup('Trainer ' . $team->GetSkcNaam());
     }
 
-    public function GetUsersInGroup($groupname)
+    public function GetUsersInGroup(string $groupname): array
     {
         $query = 'SELECT
                     U.id,
@@ -213,14 +213,14 @@ class JoomlaGateway
                   FROM J3_users U
                   INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
                   INNER JOIN J3_usergroups G ON M.group_id = G.id
-                  WHERE G.title = :groupname';
-        $params = [new Param(':groupname', $groupname, PDO::PARAM_STR)];
+                  WHERE G.title = ?';
+        $params = [$groupname];
         return $this->database->Execute($query, $params);
     }
 
     public function InitJoomla()
     {
-        define('JPATH_BASE', $this->configuration->JPATH_BASE);
+        define('JPATH_BASE', $this->configuration->JpathBase);
         define('_JEXEC', 1);
 
         require_once JPATH_BASE . '/includes/defines.php';
@@ -230,7 +230,7 @@ class JoomlaGateway
         $mainframe->initialise();
     }
 
-    public function Login($username, $password)
+    public function Login(string $username, string $password)
     {
         $this->InitJoomla();
 

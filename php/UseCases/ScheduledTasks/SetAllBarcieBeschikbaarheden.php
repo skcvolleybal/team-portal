@@ -2,7 +2,6 @@
 
 class SetAllBarcieBeschikbaarheden implements IInteractor
 {
-
     public function __construct($database)
     {
         $this->joomlaGateway = new JoomlaGateway($database);
@@ -15,14 +14,14 @@ class SetAllBarcieBeschikbaarheden implements IInteractor
     {
         $barcieleden = $this->barcieGateway->GetBarcieleden();
         $numberOfAddedBeschikbaarheden = 0;
-        $barcieDagen = $this->barcieGateway->GetBarcieDagen();
+        $barcieDagen = $this->barcieGateway->GetBarciedagen();
 
         foreach ($barcieleden as $barcielid) {
             $barcielidId = $barcielid->id;
             $team = $this->joomlaGateway->GetTeam($barcielidId);
             $coachTeam = $this->joomlaGateway->GetCoachTeam($barcielidId);
-            $eigenWedstrijden = $this->nevoboGateway->GetProgrammaForTeam($team);
-            $coachWedstrijden = $this->nevoboGateway->GetProgrammaForTeam($coachTeam);
+            $eigenWedstrijden = $this->nevoboGateway->GetWedstrijdenForTeam($team);
+            $coachWedstrijden = $this->nevoboGateway->GetWedstrijdenForTeam($coachTeam);
             $beschikbaarheden = $this->barcieGateway->GetBeschikbaarheden($barcielidId);
             foreach ($barcieDagen as $barcieDag) {
                 $date = $barcieDag->date;

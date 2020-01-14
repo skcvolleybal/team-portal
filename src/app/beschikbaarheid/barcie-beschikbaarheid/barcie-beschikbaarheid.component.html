@@ -21,9 +21,9 @@
         <li
           class="list-group-item"
           [ngClass]="{
-            'list-group-item-warning': dag.isMogelijk == 'Onbekend',
-            'list-group-item-danger': dag.isMogelijk == 'Nee',
-            'list-group-item-success': dag.isMogelijk == 'Ja'
+            'list-group-item-warning': dag.isMogelijk === null,
+            'list-group-item-danger': dag.isMogelijk === false,
+            'list-group-item-success': dag.isMogelijk === true
           }"
         >
           <form>

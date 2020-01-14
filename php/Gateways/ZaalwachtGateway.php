@@ -2,27 +2,41 @@
 
 class ZaalwachtGateway
 {
-    public function __construct($database)
+    public function __construct(Database $database)
     {
         $this->database = $database;
     }
 
-    public function GetZaalwachtForUserId($userId)
+    public function GetZaalwachtenOfUser(int $userId): array
     {
-        $query = 'SELECT Z.*, title as team
+        $query = 'SELECT 
+                    Z.id,
+                    Z.team_id as teamId, 
+                    Z.date,
+                    title as teamnaam
                   FROM TeamPortal_zaalwacht Z
                   INNER JOIN J3_user_usergroup_map M on Z.team_id = M.group_id
                   INNER JOIN J3_usergroups G ON Z.team_id = G.id
-                  WHERE M.user_id = :userId and Z.date >= CURRENT_DATE()';
-        $params = [new Param(Column::UserId, $userId, PDO::PARAM_INT)];
-        return $this->database->Execute($query, $params);
+                  WHERE M.user_id = ? and Z.date >= CURRENT_DATE()';
+        $params = [$userId];
+        $rows = $this->database->Execute($query, $params);
+        $result = [];
+        foreach ($rows as $row) {
+            $result[] = new Zaalwacht(
+                $row->date,
+                $row->id,
+                new Team($row->teamnaam, $row->teamId)
+            );
+        }
+        return $result;
     }
 
-    public function GetZaalwachtTeams()
+    public function GetZaalwachtSamenvatting(): array
     {
         $query = 'SELECT
-                    G.title as naam,
-                    count(Z.id) as zaalwacht
+                    G.id as teamId,
+                    G.title as teamnaam,
+                    count(Z.id) as aantal
                   FROM J3_usergroups G
                   LEFT JOIN TeamPortal_zaalwacht Z ON Z.team_id = G.id
                   WHERE G.id in (
@@ -31,104 +45,81 @@ class ZaalwachtGateway
                     )
                   )
                   GROUP BY G.title
-                  ORDER BY zaalwacht, SUBSTRING(naam, 1, 1), LENGTH(naam), naam';
-        return $this->database->Execute($query);
+                  ORDER BY aantal, SUBSTRING(teamnaam, 1, 1), LENGTH(teamnaam), teamnaam';
+        $rows = $this->database->Execute($query);
+        $result = [];
+        foreach ($rows as $row) {
+            $result[] = (object) [
+                'team' => new Team($row->teamnaam, $row->teamId),
+                'aantal' => $row->aantal
+            ];
+        }
+        return $result;
     }
 
-    public function GetZaalwachtersWithinPeriod($dagen)
+    public function GetZaalwachtIndeling(): array
     {
         $query = 'SELECT
                     Z.date,
-                    G.title as zaalwacht
-                  FROM TeamPortal_zaalwacht Z
-                  INNER JOIN J3_user_usergroup_map M ON Z.team_id = M.group_id
-                  INNER JOIN J3_usergroups G ON M.group_id = G.id                  
-                  WHERE date between CURRENT_DATE() AND DATE_ADD(CURRENT_DATE(), INTERVAL :dagen DAY)';
-        $params = [new Param(':dagen', $dagen, PDO::PARAM_INT)];
-        return $this->database->Execute($query, $params);
-    }
-
-    public function GetZaalwachtIndeling()
-    {
-        $query = 'SELECT
-                    Z.date,
+                    G.id as teamId,
                     G.title as team
                   FROM TeamPortal_zaalwacht Z
                   INNER JOIN J3_usergroups G ON Z.team_id = G.id';
-        return $this->database->Execute($query);
+        $rows = $this->database->Execute($query);
+
+        $response = [];
+        foreach ($rows as $row) {
+            $rows[$row->date] = new Team($row->team, $row->teamId);
+        }
+        return $response;
     }
 
-    public function GetZaalwacht($date)
+    public function GetZaalwacht(DateTime $date): ?Zaalwacht
     {
         $query = 'SELECT
-                    id,
+                    Z.id,
                     date,
-                    team_id as teamId
-                  FROM TeamPortal_zaalwacht WHERE date = :date';
-        $params = [new Param(Column::Date, $date, PDO::PARAM_STR)];
-        $zaalwachten = $this->database->Execute($query, $params);
-        if (count($zaalwachten) == 0) {
-            return null;
-        }
-        return $zaalwachten[0];
-    }
-
-    public function GetZaalwachtTeamForDate($date)
-    {
-        $query = "SELECT
                     team_id as teamId,
-                    G.title as naam
+                    G.title as teamnaam
                   FROM TeamPortal_zaalwacht Z
-                  INNER JOIN J3_usergroups G on Z.team_id = G.id
-                  WHERE date = ?";
-        $params = [$date->format("Y-m-d")];
-        $zaalwacht = $this->database->Execute2($query, $params);
-        if (count($zaalwacht) == 0) {
+                  INNER JOIN J3_usergroups G ON Z.team_id = G.id
+                  WHERE date = ?';
+        $params = [DateFunctions::GetYmdNotation($date)];
+        $result = $this->database->Execute($query, $params);
+        if (count($result) != 1) {
             return null;
         }
-
-        return new Team(
-            $zaalwacht[0]->teamId,
-            $zaalwacht[0]->naam
+        return new Zaalwacht(
+            DateFunctions::CreateDateTime($result[0]->date),
+            $result[0]->id,
+            new Team($result[0]->teamnaam, $result[0]->teamId)
         );
     }
 
-    public function Update($zaalwacht, $team)
+    public function Update(Zaalwacht $zaalwacht)
     {
-        $id = $zaalwacht->id;
-        $teamId = $team->id;
-
         $query = 'UPDATE TeamPortal_zaalwacht
-                  SET team_id = :teamId
-                  WHERE id = :id';
-        $params = [
-            new Param(':id', $id, PDO::PARAM_INT),
-            new Param(':teamId', $teamId, PDO::PARAM_INT),
-        ];
+                  SET team_id = ?
+                  WHERE id = ?';
+        $params = [$zaalwacht->team->id, $zaalwacht->id];
         $this->database->Execute($query, $params);
     }
 
-    public function Insert($date, $team)
+    public function Insert(Zaalwacht $zaalwacht)
     {
-        $teamId = $team->id;
-
         $query = 'INSERT INTO TeamPortal_zaalwacht (date, team_id)
-                  VALUES (:date, :teamId)';
+                  VALUES (?, ?)';
         $params = [
-            new Param(Column::Date, $date, PDO::PARAM_STR),
-            new Param(':teamId', $teamId, PDO::PARAM_INT),
+            DateFunctions::GetYmdNotation($zaalwacht->date),
+            $zaalwacht->team->id
         ];
         $this->database->Execute($query, $params);
     }
 
-    public function Delete($zaalwacht)
+    public function Delete(Zaalwacht $zaalwacht)
     {
-        $id = $zaalwacht->id;
-
-        $query = 'DELETE FROM TeamPortal_zaalwacht WHERE id = :id';
-        $params = [
-            new Param(':id', $id, PDO::PARAM_INT),
-        ];
+        $query = 'DELETE FROM TeamPortal_zaalwacht WHERE id = ?';
+        $params = [$zaalwacht->id];
         $this->database->Execute($query, $params);
     }
 }

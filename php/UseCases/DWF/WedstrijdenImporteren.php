@@ -20,8 +20,8 @@ class WedstrijdenImporteren implements IInteractor
                 continue;
             }
 
-            $wedstrijdverloop = $this->dwfGateway->GetWedstrijdVerloop($wedstrijd->id);
-            if ($wedstrijdverloop == null) {
+            $wedstrijdverloop = $this->dwfGateway->GetWedstrijdVerloop($wedstrijd->matchId);
+            if ($wedstrijdverloop === null) {
                 continue;
             }
 
@@ -59,7 +59,7 @@ class WedstrijdenImporteren implements IInteractor
                                 }
 
                                 $this->gespeeldeWedstrijdenGateway->AddPunt(
-                                    $wedstrijd->id,
+                                    $wedstrijd->matchId,
                                     $skcTeam,
                                     $currentSet + 1,
                                     $punt->serverendTeam == $team,
@@ -84,7 +84,7 @@ class WedstrijdenImporteren implements IInteractor
                 }
 
                 $newWedstrijd = (object) [
-                    "id" => $wedstrijd->id,
+                    "matchId" => $wedstrijd->matchId,
                     "skcTeam" => $skcTeam,
                     "otherTeam" => $otherTeam,
                     "setsSkcTeam" => $setsSkcTeam,
@@ -95,13 +95,13 @@ class WedstrijdenImporteren implements IInteractor
             }
         }
 
-        exit("Done!");
+        return "Done!";
     }
 
     private function IsWedstrijdAlOpgeslagen($wedstrijd)
     {
         foreach ($this->opgeslagenWedstrijden as $gespeeldeWedstrijd) {
-            if ($wedstrijd->id == $gespeeldeWedstrijd->id) {
+            if ($wedstrijd->matchId == $gespeeldeWedstrijd->matchId) {
                 return true;
             }
         }

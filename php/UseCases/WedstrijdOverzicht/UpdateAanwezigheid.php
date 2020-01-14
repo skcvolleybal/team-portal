@@ -3,10 +3,10 @@
 
 class UpdateAanwezigheid implements IInteractorWithData
 {
-    public function __construct($database)
+    public function __construct(JoomlaGateway $joomlaGateway, AanwezigheidGateway $aanwezigheidGateway)
     {
-        $this->joomlaGateway = new JoomlaGateway($database);
-        $this->aanwezigheidGateway = new AanwezigheidGateway($database);
+        $this->joomlaGateway = $joomlaGateway;
+        $this->aanwezigheidGateway = $aanwezigheidGateway;
     }
 
     public function Execute($data)
@@ -14,24 +14,26 @@ class UpdateAanwezigheid implements IInteractorWithData
         $userId = $this->joomlaGateway->GetUserId();
 
         if ($userId === null) {
-            UnauthorizedResult();
+            throw new UnauthorizedException();
         }
 
-        $playerId = $data->spelerId ?? $userId;
+        $spelerId = $data->spelerId ?? $userId;
+        $speler = $this->joomlaGateway->GetUser($spelerId);
         $matchId = $data->matchId;
         $isAanwezig = $data->isAanwezig;
         $rol = $data->rol;
 
-        $aanwezigheid = $this->aanwezigheidGateway->GetAanwezigheid($playerId, $matchId, $rol);
-        if ($aanwezigheid) {
-            if ($isAanwezig === 'Onbekend') {
-                $this->aanwezigheidGateway->Delete($aanwezigheid->id);
-            } else {
-                $this->aanwezigheidGateway->Update($aanwezigheid->id, $isAanwezig);
+        $aanwezigheid = $this->aanwezigheidGateway->GetAanwezigheid($spelerId, $matchId, $rol) ?? new Aanwezigheid($matchId, new Persoon($speler->id, $speler->naam), $isAanwezig, $rol);
+        $aanwezigheid->isAanwezig = $isAanwezig;
+        if ($aanwezigheid->id === null) {
+            if ($aanwezigheid->isAanwezig !== null) {
+                $this->aanwezigheidGateway->Insert($aanwezigheid);
             }
         } else {
-            if ($isAanwezig !== 'Onbekend') {
-                $this->aanwezigheidGateway->Insert($playerId, $matchId, $isAanwezig, $rol);
+            if ($aanwezigheid->isAanwezig === null) {
+                $this->aanwezigheidGateway->Delete($aanwezigheid);
+            } else {
+                $this->aanwezigheidGateway->Update($aanwezigheid);
             }
         }
     }

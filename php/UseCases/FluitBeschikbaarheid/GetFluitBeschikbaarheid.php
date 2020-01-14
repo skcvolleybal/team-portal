@@ -4,19 +4,21 @@ class GetFluitBeschikbaarheid implements IInteractor
 {
     private $uscCode = 'LDNUN';
 
-    public function __construct($database)
-    {
-        $this->joomlaGateway = new JoomlaGateway($database);
-        $this->nevoboGateway = new NevoboGateway();
-        $this->fluitBeschikbaarheidGateway = new FluitBeschikbaarheidGateway($database);
-        $this->fluitBeschikbaarheidHelper = new FluitBeschikbaarheidHelper();
+    public function __construct(
+        JoomlaGateway $joomlaGateway,
+        NevoboGateway $nevoboGateway,
+        FluitBeschikbaarheidGateway $fluitBeschikbaarheidGateway
+    ) {
+        $this->joomlaGateway = $joomlaGateway;
+        $this->nevoboGateway = $nevoboGateway;
+        $this->fluitBeschikbaarheidGateway = $fluitBeschikbaarheidGateway;
     }
 
-    public function Execute()
+    public function Execute(): iterable
     {
         $userId = $this->joomlaGateway->GetUserId();
         if ($userId === null) {
-            UnauthorizedResult();
+            throw new UnauthorizedException();
         }
 
         if (!$this->joomlaGateway->IsScheidsrechter($userId)) {
@@ -25,56 +27,97 @@ class GetFluitBeschikbaarheid implements IInteractor
 
         $team = $this->joomlaGateway->GetTeam($userId);
         $coachTeam = $this->joomlaGateway->GetCoachTeam($userId);
-        $fluitBeschikbaarheden = $this->fluitBeschikbaarheidGateway->GetFluitBeschikbaarheden($userId);
+        $beschikbaarheden = $this->fluitBeschikbaarheidGateway->GetFluitBeschikbaarheden($userId);
 
-        $programma = $this->nevoboGateway->GetProgrammaForTeam($team);
-        $coachProgramma = [];
-        if ($coachTeam) {
-            $coachProgramma = $this->nevoboGateway->GetProgrammaForTeam($coachTeam);
-        }
+        $wedstrijden = $this->nevoboGateway->GetWedstrijdenForTeam($team);
+        $coachWedstrijden = $this->nevoboGateway->GetWedstrijdenForTeam($coachTeam);
 
-        $skcProgramma = $this->nevoboGateway->GetProgrammaForSporthal($this->uscCode);
-        $skcProgramma = RemoveMatchesWithoutData($skcProgramma);
+        $rooster = [];
+        $wedstrijddagen = $this->nevoboGateway->GetWedstrijddagenForSporthal($this->uscCode, 365);
+        foreach ($wedstrijddagen as $wedstrijddag) {
+            $dag = new TeamPortalWedstrijddag($wedstrijddag);
 
-        $rooster = $this->fluitBeschikbaarheidHelper->GetUscRooster($skcProgramma, $team, $coachTeam);
-
-        foreach ($rooster as &$wedstrijdDag) {
-            $date = $wedstrijdDag->date;
-            $speelWedstrijd = $this->fluitBeschikbaarheidHelper->GetWedstrijdWithDate($programma, $date);
-            $coachWedstrijd = $this->fluitBeschikbaarheidHelper->GetWedstrijdWithDate($coachProgramma, $date);
+            $speelWedstrijd = Wedstrijd::GetWedstrijdWithDate($wedstrijden, $wedstrijddag->date);
+            $coachWedstrijd = Wedstrijd::GetWedstrijdWithDate($coachWedstrijden, $wedstrijddag->date);
             $eigenWedstrijden = array_filter([$speelWedstrijd, $coachWedstrijd], function ($value) {
                 return $value !== null;
             });
-
-            foreach ($wedstrijdDag->speeltijden as $tijdslot) {
-                $date = $wedstrijdDag->date;
-                $time = $tijdslot->time;
-                $i = $this->fluitBeschikbaarheidHelper->GetIndexOfTijd($wedstrijdDag->speeltijden, $time);
-
-                $wedstrijdDag->speeltijden[$i]->beschikbaarheid = $this->fluitBeschikbaarheidHelper->GetFluitBeschikbaarheid($fluitBeschikbaarheden, $date, $time) ?? "Onbekend";
-                $wedstrijdDag->speeltijden[$i]->isMogelijk = $this->fluitBeschikbaarheidHelper->isMogelijk($eigenWedstrijden, $time);
-            }
-
             foreach ($eigenWedstrijden as $wedstrijd) {
-                $wedstrijdDag->eigenWedstrijden[] = $this->MapToEigenWedstrijd($wedstrijd, $team, $coachTeam);
+                $dag->eigenWedstrijden[] = new TeamPortalWedstrijd($wedstrijd, $team, $coachTeam);
             }
+
+            foreach ($wedstrijddag->speeltijden as $speeltijd) {
+                $speeltijd->isBeschikbaar = Beschikbaarheid::IsBeschikbaar($beschikbaarheden, $speeltijd->time);
+                $speeltijd->isMogelijk = Beschikbaarheid::isFluitenMogelijk($eigenWedstrijden, $speeltijd->time);
+                $dag->AddSpeeltijd($speeltijd, $team, $coachTeam);
+            }
+
+            $rooster[] = $dag;
         }
 
-        exit(json_encode($rooster));
+        return $rooster;
+    }
+}
+
+class TeamPortalWedstrijd
+{
+    public string $datum;
+    public string $tijd;
+    public string $team1;
+    public bool $isTeam1;
+    public bool $isCoachTeam1;
+    public string $team2;
+    public bool $isTeam2;
+    public bool $isCoachTeam2;
+    public string $locatie;
+
+    public function __construct($wedstrijd, $team, $coachTeam)
+    {
+        $this->datum = DateFunctions::GetDutchDate($wedstrijd->timestamp);
+        $this->tijd = $wedstrijd->timestamp->format('H:i');
+        $this->team1 = $wedstrijd->team1->naam;
+        $this->isTeam1 = $wedstrijd->team1->Equals($team);
+        $this->isCoachTeam1 = $wedstrijd->team1->Equals($coachTeam);
+        $this->team2 = $wedstrijd->team2->naam;
+        $this->isTeam2 = $wedstrijd->team2->Equals($team);
+        $this->isCoachTeam2 = $wedstrijd->team2->Equals($coachTeam);
+        $this->locatie = $wedstrijd->GetShortLocatie();
+    }
+}
+
+class TeamPortalSpeeltijd
+{
+    public string $tijd;
+    public array $wedstrijden = [];
+    public ?bool $isBeschikbaar;
+    public ?bool $isMogelijk;
+}
+
+class TeamPortalWedstrijddag
+{
+    public string $date;
+    public array $speeltijden = [];
+    public array $bardiensten = [];
+    public array $eigenWedstrijden = [];
+    public string $zaalwacht;
+
+    public function __construct(Wedstrijddag $dag)
+    {
+        $this->date = DateFunctions::GetYmdNotation($dag->date);
+        if ($dag->zaalwacht !== null) {
+            $this->zaalwacht = $dag->zaalwacht->naam;
+        }
     }
 
-    private function MapToEigenWedstrijd($wedstrijd, $team, $coachTeam)
+    public function AddSpeeltijd(Speeltijd $speeltijd, ?Team $team, ?Team $coachTeam)
     {
-        return (object) [
-            "datum" => GetDutchDate($wedstrijd->timestamp),
-            "tijd" => $wedstrijd->timestamp->format('H:i'),
-            "team1" => $wedstrijd->team1,
-            "isTeam1" => $wedstrijd->team1 == $team,
-            "isCoachTeam1" => $wedstrijd->team1 == $coachTeam,
-            "team2" => $wedstrijd->team2,
-            "isTeam2" => $wedstrijd->team2 == $team,
-            "isCoachTeam2" => $wedstrijd->team2 == $coachTeam,
-            "locatie" => GetShortLocatie($wedstrijd->locatie),
-        ];
+        $tijd = new TeamPortalSpeeltijd();
+        $tijd->isBeschikbaar = $speeltijd->isBeschikbaar;
+        $tijd->isMogelijk = $speeltijd->isMogelijk;
+        $tijd->tijd = DateFunctions::GetTime($speeltijd->time);
+        foreach ($speeltijd->wedstrijden as $wedstrijd) {
+            $tijd->wedstrijden[] = new TeamPortalWedstrijd($wedstrijd, $team, $coachTeam);
+        }
+        $this->speeltijden[] = $tijd;
     }
 }

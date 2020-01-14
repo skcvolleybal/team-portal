@@ -37,7 +37,7 @@ class DeleteBarcieAanwezigheid implements IInteractorWithData
 
         $aanwezigheid = $this->barcieGateway->GetAanwezigheid($dayId, $barcielidId, $shift);
         if ($aanwezigheid) {
-            $this->barcieGateway->DeleteAanwezigheid($aanwezigheid->id);
+            $this->barcieGateway->DeleteBarciedienst($aanwezigheid->id);
         } else {
             throw new UnexpectedValueException("Aanwezigheid bestaat niet");
         }

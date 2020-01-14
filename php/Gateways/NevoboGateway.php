@@ -33,7 +33,7 @@ class NevoboGateway
         'december' => 'December',
     ];
 
-    public function __construct($verenigingscode = 'CKL9R53', $regio = 'regio-west')
+    public function __construct(string $verenigingscode = 'CKL9R53', string $regio = 'regio-west')
     {
         $this->verenigingscode = $verenigingscode;
         $this->regio = $regio;
@@ -90,18 +90,28 @@ class NevoboGateway
     {
         $endDate = new DateTime("+$dagen days");
         $wedstrijden = $this->GetProgrammaForSporthal($sporthal);
-        usort($wedstrijden, "WedstrijdenSortFunction");
+        usort($wedstrijden, Wedstrijd::class . "::Compare");
         $wedstrijddagen = [];
         $currentDag = null;
+        $currentSpeeltijd = null;
         foreach ($wedstrijden as $wedstrijd) {
             if ($wedstrijd->timestamp > $endDate) {
                 continue;
             }
-            if ($currentDag != $wedstrijd->timestamp->format("Y-m-d")) {
-                $currentDag = $wedstrijd->timestamp->format("Y-m-d");
-                $wedstrijddagen[] = new Wedstrijddag(new DateTime($currentDag));
+            if ($currentDag !== DateFunctions::GetYmdNotation($wedstrijd->timestamp)) {
+                $currentDag = DateFunctions::GetYmdNotation($wedstrijd->timestamp);
+                $currentSpeeltijd = null;
+                $wedstrijddagen[] = new Wedstrijddag(DateFunctions::CreateDateTime($currentDag));
             }
-            $wedstrijddagen[count($wedstrijddagen) - 1]->wedstrijden[] = $wedstrijd;
+            $i = count($wedstrijddagen) - 1;
+
+            if ($currentSpeeltijd !== DateFunctions::GetTime($wedstrijd->timestamp)) {
+                $currentSpeeltijd = DateFunctions::GetTime($wedstrijd->timestamp);
+                $wedstrijddagen[$i]->speeltijden[] = new Speeltijd(DateFunctions::CreateDateTime($currentDag, $currentSpeeltijd));
+            }
+            $j = count($wedstrijddagen[$i]->speeltijden) - 1;
+
+            $wedstrijddagen[$i]->AddWedstrijd($wedstrijd);
         }
         return $wedstrijddagen;
     }
@@ -112,7 +122,7 @@ class NevoboGateway
         return $this->GetProgramma($url);
     }
 
-    public function GetProgrammaForTeam($team)
+    public function GetWedstrijdenForTeam(Team $team)
     {
         if (!$team) {
             return [];
@@ -181,30 +191,30 @@ class NevoboGateway
         }
     }
 
-    private function GetGender($team)
+    private function GetGender(Team $team)
     {
-        if (substr($team, 4, 2) == 'HS') {
+        if (substr($team->naam, 4, 2) == 'HS') {
             return 'heren';
         }
 
-        if (substr($team, 4, 2) == 'DS') {
+        if (substr($team->naam, 4, 2) == 'DS') {
             return 'dames';
         }
 
         throw new InvalidArgumentException("Onbekend geslacht in team '$team'");
     }
 
-    private function GetSequence($team)
+    private function GetSequence(Team $team)
     {
-        $sequence = substr($team, 7);
+        $sequence = substr($team->naam, 7);
         if (empty($sequence)) {
-            throw new InvalidArgumentException("Unknown sequence for team '$team'");
+            throw new InvalidArgumentException("Unknown sequence for team '$team->naam'");
         }
 
         return $sequence;
     }
 
-    private function GetProgramma($url)
+    private function GetProgramma($url): array
     {
         /*
         Voorbeeld:
@@ -234,23 +244,27 @@ class NevoboGateway
             $team2 = stripslashes($titleMatches[3]);
 
             if (preg_match('/Wedstrijd: (.*), Datum: (.*), Speellocatie: (.*)/', $description, $descriptionMatches)) {
+                $date = $this->ConvertNevoboDate($descriptionMatches[2]);
+                if ($date === null) {
+                    continue;
+                }
+
                 $matchId = preg_replace('/\s+/', ' ', $descriptionMatches[1]);
-                $date = $descriptionMatches[2];
                 $locatie = preg_replace('/\s+/', ' ', stripslashes($descriptionMatches[3]));
 
-                $programma[] = new Wedstrijd(
+                $programma[] = Wedstrijd::CreateFromNevoboWedstrijd(
                     $matchId,
-                    $team1,
-                    $team2,
+                    new Team($team1),
+                    new Team($team2),
                     substr($matchId, 4, 3),
-                    $this->ConvertNevoboDate($date),
+                    $date,
                     $locatie
                 );
             } else if (preg_match('/Vervallen wedstrijd: (.*), Datum: (.*), (.*), Speellocatie: (.*), (.*)/', $description, $descriptionMatches)) {
                 // Nothing
             } else {
-                $currentTime = (new DateTime())->format('Y-m-d H.i.s.u');
-                WriteToErrorLog($currentTime, "Deze wedstrijd kon niet geparsed worden:\n$description");
+                // $currentTime = (new DateTime())->format('Y-m-d H.i.s.u');
+                // WriteToErrorLog($currentTime, "Deze wedstrijd kon niet geparsed worden:\n$description");
             }
         }
 

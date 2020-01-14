@@ -5,13 +5,13 @@ class GetTeamoverzicht implements IInteractorWithData
     public function Execute($data)
     {
         $teamnaam = $data->team ?? null;
-        if ($teamnaam == null) {
+        if ($teamnaam === null) {
             throw new \InvalidArgumentException("Teamnaam is leeg");
         }
 
         $filename = dirname(__FILE__) . '/teamoverzichten.json';
         if (!file_exists($filename)) {
-            exit("Overzichtsbestand bestaat niet");
+            return "Overzichtsbestand bestaat niet";
         }
 
         $overzichten = json_decode(file_get_contents($filename));
@@ -97,7 +97,7 @@ class GetTeamoverzicht implements IInteractorWithData
         }
         $template = str_replace("{{PROGRAMMA}}", $html, $template);
 
-        exit($template);
+        return $template;
     }
 
     private function GetOverzichtForTeam($overzichten, $teamnaam)
@@ -107,6 +107,6 @@ class GetTeamoverzicht implements IInteractorWithData
                 return $overzicht;
             }
         }
-        exit("Team $teamnaam niet gevonden in overzichtsbestand");
+        return "Team $teamnaam niet gevonden in overzichtsbestand";
     }
 }

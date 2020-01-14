@@ -73,7 +73,7 @@ export class ScheidscoComponent implements OnInit {
         speeldag.zaalwacht =
           team == null
             ? null
-            : (speeldag.zaalwacht = `${team[0]}${team.substring(6)}`);
+            : (speeldag.zaalwacht = `${team[4]}${team.substring(7)}`);
         return;
       }
     });

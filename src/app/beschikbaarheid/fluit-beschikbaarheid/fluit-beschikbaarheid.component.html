@@ -17,9 +17,9 @@
         <li
           class="list-group-item"
           [ngClass]="{
-            'list-group-item-warning': speeltijd.isMogelijk == 'Onbekend',
-            'list-group-item-danger': speeltijd.isMogelijk == 'Nee',
-            'list-group-item-success': speeltijd.isMogelijk == 'Ja'
+            'list-group-item-warning': speeltijd.isMogelijk === null,
+            'list-group-item-danger': speeltijd.isMogelijk === false,
+            'list-group-item-success': speeltijd.isMogelijk === true
           }"
           *ngFor="let speeltijd of speeldag.speeltijden"
         >
@@ -34,10 +34,10 @@
                     UpdateFluitBeschikbaarheid(
                       $event,
                       speeldag.date,
-                      speeltijd.time
+                      speeltijd.tijd
                     )
                   "
-                  [keuze]="speeltijd.beschikbaarheid"
+                  [keuze]="speeltijd.isBeschikbaar"
                 ></teamportal-keuze>
               </div>
             </div>

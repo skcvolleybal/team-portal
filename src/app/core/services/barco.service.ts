@@ -3,35 +3,25 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class BarcoService {
   constructor(private httpClient: HttpClient) {}
 
   AddBarcieDag(date: any) {
     return this.httpClient.post<any>(
-      environment.baseUrl,
+      environment.baseUrl + 'barcie/barciedag/add',
       {
         date: `${date.year}-${date.month}-${date.day}`
-      },
-      {
-        params: {
-          action: 'AddBarcieDag'
-        }
       }
     );
   }
 
   DeleteBarcieDag(date: string) {
     return this.httpClient.post<any>(
-      environment.baseUrl,
+      environment.baseUrl + 'barcie/barciedag/delete',
       {
         date
-      },
-      {
-        params: {
-          action: 'DeleteBarcieDag'
-        }
       }
     );
   }
@@ -55,19 +45,14 @@ export class BarcoService {
   }
 
   GetBarcieBeschikbaarheden(date: string) {
-    return this.httpClient.get<any>(environment.baseUrl, {
+    return this.httpClient.get<any>(environment.baseUrl + 'barcie/beschikbaarheden', {
       params: {
-        action: 'GetBarcieBeschikbaarheden',
         date
       }
     });
   }
 
   GetBarcieRooster() {
-    return this.httpClient.get<any>(environment.baseUrl, {
-      params: {
-        action: 'GetBarcieRooster'
-      }
-    });
+    return this.httpClient.get<any>(environment.baseUrl + 'barcie/rooster');
   }
 }

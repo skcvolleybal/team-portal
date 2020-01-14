@@ -1,0 +1,2 @@
+ALTER TABLE `TeamPortal_wedstrijden` DROP PRIMARY KEY;
+ALTER TABLE `TeamPortal_wedstrijden` ADD `id` INT(11) NOT NULL AUTO_INCREMENT FIRST, ADD PRIMARY KEY (`id`);

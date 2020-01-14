@@ -4,71 +4,61 @@
 class GetBarcieRooster implements IInteractor
 {
 
-    public function __construct($database)
+    public function __construct(JoomlaGateway $joomlaGateway, BarcieGateway $barcieGateway)
     {
-        $this->joomlaGateway = new JoomlaGateway($database);
-        $this->barcieGateway = new BarcieGateway($database);
+        $this->joomlaGateway = $joomlaGateway;
+        $this->barcieGateway = $barcieGateway;
     }
 
     public function Execute()
     {
         $userId = $this->joomlaGateway->GetUserId();
+        if ($userId === null) {
+            throw new UnauthorizedException();
+        }
+
         if (!$this->joomlaGateway->isBarcie($userId)) {
             throw new UnexpectedValueException("Je bent geen barcie");
         }
 
-        $aanwezigheden = $this->barcieGateway->GetBarcieAanwezigheden();
+        $barciediensten = $this->barcieGateway->GetBarciediensten();
         $rooster = [];
-        foreach ($aanwezigheden as $aanwezigheid) {
-            $date = $aanwezigheid->date;
-
-            $i = $this->GetDayIndex($rooster, $date);
+        foreach ($barciediensten as $barciedienst) {
+            $i = $this->GetDayIndex($rooster, $barciedienst->date);
             if ($i === null) {
-                $datum = GetDutchDate(new DateTime($date));
-
-                $newDate = (object) [
-                    "date" => $date,
-                    "datum" => $datum,
+                $rooster[] = (object) [
+                    "date" => DateFunctions::GetYmdNotation($barciedienst->date),
+                    "datum" => DateFunctions::GetDutchDate($barciedienst->date),
                     "shifts" => [(object) [
                         "barcieleden" => []
                     ]]
                 ];
-                $rooster[] = $newDate;
                 $i = count($rooster) - 1;
             }
-            if ($aanwezigheid->userId !== null) {
-                $shiftNumber = intval($aanwezigheid->shift);
-                for ($j = 0; $j < $shiftNumber; $j++) {
+
+            if ($barciedienst->persoon !== null) {
+                for ($j = 0; $j < $barciedienst->shift; $j++) {
                     if (!isset($rooster[$i]->shifts[$j])) {
                         $rooster[$i]->shifts[] = (object) [
                             "barcieleden" => []
                         ];
                     }
                 }
-                $rooster[$i]->shifts[$shiftNumber - 1]->barcieleden[] = (object) [
-                    "id" => $aanwezigheid->userId,
-                    "naam" => $aanwezigheid->naam,
-                    "isBhv" => $aanwezigheid->isBhv === "1",
+
+                $rooster[$i]->shifts[$barciedienst->shift - 1]->barcieleden[] = (object) [
+                    "id" => $barciedienst->persoon->id,
+                    "naam" => $barciedienst->persoon->naam,
+                    "isBhv" => $barciedienst->isBhv,
                 ];
             }
         }
 
-        exit(json_encode($rooster));
+        return $rooster;
     }
 
-    private function GetDayIndex($rooster, $date)
+    private function GetDayIndex(array $rooster, DateTime $date)
     {
         foreach ($rooster as $i => $item) {
-            if ($item->date == $date) {
-                return $i;
-            }
-        }
-        return null;
-    }
-
-    private function GetShiftIndex($shifts, $shift)
-    {
-        foreach ($shifts as $i => $shiftItem) {
             if ($item->date == $date) {
                 return $i;
             }

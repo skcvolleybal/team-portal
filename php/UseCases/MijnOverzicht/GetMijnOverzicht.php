@@ -1,16 +1,15 @@
 <?php
 
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
+use Slim\Exception\HttpUnauthorizedException;
 
-class MijnOverzichtController
+class MijnOverzichtInteractor extends OutputPort
 {
     public function __construct(
-        \JoomlaGateway $joomlaGateway,
-        \NevoboGateway $nevoboGateway,
-        \TelFluitGateway $telFluitGateway,
-        \ZaalwachtGateway $zaalwachtGateway,
-        \BarcieGateway $barcieGateway
+        JoomlaGateway $joomlaGateway,
+        NevoboGateway $nevoboGateway,
+        TelFluitGateway $telFluitGateway,
+        ZaalwachtGateway $zaalwachtGateway,
+        BarcieGateway $barcieGateway
     ) {
         $this->joomlaGateway = $joomlaGateway;
         $this->nevoboGateway = $nevoboGateway;
@@ -19,12 +18,12 @@ class MijnOverzichtController
         $this->barcieGateway = $barcieGateway;
     }
 
-    public function __invoke(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
+    public function Execute()
     {
         $userId = $this->joomlaGateway->GetUserId();
 
         if ($userId === null) {
-            UnauthorizedResult();
+            throw new UnauthorizedException();
         }
 
         $team = $this->joomlaGateway->GetTeam($userId);
@@ -34,9 +33,7 @@ class MijnOverzichtController
 
         $allUscMatches = $this->nevoboGateway->GetProgrammaForVereniging("CKL9R53");
 
-        $allUscMatches = RemoveMatchesWithoutData($allUscMatches);
-
-        $zaalwachten = $this->zaalwachtGateway->GetZaalwachtForUserId($userId);
+        $zaalwachten = $this->zaalwachtGateway->GetZaalwachtenOfUser($userId);
         foreach ($zaalwachten as $zaalwacht) {
             $overzichtItem = $this->MapFromZaalwacht($zaalwacht, $allUscMatches);
             $this->AddToOverzicht($overzicht, $overzichtItem);
@@ -60,13 +57,13 @@ class MijnOverzichtController
 
         $bardiensten = $this->barcieGateway->GetBarciedienstenByUserId($userId);
         foreach ($bardiensten as $dienst) {
-            $overzichtItem = $this->MapFromBarciedienst($dienst->date, $dienst->shift, $dienst->isBhv);
+            $overzichtItem = $this->MapFromBarciedienst($dienst);
             if ($overzichtItem) {
                 $this->AddToOverzicht($overzicht, $overzichtItem);
             }
         }
 
-        $speelWedstrijden = $this->nevoboGateway->GetProgrammaForTeam($team);
+        $speelWedstrijden = $this->nevoboGateway->GetWedstrijdenForTeam($team);
         foreach ($speelWedstrijden as $speelWedstrijd) {
             $overzichtItem = $this->MapFromMatch($speelWedstrijd, $allUscMatches, $team, $coachTeam, $userId);
             if ($overzichtItem) {
@@ -75,7 +72,7 @@ class MijnOverzichtController
         }
 
         if ($coachTeam) {
-            $coachWedstrijden = $this->nevoboGateway->GetProgrammaForTeam($coachTeam);
+            $coachWedstrijden = $this->nevoboGateway->GetWedstrijdenForTeam($coachTeam);
             foreach ($coachWedstrijden as $coachWedstrijd) {
                 $overzichtItem = $this->MapFromMatch($coachWedstrijd, $allUscMatches, $team, $coachTeam, $userId);
                 if ($overzichtItem) {
@@ -84,42 +81,41 @@ class MijnOverzichtController
             }
         }
 
-        echo json_encode($overzicht);
-        return $response;
+        return $overzicht;
     }
 
-    private function MapFromMatch($match, $allUscMatches, $team, $coachTeam, $userId)
+    private function MapFromMatch(Wedstrijd $match, array $allUscMatches, Team $team, Team $coachTeam, int $userId)
     {
-        $uscMatch = $this->GetUscMatch($match->id, $allUscMatches);
-        if ($uscMatch == null) {
+        $uscMatch = $this->GetUscMatch($match->matchId, $allUscMatches);
+        if ($uscMatch === null) {
             return null;
         }
         return (object) [
-            "id" => $uscMatch->id,
+            "matchId" => $uscMatch->matchId,
             "type" => "wedstrijd",
-            "date" => $uscMatch->timestamp->format('Y-m-d'),
-            "tijd" => $uscMatch->timestamp->format('G:i'),
-            "team1" => $uscMatch->team1,
-            "isTeam1" => $uscMatch->team1 == $team,
-            "isCoachTeam1" => $uscMatch->team1 == $coachTeam,
-            "team2" => $uscMatch->team2,
-            "isTeam2" => $uscMatch->team2 == $team,
-            "isCoachTeam2" => $uscMatch->team2 == $coachTeam,
-            "scheidsrechter" => $match->scheidsrechter ?? null,
+            "date" => DateFunctions::GetYmdNotation($uscMatch->timestamp),
+            "tijd" => DateFunctions::GetTime($uscMatch->timestamp),
+            "team1" => $uscMatch->team1->naam,
+            "isTeam1" => $uscMatch->team1->Equals($team),
+            "isCoachTeam1" => $uscMatch->team1->Equals($coachTeam),
+            "team2" => $uscMatch->team2->naam,
+            "isTeam2" => $uscMatch->team2->Equals($team),
+            "isCoachTeam2" => $uscMatch->team2->Equals($coachTeam),
+            "scheidsrechter" => $match->scheidsrechter ? $match->scheidsrechter->naam : null,
             "isScheidsrechter" => ($match->scheidsrechterId ?? null) == $userId,
-            "tellers" => GetShortTeam(($match->tellers ?? null)),
-            "isTellers" => ($match->tellers ?? null) == $team,
-            "locatie" => $uscMatch->locatie,
+            "tellers" => $match->telteam ? $match->telteam->GetShortNotation() : null,
+            "isTellers" => $team->Equals($match->telteam),
+            "locatie" => $uscMatch->locatie
         ];
     }
 
-    private function MapFromBarciedienst($date, $shift, $isBhv)
+    private function MapFromBarciedienst(Barciedienst $dienst)
     {
         return (object) [
             "type" => "bardienst",
-            "date" => $date,
-            "shift" => $shift,
-            "isBhv" => $isBhv
+            "date" => DateFunctions::GetYmdNotation($dienst->date),
+            "shift" => $dienst->shift,
+            "isBhv" => $dienst->isBhv
         ];
     }
 
@@ -152,12 +148,12 @@ class MijnOverzichtController
         $overzicht[] = $this->GetNewDateItem($newItemDate, $newItem);
     }
 
-    private function GetNewDateItem($date, $newItem)
+    private function GetNewDateItem(string $date, $newItem)
     {
-        $datetime = new DateTime($date);
+        $datetime = DateFunctions::CreateDateTime($date);
         return (object) [
-            "datum" => GetDutchDate($datetime),
-            "date" => $datetime->format('Y-m-d'),
+            "datum" => DateFunctions::GetDutchDate($datetime),
+            "date" => DateFunctions::GetYmdNotation($datetime),
             "tijdsloten" => [$newItem],
         ];
     }
@@ -170,7 +166,7 @@ class MijnOverzichtController
         }
 
         $duplicates = array_filter($tijdsloten, function ($wedstrijd) use ($newItem) {
-            return $wedstrijd->type == "wedstrijd" && $wedstrijd->id == $newItem->id;
+            return $wedstrijd->type == "wedstrijd" && $wedstrijd->matchId == $newItem->matchId;
         });
 
         if (count($duplicates) > 0) {
@@ -182,7 +178,7 @@ class MijnOverzichtController
             if (
                 !in_array($tijdslot->type, ['zaalwacht', 'bardienst']) &&
                 $newItem->tijd <= $tijdslot->tijd &&
-                $newItem->id != $tijdslot->id
+                $newItem->matchId != $tijdslot->matchId
             ) {
                 array_splice($tijdsloten, $counter, 0, [$newItem]);
                 return;
@@ -195,7 +191,7 @@ class MijnOverzichtController
     private function GetUscMatch($matchId, $allUscMatches)
     {
         foreach ($allUscMatches as $match) {
-            if ($match->id == $matchId) {
+            if ($match->matchId == $matchId) {
                 return $match;
             }
         }

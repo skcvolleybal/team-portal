@@ -5,20 +5,23 @@ use Kigkonsult\Icalcreator\Vcalendar;
 
 class GetCalendar implements IInteractor
 {
-    public function __construct($database)
-    {
-        $this->zaalwachtGateway = new ZaalwachtGateway($database);
-        $this->joomlaGateway = new JoomlaGateway($database);
-        $this->nevoboGateway = new NevoboGateway();
-        $this->telFluitGateway = new TelFluitGateway($database);
+    public function __construct(
+        ZaalwachtGateway $zaalwachtGateway,
+        JoomlaGateway $joomlaGateway,
+        NevoboGateway $nevoboGateway,
+        TelFluitGateway $telFluitGateway
+    ) {
+        $this->zaalwachtGateway = $zaalwachtGateway;
+        $this->joomlaGateway = $joomlaGateway;
+        $this->nevoboGateway = $nevoboGateway;
+        $this->telFluitGateway = $telFluitGateway;
     }
 
-    public function Execute()
+    public function Execute($data)
     {
-        $userId = GetQueryStringParamater('userid');
-
-        $withFluiten = GetQueryStringParamater('fluiten');
-        $withTellen = GetQueryStringParamater('tellen');
+        $userId = $data->userid;
+        $withFluiten = $data->fluiten;
+        $withTellen = $data->tellen;
 
         if (!$userId) {
             throw new InvalidArgumentException("userid is not set");
@@ -30,10 +33,10 @@ class GetCalendar implements IInteractor
 
         $team = $this->joomlaGateway->GetTeam($userId);
         $coachTeam = $this->joomlaGateway->GetCoachTeam($userId);
-        $uscLocatie = "Universitair SC, Einsteinweg 6, 2333CC LEIDEN";
+        
         $this->uscWedstrijden = $this->nevoboGateway->GetProgrammaForSporthal('LDNUN');
 
-        $skcTeam = ToSkcName($team) ?? "je team";
+        $skcTeam = $team->GetSkcNotatie() ?? "je team";
         if ($withTellen !== null && $withFluiten !== null) {
             $title = "Fluit-, tel- en zaalwachtrooster van $skcTeam";
         } else if ($withTellen !== null) {
@@ -44,7 +47,8 @@ class GetCalendar implements IInteractor
 
         $this->CreateCalendar($title);
 
-        $zaalwachten = $this->zaalwachtGateway->GetZaalwachtForUserId($userId);
+        $uscLocatie = "Universitair SC, Einsteinweg 6, 2333CC LEIDEN";
+        $zaalwachten = $this->zaalwachtGateway->GetZaalwachtenOfUser($userId);
         foreach ($zaalwachten as $zaalwacht) {
             [$start, $end] = $this->GetStartAndEndDateOfZaalwacht($zaalwacht);
             $this->AddEvent($start, $end, $uscLocatie, "Zaalwacht");
@@ -76,13 +80,13 @@ class GetCalendar implements IInteractor
             }
         }
 
-        exit($this->calendar->createCalendar());
+        return $this->calendar->createCalendar();
     }
 
     private function GetMatchWithId($matchId)
     {
         foreach ($this->uscWedstrijden as $wedstrijd) {
-            if ($wedstrijd->id == $matchId) {
+            if ($wedstrijd->matchId == $matchId) {
                 return $wedstrijd;
             }
         }

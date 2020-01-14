@@ -23,14 +23,13 @@ class SetAllFluitbeschikbaarheden implements IInteractor
             $coachTeam = $this->joomlaGateway->GetCoachTeam($scheidsrechterId);
             $fluitBeschikbaarheden = $this->fluitBeschikbaarheidGateway->GetFluitBeschikbaarheden($scheidsrechterId);
 
-            $programma = $this->nevoboGateway->GetProgrammaForTeam($team);
+            $programma = $this->nevoboGateway->GetWedstrijdenForTeam($team);
             $coachProgramma = [];
             if ($coachTeam) {
-                $coachProgramma = $this->nevoboGateway->GetProgrammaForTeam($coachTeam);
+                $coachProgramma = $this->nevoboGateway->GetWedstrijdenForTeam($coachTeam);
             }
 
             $skcProgramma = $this->nevoboGateway->GetProgrammaForSporthal('LDNUN');
-            $skcProgramma = RemoveMatchesWithoutData($skcProgramma);
 
             $rooster = $this->fluitBeschikbaarheidHelper->GetUscRooster($skcProgramma, $team, $coachTeam);
             foreach ($rooster as &$wedstrijdDag) {

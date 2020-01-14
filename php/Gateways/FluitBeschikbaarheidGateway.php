@@ -2,86 +2,129 @@
 
 class FluitBeschikbaarheidGateway
 {
-    public function __construct($database)
+    public function __construct(Database $database)
     {
         $this->database = $database;
     }
 
-    public function GetFluitBeschikbaarheden($userId)
+    public function GetFluitBeschikbaarheden(int $userId): array
     {
-        $query = 'SELECT *
-                  FROM TeamPortal_fluitbeschikbaarheid
-                  WHERE user_id = :userId';
-        $params = [new Param(Column::UserId, $userId, PDO::PARAM_INT)];
+        $query = 'SELECT 
+                    B.id,
+                    U.id as userId,
+                    U.name as naam,
+                    B.date,
+                    SUBSTRING(B.`time`, 1, 5) as time,
+                    B.is_beschikbaar as isBeschikbaar
+                  FROM TeamPortal_fluitbeschikbaarheid B
+                  INNER JOIN J3_users U ON U.id = B.user_id
+                  WHERE user_id = ?';
+        $params = [$userId];
 
-        return $this->database->Execute($query, $params);
-    }
-
-    public function GetFluitBeschikbaarheid($userId, $date, $time)
-    {
-        $query = 'SELECT *
-                  FROM TeamPortal_fluitbeschikbaarheid
-                  WHERE user_id = :userId and date = :date and time = :time';
-        $params = [
-            new Param(Column::UserId, $userId, PDO::PARAM_INT),
-            new Param(Column::Date, $date, PDO::PARAM_STR),
-            new Param(Column::Time, $time, PDO::PARAM_STR),
-        ];
-
-        $result = $this->database->Execute($query, $params);
-        if (count($result) > 0) {
-            return $result[0];
+        $rows = $this->database->Execute($query, $params);
+        $result = [];
+        foreach ($rows as $row) {
+            $result[] = new Beschikbaarheid(
+                $row->id,
+                new Persoon($row->userId, $row->naam),
+                DateFunctions::CreateDateTime($row->date, $row->time),
+                $row->isBeschikbaar === "Ja"
+            );
         }
-        return null;
+        return $result;
     }
 
-    public function GetAllBeschikbaarheid($date, $time)
+    public function GetFluitBeschikbaarheid(int $userId, DateTime $date): ?Beschikbaarheid
     {
-        $query = 'SELECT *
-                  FROM TeamPortal_fluitbeschikbaarheid
-                  WHERE date = :date and time = :time';
+        $query = 'SELECT 
+                    B.id,
+                    U.id as userId,
+                    U.name as naam,
+                    date,
+                    time,
+                    is_beschikbaar as isBeschikbaar
+                  FROM TeamPortal_fluitbeschikbaarheid B
+                  INNER JOIN J3_users U on B.user_id = U.id
+                  WHERE user_id = ? and date = ? and time = ?';
         $params = [
-            new Param(Column::Date, $date, PDO::PARAM_STR),
-            new Param(Column::Time, $time, PDO::PARAM_STR),
+            $userId,
+            DateFunctions::GetYmdNotation($date),
+            DateFunctions::GetTime($date)
         ];
 
-        return $this->database->Execute($query, $params);
+        $rows = $this->database->Execute($query, $params);
+        if (count($rows) != 1) {
+            return null;
+        }
+        return new Beschikbaarheid(
+            $rows[0]->id,
+            new Persoon($rows[0]->id, $rows[0]->naam),
+            DateFunctions::CreateDateTime($rows[0]->date),
+            $rows[0]->isBeschikbaar === "Ja"
+        );
     }
 
-    public function Insert($userId, $date, $time, $isBeschikbaar)
+    public function GetAllBeschikbaarheden(DateTIme $date): array
+    {
+        $query = 'SELECT         
+                    F.id,
+                    U.id as userId,
+                    U.name as naam,
+                    date,
+                    time,
+                    is_beschikbaar as isBeschikbaar
+                  FROM TeamPortal_fluitbeschikbaarheid F
+                  INNER JOIN J3_users U on F.user_id = U.id
+                  WHERE date = ? and time = ?';
+        $params = [
+            DateFunctions::GetYmdNotation($date),
+            DateFunctions::GetTime($date)
+        ];
+
+        $rows = $this->database->Execute($query, $params);
+        $result = [];
+        foreach ($rows as $row) {
+            $persoon = new Persoon($row->userId, $row->naam);
+            $result[] = new Beschikbaarheid(
+                $row->id,
+                $persoon,
+                DateTime::createFromFormat('Y-m-d H:i:s', $row->date . ' ' . $row->time),
+                $row->isBeschikbaar === "Ja"
+            );
+        }
+        return $result;
+    }
+
+    public function Insert(Beschikbaarheid $beschikbaarheid)
     {
         $query = 'INSERT INTO TeamPortal_fluitbeschikbaarheid (user_id, date, time, is_beschikbaar) 
-                  VALUES (:userId, :date, :time, :isBeschikbaar)';
+                  VALUES (?, ?, ?, ?)';
         $params = [
-            new Param(Column::UserId, $userId, PDO::PARAM_INT),
-            new Param(Column::Date, $date, PDO::PARAM_STR),
-            new Param(Column::Time, $time, PDO::PARAM_STR),
-            new Param(Column::IsBeschikbaar, $isBeschikbaar, PDO::PARAM_STR),
+            $beschikbaarheid->persoon->id,
+            DateFunctions::GetYmdNotation($beschikbaarheid->date),
+            DateFunctions::GetTime($beschikbaarheid->date),
+            $beschikbaarheid->isBeschikbaar ? "Ja" : "Nee",
         ];
 
         $this->database->Execute($query, $params);
     }
 
-    public function Update($id, $isBeschikbaar)
+    public function Update(Beschikbaarheid $beschikbaar)
     {
         $query = 'UPDATE TeamPortal_fluitbeschikbaarheid
-                  SET is_beschikbaar = :isBeschikbaar
-                  WHERE id = :id';
+                  SET is_beschikbaar = ?
+                  WHERE id = ?';
 
-        $params = [
-            new Param(':id', $id, PDO::PARAM_INT),
-            new Param(Column::IsBeschikbaar, $isBeschikbaar, PDO::PARAM_STR),
-        ];
+        $params = [$beschikbaar->isBeschikbaar, $beschikbaar->id];
 
         $this->database->Execute($query, $params);
     }
 
-    public function Delete($id)
+    public function Delete(Beschikbaarheid $beschikbaar)
     {
         $query = 'DELETE FROM TeamPortal_fluitbeschikbaarheid
-                  WHERE id = :id';
-
-        $params = [new Param(':id', $id, PDO::PARAM_INT)];
+                  WHERE id = ?';
+        $params = [$beschikbaar->id];
 
         $this->database->Execute($query, $params);
     }

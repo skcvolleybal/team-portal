@@ -3,7 +3,7 @@
 
 class GespeeldeWedstrijdenGateway
 {
-    public function __construct($database)
+    public function __construct(Database $database)
     {
         $this->database = $database;
     }
@@ -11,24 +11,24 @@ class GespeeldeWedstrijdenGateway
     public function GetGespeeldeWedstrijden()
     {
         $query = 'SELECT * FROM DWF_wedstrijden';
-        return $this->database->Execute2($query);
+        return $this->database->Execute($query);
     }
 
-    public function AddWedstrijd($wedstrijd)
+    public function AddWedstrijd(Wedstrijd $wedstrijd)
     {
         $query = 'INSERT INTO DWF_wedstrijden (id, skcTeam, otherTeam, setsSkcTeam, setsOtherTeam)
                   VALUES (?, ?, ?, ?, ?)';
         $params = [
-            $wedstrijd->id,
+            $wedstrijd->matchId,
             $wedstrijd->skcTeam,
             $wedstrijd->otherTeam,
             $wedstrijd->setsSkcTeam,
             $wedstrijd->setsOtherTeam
         ];
-        $this->database->Execute2($query, $params);
+        $this->database->Execute($query, $params);
     }
 
-    public function AddPunt($wedstrijdId, $skcTeam, $set, $isSkcService, $isSkcPunt, $puntenSkcTeam, $puntenOtherTeam, $opstelling)
+    public function AddPunt(string $wedstrijdId, Team $skcTeam, int $set, bool $isSkcService, bool $isSkcPunt, int $puntenSkcTeam, int $puntenOtherTeam, array $opstelling)
     {
         $query = 'INSERT INTO DWF_punten (matchId, skcTeam, `set`, isSkcService, isSkcPunt, puntenSkcTeam, puntenOtherTeam, ra, rv, mv, lv, la, ma)
                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
@@ -47,6 +47,6 @@ class GespeeldeWedstrijdenGateway
             $opstelling[4],
             $opstelling[5]
         ];
-        $this->database->Execute2($query, $params);
+        $this->database->Execute($query, $params);
     }
 }

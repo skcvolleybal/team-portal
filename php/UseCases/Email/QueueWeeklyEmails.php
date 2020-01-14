@@ -24,14 +24,20 @@ class QueueWeeklyEmails implements IInteractor
     private $webcie;
     private $fromAddress;
 
-    public function __construct($database)
-    {
-        $this->nevoboGateway = new NevoboGateway();
-        $this->telFluitGateway = new TelFluitGateway($database);
-        $this->zaalwachtGateway = new ZaalwachtGateway($database);
-        $this->mailQueueGateway = new EmailGateway($database);
-        $this->barcieGateway = new BarcieGateway($database);
-        $this->joomlaGateway = new JoomlaGateway($database);
+    public function __construct(
+        NevoboGateway $nevoboGateway,
+        TelFluitGateway $telFluitGateway,
+        ZaalwachtGateway $zaalwachtGateway,
+        EmailGateway $emailGateway,
+        BarcieGateway $barcieGateway,
+        JoomlaGateway $joomlaGateway
+    ) {
+        $this->nevoboGateway = $nevoboGateway;
+        $this->telFluitGateway = $telFluitGateway;
+        $this->zaalwachtGateway = $zaalwachtGateway;
+        $this->mailQueueGateway = $emailGateway;
+        $this->barcieGateway = $barcieGateway;
+        $this->joomlaGateway = $joomlaGateway;
     }
 
     public function Execute()
@@ -48,19 +54,22 @@ class QueueWeeklyEmails implements IInteractor
         $wedstrijddagen = $this->nevoboGateway->GetWedstrijddagenForSporthal('LDNUN');
         foreach ($wedstrijddagen as $dag) {
             $dag->bardiensten = $this->barcieGateway->GetBarciedienstenForDate($dag->date);
-            $dag->zaalwacht = $this->zaalwachtGateway->GetZaalwachtTeamForDate($dag->date);
+            $dag->zaalwacht = $this->zaalwachtGateway->GetZaalwacht($dag->date);
             if ($dag->zaalwacht) {
                 $dag->zaalwacht->teamgenoten = $this->joomlaGateway->GetTeamgenoten($dag->zaalwacht->naam);
             }
-
-            foreach ($dag->wedstrijden as $wedstrijd) {
-                list($scheidsrechter, $telteam) = $this->telFluitGateway->GetScheidsrechterAndTellersForWedstrijd($wedstrijd->id);
-                $wedstrijd->scheidsrechter = $scheidsrechter;
-                $wedstrijd->telteam = $telteam;
-                if ($wedstrijd->telteam) {
-                    $wedstrijd->telteam->teamgenoten = $this->joomlaGateway->GetTeamgenoten($telteam->naam);
+            foreach ($dag->speeltijden as $speeltijd){
+                foreach ($speeltijd->wedstrijden as $wedstrijd) {
+                    list($scheidsrechter, $telteam) = $this->telFluitGateway->GetWedstrijd($wedstrijd->matchId);
+                    $wedstrijd->scheidsrechter = $scheidsrechter;
+                    $wedstrijd->telteam = $telteam;
+                    if ($wedstrijd->telteam) {
+                        $wedstrijd->telteam->teamgenoten = $this->joomlaGateway->GetTeamgenoten($telteam->naam);
+                    }
                 }
             }
+
+            
         }
 
         $emails = $this->GetAllEmails($wedstrijddagen);
@@ -68,7 +77,7 @@ class QueueWeeklyEmails implements IInteractor
         $this->mailQueueGateway->QueueEmails($emails);
     }
 
-    private function GetAllEmails($wedstrijdagen)
+    private function GetAllEmails(array $wedstrijdagen)
     {
         $emails = [];
 
@@ -106,7 +115,7 @@ class QueueWeeklyEmails implements IInteractor
     {
         $scheidsrechter = $wedstrijd->scheidsrechter;
 
-        $datum = GetDutchDate($wedstrijd->timestamp);
+        $datum = DateFunctions::GetDutchDate($wedstrijd->timestamp);
         $tijd = $wedstrijd->timestamp->format('G:i');
         $naam = $scheidsrechter->naam;
         $userId = $scheidsrechter->id;
@@ -136,7 +145,7 @@ class QueueWeeklyEmails implements IInteractor
 
     private function CreateTellerMail($teller, $wedstrijd)
     {
-        $datum = GetDutchDate($wedstrijd->timestamp);
+        $datum = DateFunctions::GetDutchDate($wedstrijd->timestamp);
         $tijd = $wedstrijd->timestamp->format('G:i');
         $naam = $teller->naam;
         $userId = $teller->id;
@@ -162,7 +171,7 @@ class QueueWeeklyEmails implements IInteractor
     private function CreateZaalwachtMail($zaalwachter, $wedstrijddag)
     {
         $naam = $zaalwachter->naam;
-        $datum = GetDutchDateLong($wedstrijddag->date);
+        $datum = DateFunctions::GetDutchDateLong($wedstrijddag->date);
 
         $template = file_get_contents("./UseCases/Email/templates/zaalwachtTemplate.txt");
         $placeholders = [
@@ -183,7 +192,7 @@ class QueueWeeklyEmails implements IInteractor
 
     private function CreateBarcieMail($bardienst, $dag)
     {
-        $datum = GetDutchDateLong($dag->date);
+        $datum = DateFunctions::GetDutchDateLong($dag->date);
         $naam = $bardienst->persoon->naam;
         $shift = $bardienst->shift;
         $bhv = $bardienst->isBhv == 1 ? "<br>Je bent BHV'er." : "";

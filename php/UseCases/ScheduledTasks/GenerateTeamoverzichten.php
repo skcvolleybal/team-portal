@@ -16,7 +16,7 @@ class GenerateTeamoverzichten implements IInteractor
         foreach ($teams as $team) {
             $ranking = $this->nevoboGateway->GetStandForPoule($team->poule);
             $uitslagen = $this->nevoboGateway->GetUitslagenForTeam($team->naam);
-            $programma = $this->nevoboGateway->GetProgrammaForTeam($team->naam);
+            $programma = $this->nevoboGateway->GetWedstrijdenForTeam($team->naam);
 
             $result[] = (object) [
                 "naam" => $team->naam,

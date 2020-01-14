@@ -2,10 +2,10 @@
 
 class AddBarcieAanwezigheid implements IInteractorWithData
 {
-    public function __construct($configuration, $database)
+    public function __construct(BarcieGateway $barcieGateway, JoomlaGateway $joomlaGateway)
     {
-        $this->barcieGateway = new BarcieGateway($database);
-        $this->joomlaGateway = new JoomlaGateway($configuration, $database);
+        $this->barcieGateway = $barcieGateway;
+        $this->joomlaGateway = $joomlaGateway;
     }
 
     public function Execute($data)
@@ -16,7 +16,8 @@ class AddBarcieAanwezigheid implements IInteractorWithData
         }
 
         $barcielidId = $data->barcielidId ?? null;
-        $date = $data->date ?? null;
+        $barcielid = $this->barcieGateway->GetBarcielidById($barcielidId);
+        $date = DateFunctions::CreateDateTime($data->date ?? null);
         $shift = $data->shift ?? null;
 
         if ($barcielidId === null) {
@@ -34,11 +35,9 @@ class AddBarcieAanwezigheid implements IInteractorWithData
             throw new UnexpectedValueException("Er bestaat geen barciedag $date");
         }
 
-        $aanwezigheid = $this->barcieGateway->GetAanwezigheid($dayId, $barcielidId, $shift);
-        if ($aanwezigheid === null) {
-            $this->barcieGateway->InsertAanwezigheid($dayId, $barcielidId, $shift);
-        } else {
-            throw new UnexpectedValueException("Aanwezigheid bestaat al");
+        $barciedienst = $this->barcieGateway->GetBarciedienst($dayId, $barcielidId, $shift) ?? new Barciedienst($date, $barcielid, $shift, false);
+        if ($barciedienst->id === null) {
+            $this->barcieGateway->InsertBarciedienst($barciedienst, $dayId);
         }
     }
 }

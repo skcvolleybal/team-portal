@@ -6,65 +6,43 @@ import { environment } from '../../../environments/environment';
 @Injectable({
   providedIn: 'root'
 })
-export class RequestService {
+export class JoomlaService {
   constructor(private httpClient: HttpClient) {}
 
   GetGroupsOfUser() {
-    return this.httpClient.get<string[]>(environment.baseUrl, {
-      params: { action: 'GetGroups' }
-    });
+    const url = environment.baseUrl + 'joomla/groepen';
+    return this.httpClient.get<string[]>(url);
   }
 
   GetUsers(naam) {
-    return this.httpClient.post(
-      environment.baseUrl,
-      {
+    const url = environment.baseUrl + 'joomla/users';
+    return this.httpClient.post(url, {
+      params: {
         naam
-      },
-      {
-        params: {
-          action: 'GetUsers'
-        }
       }
-    );
+    });
   }
 
   Login(username: string, password: string) {
-    return this.httpClient.post<any>(
-      environment.baseUrl,
-      {
-        username,
-        password
-      },
-      {
-        params: {
-          action: 'Login'
-        }
-      }
-    );
+    const url = environment.baseUrl + 'joomla/inloggen';
+    return this.httpClient.post<any>(url, {
+      username,
+      password
+    });
   }
 
   GetMijnOverzicht() {
-    return this.httpClient.get<any>(environment.baseUrl, {
-      params: {
-        action: 'GetMijnOverzicht'
-      }
-    });
+    const url = environment.baseUrl + 'mijn-overzicht';
+    return this.httpClient.get<any>(url);
   }
 
   GetWedstrijdOverzicht(): Observable<any[]> {
-    return this.httpClient.get<any[]>(environment.baseUrl, {
-      params: {
-        action: 'GetWedstrijdOverzicht'
-      }
-    });
+    const url = environment.baseUrl + 'wedstrijd-overzicht';
+    return this.httpClient.get<any[]>(url);
   }
 
   GetCurrentUser(): Observable<any[]> {
-    return this.httpClient.get<any[]>(environment.baseUrl, {
-      params: {
-        action: 'GetCurrentUser'
-      }
-    });
+    const url = environment.baseUrl + 'joomla/user';
+    return this.httpClient.get<any[]>(url);
   }
 }

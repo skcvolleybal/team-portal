@@ -15,6 +15,6 @@ class IsWebcie implements IInteractor
         if ($userId !== null) {
             $isWebcie = $this->joomlaGateway->IsWebcie($userId);
         }
-        exit(json_encode($isWebcie));
+        return $isWebcie)
     }
 }

@@ -1,19 +1,27 @@
 <?php
 
-use Psr\Container\ContainerInterface;
+use DI\Container;
+use JMS\Serializer\SerializerBuilder;
+use JMS\Serializer\Naming\SerializedNameAnnotationStrategy;
+use JMS\Serializer\Naming\IdenticalPropertyNamingStrategy;
 
-$container->set(\MijnOverzichtController::class, function (ContainerInterface $container) {
-    $database = $container->get(\Database::class);
-    $config = $container->get('config');
-    $joomlaGateway = new JoomlaGateway($config, $database);
-    $nevoboGateway = new NevoboGateway();
-    $telFluitGateway = new TelFluitGateway($database);
-    $zaalwachtGateway = new ZaalwachtGateway($database);
-    $barcieGateway = new BarcieGateway($database);
-    return new MijnOverzichtController($joomlaGateway,  $nevoboGateway, $telFluitGateway, $zaalwachtGateway, $barcieGateway);
-});
+class ContainerFactory
+{
+    static public function Create(): Container
+    {
+        $container = new Container();
+        $container->set(\Configuration::class, function () {
+            $jsonData = file_get_contents("../appsettings.json");
+            $serializer = SerializerBuilder::create()
+                ->setPropertyNamingStrategy(
+                    new SerializedNameAnnotationStrategy(
+                        new IdenticalPropertyNamingStrategy()
+                    )
+                )
+                ->build();
+            return $serializer->deserialize($jsonData, 'Configuration', 'json');
+        });
 
-$container->set(\Database::class, function (ContainerInterface $container) {
-    $config = $container->get('config');
-    return new \Database($config);
-});
+        return $container;
+    }
+}

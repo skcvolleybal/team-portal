@@ -2,17 +2,19 @@
 
 class UpdateScheidsrechter implements IInteractorWithData
 {
-    public function __construct($database)
-    {
-        $this->telFluitGateway = new TelFluitGateway($database);
-        $this->joomlaGateway = new JoomlaGateway($database);
+    public function __construct(
+        TelFluitGateway $telFluitGateway,
+        JoomlaGateway $joomlaGateway
+    ) {
+        $this->telFluitGateway = $telFluitGateway;
+        $this->joomlaGateway = $joomlaGateway;
     }
 
     public function Execute($data)
     {
         $userId = $this->joomlaGateway->GetUserId();
         if ($userId === null) {
-            UnauthorizedResult();
+            throw new UnauthorizedException();
         }
 
         if (!$this->joomlaGateway->IsTeamcoordinator($userId)) {
@@ -20,32 +22,27 @@ class UpdateScheidsrechter implements IInteractorWithData
         }
 
         $matchId = $data->matchId ?? null;
-        $scheidsrechter = $data->scheidsrechter ?? null;
+        $scheidsrechterId = $data->scheidsrechterId ?? null;
 
-        if ($matchId == null) {
+        if ($matchId === null) {
             throw new InvalidArgumentException("matchId is null");
         }
 
-        $scheidsrechter = $this->joomlaGateway->GetScheidsrechterByName($scheidsrechter);
+        $wedstrijd = $this->telFluitGateway->GetWedstrijd($matchId) ?? new Wedstrijd($matchId);
+        $wedstrijd->scheidsrechter = $scheidsrechterId ? $this->joomlaGateway->GetScheidsrechter($scheidsrechterId) : null;
 
-        $wedstrijd = $this->telFluitGateway->GetWedstrijd($matchId);
-        if ($wedstrijd == null) {
-            if ($scheidsrechter) {
-                $this->telFluitGateway->Insert($matchId, $scheidsrechter->id, null);
-            }
+        if ($wedstrijd->id === null) {
+            $this->telFluitGateway->Insert($wedstrijd);
         } else {
-            if ($scheidsrechter == null) {
-                if ($wedstrijd->telteamId == null) {
-                    $this->telFluitGateway->Delete($matchId);
+            if ($wedstrijd->scheidsrechter === null) {
+                if ($wedstrijd->telteam === null) {
+                    $this->telFluitGateway->Delete($wedstrijd);
                 } else {
-                    $this->telFluitGateway->Update($matchId, null, $wedstrijd->telteamId);
+                    $this->telFluitGateway->Update($wedstrijd);
                 }
             } else {
-                $this->telFluitGateway->Update($matchId, $scheidsrechter->id, $wedstrijd->telteamId);
+                $this->telFluitGateway->Update($wedstrijd);
             }
         }
-
-        exit();
     }
-
 }

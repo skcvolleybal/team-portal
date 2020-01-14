@@ -4,7 +4,7 @@ import {
   faPlusSquare,
   faUser
 } from '@fortawesome/free-solid-svg-icons';
-import { RequestService } from '../../core/services/request.service';
+import { JoomlaService } from '../../core/services/request.service';
 
 @Component({
   selector: 'teamportal-mijn-overzicht',
@@ -19,11 +19,11 @@ export class MijnOverzichtComponent implements OnInit {
   dagen: any[];
   errorMessage: string;
 
-  constructor(private requestService: RequestService) {}
+  constructor(private joomalService: JoomlaService) {}
 
   ngOnInit() {
     this.loading = true;
-    this.requestService.GetMijnOverzicht().subscribe(
+    this.joomalService.GetMijnOverzicht().subscribe(
       response => {
         this.dagen = response;
         this.loading = false;

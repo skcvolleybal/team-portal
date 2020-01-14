@@ -2,24 +2,19 @@
 
 class GetBarcieBeschikbaarheden implements IInteractorWithData
 {
-
-    public function __construct($database)
+    public function __construct(BarcieGateway $barcieGateway, JoomlaGateway $joomlaGateway)
     {
-        $this->barcieGateway = new BarcieGateway($database);
-        $this->joomlaGateway = new JoomlaGateway($database);
+        $this->barcieGateway = $barcieGateway;
+        $this->joomlaGateway = $joomlaGateway;
     }
 
     public function Execute($data)
     {
         $userId = $this->joomlaGateway->GetUserId();
-        if ($userId === null) {
-            UnauthorizedResult();
-        }
-
         if (!$this->joomlaGateway->IsTeamcoordinator($userId)) {
             throw new UnexpectedValueException("Je bent geen (helaas) geen teamcoordinator");
         }
-        $date = $data->date ?? null;
+        $date = DateFunctions::CreateDateTime($data->date ?? null);
         if (!$date) {
             throw new InvalidArgumentException("Date is leeg");
         }
@@ -33,17 +28,13 @@ class GetBarcieBeschikbaarheden implements IInteractorWithData
         ];
 
         foreach ($beschikbaarheden as $beschikbaarheid) {
-            $barcielid = $this->GetBarcielidById($barcieleden, $beschikbaarheid->user_id);
-            if ($barcielid === null) {
-                continue;
-            }
-            
+            $barcielid = $this->barcieGateway->GetBarcielidById($beschikbaarheid->persoon->id);
             $newBeschikbaarheid = (object) [
                 "id" => $barcielid->id,
                 "naam" => $barcielid->naam,
                 "aantalDiensten" => $barcielid->aantalDiensten,
             ];
-            if ($beschikbaarheid->is_beschikbaar === "Ja") {
+            if ($beschikbaarheid->isBeschikbaar) {
                 $result->Ja[] = $newBeschikbaarheid;
             } else {
                 $result->Nee[] = $newBeschikbaarheid;
@@ -56,13 +47,13 @@ class GetBarcieBeschikbaarheden implements IInteractorWithData
 
         $result->Onbekend = array_values($barcieleden);
 
-        exit(json_encode($result));
+        return $result;
     }
 
-    private function GetBarcielidById($barcieleden, $userId)
+    private function GetBarcielidById(array $barcieleden, Persoon $persoon)
     {
         foreach ($barcieleden as $barcielid) {
-            if ($barcielid->id == $userId) {
+            if ($barcielid->id == $persoon->id) {
                 return $barcielid;
             }
         }

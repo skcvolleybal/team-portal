@@ -49,6 +49,6 @@ class GetTeamstanden implements IInteractor
         $template = str_replace("__DATABACKGROUNDCOLOR__", implode(", ", $backgroundcolor), $template);
         $template = str_replace("__DATABORDERCOLOR__", implode(", ", $bordercolors), $template);
 
-        exit($template);
+        return $template;
     }
 }

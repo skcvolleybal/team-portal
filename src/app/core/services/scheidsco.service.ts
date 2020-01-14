@@ -4,81 +4,63 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class ScheidscoService {
   constructor(private httpClient: HttpClient) {}
 
   GetScheidscoOverzicht(): Observable<any> {
-    return this.httpClient.get<any[]>(environment.baseUrl, {
-      params: {
-        action: 'GetScheidscoOverzicht'
-      }
-    });
+    return this.httpClient.get<any[]>(
+      environment.baseUrl + 'scheidsco/overzicht'
+    );
   }
 
   GetScheidsrechtersForMatch(matchId: string): Observable<any> {
-    return this.httpClient.post<any>(
-      environment.baseUrl,
-      { matchId },
+    return this.httpClient.get<any>(
+      environment.baseUrl + 'scheidsco/scheidsrechters',
       {
-        params: { action: 'GetScheidsrechters' }
+        params: { matchId }
       }
     );
   }
 
   UpdateScheidsrechter(
     matchId: string,
-    scheidsrechter: string
+    scheidsrechterId: number
   ): Observable<any> {
     return this.httpClient.post<any>(
-      environment.baseUrl,
+      environment.baseUrl + 'scheidsco/scheidsrechters',
       {
         matchId,
-        scheidsrechter
-      },
-      {
-        params: {
-          action: 'UpdateScheidsrechter'
-        }
+        scheidsrechterId
       }
     );
   }
 
   GetTelTeams(matchId: string) {
-    return this.httpClient.post<any>(
-      environment.baseUrl,
-      { matchId },
-      {
-        params: {
-          action: 'GetTelTeams'
-        }
+    return this.httpClient.get<any>(environment.baseUrl + 'scheidsco/tellers', {
+      params: {
+        matchId
       }
-    );
+    });
   }
 
   UpdateTellers(matchId: string, tellers: string) {
     return this.httpClient.post<any>(
-      environment.baseUrl,
+      environment.baseUrl + 'scheidsco/tellers',
       {
         matchId,
         tellers
-      },
-      {
-        params: {
-          action: 'UpdateTellers'
-        }
       }
     );
   }
 
   GetZaalwachtOpties(date: string) {
-    return this.httpClient.post<any>(
-      environment.baseUrl,
-      { date },
+    return this.httpClient.get<any>(
+      environment.baseUrl + 'scheidsco/zaalwachtteams',
       {
         params: {
-          action: 'GetZaalwachtTeams'
+          date
         }
       }
     );
@@ -86,15 +68,10 @@ export class ScheidscoService {
 
   UpdateZaalwacht(date: string, team: string) {
     return this.httpClient.post<any>(
-      environment.baseUrl,
+      environment.baseUrl + 'scheidsco/zaalwacht',
       {
         date,
         team
-      },
-      {
-        params: {
-          action: 'UpdateZaalwacht'
-        }
       }
     );
   }

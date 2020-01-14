@@ -24,7 +24,7 @@ class GetVoorpaginaRooster implements IInteractor
                 $date = $wedstrijd->timestamp->format('Y-m-d');
                 $result[] = (object) [
                     "date" => $date,
-                    "datum" => GetDutchDate($wedstrijd->timestamp),
+                    "datum" => DateFunctions::GetDutchDate($wedstrijd->timestamp),
                     "zaalwacht" => $this->GetZaalwacht($date),
                     "wedstrijden" => [$this->MapWedstrijd($wedstrijd)],
                 ];
@@ -43,8 +43,8 @@ class GetVoorpaginaRooster implements IInteractor
         return (object) [
             "tijd" => $wedstrijd->timestamp->format('H:i'),
             "teams" => $wedstrijd->team1 . " - " . $wedstrijd->team2,
-            "scheidsrechter" => $this->GetScheidsrechterForWedstrijd($wedstrijd->id),
-            "tellers" => $this->GetTellersForWedstrijd($wedstrijd->id),
+            "scheidsrechter" => $this->GetScheidsrechterForWedstrijd($wedstrijd->matchId),
+            "tellers" => $this->GetTellersForWedstrijd($wedstrijd->matchId),
         ];
     }
 

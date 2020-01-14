@@ -11,17 +11,17 @@ class StatistiekenGateway
         $skcTeam = ToSkcName($team);
         $query = 'SELECT R.naam, T2.rugnummer, T2.gespeeldePunten FROM (
                     SELECT rugnummer, count(*) gespeeldePunten FROM (
-                        SELECT ra as rugnummer FROM DWF_punten P inner join DWF_wedstrijden W on P.matchId = W.id where W.team1 = :team || W.team2 = :team
+                        SELECT ra as rugnummer FROM DWF_punten P inner join DWF_wedstrijden W on P.matchId = W.id where W.team1 = ? || W.team2 = ?
                         UNION ALL
-                        SELECT rv as rugnummer FROM DWF_punten P inner join DWF_wedstrijden W on P.matchId = W.id where W.team1 = :team || W.team2 = :team
+                        SELECT rv as rugnummer FROM DWF_punten P inner join DWF_wedstrijden W on P.matchId = W.id where W.team1 = ? || W.team2 = ?
                         UNION ALL
-                        SELECT mv as rugnummer FROM DWF_punten P inner join DWF_wedstrijden W on P.matchId = W.id where W.team1 = :team || W.team2 = :team
+                        SELECT mv as rugnummer FROM DWF_punten P inner join DWF_wedstrijden W on P.matchId = W.id where W.team1 = ? || W.team2 = ?
                         UNION ALL
-                        SELECT lv as rugnummer FROM DWF_punten P inner join DWF_wedstrijden W on P.matchId = W.id where W.team1 = :team || W.team2 = :team
+                        SELECT lv as rugnummer FROM DWF_punten P inner join DWF_wedstrijden W on P.matchId = W.id where W.team1 = ? || W.team2 = ?
                         UNION ALL
-                        SELECT la as rugnummer FROM DWF_punten P inner join DWF_wedstrijden W on P.matchId = W.id where W.team1 = :team || W.team2 = :team
+                        SELECT la as rugnummer FROM DWF_punten P inner join DWF_wedstrijden W on P.matchId = W.id where W.team1 = ? || W.team2 = ?
                         UNION ALL
-                        SELECT ma as rugnummer FROM DWF_punten P inner join DWF_wedstrijden W on P.matchId = W.id where W.team1 = :team || W.team2 = :team
+                        SELECT ma as rugnummer FROM DWF_punten P inner join DWF_wedstrijden W on P.matchId = W.id where W.team1 = ? || W.team2 = ?
                     ) T1
                     GROUP BY rugnummer ORDER BY gespeeldePunten DESC
                   ) T2
@@ -31,12 +31,9 @@ class StatistiekenGateway
                     INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
                     INNER JOIN J3_usergroups G on M.group_id = G.id
                     INNER JOIN J3_comprofiler C ON U.id = C.user_id
-                    where G.title = :skcTeam
+                    where G.title = ?
                   ) R ON T2.rugnummer = R.rugnummer';
-        $params = [
-            new Param(':team', $team, PDO::PARAM_STR),
-            new Param(':skcTeam', $skcTeam, PDO::PARAM_STR),
-        ];
+        $params = [$team, $skcTeam];
         return $this->database->Execute($query, $params);
     }
 
@@ -47,7 +44,7 @@ class StatistiekenGateway
                   WHERE P.skcTeam = ?
                   ORDER BY P.id';
         $params = [$team];
-        return $this->database->Execute2($query, $params);
+        return $this->database->Execute($query, $params);
     }
 
     public function GetAllePuntenByMatchId($matchId, $team)
@@ -57,7 +54,7 @@ class StatistiekenGateway
                   WHERE P.matchId = ? AND P.skcTeam = ?
                   ORDER BY P.id';
         $params = [$matchId, $team];
-        return $this->database->Execute2($query, $params);
+        return $this->database->Execute($query, $params);
     }
 
     public function GetAlleSkcPunten()
@@ -65,6 +62,6 @@ class StatistiekenGateway
         $query = 'SELECT * FROM DWF_punten P
                   INNER JOIN DWF_wedstrijden W ON P.matchId = W.id
                   ORDER BY P.id';
-        return $this->database->Execute2($query);
+        return $this->database->Execute($query);
     }
 }

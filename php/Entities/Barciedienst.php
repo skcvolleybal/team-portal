@@ -2,13 +2,14 @@
 
 class Barciedienst
 {
-    public $date;
-    public $persoon;
-    public $shift;
-    public $isBhv;
+    public DateTime $date;
+    public ?Persoon $persoon;
+    public ?int $shift;
+    public ?bool $isBhv;
 
-    public function __construct($date, $persoon, $shift, $isBhv)
+    public function __construct(DateTime $date, ?Persoon $persoon, ?int $shift, ?bool $isBhv, $id = null)
     {
+        $this->id = $id;
         $this->date = $date;
         $this->persoon = $persoon;
         $this->shift = $shift;

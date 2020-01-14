@@ -3,37 +3,43 @@
 class UpdateBarcieBeschikbaarheid implements IInteractorWithData
 {
 
-    public function __construct($database)
-    {
-        $this->joomlaGateway = new JoomlaGateway($database);
-        $this->barcieGateway = new BarcieGateway($database);
+    public function __construct(
+        JoomlaGateway $joomlaGateway,
+        BarcieGateway $barcieGateway
+    ) {
+        $this->joomlaGateway = $joomlaGateway;
+        $this->barcieGateway = $barcieGateway;
     }
 
     public function Execute($data)
     {
         $userId = $this->joomlaGateway->GetUserId();
         if ($userId === null) {
-            UnauthorizedResult();
+            throw new UnauthorizedException();
         }
 
         if (!$this->joomlaGateway->IsBarcie($userId)) {
             throw new UnexpectedValueException("Je bent (helaas) geen Barcie lid");
         }
 
-        $date = $data->date;
-        $beschikbaarheid = $data->beschikbaarheid;
+        $date = DateFunctions::CreateDateTime($data->date);
+        $barcielid = $this->joomlaGateway->GetUser($userId);
+        $isBeschikbaar = $data->isBeschikbaar;
 
         $dayId = $this->barcieGateway->GetDateId($date);
 
-        $dbBeschikbaarheid = $this->barcieGateway->GetBeschikbaarheid($userId, $dayId);
-        if ($dbBeschikbaarheid) {
-            if ($beschikbaarheid == "Onbekend") {
-                $this->barcieGateway->DeleteBeschikbaarheid($dbBeschikbaarheid->id);
-            } else {
-                $this->barcieGateway->UpdateBeschikbaarheid($dbBeschikbaarheid->id, $beschikbaarheid);
+        $beschikbaarheid = $this->barcieGateway->GetBeschikbaarheid($userId, $dayId) ?? new  Beschikbaarheid(null, new Persoon($barcielid->id, $barcielid->naam), $date, $isBeschikbaar);
+        $beschikbaarheid->isBeschikbaar = $isBeschikbaar;
+        if ($beschikbaarheid->id === null) {
+            if ($beschikbaarheid->isBeschikbaar !== null) {
+                $this->barcieGateway->InsertBeschikbaarheid($beschikbaarheid, $dayId);
             }
         } else {
-            $this->barcieGateway->InsertBeschikbaarheid($userId, $dayId, $beschikbaarheid);
+            if ($beschikbaarheid->isBeschikbaar === null) {
+                $this->barcieGateway->DeleteBeschikbaarheid($beschikbaarheid);
+            } else {
+                $this->barcieGateway->UpdateBeschikbaarheid($beschikbaarheid);
+            }
         }
     }
 }

@@ -10,47 +10,27 @@ export class BeschikbaarheidService {
   UpdateFluitBeschikbaarheid(
     datum: string,
     tijd: string,
-    beschikbaarheid: string
+    isBeschikbaar: boolean
   ) {
-    return this.httpClient.post(
-      environment.baseUrl,
-      {
-        datum,
-        tijd,
-        beschikbaarheid
-      },
-      {
-        params: { action: 'UpdateFluitBeschikbaarheid' }
-      }
-    );
+    return this.httpClient.post(environment.baseUrl + 'fluiten', {
+      datum,
+      tijd,
+      isBeschikbaar
+    });
   }
 
-  UpdateBarcieBeschikbaarheid(date: string, beschikbaarheid: string) {
-    return this.httpClient.post(
-      environment.baseUrl,
-      {
-        date,
-        beschikbaarheid
-      },
-      {
-        params: { action: 'UpdateBarcieBeschikbaarheid' }
-      }
-    );
+  UpdateBarcieBeschikbaarheid(date: string, isBeschikbaar: boolean) {
+    return this.httpClient.post(environment.baseUrl + 'barcie', {
+      date,
+      isBeschikbaar
+    });
   }
 
   GetFluitBeschikbaarheid() {
-    return this.httpClient.get<any[]>(environment.baseUrl, {
-      params: {
-        action: 'GetFluitBeschikbaarheid'
-      }
-    });
+    return this.httpClient.get<any[]>(environment.baseUrl + 'fluiten');
   }
 
   GetBarcieBeschikbaarheid() {
-    return this.httpClient.get<any[]>(environment.baseUrl, {
-      params: {
-        action: 'GetBarcieBeschikbaarheid'
-      }
-    });
+    return this.httpClient.get<any[]>(environment.baseUrl + 'barcie');
   }
 }

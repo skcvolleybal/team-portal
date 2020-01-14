@@ -2,11 +2,10 @@
 
 class DeleteBarcieDag implements IInteractorWithData
 {
-
-    public function __construct($database)
+    public function __construct(JoomlaGateway $joomlaGateway, BarcieGateway $barcieGateway)
     {
-        $this->joomlaGateway = new JoomlaGateway($database);
-        $this->barcieGateway = new BarcieGateway($database);
+        $this->joomlaGateway = $joomlaGateway;
+        $this->barcieGateway = $barcieGateway;
     }
 
     public function Execute($data)
@@ -16,16 +15,16 @@ class DeleteBarcieDag implements IInteractorWithData
             throw new UnexpectedValueException("Je bent geen teamcoordinator");
         }
 
-        $date = $data->date ?? null;
+        $date = DateFunctions::CreateDateTime($data->date ?? null);
         if ($date === null) {
             throw new InvalidArgumentException("Date is leeg");
         }
 
         $dayId = $this->barcieGateway->GetDateId($date);
 
-        $aanwezigheden = $this->barcieGateway->GetBarcieAanwezigheden();
-        foreach ($aanwezigheden as $aanwezigheid) {
-            if ($aanwezigheid->date == $date && $aanwezigheid->userId) {
+        $barciediensten = $this->barcieGateway->GetBarciediensten();
+        foreach ($barciediensten as $barciedienst) {
+            if ($barciedienst->persoon) {
                 throw new UnexpectedValueException("Datum heeft nog aanwezigheden");
             }
         }

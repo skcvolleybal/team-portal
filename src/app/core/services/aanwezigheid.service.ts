@@ -33,25 +33,17 @@ export class AanwezigheidService {
 
   UpdateAanwezigheid(
     matchId: number,
-    isAanwezig: string,
+    isAanwezig: boolean,
     spelerId: string,
     rol: string
   ) {
     this.httpClient
-      .post<any>(
-        environment.baseUrl,
-        {
-          matchId,
-          spelerId,
-          isAanwezig,
-          rol
-        },
-        {
-          params: {
-            action: 'UpdateAanwezigheid'
-          }
-        }
-      )
+      .post<any>(environment.baseUrl + 'aanwezigheid', {
+        matchId,
+        spelerId,
+        isAanwezig,
+        rol
+      })
       .subscribe();
   }
 
@@ -81,16 +73,11 @@ export class AanwezigheidService {
 
   AddBarcieAanwezigheid(date: string, shift: number, barcielidId: string) {
     return this.httpClient.post<any>(
-      environment.baseUrl,
+      environment.baseUrl + 'barcie/aanwezigheid',
       {
         date,
         shift,
         barcielidId
-      },
-      {
-        params: {
-          action: 'AddBarcieAanwezigheid'
-        }
       }
     );
   }

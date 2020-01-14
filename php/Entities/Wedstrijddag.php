@@ -3,8 +3,9 @@
 class Wedstrijddag
 {
     private $date;
-    public $wedstrijden;
-    public $bardiensten;
+    public array $speeltijden = [];
+    public array $bardiensten = [];
+    public ?Team $zaalwacht = null;
 
     public function __get($property)
     {
@@ -13,8 +14,23 @@ class Wedstrijddag
         }
     }
 
-    function __construct($timestamp)
+    function __construct($date)
     {
-        $this->date = $timestamp;
+        $this->date = $date;
+    }
+
+    function AddWedstrijd(Wedstrijd $wedstrijd)
+    {
+        if ($wedstrijd === null) {
+            return;
+        }
+        foreach ($this->speeltijden as $speeltijd) {
+            if (DateFunctions::AreDateTimesEqual($speeltijd->time, $wedstrijd->timestamp)) {
+                $speeltijd->wedstrijden[] = $wedstrijd;
+                return;
+            }
+        }
+        $this->speeltijden[] = new Speeltijd($wedstrijd->timestamp);
+        $this->speeltijden[0]->wedstrijden[] = $wedstrijd;
     }
 }
