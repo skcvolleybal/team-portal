@@ -13,11 +13,6 @@ class UpdateFluitBeschikbaarheid implements IInteractorWithData
     public function Execute($data)
     {
         $userId = $this->joomlaGateway->GetUserId();
-        if ($userId === null) {
-            throw new UnauthorizedException();
-        }
-        $user = $this->joomlaGateway->GetUser($userId);
-
         if (!$this->joomlaGateway->IsScheidsrechter($userId)) {
             throw new UnexpectedValueException("Je bent (helaas) geen scheidsrechter");
         }
@@ -35,6 +30,7 @@ class UpdateFluitBeschikbaarheid implements IInteractorWithData
             throw new InvalidArgumentException("Unknown beschikbaarheid: $isBeschikbaar");
         }
 
+        $user = $this->joomlaGateway->GetUser($userId);
         $beschikbaarheid = $this->fluitBeschikbaarheidGateway->GetFluitBeschikbaarheid($userId, $date) ??
             new Beschikbaarheid(
                 null,

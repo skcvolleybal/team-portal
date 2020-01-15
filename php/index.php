@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 use Slim\Factory\AppFactory;
@@ -49,6 +50,7 @@ $entryPoint =
         new RouteGroup('/joomla', [
             new GetRoute('/groepen', GetGroupsInteractor::class),
             new GetRoute('/user', GetCurrentUserInteractor::class),
+            new GetRoute('/users', GetUsers::class),
             new PostRoute('/inloggen', InloggenInteractor::class)
         ]),
         new GetRoute('/mijn-overzicht', MijnOverzichtInteractor::class),
@@ -62,9 +64,13 @@ $entryPoint =
         new RouteGroup('/barcie', [
             new GetRoute('', GetBarcieBeschikbaarheid::class),
             new PostRoute('', UpdateBarcieBeschikbaarheid::class),
+            new PostRoute('/toggle-bhv', ToggleBhv::class),
             new GetRoute('/rooster', GetBarcieRooster::class),
             new GetRoute('/beschikbaarheden', GetBarcieBeschikbaarheden::class),
-            new PostRoute('/aanwezigheid', AddBarcieAanwezigheid::class),
+            new RouteGroup('/dienst', [
+                new PostRoute('/add', AddBarcieAanwezigheid::class),
+                new PostRoute('/delete', DeleteBarcieAanwezigheid::class)
+            ]),
             new PostRoute('/barciedag/add', AddBarcieDag::class),
             new PostRoute('/barciedag/delete', DeleteBarcieDag::class),
         ]),

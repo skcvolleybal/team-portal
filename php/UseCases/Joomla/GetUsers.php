@@ -3,16 +3,15 @@
 class GetUsers implements IInteractorWithData
 {
 
-    public function __construct($database)
+    public function __construct(JoomlaGateway $joomlaGateway)
     {
-        $this->joomlaGateway = new JoomlaGateway($database);
+        $this->joomlaGateway = $joomlaGateway;
     }
 
     public function Execute($data)
     {
         $userId = $this->joomlaGateway->GetUserId(false);
-        $isWebcie = $this->joomlaGateway->IsWebcie($userId);
-        if ($isWebcie === false) {
+        if (!$this->joomlaGateway->IsWebcie($userId)) {
             throw new UnexpectedValueException("Je bent geen webcie");
         }
 
@@ -29,6 +28,6 @@ class GetUsers implements IInteractorWithData
             }
         }
 
-        return $result)
+        return $result;
     }
 }

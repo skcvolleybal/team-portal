@@ -12,10 +12,6 @@ class AddBarcieDag implements IInteractorWithData
     public function Execute($data)
     {
         $userId = $this->joomlaGateway->GetUserId();
-        if ($userId === null) {
-            throw new UnauthorizedException();
-        }
-
         if (!$this->joomlaGateway->IsTeamcoordinator($userId)) {
             throw new UnexpectedValueException("Je bent geen teamcoordinator");
         }

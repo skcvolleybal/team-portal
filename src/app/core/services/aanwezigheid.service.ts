@@ -57,23 +57,18 @@ export class AanwezigheidService {
 
   DeleteBarcieAanwezigheid(date: string, shift: string, barcielidId: string) {
     return this.httpClient.post<any>(
-      environment.baseUrl,
+      environment.baseUrl + 'barcie/dienst/delete',
       {
         date,
         barcielidId,
         shift
-      },
-      {
-        params: {
-          action: 'DeleteBarcieAanwezigheid'
-        }
       }
     );
   }
 
   AddBarcieAanwezigheid(date: string, shift: number, barcielidId: string) {
     return this.httpClient.post<any>(
-      environment.baseUrl + 'barcie/aanwezigheid',
+      environment.baseUrl + 'barcie/dienst/add',
       {
         date,
         shift,

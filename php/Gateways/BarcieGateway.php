@@ -5,7 +5,56 @@ class BarcieGateway
     public function __construct(Database $database)
     {
         $this->database = $database;
-        $this->nevoboGateway = new NevoboGateway();
+    }
+
+    public function GetBarciedagen(): array
+    {
+        $query = 'SELECT 
+                    D.id,
+                    date,
+                    U.id as userId,
+                    U.name as naam,
+                    shift,
+                    is_bhv as isBhv
+                  FROM barcie_days D
+                  LEFT JOIN barcie_schedule_map M ON D.id = M.day_id
+                  LEFT JOIN J3_users U ON U.id = M.user_id
+                  WHERE CURRENT_DATE() <= D.date
+                  ORDER BY date, shift, name';
+        $rows = $this->database->Execute($query);
+        $result = [];
+        $currentDag = null;
+        $currentShift = null;
+        foreach ($rows as $row) {
+            $date = DateFunctions::CreateDateTime($row->date);
+            if ($currentDag !== $row->date) {
+                $currentDag = $row->date;
+                $result[] = new Barciedag($date);
+                $currentShift = null;
+            }
+            $i = count($result) - 1;
+
+            if ($row->shift == null) {
+                $currentShift = null;
+                continue;
+            }
+
+            if ($currentShift != $row->shift) {
+                $currentShift = $row->shift;
+                $result[$i]->shifts[] = new Barcieshift(
+                    $row->shift,
+                    $row->id
+                );
+            }
+            $j = count($result[$i]->shifts) - 1;
+
+            $barcielid = new Barcielid($row->userId, $row->naam);
+            $barcielid->shift = $row->shift;
+            $barcielid->isBhv = $row->isBhv == 1;
+            $result[$i]->shifts[$j]->barcieleden[] = $barcielid;
+        }
+
+        return $result;
     }
 
     public function GetDateId(DateTime $date): ?int
@@ -20,19 +69,6 @@ class BarcieGateway
             return null;
         }
         return $result[0]->id;
-    }
-
-    public function GetBarciedagen(): array
-    {
-        $query = 'SELECT id, date, remarks
-                  FROM barcie_days
-                  WHERE CURRENT_DATE() <= date';
-        $rows = $this->database->Execute($query);
-        $result = [];
-        foreach ($rows as $row) {
-            $result[] = DateFunctions::CreateDateTime($row->date);
-        }
-        return $result;
     }
 
     public function AddBarcieDag(DateTime $date)
@@ -161,6 +197,7 @@ class BarcieGateway
     public function GetBarciedienst(int $dayId, int $userId, int $shift): ?Barciedienst
     {
         $query = 'SELECT 
+                    M.id,
                     D.date,
                     M.day_id as dayId,
                     U.id as userId,
@@ -188,7 +225,8 @@ class BarcieGateway
             DateFunctions::CreateDateTime($rows[0]->date),
             new Persoon($rows[0]->userId, $rows[0]->naam),
             $rows[0]->shift,
-            $rows[0]->isBhv === 1
+            $rows[0]->isBhv === 1,
+            $rows[0]->id
         );
     }
 
@@ -280,7 +318,10 @@ class BarcieGateway
             return null;
         }
 
-        return new Barcielid($rows[0]->userId, $rows[0]->naam, $rows[0]->aantalDiensten);
+        $barcielid = new Barcielid($rows[0]->userId, $rows[0]->naam);
+        $barcielid->aantalDiensten = $rows[0]->aantalDiensten;
+
+        return $barcielid;
     }
 
     public function GetBarcieleden(): array
@@ -299,7 +340,9 @@ class BarcieGateway
         $rows =  $this->database->Execute($query);
         $result = [];
         foreach ($rows as $row) {
-            $result[] = new Barcielid($row->userId, $row->naam, $row->aantalDiensten);
+            $barcielid = new Barcielid($row->userId, $row->naam);
+            $barcielid->aantalDiensten = $row->aantalDiensten;
+            $result[] = $barcielid;
         }
         return $result;
     }

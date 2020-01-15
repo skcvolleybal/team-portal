@@ -27,7 +27,7 @@ export class WedstrijdOverzichtComponent implements OnInit {
       },
       error => {
         if (error.status === 500) {
-          this.errorMessage = error.error;
+          this.errorMessage = error.error.message;
           this.loading = false;
         }
       }

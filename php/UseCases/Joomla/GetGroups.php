@@ -10,12 +10,13 @@ class GetGroupsInteractor
 
     public function Execute(): array
     {
+        $result = [];
         $userId = $this->joomlaGateway->GetUserId();
         if ($userId === null) {
-            throw new UnauthorizedException();
+            return $result;
         }
 
-        $result = [];
+
         if ($this->joomlaGateway->IsScheidsrechter($userId)) {
             $result[] = "scheidsrechter";
         }

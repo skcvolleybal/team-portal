@@ -28,17 +28,11 @@ export class BarcoService {
 
   ToggleBhv(date: string, shift: string, barcielidId: number): void {
     this.httpClient
-      .post<any>(
-        environment.baseUrl,
+      .post<any>( environment.baseUrl + 'barcie/toggle-bhv',
         {
           date,
           barcielidId,
           shift
-        },
-        {
-          params: {
-            action: 'ToggleBhv'
-          }
         }
       )
       .subscribe();

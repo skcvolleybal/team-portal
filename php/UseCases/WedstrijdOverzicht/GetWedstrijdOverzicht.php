@@ -24,7 +24,10 @@ class GetWedstrijdOverzicht implements IInteractor
 
         $overzicht = [];
         $team = $this->joomlaGateway->GetTeam($userId);
-        $team->spelers = $this->joomlaGateway->GetTeamgenoten($team);
+        if ($team !== null) {
+            $team->teamgenoten = $this->joomlaGateway->GetTeamgenoten($team);
+        }
+
         $coachteam = $this->joomlaGateway->GetCoachTeam($userId);
 
         $teamprogramma = $this->nevoboGateway->GetWedstrijdenForTeam($team);
@@ -115,14 +118,17 @@ class GetWedstrijdOverzicht implements IInteractor
                     'tijd' => DateFunctions::GetTime($invalTeamWedstrijd->timestamp)
                 ] : null,
                 'isMogelijk' => $wedstrijd->IsMogelijk($invalTeamWedstrijd),
-                'spelers' => $invalTeam->teamgenoten,
+                'teamgenoten' => $invalTeam->teamgenoten,
             ];
         }
         return $invalTeams;
     }
 
-    private function GetAllInvalTeamsForTeam(Team $eigenTeam)
+    private function GetAllInvalTeamsForTeam(?Team $eigenTeam)
     {
+        if ($eigenTeam === null) {
+            return;
+        }
         $teams = $eigenTeam->IsMale() ? Team::GetAlleHerenTeams() : Team::GetAlleDamesTeams();
 
         $this->invalTeams = [];
@@ -170,10 +176,10 @@ class GetWedstrijdOverzicht implements IInteractor
 
     private function GetOnbekenden(object $aanwezigheden, Team $team)
     {
-        $spelers = $team->spelers;
+        $teamgenoten = $team->teamgenoten;
         $bekendeAanwezigheden = array_merge($aanwezigheden->aanwezigen, $aanwezigheden->afwezigen);
-        if (count($bekendeAanwezigheden) == 0 || $spelers === null || count($spelers) == 0) {
-            return $spelers;
+        if (count($bekendeAanwezigheden) == 0 || $teamgenoten === null || count($teamgenoten) == 0) {
+            return [];
         }
 
         foreach ($bekendeAanwezigheden as $aanwezigheid) {

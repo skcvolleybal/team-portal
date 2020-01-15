@@ -3,10 +3,12 @@
 class DeleteBarcieAanwezigheid implements IInteractorWithData
 {
 
-    public function __construct($database)
-    {
-        $this->barcieGateway = new BarcieGateway($database);
-        $this->joomlaGateway = new JoomlaGateway($database);
+    public function __construct(
+        BarcieGateway $barcieGateway,
+        JoomlaGateway $joomlaGateway
+    ) {
+        $this->barcieGateway = $barcieGateway;
+        $this->joomlaGateway = $joomlaGateway;
     }
 
     public function Execute($data)
@@ -17,7 +19,7 @@ class DeleteBarcieAanwezigheid implements IInteractorWithData
         }
 
         $barcielidId = $data->barcielidId ?? null;
-        $date = $data->date ?? null;
+        $date = DateFunctions::CreateDateTime($data->date ?? null);
         $shift = $data->shift ?? null;
 
         if ($barcielidId === null) {
@@ -32,14 +34,12 @@ class DeleteBarcieAanwezigheid implements IInteractorWithData
 
         $dayId = $this->barcieGateway->GetDateId($date);
         if ($dayId === null) {
-            throw new UnexpectedValueException("Er bestaat geen barciedag $date");
+            return;
         }
 
-        $aanwezigheid = $this->barcieGateway->GetAanwezigheid($dayId, $barcielidId, $shift);
-        if ($aanwezigheid) {
-            $this->barcieGateway->DeleteBarciedienst($aanwezigheid->id);
-        } else {
-            throw new UnexpectedValueException("Aanwezigheid bestaat niet");
+        $dienst = $this->barcieGateway->GetBarciedienst($dayId, $barcielidId, $shift);
+        if ($dienst !== null) {
+            $this->barcieGateway->DeleteBarciedienst($dienst);
         }
     }
 }

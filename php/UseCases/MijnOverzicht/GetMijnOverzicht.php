@@ -21,7 +21,6 @@ class MijnOverzichtInteractor extends OutputPort
     public function Execute()
     {
         $userId = $this->joomlaGateway->GetUserId();
-
         if ($userId === null) {
             throw new UnauthorizedException();
         }

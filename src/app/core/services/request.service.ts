@@ -16,7 +16,7 @@ export class JoomlaService {
 
   GetUsers(naam) {
     const url = environment.baseUrl + 'joomla/users';
-    return this.httpClient.post(url, {
+    return this.httpClient.get(url, {
       params: {
         naam
       }

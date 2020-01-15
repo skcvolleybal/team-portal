@@ -14,10 +14,6 @@ class UpdateBarcieBeschikbaarheid implements IInteractorWithData
     public function Execute($data)
     {
         $userId = $this->joomlaGateway->GetUserId();
-        if ($userId === null) {
-            throw new UnauthorizedException();
-        }
-
         if (!$this->joomlaGateway->IsBarcie($userId)) {
             throw new UnexpectedValueException("Je bent (helaas) geen Barcie lid");
         }

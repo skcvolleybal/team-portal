@@ -39,7 +39,7 @@ class Beschikbaarheid
     public static function IsBeschikbaar(array $beschikbaarheden, DateTime $date): ?bool
     {
         foreach ($beschikbaarheden as $beschikbaarheid) {
-            if (DateFunctions::AreDateTimesEqual($beschikbaarheid->date, $date)) {
+            if ($beschikbaarheid->date == $date) {
                 return $beschikbaarheid->isBeschikbaar;
             }
         }

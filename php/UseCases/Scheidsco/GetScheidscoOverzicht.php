@@ -17,13 +17,10 @@ class GetScheidscoOverzicht implements IInteractor
     public function Execute(): array
     {
         $userId = $this->joomlaGateway->GetUserId();
-        if ($userId === null) {
-            throw new UnauthorizedException();
-        }
-
         if (!$this->joomlaGateway->IsTeamcoordinator($userId)) {
             throw new UnexpectedValueException("Je bent (helaas) geen teamcoordinator");
         }
+        
         $result = [];
         $wedstrijddagen = $this->nevoboGateway->GetWedstrijddagenForSporthal('LDNUN', 365);
 

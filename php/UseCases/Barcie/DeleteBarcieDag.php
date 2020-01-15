@@ -21,17 +21,15 @@ class DeleteBarcieDag implements IInteractorWithData
         }
 
         $dayId = $this->barcieGateway->GetDateId($date);
-
-        $barciediensten = $this->barcieGateway->GetBarciediensten();
-        foreach ($barciediensten as $barciedienst) {
-            if ($barciedienst->persoon) {
-                throw new UnexpectedValueException("Datum heeft nog aanwezigheden");
-            }
-        }
         if ($dayId === null) {
-            throw new UnexpectedValueException("Dag bestaat niet");
-        } else {
-            $this->barcieGateway->DeleteBarcieDay($dayId);
+            return;
         }
+
+        $barciediensten = $this->barcieGateway->GetBarciedienstenForDate($date);
+        if (count($barciediensten) > 0) {
+            throw new UnexpectedValueException("Datum heeft nog aanwezigheden");
+        }
+
+        $this->barcieGateway->DeleteBarcieDay($dayId);
     }
 }

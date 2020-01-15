@@ -30,22 +30,19 @@ class DateFunctions
         return $timestamp->format('G:i');
     }
 
-    static function CreateDateTime(string $date, $time = "00:00")
+    static function CreateDateTime(string $date, string $time = "00:00:00")
     {
-        $format = DateFunctions::$DATE_FORMAT . " " . DateFunctions::$TIME_FORMAT . ".u";
-        $timestring = $date . " " . $time . ":00.000000";
+        if (preg_match("/^\d{2}:\d{2}$/", $time)) {
+            $time .= ":00";
+        }
+        $format = DateFunctions::$DATE_FORMAT . " " . DateFunctions::$TIME_FORMAT;
+        $timestring = $date . " " . $time;
         return DateTime::createFromFormat($format, $timestring);
     }
 
     static function AreDatesEqual(DateTime $date1, DateTime $date2)
     {
         $dateFormat = DateFunctions::$DATE_FORMAT;
-        return $date1->format($dateFormat) === $date2->format($dateFormat);
-    }
-
-    static function AreDateTimesEqual(DateTime $date1, DateTime $date2)
-    {
-        $dateFormat = DateFunctions::$DATE_FORMAT . " " . DateFunctions::$TIME_FORMAT;
         return $date1->format($dateFormat) === $date2->format($dateFormat);
     }
 }

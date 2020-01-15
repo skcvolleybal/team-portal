@@ -2,8 +2,10 @@
 
 class JoomlaGateway
 {
-    public function __construct(Configuration $configuration, Database $database)
-    {
+    public function __construct(
+        Configuration $configuration,
+        Database $database
+    ) {
         $this->configuration = $configuration;
         $this->database = $database;
     }
@@ -95,7 +97,7 @@ class JoomlaGateway
         return $this->database->Execute($query);
     }
 
-    private function IsUserInUsergroup(int $userId, string $usergroup): bool
+    private function IsUserInUsergroup(?int $userId, string $usergroup): bool
     {
         $query = 'SELECT *
                   FROM J3_user_usergroup_map M
@@ -106,22 +108,22 @@ class JoomlaGateway
         return count($result) > 0;
     }
 
-    public function IsScheidsrechter(int $userId): bool
+    public function IsScheidsrechter(?int $userId): bool
     {
         return $this->IsUserInUsergroup($userId, 'Scheidsrechters');
     }
 
-    public function IsWebcie(int $userId): bool
+    public function IsWebcie(?int $userId): bool
     {
         return $this->IsUserInUsergroup($userId, 'Super Users');
     }
 
-    public function IsTeamcoordinator(int $userId): bool
+    public function IsTeamcoordinator(?int $userId): bool
     {
         return $this->IsUserInUsergroup($userId, 'Teamcoordinator');
     }
 
-    public function IsBarcie(int $userId): bool
+    public function IsBarcie(?int $userId): bool
     {
         return $this->IsUserInUsergroup($userId, 'Barcie');
     }
@@ -137,7 +139,7 @@ class JoomlaGateway
         return count($result) > 0;
     }
 
-    public function GetTeam(int $userId): Team
+    public function GetTeam(int $userId): ?Team
     {
         $query = 'SELECT 
                     G.id,
@@ -156,8 +158,11 @@ class JoomlaGateway
         return new Team($team[0]->naam, $team[0]->id);
     }
 
-    public function GetTeamgenoten(Team $team): array
+    public function GetTeamgenoten(?Team $team): array
     {
+        if ($team === null) {
+            return [];
+        }
         $query = 'SELECT 
                     U.id, 
                     name as naam,

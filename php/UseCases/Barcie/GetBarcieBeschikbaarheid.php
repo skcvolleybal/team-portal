@@ -18,9 +18,8 @@ class GetBarcieBeschikbaarheid extends GetNevoboMatchByDate implements IInteract
     public function Execute(): array
     {
         $userId = $this->joomlaGateway->GetUserId();
-
-        if ($userId === null) {
-            throw new UnauthorizedException();
+        if (!$this->joomlaGateway->IsBarcie($userId)) {
+            throw new UnexpectedValueException("Je bent (helaas) geen Barcie lid");
         }
 
         $barcielid = $this->joomlaGateway->GetUser($userId);
@@ -36,20 +35,20 @@ class GetBarcieBeschikbaarheid extends GetNevoboMatchByDate implements IInteract
         $response = [];
         foreach ($barciedagen as $barciedag) {
             $eigenWedstrijden = array_filter($alleWedstrijden, function ($wedstrijd) use ($barciedag) {
-                return $wedstrijd->timestamp && DateFunctions::GetYmdNotation($wedstrijd->timestamp) == DateFunctions::GetYmdNotation($barciedag);
+                return $wedstrijd->timestamp && DateFunctions::AreDatesEqual($wedstrijd->timestamp, $barciedag->date);
             });
 
             $coachWedstrijden = array_filter($alleCoachWedstrijden, function ($wedstrijd) use ($barciedag) {
-                return $wedstrijd->timestamp && DateFunctions::GetYmdNotation($wedstrijd->timestamp) == DateFunctions::GetYmdNotation($barciedag);
+                return $wedstrijd->timestamp && DateFunctions::AreDatesEqual($wedstrijd->timestamp, $barciedag->date);
             });
 
             $wedstrijden = array_merge($eigenWedstrijden, $coachWedstrijden);
 
-            $isBeschikbaar = $this->GetBeschikbaarheid($beschikbaarheden, $barciedag);
+            $isBeschikbaar = $this->GetBeschikbaarheid($beschikbaarheden, $barciedag->date);
 
             $response[] = (object) [
-                "datum" => DateFunctions::GetDutchDate($barciedag),
-                "date" => DateFunctions::GetYmdNotation($barciedag),
+                "datum" => DateFunctions::GetDutchDate($barciedag->date),
+                "date" => DateFunctions::GetYmdNotation($barciedag->date),
                 "beschikbaarheid" => $isBeschikbaar,
                 "eigenWedstrijden" => $this->MapToUsecase($wedstrijden, $team, $coachTeam),
                 "isMogelijk" => $this->barcieBeschikbaarheidHelper->isMogelijk($wedstrijden),
@@ -59,7 +58,7 @@ class GetBarcieBeschikbaarheid extends GetNevoboMatchByDate implements IInteract
         return $response;
     }
 
-    private function MapToUsecase(array $wedstrijden, Team $team, Team $coachTeam)
+    private function MapToUsecase(array $wedstrijden, ?Team $team, ?Team $coachTeam)
     {
         $result = [];
         foreach ($wedstrijden as $wedstrijd) {

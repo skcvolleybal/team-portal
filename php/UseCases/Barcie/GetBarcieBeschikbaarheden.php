@@ -14,6 +14,7 @@ class GetBarcieBeschikbaarheden implements IInteractorWithData
         if (!$this->joomlaGateway->IsTeamcoordinator($userId)) {
             throw new UnexpectedValueException("Je bent geen (helaas) geen teamcoordinator");
         }
+        
         $date = DateFunctions::CreateDateTime($data->date ?? null);
         if (!$date) {
             throw new InvalidArgumentException("Date is leeg");

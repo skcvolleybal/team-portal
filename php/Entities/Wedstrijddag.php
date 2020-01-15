@@ -4,7 +4,7 @@ class Wedstrijddag
 {
     private $date;
     public array $speeltijden = [];
-    public array $bardiensten = [];
+    public array $barshifts = [];
     public ?Team $zaalwacht = null;
 
     public function __get($property)
@@ -25,7 +25,7 @@ class Wedstrijddag
             return;
         }
         foreach ($this->speeltijden as $speeltijd) {
-            if (DateFunctions::AreDateTimesEqual($speeltijd->time, $wedstrijd->timestamp)) {
+            if ($speeltijd->time == $wedstrijd->timestamp) {
                 $speeltijd->wedstrijden[] = $wedstrijd;
                 return;
             }

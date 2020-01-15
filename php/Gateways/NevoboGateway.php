@@ -122,7 +122,7 @@ class NevoboGateway
         return $this->GetProgramma($url);
     }
 
-    public function GetWedstrijdenForTeam(Team $team)
+    public function GetWedstrijdenForTeam(?Team $team)
     {
         if (!$team) {
             return [];

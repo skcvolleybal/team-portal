@@ -36,8 +36,12 @@ class AanwezigheidGateway
         );
     }
 
-    public function GetAanwezighedenForMatchIds($matchIds)
+    public function GetAanwezighedenForMatchIds(array $matchIds)
     {
+        if (count($matchIds) == 0) {
+            return [];
+        }
+
         $inClause  = join(',', array_fill(0, count($matchIds), '?'));
         $query = "SELECT
                     A.id,

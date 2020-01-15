@@ -7,13 +7,13 @@ class InloggenInteractor
         $this->joomlaGateway = $joomlaGateway;
     }
 
-    public function Execute(object $request)
+    public function Execute(object $data)
     {
-        if (empty($request->username) || empty($request->password)) {
+        if (empty($data->username) || empty($data->password)) {
             throw new InvalidArgumentException("Vul alle gegevens in");
         }
 
-        if (!$this->joomlaGateway->Login($request->username, $request->password)) {
+        if (!$this->joomlaGateway->Login($data->username, $data->password)) {
             throw new UnexpectedValueException("Gebruikersnaam/wachtwoord combinatie klopt niet");
         }
     }
