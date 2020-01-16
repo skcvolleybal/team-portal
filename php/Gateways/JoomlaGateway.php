@@ -10,7 +10,26 @@ class JoomlaGateway
         $this->database = $database;
     }
 
-    public function GetUserId(bool $forceImpersonation = true): ?int
+    public function GetUser(?int $userId = null): ?Persoon
+    {
+        return empty($userId) ? $this->GetLoggedInUser() : $this->GetUserById($userId);
+    }
+
+    private function GetUserById(int $userId): Persoon
+    {
+        $query = 'SELECT id, name as naam, email
+                  FROM J3_users
+                  WHERE id = ?';
+        $params = [$userId];
+        $users = $this->database->Execute($query, $params);
+        if (count($users) != 1) {
+            return null;
+        }
+
+        return new Persoon($users[0]->id, $users[0]->naam, $users[0]->email);
+    }
+
+    public function GetLoggedInUser(): ?int
     {
         $this->InitJoomla();
 
@@ -19,27 +38,14 @@ class JoomlaGateway
             return null;
         }
 
-        if ($forceImpersonation && $this->IsWebcie($user->id) && isset($_GET['impersonationId'])) {
+        if ($this->IsWebcie($user->id) && isset($_GET['impersonationId'])) {
             $impersonationId = $_GET['impersonationId'];
-            if (isset($impersonationId) && $this->DoesUserIdExist($impersonationId)) {
+            if ($this->DoesUserIdExist($impersonationId)) {
                 return $impersonationId;
             }
         }
 
         return $user->id;
-    }
-
-    public function GetUser(int $userId): Persoon
-    {
-        $query = 'SELECT * 
-                  FROM J3_users
-                  WHERE id = ?';
-        $params = [$userId];
-        $users = $this->database->Execute($query, $params);
-        if (count($users) == 1) {
-            return new Persoon($users[0]->id, $users[0]->name, $users[0]->email);
-        }
-        return null;
     }
 
     public function GetScheidsrechter(int $id): Scheidsrechter
@@ -225,6 +231,10 @@ class JoomlaGateway
 
     public function InitJoomla()
     {
+        if (defined('_JEXEC')) {
+            return;
+        }
+        
         define('JPATH_BASE', $this->configuration->JpathBase);
         define('_JEXEC', 1);
 

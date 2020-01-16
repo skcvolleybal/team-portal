@@ -10,13 +10,8 @@ class UpdateScheidsrechter implements IInteractorWithData
         $this->joomlaGateway = $joomlaGateway;
     }
 
-    public function Execute($data)
+    public function Execute(object $data)
     {
-        $userId = $this->joomlaGateway->GetUserId();
-        if (!$this->joomlaGateway->IsTeamcoordinator($userId)) {
-            throw new UnexpectedValueException("Je bent (helaas) geen teamcoordinator");
-        }
-
         $matchId = $data->matchId ?? null;
         $scheidsrechterId = $data->scheidsrechterId ?? null;
 

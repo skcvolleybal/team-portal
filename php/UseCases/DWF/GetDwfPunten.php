@@ -7,7 +7,7 @@ class GetDwfPunten implements IInteractorWithData
         $this->statistiekenGateway = new StatistiekenGateway($database);
     }
 
-    public function Execute($data)
+    public function Execute(object $data)
     {
         $matchIdregex = "/3000(B){0,1}[H|D]\d[A-Z] [(\d{2})|[A-Z]{2}/";
         $team = $data->team ?? null;

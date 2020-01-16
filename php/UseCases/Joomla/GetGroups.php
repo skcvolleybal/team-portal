@@ -1,8 +1,7 @@
 <?php
 
-class GetGroupsInteractor
+class GetGroups
 {
-
     public function __construct(JoomlaGateway $joomlaGateway)
     {
         $this->joomlaGateway = $joomlaGateway;
@@ -11,11 +10,11 @@ class GetGroupsInteractor
     public function Execute(): array
     {
         $result = [];
-        $userId = $this->joomlaGateway->GetUserId();
+        
+        $userId = $this->joomlaGateway->GetUser();
         if ($userId === null) {
             return $result;
         }
-
 
         if ($this->joomlaGateway->IsScheidsrechter($userId)) {
             $result[] = "scheidsrechter";

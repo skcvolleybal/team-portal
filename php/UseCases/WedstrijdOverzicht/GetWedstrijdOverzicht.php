@@ -17,11 +17,6 @@ class GetWedstrijdOverzicht implements IInteractor
 
     public function Execute()
     {
-        $userId = $this->joomlaGateway->GetUserId();
-        if ($userId === null) {
-            throw new UnauthorizedException();
-        }
-
         $overzicht = [];
         $team = $this->joomlaGateway->GetTeam($userId);
         if ($team !== null) {

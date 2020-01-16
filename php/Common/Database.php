@@ -23,7 +23,7 @@ class Database
         return $this->dbc;
     }
 
-    public function Execute($query, $params = null)
+    public function Execute(string $query, array $params = [])
     {
         if (empty($query)) {
             throw new UnexpectedValueException('Query is empty');

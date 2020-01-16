@@ -8,13 +8,8 @@ class GetUsers implements IInteractorWithData
         $this->joomlaGateway = $joomlaGateway;
     }
 
-    public function Execute($data)
+    public function Execute(object $data)
     {
-        $userId = $this->joomlaGateway->GetUserId(false);
-        if (!$this->joomlaGateway->IsWebcie($userId)) {
-            throw new UnexpectedValueException("Je bent geen webcie");
-        }
-
         $name = $data->naam ?? null;
         $result = [];
 

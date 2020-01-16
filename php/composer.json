@@ -23,7 +23,6 @@
       "Gateways",
       "Common",
       "TeamPortalErrorHandler.php",
-      "OutputPort.php",
       "container.php",
       "RouteObjects"
     ],

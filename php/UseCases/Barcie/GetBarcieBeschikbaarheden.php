@@ -8,13 +8,8 @@ class GetBarcieBeschikbaarheden implements IInteractorWithData
         $this->joomlaGateway = $joomlaGateway;
     }
 
-    public function Execute($data)
+    public function Execute(object $data)
     {
-        $userId = $this->joomlaGateway->GetUserId();
-        if (!$this->joomlaGateway->IsTeamcoordinator($userId)) {
-            throw new UnexpectedValueException("Je bent geen (helaas) geen teamcoordinator");
-        }
-        
         $date = DateFunctions::CreateDateTime($data->date ?? null);
         if (!$date) {
             throw new InvalidArgumentException("Date is leeg");

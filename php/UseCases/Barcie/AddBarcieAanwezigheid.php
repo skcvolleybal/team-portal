@@ -1,6 +1,6 @@
 <?php
 
-class AddBarcieAanwezigheid implements IInteractorWithData
+class AddBarcieAanwezigheid implements Interactor
 {
     public function __construct(BarcieGateway $barcieGateway, JoomlaGateway $joomlaGateway)
     {
@@ -8,13 +8,8 @@ class AddBarcieAanwezigheid implements IInteractorWithData
         $this->joomlaGateway = $joomlaGateway;
     }
 
-    public function Execute($data)
+    public function Execute(object $data)
     {
-        $userId = $this->joomlaGateway->GetUserId();
-        if (!$this->joomlaGateway->IsTeamcoordinator($userId)) {
-            throw new UnexpectedValueException("Je bent geen teamcoordinator");
-        }
-
         $barcielidId = $data->barcielidId ?? null;
         $barcielid = $this->barcieGateway->GetBarcielidById($barcielidId);
         $date = DateFunctions::CreateDateTime($data->date ?? null);

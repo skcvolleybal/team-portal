@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+setlocale(LC_ALL, 'nl_NL');
+
 use Slim\Factory\AppFactory;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -47,23 +49,24 @@ $app->addRoutingMiddleware();
 
 $entryPoint =
     new RouteGroup('/team-portal/api', [
-        new RouteGroup('/joomla', [
-            new GetRoute('/groepen', GetGroupsInteractor::class),
-            new GetRoute('/user', GetCurrentUserInteractor::class),
-            new GetRoute('/users', GetUsers::class),
-            new PostRoute('/inloggen', InloggenInteractor::class)
-        ]),
-        new GetRoute('/mijn-overzicht', MijnOverzichtInteractor::class),
-        new PostRoute('/aanwezigheid', UpdateAanwezigheid::class),
-        new GetRoute('/wedstrijd-overzicht', GetWedstrijdOverzicht::class),
-        new PostRoute('/wedstrijd-aanwezigheid', UpdateAanwezigheid::class),
+        new GetRoute('/mijn-overzicht', MijnOverzicht::class, AuthorizationRole::USER),
+
+        new RouteGroup('/wedstrijd-overzicht', [
+            new GetRoute('', GetWedstrijdOverzicht::class),
+            new PostRoute('', UpdateAanwezigheid::class),
+        ], AuthorizationRole::USER),
+
         new RouteGroup('/fluiten', [
             new GetRoute('', GetFluitBeschikbaarheid::class),
             new PostRoute('', UpdateFluitBeschikbaarheid::class)
-        ]),
+        ], AuthorizationRole::SCHEIDSRECHTER),
+
         new RouteGroup('/barcie', [
             new GetRoute('', GetBarcieBeschikbaarheid::class),
-            new PostRoute('', UpdateBarcieBeschikbaarheid::class),
+            new PostRoute('', UpdateBarcieBeschikbaarheid::class)
+        ], AuthorizationRole::BARCIE),
+
+        new RouteGroup('/barco', [
             new PostRoute('/toggle-bhv', ToggleBhv::class),
             new GetRoute('/rooster', GetBarcieRooster::class),
             new GetRoute('/beschikbaarheden', GetBarcieBeschikbaarheden::class),
@@ -71,9 +74,12 @@ $entryPoint =
                 new PostRoute('/add', AddBarcieAanwezigheid::class),
                 new PostRoute('/delete', DeleteBarcieAanwezigheid::class)
             ]),
-            new PostRoute('/barciedag/add', AddBarcieDag::class),
-            new PostRoute('/barciedag/delete', DeleteBarcieDag::class),
-        ]),
+            new RouteGroup('/barciedag', [
+                new PostRoute('/add', AddBarcieDag::class),
+                new PostRoute('/delete', DeleteBarcieDag::class)
+            ])
+        ], AuthorizationRole::TEAMCOORDINATOR),
+
         new RouteGroup('/scheidsco', [
             new GetRoute('/overzicht', GetScheidscoOverzicht::class),
             new RouteGroup('/zaalwacht', [
@@ -88,7 +94,14 @@ $entryPoint =
                 new GetRoute('', GetTelTeams::class),
                 new PostRoute('', UpdateTellers::class)
             ])
-        ])
+        ], AuthorizationRole::TEAMCOORDINATOR),
+
+        new RouteGroup('/joomla', [
+            new GetRoute('/groepen', GetGroups::class),
+            new GetRoute('/user', GetCurrentUser::class),
+            new GetRoute('/users', GetUsers::class, AuthorizationRole::WEBCIE),
+            new PostRoute('/inloggen', Inloggen::class, AuthorizationRole::UNREGISTERED)
+        ], AuthorizationRole::USER),
     ]);
 $entryPoint->RegisterRoutes($app);
 

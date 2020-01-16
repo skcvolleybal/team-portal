@@ -2,13 +2,13 @@
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Slim\App;
 use Slim\Routing\RouteCollectorProxy;
 
 class PostRoute extends CrudRoute
 {
-    public function __construct($route, $interactor)
+    public function __construct($route, $interactor, int $role = null)
     {
+        $this->role = $role;
         $this->route = $route;
         $this->interactor = $interactor;
     }
@@ -19,7 +19,10 @@ class PostRoute extends CrudRoute
         $route = $this;
 
         $group->post($this->route, function (Request $request, Response $response, iterable $args) use ($interactor, $route) {
-            $interactor  = $this->get($interactor);
+            $joomlaGateway = $this->get(JoomlaGateway::class);
+            $route->Authorize($joomlaGateway, $route->role);
+
+            $interactor = $this->get($interactor);
             $body = $request->getParsedBody();
             $input = $route->MergeInputObjects($body, $args);
             $data = $interactor->Execute($input);

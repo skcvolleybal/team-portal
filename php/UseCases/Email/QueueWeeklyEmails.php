@@ -132,7 +132,7 @@ class QueueWeeklyEmails implements IInteractor
             Template::TEAMS => $spelendeTeams,
             Template::AFZENDER => $this->scheidsco->naam
         ];
-        $body = Email::FillTemplate($template, $placeholders);
+        $body = FillTemplate($template, $placeholders);
 
         $titel = "Fluiten " . $spelendeTeams;
         return new Email(
@@ -179,7 +179,7 @@ class QueueWeeklyEmails implements IInteractor
             Template::DATUM => $datum,
             Template::AFZENDER => $this->scheidsco->naam,
         ];
-        $body = Email::FillTemplate($template, $placeholders);
+        $body = FillTemplate($template, $placeholders);
 
         $titel = "Zaalwacht " . $datum;
         return new Email(
@@ -205,7 +205,7 @@ class QueueWeeklyEmails implements IInteractor
             Template::BHV => $bhv,
             Template::AFZENDER => $this->scheidsco->naam
         ];
-        $body = Email::FillTemplate($template, $placeholders);
+        $body = FillTemplate($template, $placeholders);
 
         return new Email(
             "Barciedienst " . $datum,
@@ -256,7 +256,7 @@ class QueueWeeklyEmails implements IInteractor
             Template::ZAALWACHTERS => $zaalwachtersContent,
             Template::BARCIELEDEN => $barcieContent,
         ];
-        $body = Email::FillTemplate($template, $placeholders);
+        $body = FillTemplate($template, $placeholders);
 
         $title = "Samenvatting fluit/tel/zaalwacht mails " . date("j-M-Y");
 

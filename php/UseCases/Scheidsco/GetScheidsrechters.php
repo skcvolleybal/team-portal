@@ -15,13 +15,8 @@ class GetScheidsrechters implements IInteractorWithData
         $this->fluitBeschikbaarheidGateway = $fluitBeschikbaarheidGateway;
     }
 
-    public function Execute($data): array
+    public function Execute(object $data): array
     {
-        $userId = $this->joomlaGateway->GetUserId();
-        if (!$this->joomlaGateway->IsTeamcoordinator($userId)) {
-            throw new UnexpectedValueException("Je bent (helaas) geen teamcoordinator");
-        }
-
         $matchId = $data->matchId ?? null;
         if ($matchId === null) {
             throw new InvalidArgumentException("MatchId niet gezet");

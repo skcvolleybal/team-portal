@@ -1,8 +1,6 @@
 <?php
 
-use Slim\Exception\HttpUnauthorizedException;
-
-class MijnOverzichtInteractor extends OutputPort
+class MijnOverzicht implements IInteractor
 {
     public function __construct(
         JoomlaGateway $joomlaGateway,
@@ -20,11 +18,6 @@ class MijnOverzichtInteractor extends OutputPort
 
     public function Execute()
     {
-        $userId = $this->joomlaGateway->GetUserId();
-        if ($userId === null) {
-            throw new UnauthorizedException();
-        }
-
         $team = $this->joomlaGateway->GetTeam($userId);
         $coachTeam = $this->joomlaGateway->GetCoachTeam($userId);
 

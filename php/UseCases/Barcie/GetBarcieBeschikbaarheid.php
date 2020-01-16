@@ -17,11 +17,6 @@ class GetBarcieBeschikbaarheid extends GetNevoboMatchByDate implements IInteract
 
     public function Execute(): array
     {
-        $userId = $this->joomlaGateway->GetUserId();
-        if (!$this->joomlaGateway->IsBarcie($userId)) {
-            throw new UnexpectedValueException("Je bent (helaas) geen Barcie lid");
-        }
-
         $barcielid = $this->joomlaGateway->GetUser($userId);
         $team = $this->joomlaGateway->GetTeam($userId);
         $coachTeam = $this->joomlaGateway->GetCoachTeam($userId);

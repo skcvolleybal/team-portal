@@ -9,14 +9,9 @@ class UpdateAanwezigheid implements IInteractorWithData
         $this->aanwezigheidGateway = $aanwezigheidGateway;
     }
 
-    public function Execute($data)
+    public function Execute(object $data)
     {
-        $userId = $this->joomlaGateway->GetUserId();
-        if ($userId === null) {
-            throw new UnauthorizedException();
-        }
-
-        $spelerId = $data->spelerId ?? $userId;
+        $spelerId = $data->spelerId ?? $this->joomlaGateway->GetUser()->id;
         $speler = $this->joomlaGateway->GetUser($spelerId);
         $matchId = $data->matchId;
         $isAanwezig = $data->isAanwezig;

@@ -17,7 +17,7 @@ class GetCalendar implements IInteractor
         $this->telFluitGateway = $telFluitGateway;
     }
 
-    public function Execute($data)
+    public function Execute(object $data)
     {
         $userId = $data->userid;
         $withFluiten = $data->fluiten;

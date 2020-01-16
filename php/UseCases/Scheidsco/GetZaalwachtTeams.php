@@ -12,13 +12,8 @@ class GetZaalwachtTeams implements IInteractorWithData
         $this->nevoboGateway = $nevoboGateway;
     }
 
-    public function Execute($data): object
+    public function Execute(object $data): object
     {
-        $userId = $this->joomlaGateway->GetUserId();
-        if (!$this->joomlaGateway->IsTeamcoordinator($userId)) {
-            throw new UnexpectedValueException("Je bent (helaas) geen teamcoordinator");
-        }
-
         $date = DateFunctions::CreateDateTime($data->date);
         if ($date === null) {
             throw new InvalidArgumentException("Geen datum meegegeven");

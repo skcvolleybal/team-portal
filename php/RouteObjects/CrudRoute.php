@@ -23,5 +23,37 @@ abstract class CrudRoute
         return $result;
     }
 
+    function Authorize(JoomlaGateway $joomlaGateway, ?int $role)
+    {
+        $user = $joomlaGateway->GetUser();
+        switch ($role) {
+            case null;
+            case 0:
+                $isAuthorized = true;
+                break;
+            case 1:
+                $isAuthorized = $user !== null;
+                break;
+            case 2:
+                $isAuthorized = $joomlaGateway->isBarcie($user->id);
+                break;
+            case 3:
+                $isAuthorized =  $joomlaGateway->isScheidsrechter($user->id);
+                break;
+            case 4:
+                $isAuthorized =  $joomlaGateway->isTeamcoordinator($user->id);
+                break;
+            case 5:
+                $isAuthorized =  $joomlaGateway->isWebcie($user->id);
+                break;
+            default:
+                $isAuthorized = false;
+        }
+
+        if (!$isAuthorized) {
+            throw new UnauthorizedException();
+        }
+    }
+
     abstract function RegisterAction(RouteCollectorProxy $group);
 }

@@ -16,11 +16,6 @@ class GetFluitBeschikbaarheid implements IInteractor
 
     public function Execute(): iterable
     {
-        $userId = $this->joomlaGateway->GetUserId();
-        if (!$this->joomlaGateway->IsScheidsrechter($userId)) {
-            throw new UnexpectedValueException("Je bent (helaas) geen scheidsrechter");
-        }
-
         $team = $this->joomlaGateway->GetTeam($userId);
         $coachTeam = $this->joomlaGateway->GetCoachTeam($userId);
         $beschikbaarheden = $this->fluitBeschikbaarheidGateway->GetFluitBeschikbaarheden($userId);

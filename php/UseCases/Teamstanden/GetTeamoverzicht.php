@@ -2,7 +2,7 @@
 
 class GetTeamoverzicht implements IInteractorWithData
 {
-    public function Execute($data)
+    public function Execute(object $data)
     {
         $teamnaam = $data->team ?? null;
         if ($teamnaam === null) {

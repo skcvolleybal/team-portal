@@ -1,6 +1,6 @@
 <?php
 
-class InloggenInteractor
+class Inloggen implements Interactor
 {
     public function __construct(JoomlaGateway $joomlaGateway)
     {

@@ -16,7 +16,7 @@ class TemplateTest extends TestCase
         ];
         
         // act
-        $result = Email::FillTemplate($template, $variables);
+        $result = FillTemplate($template, $variables);
 
         // assert
         $this->assertEquals($result, "THomas blalasd Jonathan");

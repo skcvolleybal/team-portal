@@ -1,6 +1,6 @@
 <?php
 
-class  TeamportalBarciedag
+class TeamportalBarciedag
 {
     public string $date;
     public string $datum;

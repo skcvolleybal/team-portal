@@ -11,11 +11,6 @@ class GetGespeeldePunten implements IInteractor
 
     public function Execute()
     {
-        $userId = $this->joomlaGateway->GetUserId();
-        if ($userId === null) {
-            UnauthorizedResult();
-        }
-
         $team = $this->joomlaGateway->GetTeam($userId);
         if (!$team) {
             throw new UnexpectedValueException("Je zit niet in een team");
