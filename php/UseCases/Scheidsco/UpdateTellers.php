@@ -1,6 +1,6 @@
 <?php
 
-class UpdateTellers implements IInteractorWithData
+class UpdateTellers implements Interactor
 {
     public function __construct(TelFluitGateway $telFluitGateway, JoomlaGateway $joomlaGateway)
     {
@@ -10,15 +10,12 @@ class UpdateTellers implements IInteractorWithData
 
     public function Execute(object $data)
     {
-        $matchId = $data->matchId ?? null;
-        $tellers = $data->tellers ?? null;
-
-        if ($matchId === null) {
+        if ($data->matchId === null) {
             throw new InvalidArgumentException("matchId is null");
         }
 
-        $wedstrijd = $this->telFluitGateway->GetWedstrijd($matchId) ?? new Wedstrijd($matchId);
-        $wedstrijd->telteam = $this->joomlaGateway->GetTeamByNaam($tellers) ?? null;
+        $wedstrijd = $this->telFluitGateway->GetWedstrijd($data->matchId);
+        $wedstrijd->telteam = $this->joomlaGateway->GetTeamByNaam($data->tellers);
         if ($wedstrijd->id === null) {
             $this->telFluitGateway->Insert($wedstrijd);
         } else {

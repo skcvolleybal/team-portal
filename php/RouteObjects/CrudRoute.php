@@ -35,16 +35,16 @@ abstract class CrudRoute
                 $isAuthorized = $user !== null;
                 break;
             case 2:
-                $isAuthorized = $joomlaGateway->isBarcie($user->id);
+                $isAuthorized = $joomlaGateway->isBarcie($user);
                 break;
             case 3:
-                $isAuthorized =  $joomlaGateway->isScheidsrechter($user->id);
+                $isAuthorized =  $joomlaGateway->isScheidsrechter($user);
                 break;
             case 4:
-                $isAuthorized =  $joomlaGateway->isTeamcoordinator($user->id);
+                $isAuthorized =  $joomlaGateway->isTeamcoordinator($user);
                 break;
             case 5:
-                $isAuthorized =  $joomlaGateway->isWebcie($user->id);
+                $isAuthorized =  $joomlaGateway->isWebcie($user);
                 break;
             default:
                 $isAuthorized = false;

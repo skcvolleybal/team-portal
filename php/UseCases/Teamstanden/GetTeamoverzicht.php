@@ -1,11 +1,10 @@
 <?php
 
-class GetTeamoverzicht implements IInteractorWithData
+class GetTeamoverzicht implements Interactor
 {
     public function Execute(object $data)
     {
-        $teamnaam = $data->team ?? null;
-        if ($teamnaam === null) {
+        if ($data->teamnaam === null) {
             throw new \InvalidArgumentException("Teamnaam is leeg");
         }
 
@@ -15,7 +14,7 @@ class GetTeamoverzicht implements IInteractorWithData
         }
 
         $overzichten = json_decode(file_get_contents($filename));
-        $teamoverzicht = $this->GetOverzichtForTeam($overzichten, $teamnaam);
+        $teamoverzicht = $this->GetOverzichtForTeam($overzichten, $data->teamnaam);
 
         $poule = GetKlasse($teamoverzicht->poule);
         $klasseUrl = "https://www.volleybal.nl/competitie/poule/" . $teamoverzicht->poule . "/regio-west";
@@ -53,9 +52,9 @@ class GetTeamoverzicht implements IInteractorWithData
         $html = "";
         foreach ($stand as $team) {
             $style = "";
-            $number = substr($teamnaam, 5);
+            $number = substr($data->teamnaam, 5);
 
-            $html .= "<tr style=" . ($team->team == $teamnaam ? "font-weight: bold;" : "") . ">
+            $html .= "<tr style=" . ($team->team == $data->teamnaam ? "font-weight: bold;" : "") . ">
                         <td>" . $team->nummer . "</td>
                         <td>" . $team->team . "</td>
                         <td>" . $team->wedstrijden . "</td>

@@ -1,6 +1,6 @@
 <?php
 
-class WedstrijdenImporteren implements IInteractor
+class WedstrijdenImporteren implements Interactor
 {
     public function __construct($database)
     {

@@ -1,31 +1,29 @@
 <?php
 
-class AddBarcieDag implements IInteractorWithData
+class AddBardag implements Interactor
 {
-
     public function __construct(JoomlaGateway $joomlaGateway, BarcieGateway $barcieGateway)
     {
         $this->joomlaGateway = $joomlaGateway;
         $this->barcieGateway = $barcieGateway;
     }
 
-    public function Execute(object $data)
+    public function Execute(object $data): void
     {
-        $date = DateFunctions::CreateDateTime($data->date ?? null);
-
-        if ($date === null) {
-            throw new InvalidArgumentException("Date is leeg");
+        $date = DateFunctions::CreateDateTime($data->date);
+        if ($date === false) {
+            throw new InvalidArgumentException("Incorrecte dag: $data->data");
         }
 
         if (new DateTime() > $date) {
             throw new UnexpectedValueException("Dag ligt in het verleden");
         }
 
-        $dayId = $this->barcieGateway->GetDateId($date);
-        if ($dayId !== null) {
+        $bardag = $this->barcieGateway->GetBardag($date);
+        if ($bardag->id !== null) {
             throw new UnexpectedValueException("Dag bestaat al");
         } else {
-            $this->barcieGateway->AddBarcieDag($date);
+            $this->barcieGateway->AddBardag($date);
         }
     }
 }

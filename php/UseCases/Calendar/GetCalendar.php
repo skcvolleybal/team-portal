@@ -3,7 +3,7 @@
 use Kigkonsult\Icalcreator\Vcalendar;
 
 
-class GetCalendar implements IInteractor
+class GetCalendar implements Interactor
 {
     public function __construct(
         ZaalwachtGateway $zaalwachtGateway,
@@ -19,43 +19,37 @@ class GetCalendar implements IInteractor
 
     public function Execute(object $data)
     {
-        $userId = $data->userid;
         $withFluiten = $data->fluiten;
         $withTellen = $data->tellen;
 
-        if (!$userId) {
+        if (!$data->userid) {
             throw new InvalidArgumentException("userid is not set");
         }
 
-        if (!$this->joomlaGateway->DoesUserIdExist($userId)) {
+        $user = $this->JoomlaGateway->GetUser($data->userid);
+        if ($user === null) {
             throw new UnexpectedValueException();
         }
 
-        $team = $this->joomlaGateway->GetTeam($userId);
-        $coachTeam = $this->joomlaGateway->GetCoachTeam($userId);
-        
+        $team = $this->joomlaGateway->GetTeam($user);
+        $coachTeam = $this->joomlaGateway->GetCoachTeam($user);
+
         $this->uscWedstrijden = $this->nevoboGateway->GetProgrammaForSporthal('LDNUN');
 
         $skcTeam = $team->GetSkcNotatie() ?? "je team";
-        if ($withTellen !== null && $withFluiten !== null) {
-            $title = "Fluit-, tel- en zaalwachtrooster van $skcTeam";
-        } else if ($withTellen !== null) {
-            $title = "Tel- en zaalwachtrooster van $skcTeam";
-        } else {
-            $title = "Fluit- en zaalwachtrooster van $skcTeam";
-        }
+        $title = $this->GetTitle($skcTeam, $withFluiten, $withTellen);
 
         $this->CreateCalendar($title);
 
         $uscLocatie = "Universitair SC, Einsteinweg 6, 2333CC LEIDEN";
-        $zaalwachten = $this->zaalwachtGateway->GetZaalwachtenOfUser($userId);
+        $zaalwachten = $this->zaalwachtGateway->GetZaalwachtenOfUser($user);
         foreach ($zaalwachten as $zaalwacht) {
             [$start, $end] = $this->GetStartAndEndDateOfZaalwacht($zaalwacht);
             $this->AddEvent($start, $end, $uscLocatie, "Zaalwacht");
         }
 
         if ($withTellen !== null) {
-            $telbeurten = $this->telFluitGateway->GetTelbeurten($userId);
+            $telbeurten = $this->telFluitGateway->GetTelbeurten($user);
             foreach ($telbeurten as $telbeurt) {
                 $telWedstrijd = $this->GetMatchWithId($telbeurt->id);
                 if ($telWedstrijd) {
@@ -68,7 +62,7 @@ class GetCalendar implements IInteractor
         }
 
         if ($withFluiten !== null) {
-            $fluitbeurten = $this->telFluitGateway->GetFluitbeurten($userId);
+            $fluitbeurten = $this->telFluitGateway->GetFluitbeurten($user);
             foreach ($fluitbeurten as $fluitbeurt) {
                 $fluitWedstrijd = $this->GetMatchWithId($fluitbeurt->id);
                 if ($fluitWedstrijd) {
@@ -81,6 +75,19 @@ class GetCalendar implements IInteractor
         }
 
         return $this->calendar->createCalendar();
+    }
+
+    private function GetTitle($skcTeam, $withFluiten, $withTellen)
+    {
+        if ($withTellen !== null && $withFluiten !== null) {
+            $title = "Fluit-, tel- en zaalwachtrooster van $skcTeam";
+        } else if ($withTellen !== null) {
+            $title = "Tel- en zaalwachtrooster van $skcTeam";
+        } else {
+            $title = "Fluit- en zaalwachtrooster van $skcTeam";
+        }
+
+        return $title;
     }
 
     private function GetMatchWithId($matchId)

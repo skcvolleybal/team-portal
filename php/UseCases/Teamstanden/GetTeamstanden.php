@@ -1,6 +1,6 @@
 <?php
 
-class GetTeamstanden implements IInteractor
+class GetTeamstanden implements Interactor
 {
     public function Execute()
     {

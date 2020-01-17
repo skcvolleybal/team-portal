@@ -7,19 +7,19 @@ class FluitBeschikbaarheidGateway
         $this->database = $database;
     }
 
-    public function GetFluitBeschikbaarheden(int $userId): array
+    public function GetFluitBeschikbaarheden(Persoon $user): array
     {
         $query = 'SELECT 
                     B.id,
-                    U.id as userId,
-                    U.name as naam,
+                    U.id AS userId,
+                    U.name AS naam,
                     B.date,
-                    SUBSTRING(B.`time`, 1, 5) as time,
-                    B.is_beschikbaar as isBeschikbaar
+                    SUBSTRING(B.`time`, 1, 5) AS time,
+                    B.is_beschikbaar AS isBeschikbaar
                   FROM TeamPortal_fluitbeschikbaarheid B
                   INNER JOIN J3_users U ON U.id = B.user_id
                   WHERE user_id = ?';
-        $params = [$userId];
+        $params = [$user->id];
 
         $rows = $this->database->Execute($query, $params);
         $result = [];
@@ -34,20 +34,20 @@ class FluitBeschikbaarheidGateway
         return $result;
     }
 
-    public function GetFluitBeschikbaarheid(int $userId, DateTime $date): ?Beschikbaarheid
+    public function GetFluitBeschikbaarheid(Persoon $user, DateTime $date): ?Beschikbaarheid
     {
         $query = 'SELECT 
                     B.id,
-                    U.id as userId,
-                    U.name as naam,
+                    U.id AS userId,
+                    U.name AS naam,
                     date,
                     time,
-                    is_beschikbaar as isBeschikbaar
+                    is_beschikbaar AS isBeschikbaar
                   FROM TeamPortal_fluitbeschikbaarheid B
                   INNER JOIN J3_users U on B.user_id = U.id
                   WHERE user_id = ? and date = ? and time = ?';
         $params = [
-            $userId,
+            $user->id,
             DateFunctions::GetYmdNotation($date),
             DateFunctions::GetTime($date)
         ];
@@ -64,15 +64,15 @@ class FluitBeschikbaarheidGateway
         );
     }
 
-    public function GetAllBeschikbaarheden(DateTIme $date): array
+    public function GetAllBeschikbaarheden(DateTime $date): array
     {
         $query = 'SELECT         
                     F.id,
-                    U.id as userId,
-                    U.name as naam,
+                    U.id AS userId,
+                    U.name AS naam,
                     date,
                     time,
-                    is_beschikbaar as isBeschikbaar
+                    is_beschikbaar AS isBeschikbaar
                   FROM TeamPortal_fluitbeschikbaarheid F
                   INNER JOIN J3_users U on F.user_id = U.id
                   WHERE date = ? and time = ?';
@@ -109,22 +109,25 @@ class FluitBeschikbaarheidGateway
         $this->database->Execute($query, $params);
     }
 
-    public function Update(Beschikbaarheid $beschikbaar)
+    public function Update(Beschikbaarheid $beschikbaarheid)
     {
         $query = 'UPDATE TeamPortal_fluitbeschikbaarheid
                   SET is_beschikbaar = ?
                   WHERE id = ?';
 
-        $params = [$beschikbaar->isBeschikbaar, $beschikbaar->id];
+        $params = [
+            $beschikbaarheid->isBeschikbaar,
+            $beschikbaarheid->id
+        ];
 
         $this->database->Execute($query, $params);
     }
 
-    public function Delete(Beschikbaarheid $beschikbaar)
+    public function Delete(Beschikbaarheid $beschikbaarheid)
     {
         $query = 'DELETE FROM TeamPortal_fluitbeschikbaarheid
                   WHERE id = ?';
-        $params = [$beschikbaar->id];
+        $params = [$beschikbaarheid->id];
 
         $this->database->Execute($query, $params);
     }

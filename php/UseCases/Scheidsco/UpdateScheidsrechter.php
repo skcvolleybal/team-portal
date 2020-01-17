@@ -1,6 +1,6 @@
 <?php
 
-class UpdateScheidsrechter implements IInteractorWithData
+class UpdateScheidsrechter implements Interactor
 {
     public function __construct(
         TelFluitGateway $telFluitGateway,
@@ -12,15 +12,12 @@ class UpdateScheidsrechter implements IInteractorWithData
 
     public function Execute(object $data)
     {
-        $matchId = $data->matchId ?? null;
-        $scheidsrechterId = $data->scheidsrechterId ?? null;
-
-        if ($matchId === null) {
+        if ($data->matchId === null) {
             throw new InvalidArgumentException("matchId is null");
         }
 
-        $wedstrijd = $this->telFluitGateway->GetWedstrijd($matchId) ?? new Wedstrijd($matchId);
-        $wedstrijd->scheidsrechter = $scheidsrechterId ? $this->joomlaGateway->GetScheidsrechter($scheidsrechterId) : null;
+        $wedstrijd = $this->telFluitGateway->GetWedstrijd($data->matchId);
+        $wedstrijd->scheidsrechter = $this->joomlaGateway->GetScheidsrechter($data->scheidsrechterId);
 
         if ($wedstrijd->id === null) {
             $this->telFluitGateway->Insert($wedstrijd);

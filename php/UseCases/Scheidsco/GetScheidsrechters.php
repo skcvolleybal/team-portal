@@ -1,7 +1,7 @@
 <?php
 
 
-class GetScheidsrechters implements IInteractorWithData
+class GetScheidsrechters implements Interactor
 {
     public function __construct(
         JoomlaGateway $joomlaGateway,
@@ -17,15 +17,14 @@ class GetScheidsrechters implements IInteractorWithData
 
     public function Execute(object $data): array
     {
-        $matchId = $data->matchId ?? null;
-        if ($matchId === null) {
+        if ($data->matchId === null) {
             throw new InvalidArgumentException("MatchId niet gezet");
         }
 
         $fluitWedstrijd = null;
         $uscWedstrijden = $this->nevoboGateway->GetProgrammaForSporthal('LDNUN');
         foreach ($uscWedstrijden as $wedstrijd) {
-            if ($wedstrijd->matchId == $matchId) {
+            if ($wedstrijd->matchId == $data->matchId) {
                 $fluitWedstrijd = $wedstrijd;
                 break;
             }
@@ -46,8 +45,8 @@ class GetScheidsrechters implements IInteractorWithData
         $scheidsrechters = $this->telFluitGateway->GetScheidsrechters();
 
         $result = [
-            new BeschikbareScheidsrechters("spelendeScheidsrechters"),
-            new BeschikbareScheidsrechters("overigeScheidsrechters")
+            new Beschikbaarheidssamenvatting("spelendeScheidsrechters"),
+            new Beschikbaarheidssamenvatting("overigeScheidsrechters")
         ];
 
         foreach ($scheidsrechters as $scheidsrechter) {

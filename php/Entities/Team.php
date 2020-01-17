@@ -7,8 +7,8 @@ class Team
     public string $poule;
     public array $teamgenoten = [];
     public int $niveau;
-    public static $alleNiveaus;
-    public int $aantalKeerGeteld;
+    public static $alleSkcTeams = [];
+    public ?string $facebook;
 
     public function __construct($naam, $id = null, $teamgenoten = [])
     {
@@ -24,9 +24,10 @@ class Team
         }
 
         $this->teamgenoten = $teamgenoten;
-        foreach (Team::$alleNiveaus as $team => $niveau) {
+
+        foreach (Team::$alleSkcTeams as $team) {
             if ($team === $this->naam) {
-                $this->niveau = $niveau;
+                $this->niveau = $team->niveau;
                 break;
             }
         }
@@ -74,12 +75,12 @@ class Team
         return Team::GetAllTeamsByGender("D");
     }
 
-    private static function GetAllTeamsByGender($genderletter)
+    private static function GetAllTeamsByGender($genderCharacter)
     {
         $result = [];
-        foreach (Team::$alleNiveaus as $teamnaam => $niveau) {
-            if ($teamnaam[4] === $genderletter) {
-                $result[] = new Team($teamnaam);
+        foreach (Team::$alleSkcTeams as $team) {
+            if ($team->naam[4] === $genderCharacter) {
+                $result[] = $team;
             }
         }
         return $result;
@@ -104,32 +105,20 @@ class Team
 
         return null;
     }
+
+    static function LoadAlleSkcTeams(): void
+    {
+        $string = file_get_contents("skc-teams.json");
+        $teams = json_decode($string);
+        foreach ($teams as $team) {
+            $skcTeam = new Team($team->naam);
+            $skcTeam->poule = $team->poule;
+            $skcTeam->trainingstijden = $team->trainingstijden;
+            $skcTeam->facebook = $team->facebook ?? null;
+            $skcTeam->niveau =  Niveau::GetNiveauByString($team->niveau);
+            Team::$alleSkcTeams[] = $skcTeam;
+        }
+    }
 }
 
-Team::$alleNiveaus = (object) [
-    "SKC DS 1" => Niveau::PROMOTIEKLASSE,
-    "SKC DS 2" => Niveau::EERSTE_KLASSE,
-    "SKC DS 3" => Niveau::TWEEDE_KLASSE,
-    "SKC DS 4" => Niveau::TWEEDE_KLASSE,
-    "SKC DS 5" => Niveau::DERDE_KLASSE,
-    "SKC DS 6" => Niveau::DERDE_KLASSE,
-    "SKC DS 7" => Niveau::DERDE_KLASSE,
-    "SKC DS 8" => Niveau::DERDE_KLASSE,
-    "SKC DS 9" => Niveau::DERDE_KLASSE,
-    "SKC DS 10" => Niveau::VIERDE_KLASSE,
-    "SKC DS 11" => Niveau::VIERDE_KLASSE,
-    "SKC DS 12" => Niveau::VIERDE_KLASSE,
-    "SKC DS 13" => Niveau::VIERDE_KLASSE,
-    "SKC DS 14" => Niveau::VIERDE_KLASSE,
-    "SKC DS 15" => Niveau::VIERDE_KLASSE,
-
-    "SKC HS 1" => Niveau::EERSTE_KLASSE,
-    "SKC HS 2" => Niveau::EERSTE_KLASSE,
-    "SKC HS 3" => Niveau::TWEEDE_KLASSE,
-    "SKC HS 4" => Niveau::DERDE_KLASSE,
-    "SKC HS 5" => Niveau::DERDE_KLASSE,
-    "SKC HS 6" => Niveau::VIERDE_KLASSE,
-    "SKC HS 7" => Niveau::VIERDE_KLASSE,
-    "SKC HS 8" => Niveau::VIERDE_KLASSE,
-    "SKC HS 9" => Niveau::VIERDE_KLASSE
-];
+Team::LoadAlleSkcTeams();

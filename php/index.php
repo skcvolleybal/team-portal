@@ -74,9 +74,9 @@ $entryPoint =
                 new PostRoute('/add', AddBarcieAanwezigheid::class),
                 new PostRoute('/delete', DeleteBarcieAanwezigheid::class)
             ]),
-            new RouteGroup('/barciedag', [
-                new PostRoute('/add', AddBarcieDag::class),
-                new PostRoute('/delete', DeleteBarcieDag::class)
+            new RouteGroup('/bardag', [
+                new PostRoute('/add', AddBardag::class),
+                new PostRoute('/delete', DeleteBardag::class)
             ])
         ], AuthorizationRole::TEAMCOORDINATOR),
 

@@ -1,6 +1,6 @@
 <?php
 
-class UpdateBarcieBeschikbaarheid implements IInteractorWithData
+class UpdateBarcieBeschikbaarheid implements Interactor
 {
 
     public function __construct(
@@ -14,16 +14,19 @@ class UpdateBarcieBeschikbaarheid implements IInteractorWithData
     public function Execute(object $data)
     {
         $date = DateFunctions::CreateDateTime($data->date);
-        $barcielid = $this->joomlaGateway->GetUser($userId);
+        $user = $this->joomlaGateway->GetUser();
         $isBeschikbaar = $data->isBeschikbaar;
 
-        $dayId = $this->barcieGateway->GetDateId($date);
+        $bardag = $this->barcieGateway->GetBardag($date);
+        if ($bardag->id === null) {
+            throw new UnexpectedValueException("Dag '$date' bestaat niet");
+        }
 
-        $beschikbaarheid = $this->barcieGateway->GetBeschikbaarheid($userId, $dayId) ?? new  Beschikbaarheid(null, new Persoon($barcielid->id, $barcielid->naam), $date, $isBeschikbaar);
+        $beschikbaarheid = $this->barcieGateway->GetBeschikbaarheid($user, $bardag);
         $beschikbaarheid->isBeschikbaar = $isBeschikbaar;
         if ($beschikbaarheid->id === null) {
             if ($beschikbaarheid->isBeschikbaar !== null) {
-                $this->barcieGateway->InsertBeschikbaarheid($beschikbaarheid, $dayId);
+                $this->barcieGateway->InsertBeschikbaarheid($beschikbaarheid);
             }
         } else {
             if ($beschikbaarheid->isBeschikbaar === null) {

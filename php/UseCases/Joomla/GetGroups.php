@@ -11,21 +11,21 @@ class GetGroups
     {
         $result = [];
         
-        $userId = $this->joomlaGateway->GetUser();
-        if ($userId === null) {
+        $user = $this->joomlaGateway->GetUser();
+        if ($user === null) {
             return $result;
         }
 
-        if ($this->joomlaGateway->IsScheidsrechter($userId)) {
+        if ($this->joomlaGateway->IsScheidsrechter($user)) {
             $result[] = "scheidsrechter";
         }
-        if ($this->joomlaGateway->IsBarcie($userId)) {
+        if ($this->joomlaGateway->IsBarcie($user)) {
             $result[] = "barcie";
         }
-        if ($this->joomlaGateway->IsTeamcoordinator($userId)) {
+        if ($this->joomlaGateway->IsTeamcoordinator($user)) {
             $result[] = "teamcoordinator";
         }
-        if ($this->joomlaGateway->IsWebcie($userId)) {
+        if ($this->joomlaGateway->IsWebcie($user)) {
             $result[] = "webcie";
         }
 

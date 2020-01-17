@@ -1,16 +1,16 @@
 <?php
 
-class GenerateTeamstanden implements IInteractor
+class GenerateTeamstanden implements Interactor
 {
 
-    public function __construct()
+    public function __construct(NevoboGateway $nevoboGateway)
     {
-        $this->nevoboGateway = new NevoboGateway();
+        $this->nevoboGateway = $nevoboGateway;
     }
 
     public function Execute()
     {
-        $teams = GetAllSkcTeams();
+        $teams = Team::GetAlleSkcTeams();
         foreach ($teams as &$team) {
             $rankings = $this->nevoboGateway->GetStandForPoule($team->poule);
 

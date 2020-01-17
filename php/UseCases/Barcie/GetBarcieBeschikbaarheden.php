@@ -1,6 +1,6 @@
 <?php
 
-class GetBarcieBeschikbaarheden implements IInteractorWithData
+class GetBarcieBeschikbaarheden implements Interactor
 {
     public function __construct(BarcieGateway $barcieGateway, JoomlaGateway $joomlaGateway)
     {
@@ -10,47 +10,38 @@ class GetBarcieBeschikbaarheden implements IInteractorWithData
 
     public function Execute(object $data)
     {
-        $date = DateFunctions::CreateDateTime($data->date ?? null);
+        $date = DateFunctions::CreateDateTime($data->date);
         if (!$date) {
-            throw new InvalidArgumentException("Date is leeg");
+            throw new InvalidArgumentException("Incorrecte Datum: $data->date");
         }
 
-        $barcieleden = $this->barcieGateway->GetBarcieleden();
+        $barleden = $this->barcieGateway->GetBarleden();
         $beschikbaarheden = $this->barcieGateway->GetBeschikbaarhedenForDate($date);
-        $result = (object) [
-            "Ja" => [],
-            "Nee" => [],
-            "Onbekend" => [],
-        ];
-
+        
+        $result = new Beschikbaarheidssamenvatting();
         foreach ($beschikbaarheden as $beschikbaarheid) {
-            $barcielid = $this->barcieGateway->GetBarcielidById($beschikbaarheid->persoon->id);
-            $newBeschikbaarheid = (object) [
-                "id" => $barcielid->id,
-                "naam" => $barcielid->naam,
-                "aantalDiensten" => $barcielid->aantalDiensten,
-            ];
+            $barlid = $this->GetBarlidById($barleden, $beschikbaarheid);
             if ($beschikbaarheid->isBeschikbaar) {
-                $result->Ja[] = $newBeschikbaarheid;
+                $result->Ja[] = $barlid;
             } else {
-                $result->Nee[] = $newBeschikbaarheid;
+                $result->Nee[] = $barlid;
             }
 
-            $barcieleden = array_filter($barcieleden, function ($currentBarcielid) use ($barcielid) {
-                return $barcielid->id !== $currentBarcielid->id;
+            $barleden = array_filter($barleden, function ($currentBarlid) use ($barlid) {
+                return $barlid->id !== $currentBarlid->id;
             });
         }
 
-        $result->Onbekend = array_values($barcieleden);
+        $result->Onbekend = array_values($barleden);
 
         return $result;
     }
 
-    private function GetBarcielidById(array $barcieleden, Persoon $persoon)
+    private function GetBarlidById(array $barleden, Persoon $persoon)
     {
-        foreach ($barcieleden as $barcielid) {
-            if ($barcielid->id == $persoon->id) {
-                return $barcielid;
+        foreach ($barleden as $barlid) {
+            if ($barlid->id === $persoon->id) {
+                return $barlid;
             }
         }
         return null;

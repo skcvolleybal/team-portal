@@ -7,18 +7,18 @@ class ZaalwachtGateway
         $this->database = $database;
     }
 
-    public function GetZaalwachtenOfUser(int $userId): array
+    public function GetZaalwachtenOfUser(Persoon $user): array
     {
         $query = 'SELECT 
                     Z.id,
-                    Z.team_id as teamId, 
+                    Z.team_id AS teamId, 
                     Z.date,
-                    title as teamnaam
+                    title AS teamnaam
                   FROM TeamPortal_zaalwacht Z
                   INNER JOIN J3_user_usergroup_map M on Z.team_id = M.group_id
                   INNER JOIN J3_usergroups G ON Z.team_id = G.id
                   WHERE M.user_id = ? and Z.date >= CURRENT_DATE()';
-        $params = [$userId];
+        $params = [$user->id];
         $rows = $this->database->Execute($query, $params);
         $result = [];
         foreach ($rows as $row) {
@@ -34,9 +34,9 @@ class ZaalwachtGateway
     public function GetZaalwachtSamenvatting(): array
     {
         $query = 'SELECT
-                    G.id as teamId,
-                    G.title as teamnaam,
-                    count(Z.id) as aantal
+                    G.id AS teamId,
+                    G.title AS teamnaam,
+                    count(Z.id) AS aantal
                   FROM J3_usergroups G
                   LEFT JOIN TeamPortal_zaalwacht Z ON Z.team_id = G.id
                   WHERE G.id in (
@@ -61,8 +61,8 @@ class ZaalwachtGateway
     {
         $query = 'SELECT
                     Z.date,
-                    G.id as teamId,
-                    G.title as team
+                    G.id AS teamId,
+                    G.title AS team
                   FROM TeamPortal_zaalwacht Z
                   INNER JOIN J3_usergroups G ON Z.team_id = G.id';
         $rows = $this->database->Execute($query);
@@ -79,8 +79,8 @@ class ZaalwachtGateway
         $query = 'SELECT
                     Z.id,
                     date,
-                    team_id as teamId,
-                    G.title as teamnaam
+                    team_id AS teamId,
+                    G.title AS teamnaam
                   FROM TeamPortal_zaalwacht Z
                   INNER JOIN J3_usergroups G ON Z.team_id = G.id
                   WHERE date = ?';
@@ -96,7 +96,7 @@ class ZaalwachtGateway
         );
     }
 
-    public function Update(Zaalwacht $zaalwacht)
+    public function Update(Zaalwacht $zaalwacht): void
     {
         $query = 'UPDATE TeamPortal_zaalwacht
                   SET team_id = ?
@@ -105,7 +105,7 @@ class ZaalwachtGateway
         $this->database->Execute($query, $params);
     }
 
-    public function Insert(Zaalwacht $zaalwacht)
+    public function Insert(Zaalwacht $zaalwacht): void
     {
         $query = 'INSERT INTO TeamPortal_zaalwacht (date, team_id)
                   VALUES (?, ?)';
@@ -116,7 +116,7 @@ class ZaalwachtGateway
         $this->database->Execute($query, $params);
     }
 
-    public function Delete(Zaalwacht $zaalwacht)
+    public function Delete(Zaalwacht $zaalwacht): void
     {
         $query = 'DELETE FROM TeamPortal_zaalwacht WHERE id = ?';
         $params = [$zaalwacht->id];

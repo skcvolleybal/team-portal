@@ -1,6 +1,6 @@
 <?php
 
-class GetZaalwachtTeams implements IInteractorWithData
+class GetZaalwachtTeams implements Interactor
 {
     public function __construct(
         ZaalwachtGateway $zaalwachtGateway,
@@ -23,10 +23,7 @@ class GetZaalwachtTeams implements IInteractorWithData
         $samenvattingen = $this->zaalwachtGateway->GetZaalwachtSamenvatting();
         $spelendeTeams = $this->GetSpelendeTeamsForDate($uscWedstrijden, $date);
 
-        $result = (object) [
-            "spelendeTeams" => [],
-            "overigeTeams" => []
-        ];
+        $result = new Teamsamenvatting();
         foreach ($samenvattingen as $samenvatting) {
             if (in_array($samenvatting->team->GetSkcNaam(), $spelendeTeams)) {
                 $result->spelendeTeams[] = $this->MapToUsecaseModel($samenvatting);

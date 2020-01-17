@@ -1,9 +1,9 @@
 <?php
-class Barcieshift
+class Barshift
 {
     public ?int $id;
     public int $shift;
-    public array $barcieleden;
+    public array $barleden;
 
     public function __construct(int $shift, int $id = null)
     {

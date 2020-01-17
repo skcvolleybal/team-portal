@@ -1,6 +1,6 @@
 <?php
 
-class Barciedag
+class Bardag
 {
     public DateTime $date;
     public array $shifts = [];

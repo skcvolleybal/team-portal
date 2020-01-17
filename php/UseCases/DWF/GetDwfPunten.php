@@ -1,31 +1,38 @@
 <?php
 
-class GetDwfPunten implements IInteractorWithData
+class GetDwfPunten implements Interactor
 {
-    public function __construct($database)
+    public function __construct(
+        StatistiekenGateway $statistiekenGateway, 
+        JoomlaGateway $joomlaGateway)
     {
-        $this->statistiekenGateway = new StatistiekenGateway($database);
+        $this->statistiekenGateway = $statistiekenGateway;
+        $this->joomlaGateway = $joomlaGateway;
     }
 
     public function Execute(object $data)
     {
-        $matchIdregex = "/3000(B){0,1}[H|D]\d[A-Z] [(\d{2})|[A-Z]{2}/";
-        $team = $data->team ?? null;
         $matchId = $data->matchId ?? null;
-
-        if ($matchId && !preg_match_all($matchIdregex, $matchId)) {
-            throw new UnexpectedValueException("Error: matchId: '$matchId', klopt niet. Bv: 3000 H4G DG");
+        $matchIdregex = "/3000(B){0,1}[H|D]\d[A-Z] [(\d{2})|[A-Z]{2}/";
+        if (!preg_match_all($matchIdregex, $matchId)) {
+            throw new UnexpectedValueException("matchId klopt niet: '$data->matchId'. Bv: 3000 H4G DG");
         }
-        if ($team && isSkcFormat($team)) {
-            throw new UnexpectedValueException("Error: team: '$team', klopt niet. Bv: SKC HS 2");
+        $skcTeams = Team::GetAlleSkcTeams();
+        foreach ($skcTeams as $skcTeam) {
+            if ($skcTeam->naam == $data->team) {
+                $team = $this->joomlaGateway->GetTeamByNaam($data->team);
+                break;
+            }
+        }
+        if ($team === null) {
+            throw new UnexpectedValueException("Team klopt niet: '$data->Team'. Bv: SKC HS 2");
         }
 
-        if (empty($team) && empty($matchId)) {
+        if ($team === null && $matchId === null) {
             $punten = $this->statistiekenGateway->GetAlleSkcPunten();
-        } else if (!empty($team) && !empty($matchId)) {
-            $punten = $this->statistiekenGateway->GetAllePuntenByMatchId($matchId, $team);
-        } else if (!empty($team)) {
-            $team = ToNevoboName($team);
+        } else if ($team !== null && $data->matchId !== null) {
+            $punten = $this->statistiekenGateway->GetAllePuntenByMatchId($data->matchId, $team);
+        } else if ($team !== null) {
             $punten = $this->statistiekenGateway->GetAllePuntenByTeam($team);
         } else {
             throw new UnexpectedValueException("Error: team: '$matchId', '$team'");
@@ -44,21 +51,16 @@ class GetDwfPunten implements IInteractorWithData
                 "isSkcPunt" => $punt->isSkcPunt == "Y",
                 "puntenSkcTeam" => intval($punt->puntenSkcTeam),
                 "puntenOtherTeam" => intval($punt->puntenOtherTeam),
-                "ra" => $this->ToInt($punt->ra),
-                "rv" => $this->ToInt($punt->rv),
-                "mv" => $this->ToInt($punt->mv),
-                "lv" => $this->ToInt($punt->lv),
-                "la" => $this->ToInt($punt->la),
-                "ma" => $this->ToInt($punt->ma)
+                "ra" => StringToInt($punt->ra),
+                "rv" => StringToInt($punt->rv),
+                "mv" => StringToInt($punt->mv),
+                "lv" => StringToInt($punt->lv),
+                "la" => StringToInt($punt->la),
+                "ma" => StringToInt($punt->ma)
             ];
         }
 
 
         return $result;
-    }
-
-    private function ToInt($getal)
-    {
-        return $getal ? intval($getal) : null;
     }
 }

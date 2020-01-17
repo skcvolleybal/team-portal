@@ -1,10 +1,10 @@
 <?php
 
-class TeamportalBarcieshift
+class TeamportalBarshift
 {
     public int $shift;
 
-    public function __construct(Barcieshift $shift)
+    public function __construct(Barshift $shift)
     {
         $this->shift = $shift->shift;
     }

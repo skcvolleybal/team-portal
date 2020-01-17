@@ -1,17 +1,17 @@
 <?php
 
-class Barciedienst
+class Bardienst
 {
     public ?int $id;
-    public DateTime $date;
+    public Bardag $bardag;
     public ?Persoon $persoon;
     public ?int $shift;
     public ?bool $isBhv;
 
-    public function __construct(DateTime $date, ?Persoon $persoon, ?int $shift, ?bool $isBhv, int $id = null)
+    public function __construct(Bardag $bardag, ?Persoon $persoon, ?int $shift, ?bool $isBhv, int $id = null)
     {
         $this->id = $id;
-        $this->date = $date;
+        $this->bardag = $bardag;
         $this->persoon = $persoon;
         $this->shift = $shift;
         $this->isBhv = $isBhv;

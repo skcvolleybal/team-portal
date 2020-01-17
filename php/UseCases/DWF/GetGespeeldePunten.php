@@ -1,6 +1,6 @@
 <?php
 
-class GetGespeeldePunten implements IInteractor
+class GetGespeeldePunten implements Interactor
 {
 
     public function __construct($database)
@@ -11,7 +11,8 @@ class GetGespeeldePunten implements IInteractor
 
     public function Execute()
     {
-        $team = $this->joomlaGateway->GetTeam($userId);
+        $user = $this->joomlaGateway->GetUser();
+        $team = $this->joomlaGateway->GetTeam($user);
         if (!$team) {
             throw new UnexpectedValueException("Je zit niet in een team");
         }

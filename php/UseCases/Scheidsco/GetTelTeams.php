@@ -1,6 +1,6 @@
 <?php
 
-class GetTelTeams implements IInteractorWithData
+class GetTelTeams implements Interactor
 {
     public function __construct(
         JoomlaGateway $joomlaGateway,
@@ -14,31 +14,25 @@ class GetTelTeams implements IInteractorWithData
 
     public function Execute(object $data)
     {
-        $result = [];
-
-        $matchId = $data->matchId ?? null;
-        if ($matchId === null) {
+        if ($data->matchId === null) {
             throw new InvalidArgumentException("MatchId niet gezet");
         }
         $telWedstrijd = null;
         $uscWedstrijden = $this->nevoboGateway->GetProgrammaForSporthal("LDNUN");
         foreach ($uscWedstrijden as $wedstrijd) {
-            if ($wedstrijd->matchId == $matchId) {
+            if ($wedstrijd->matchId == $data->matchId) {
                 $telWedstrijd = $wedstrijd;
                 break;
             }
         }
         if ($telWedstrijd === null) {
-            throw new UnexpectedValueException("Wedstrijd met $matchId niet bekend");
+            throw new UnexpectedValueException("Wedstrijd met $data->matchId niet bekend");
         }
 
         $teams = $this->telFluitGateway->GetTelTeams();
         $wedstrijden = $this->GetWedstrijdenWithDate($uscWedstrijden, $telWedstrijd->timestamp);
 
-        $result = (object) [
-            "spelendeTeams" => [],
-            "overigeTeams" => []
-        ];
+        $result = new Teamsamenvatting();
         foreach ($teams as $team) {
             $wedstrijd = $team->GetWedstrijdOfTeam($wedstrijden);
             if ($wedstrijd) {

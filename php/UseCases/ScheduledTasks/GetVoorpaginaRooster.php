@@ -1,6 +1,6 @@
 <?php
 
-class GetVoorpaginaRooster implements IInteractor
+class GetVoorpaginaRooster implements Interactor
 {
     public function __construct($database)
     {

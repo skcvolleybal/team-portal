@@ -1,19 +1,8 @@
 <?php
 
-class Beschikbaarheid
+class Fluitbeschikbaarheid extends Beschikbaarheid
 {
-    public ?int $id;
-    public Persoon $persoon;
-    public DateTime $date;
-    public ?bool $isBeschikbaar;
-
-    public function __construct(?int $id, Persoon $persoon, DateTime $date, ?bool $isBeschikbaar)
-    {
-        $this->id = $id;
-        $this->persoon = $persoon;
-        $this->date = $date;
-        $this->isBeschikbaar = $isBeschikbaar;
-    }
+    public Speeltijd $speeltijd;
 
     public static function isFluitenMogelijk(array $wedstrijden, DateTime $tijd): ?bool
     {
@@ -34,15 +23,5 @@ class Beschikbaarheid
         }
 
         return $bestResult;
-    }
-
-    public static function IsBeschikbaar(array $beschikbaarheden, DateTime $date): ?bool
-    {
-        foreach ($beschikbaarheden as $beschikbaarheid) {
-            if ($beschikbaarheid->date == $date) {
-                return $beschikbaarheid->isBeschikbaar;
-            }
-        }
-        return null;
     }
 }

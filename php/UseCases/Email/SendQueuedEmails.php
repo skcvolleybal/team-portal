@@ -1,6 +1,6 @@
 <?php
 
-class SendQueuedEmails implements IInteractor
+class SendQueuedEmails implements Interactor
 {
     public function __construct($database)
     {

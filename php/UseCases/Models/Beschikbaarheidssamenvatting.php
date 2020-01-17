@@ -1,20 +1,14 @@
 <?php
 
-class BeschikbareScheidsrechters
+class Beschikbaarheidssamenvatting
 {
-    public string $type;
+    public ?string $type;
     public array $ja = [];
     public array $onbekend = [];
     public array $nee = [];
 
-    private $types = ["spelendeScheidsrechters", "overigeScheidsrechters"];
-
-    public function __construct($type)
+    public function __construct(string $type = null)
     {
-        if (!in_array($type, $this->types)) {
-            throw new InvalidArgumentException("$type is niet een van de opties");
-        }
-
         $this->type = $type;
     }
 

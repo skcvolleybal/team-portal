@@ -1,17 +1,19 @@
 <?php
 
-class GenerateTeamoverzichten implements IInteractor
+class GenerateTeamoverzichten implements Interactor
 {
 
-    public function __construct($database)
-    {
-        $this->nevoboGateway = new NevoboGateway();
-        $this->joomlaGateway = new JoomlaGateway($database);
+    public function __construct(
+        NevoboGateway $nevoboGateway,
+        JoomlaGateway $joomlaGateway
+    ) {
+        $this->nevoboGateway = $nevoboGateway;
+        $this->joomlaGateway = $joomlaGateway;
     }
 
     public function Execute()
     {
-        $teams = GetAllSkcTeams();
+        $teams = Team::GetAlleSkcTeams();
         $result = [];
         foreach ($teams as $team) {
             $ranking = $this->nevoboGateway->GetStandForPoule($team->poule);
@@ -24,7 +26,7 @@ class GenerateTeamoverzichten implements IInteractor
                 "trainer" => $this->joomlaGateway->GetTrainers($team->naam),
                 "trainingstijden" => $team->trainingstijden,
                 "coaches" => $this->joomlaGateway->GetCoaches($team->naam),
-                "facebook" => $team->facebook ?? null,
+                "facebook" => $team->facebook,
                 "stand" => $ranking,
                 "uitslagen" => array_slice($uitslagen, 0, 3),
                 "programma" => array_slice($programma, 0, 3),

@@ -1,8 +1,7 @@
 <?php
 
-class GetUsers implements IInteractorWithData
+class GetUsers implements Interactor
 {
-
     public function __construct(JoomlaGateway $joomlaGateway)
     {
         $this->joomlaGateway = $joomlaGateway;

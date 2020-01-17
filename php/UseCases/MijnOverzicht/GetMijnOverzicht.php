@@ -1,6 +1,6 @@
 <?php
 
-class MijnOverzicht implements IInteractor
+class MijnOverzicht implements Interactor
 {
     public function __construct(
         JoomlaGateway $joomlaGateway,
@@ -18,38 +18,39 @@ class MijnOverzicht implements IInteractor
 
     public function Execute()
     {
-        $team = $this->joomlaGateway->GetTeam($userId);
-        $coachTeam = $this->joomlaGateway->GetCoachTeam($userId);
+        $user = $this->joomlaGateway->GetUser();
+        $team = $this->joomlaGateway->GetTeam($user);
+        $coachTeam = $this->joomlaGateway->GetCoachTeam($user);
 
         $overzicht = [];
 
         $allUscMatches = $this->nevoboGateway->GetProgrammaForVereniging("CKL9R53");
 
-        $zaalwachten = $this->zaalwachtGateway->GetZaalwachtenOfUser($userId);
+        $zaalwachten = $this->zaalwachtGateway->GetZaalwachtenOfUser($user);
         foreach ($zaalwachten as $zaalwacht) {
             $overzichtItem = $this->MapFromZaalwacht($zaalwacht, $allUscMatches);
             $this->AddToOverzicht($overzicht, $overzichtItem);
         }
 
-        $telbeurten = $this->telFluitGateway->GetTelbeurten($userId);
+        $telbeurten = $this->telFluitGateway->GetTelbeurten($user);
         foreach ($telbeurten as $telbeurt) {
-            $overzichtItem = $this->MapFromMatch($telbeurt, $allUscMatches, $team, $coachTeam, $userId);
+            $overzichtItem = $this->MapFromMatch($telbeurt, $allUscMatches, $team, $coachTeam, $user);
             if ($overzichtItem) {
                 $this->AddToOverzicht($overzicht, $overzichtItem);
             }
         }
 
-        $fluitbeurten = $this->telFluitGateway->GetFluitbeurten($userId);
+        $fluitbeurten = $this->telFluitGateway->GetFluitbeurten($user);
         foreach ($fluitbeurten as $fluitbeurt) {
-            $overzichtItem = $this->MapFromMatch($fluitbeurt, $allUscMatches, $team, $coachTeam, $userId);
+            $overzichtItem = $this->MapFromMatch($fluitbeurt, $allUscMatches, $team, $coachTeam, $user);
             if ($overzichtItem) {
                 $this->AddToOverzicht($overzicht, $overzichtItem);
             }
         }
 
-        $bardiensten = $this->barcieGateway->GetBarciedienstenByUserId($userId);
+        $bardiensten = $this->barcieGateway->GetBardienstenForUser($user);
         foreach ($bardiensten as $dienst) {
-            $overzichtItem = $this->MapFromBarciedienst($dienst);
+            $overzichtItem = $this->MapFromBardienst($dienst);
             if ($overzichtItem) {
                 $this->AddToOverzicht($overzicht, $overzichtItem);
             }
@@ -57,7 +58,7 @@ class MijnOverzicht implements IInteractor
 
         $speelWedstrijden = $this->nevoboGateway->GetWedstrijdenForTeam($team);
         foreach ($speelWedstrijden as $speelWedstrijd) {
-            $overzichtItem = $this->MapFromMatch($speelWedstrijd, $allUscMatches, $team, $coachTeam, $userId);
+            $overzichtItem = $this->MapFromMatch($speelWedstrijd, $allUscMatches, $team, $coachTeam, $user);
             if ($overzichtItem) {
                 $this->AddToOverzicht($overzicht, $overzichtItem);
             }
@@ -66,7 +67,7 @@ class MijnOverzicht implements IInteractor
         if ($coachTeam) {
             $coachWedstrijden = $this->nevoboGateway->GetWedstrijdenForTeam($coachTeam);
             foreach ($coachWedstrijden as $coachWedstrijd) {
-                $overzichtItem = $this->MapFromMatch($coachWedstrijd, $allUscMatches, $team, $coachTeam, $userId);
+                $overzichtItem = $this->MapFromMatch($coachWedstrijd, $allUscMatches, $team, $coachTeam, $user);
                 if ($overzichtItem) {
                     $this->AddToOverzicht($overzicht, $overzichtItem);
                 }
@@ -76,7 +77,7 @@ class MijnOverzicht implements IInteractor
         return $overzicht;
     }
 
-    private function MapFromMatch(Wedstrijd $match, array $allUscMatches, Team $team, Team $coachTeam, int $userId)
+    private function MapFromMatch(Wedstrijd $match, array $allUscMatches, Team $team, Team $coachTeam, Persoon $user)
     {
         $uscMatch = $this->GetUscMatch($match->matchId, $allUscMatches);
         if ($uscMatch === null) {
@@ -94,14 +95,14 @@ class MijnOverzicht implements IInteractor
             "isTeam2" => $uscMatch->team2->Equals($team),
             "isCoachTeam2" => $uscMatch->team2->Equals($coachTeam),
             "scheidsrechter" => $match->scheidsrechter ? $match->scheidsrechter->naam : null,
-            "isScheidsrechter" => ($match->scheidsrechterId ?? null) == $userId,
+            "isScheidsrechter" => $user->Equals($match->scheidsrechter),
             "tellers" => $match->telteam ? $match->telteam->GetShortNotation() : null,
             "isTellers" => $team->Equals($match->telteam),
             "locatie" => $uscMatch->locatie
         ];
     }
 
-    private function MapFromBarciedienst(Barciedienst $dienst)
+    private function MapFromBardienst(Bardienst $dienst)
     {
         return (object) [
             "type" => "bardienst",

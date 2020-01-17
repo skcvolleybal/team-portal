@@ -1,7 +1,7 @@
 <?php
 
 
-class GetWedstrijdOverzicht implements IInteractor
+class GetWedstrijdOverzicht implements Interactor
 {
     private array $invalTeams;
 
@@ -18,12 +18,13 @@ class GetWedstrijdOverzicht implements IInteractor
     public function Execute()
     {
         $overzicht = [];
-        $team = $this->joomlaGateway->GetTeam($userId);
+        $user = $this->joomlaGateway->GetUser();
+        $team = $this->joomlaGateway->GetTeam($user);
         if ($team !== null) {
             $team->teamgenoten = $this->joomlaGateway->GetTeamgenoten($team);
         }
 
-        $coachteam = $this->joomlaGateway->GetCoachTeam($userId);
+        $coachteam = $this->joomlaGateway->GetCoachTeam($user);
 
         $teamprogramma = $this->nevoboGateway->GetWedstrijdenForTeam($team);
         $coachProgramma = $this->nevoboGateway->GetWedstrijdenForTeam($coachteam);
@@ -46,7 +47,7 @@ class GetWedstrijdOverzicht implements IInteractor
         $this->GetAllInvalTeamsForTeam($team);
         foreach ($wedstrijden as $wedstrijd) {
             $matchId = $wedstrijd->matchId;
-            $isAanwezig = $this->IsAanwezig($aanwezigheden, $matchId, $userId);
+            $isAanwezig = $this->IsAanwezig($aanwezigheden, $matchId, $user);
 
             $aanwezighedenForMatch = [];
             $invalTeamInfo = null;
@@ -140,14 +141,9 @@ class GetWedstrijdOverzicht implements IInteractor
         }
     }
 
-    private function GetAanwezighedenForWedstrijd(string $matchId, array $aanwezigheden, Team $team): object
+    private function GetAanwezighedenForWedstrijd(string $matchId, array $aanwezigheden, Team $team): Aanwezigheidssamenvatting
     {
-        $result = (object) [
-            'aanwezigen' => [],
-            'afwezigen' => [],
-            'onbekend' => [],
-            'coaches' => []
-        ];
+        $result = new Aanwezigheidssamenvatting();
         foreach ($aanwezigheden as $aanwezigheid) {
             if ($aanwezigheid->matchId == $matchId) {
                 if ($aanwezigheid->IsCoach()) {
@@ -156,7 +152,7 @@ class GetWedstrijdOverzicht implements IInteractor
                     $newAanwezigheid = (object) [
                         "id" => $aanwezigheid->persoon->id,
                         "naam" => $aanwezigheid->persoon->naam,
-                        "isInvaller" => !$team->Equals($aanwezigheid->persoon->team ?? null)
+                        "isInvaller" => !$team->Equals($aanwezigheid->persoon->team)
                     ];
                     if ($aanwezigheid->isAanwezig) {
                         $result->aanwezigen[] = $newAanwezigheid;
@@ -178,8 +174,8 @@ class GetWedstrijdOverzicht implements IInteractor
         }
 
         foreach ($bekendeAanwezigheden as $aanwezigheid) {
-            for ($i = 0; $i < count($spelers); $i++) {
-                if ($aanwezigheid->id === $spelers[$i]->id) {
+            for ($i = 0; $i < count($teamgenoten); $i++) {
+                if ($aanwezigheid->id === $teamgenoten[$i]->id) {
                     array_splice($spelers, $i, 1);
                     break;
                 }
@@ -188,10 +184,10 @@ class GetWedstrijdOverzicht implements IInteractor
         return $spelers;
     }
 
-    private function IsAanwezig(array $aanwezigheden, string $matchId, int $userId)
+    private function IsAanwezig(array $aanwezigheden, string $matchId, Persoon $user)
     {
         foreach ($aanwezigheden as $aanwezigheid) {
-            if ($aanwezigheid->persoon->id === $userId && $aanwezigheid->matchId === $matchId) {
+            if ($aanwezigheid->persoon->id === $user->id && $aanwezigheid->matchId === $matchId) {
                 return $aanwezigheid->isAanwezig;
             }
         }

@@ -1,6 +1,6 @@
 <?php
 
-class DeleteBarcieDag implements IInteractorWithData
+class DeleteBardag implements Interactor
 {
     public function __construct(JoomlaGateway $joomlaGateway, BarcieGateway $barcieGateway)
     {
@@ -8,23 +8,23 @@ class DeleteBarcieDag implements IInteractorWithData
         $this->barcieGateway = $barcieGateway;
     }
 
-    public function Execute(object $data)
+    public function Execute(object $data): void
     {
-        $date = DateFunctions::CreateDateTime($data->date ?? null);
+        $date = DateFunctions::CreateDateTime($data->date);
         if ($date === null) {
             throw new InvalidArgumentException("Date is leeg");
         }
 
-        $dayId = $this->barcieGateway->GetDateId($date);
-        if ($dayId === null) {
+        $bardag = $this->barcieGateway->GetBardag($date);
+        if ($bardag->id === null) {
             return;
-        }
+        
 
-        $barciediensten = $this->barcieGateway->GetBarciedienstenForDate($date);
-        if (count($barciediensten) > 0) {
+        
+        if (count($bardag->shifts) > 0) {
             throw new UnexpectedValueException("Datum heeft nog aanwezigheden");
         }
 
-        $this->barcieGateway->DeleteBarcieDay($dayId);
+        $this->barcieGateway->DeleteBarcieDay($bardag);
     }
 }

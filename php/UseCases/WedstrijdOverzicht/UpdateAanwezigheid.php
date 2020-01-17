@@ -1,7 +1,7 @@
 <?php
 
 
-class UpdateAanwezigheid implements IInteractorWithData
+class UpdateAanwezigheid implements Interactor
 {
     public function __construct(JoomlaGateway $joomlaGateway, AanwezigheidGateway $aanwezigheidGateway)
     {
@@ -11,13 +11,13 @@ class UpdateAanwezigheid implements IInteractorWithData
 
     public function Execute(object $data)
     {
-        $spelerId = $data->spelerId ?? $this->joomlaGateway->GetUser()->id;
-        $speler = $this->joomlaGateway->GetUser($spelerId);
+        $spelerId = $data->spelerId;
+        $user = $spelerId === null ? $this->joomlaGateway->GetUser() : $this->joomlaGateway->GetUser($spelerId);
         $matchId = $data->matchId;
         $isAanwezig = $data->isAanwezig;
         $rol = $data->rol;
 
-        $aanwezigheid = $this->aanwezigheidGateway->GetAanwezigheid($spelerId, $matchId, $rol) ?? new Aanwezigheid($matchId, new Persoon($speler->id, $speler->naam), $isAanwezig, $rol);
+        $aanwezigheid = $this->aanwezigheidGateway->GetAanwezigheid($user, $matchId, $rol);
         $aanwezigheid->isAanwezig = $isAanwezig;
         if ($aanwezigheid->id === null) {
             if ($aanwezigheid->isAanwezig !== null) {

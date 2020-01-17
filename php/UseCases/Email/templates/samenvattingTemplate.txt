@@ -15,7 +15,7 @@ De volgende mensen hebben zojuist een mail gekregen vanuit de webserver over het
 {{zaalwachters}}
 <br>
 <b>Barcie</b><br>
-{{barcieleden}}
+{{barleden}}
 <br>
 Met vriendelijke groet,<br>
 <br>

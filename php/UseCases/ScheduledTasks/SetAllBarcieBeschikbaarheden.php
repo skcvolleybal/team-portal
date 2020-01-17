@@ -1,6 +1,6 @@
 <?php
 
-class SetAllBarcieBeschikbaarheden implements IInteractor
+class SetAllBarcieBeschikbaarheden implements Interactor
 {
     public function __construct($database)
     {
@@ -12,19 +12,19 @@ class SetAllBarcieBeschikbaarheden implements IInteractor
 
     public function Execute()
     {
-        $barcieleden = $this->barcieGateway->GetBarcieleden();
+        $barleden = $this->barcieGateway->GetBarleden();
         $numberOfAddedBeschikbaarheden = 0;
-        $barcieDagen = $this->barcieGateway->GetBarciedagen();
+        $bardagen = $this->barcieGateway->GetBardagen();
 
-        foreach ($barcieleden as $barcielid) {
-            $barcielidId = $barcielid->id;
-            $team = $this->joomlaGateway->GetTeam($barcielidId);
-            $coachTeam = $this->joomlaGateway->GetCoachTeam($barcielidId);
+        foreach ($barleden as $barlid) {
+            $barlidId = $barlid->id;
+            $team = $this->joomlaGateway->GetTeam($barlidId);
+            $coachTeam = $this->joomlaGateway->GetCoachTeam($barlidId);
             $eigenWedstrijden = $this->nevoboGateway->GetWedstrijdenForTeam($team);
             $coachWedstrijden = $this->nevoboGateway->GetWedstrijdenForTeam($coachTeam);
-            $beschikbaarheden = $this->barcieGateway->GetBeschikbaarheden($barcielidId);
-            foreach ($barcieDagen as $barcieDag) {
-                $date = $barcieDag->date;
+            $beschikbaarheden = $this->barcieGateway->GetBeschikbaarheden($barlidId);
+            foreach ($bardagen as $bardag) {
+                $date = $bardag->date;
                 $beschikbaarheid = $this->GetBeschikbaarheid($beschikbaarheden, $date);
                 if ($beschikbaarheid === null) {
                     $eigenWedstrijd = $this->GetWedstrijdWithDate($eigenWedstrijden, $date);
@@ -35,9 +35,9 @@ class SetAllBarcieBeschikbaarheden implements IInteractor
                     });
 
                     $beschikbaarheid = $this->barcieBeschikbaarheidHelper->isMogelijk($wedstrijden);
-                    $dayId = $this->barcieGateway->GetDateId($date);
+                    $bardag = $this->barcieGateway->GetBardag($date);
                     if ($dayId !== null && $beschikbaarheid != "Onbekend") {
-                        $this->barcieGateway->InsertBeschikbaarheid($barcielidId, $dayId, $beschikbaarheid);
+                        $this->barcieGateway->InsertBeschikbaarheid($barlidId, $dayId, $beschikbaarheid);
                         $numberOfAddedBeschikbaarheden++;
                     }
                 }

@@ -1,6 +1,6 @@
 <?php
 
-class SetAllFluitbeschikbaarheden implements IInteractor
+class SetAllFluitbeschikbaarheden implements Interactor
 {
 
     public function __construct($database)

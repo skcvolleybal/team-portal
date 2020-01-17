@@ -15,10 +15,10 @@ class Template
     public const SCHEIDSRECHTERS = "{{scheidsrechters}}";
     public const TELLERS = "{{tellers}}";
     public const ZAALWACHTERS = "{{zaalwachters}}";
-    public const BARCIELEDEN = "{{barcieleden}}";
+    public const BARLEDEN = "{{barleden}}";
 }
 
-class QueueWeeklyEmails implements IInteractor
+class QueueWeeklyEmails implements Interactor
 {
     private $scheidsco;
     private $webcie;
@@ -53,12 +53,13 @@ class QueueWeeklyEmails implements IInteractor
 
         $wedstrijddagen = $this->nevoboGateway->GetWedstrijddagenForSporthal('LDNUN');
         foreach ($wedstrijddagen as $dag) {
-            $dag->bardiensten = $this->barcieGateway->GetBarciedienstenForDate($dag->date);
+
+            $dag->barshifts = $this->barcieGateway->GetBardag($dag->date);
             $dag->zaalwacht = $this->zaalwachtGateway->GetZaalwacht($dag->date);
             if ($dag->zaalwacht) {
                 $dag->zaalwacht->teamgenoten = $this->joomlaGateway->GetTeamgenoten($dag->zaalwacht->naam);
             }
-            foreach ($dag->speeltijden as $speeltijd){
+            foreach ($dag->speeltijden as $speeltijd) {
                 foreach ($speeltijd->wedstrijden as $wedstrijd) {
                     list($scheidsrechter, $telteam) = $this->telFluitGateway->GetWedstrijd($wedstrijd->matchId);
                     $wedstrijd->scheidsrechter = $scheidsrechter;
@@ -68,8 +69,6 @@ class QueueWeeklyEmails implements IInteractor
                     }
                 }
             }
-
-            
         }
 
         $emails = $this->GetAllEmails($wedstrijddagen);
@@ -111,12 +110,12 @@ class QueueWeeklyEmails implements IInteractor
         return $emails;
     }
 
-    private function CreateScheidsrechterMail($wedstrijd)
+    private function CreateScheidsrechterMail(Wedstrijd $wedstrijd)
     {
-        $scheidsrechter = $wedstrijd->scheidsrechter;
-
         $datum = DateFunctions::GetDutchDate($wedstrijd->timestamp);
-        $tijd = $wedstrijd->timestamp->format('G:i');
+        $tijd = DateFunctions::GetTime($wedstrijd->timestamp);
+
+        $scheidsrechter = $wedstrijd->scheidsrechter;
         $naam = $scheidsrechter->naam;
         $userId = $scheidsrechter->id;
         $team = $scheidsrechter->team ?? "je team";
@@ -143,7 +142,7 @@ class QueueWeeklyEmails implements IInteractor
         );
     }
 
-    private function CreateTellerMail($teller, $wedstrijd)
+    private function CreateTellerMail(Persoon $teller, $wedstrijd)
     {
         $datum = DateFunctions::GetDutchDate($wedstrijd->timestamp);
         $tijd = $wedstrijd->timestamp->format('G:i');
@@ -151,13 +150,16 @@ class QueueWeeklyEmails implements IInteractor
         $userId = $teller->id;
         $spelendeTeams = $wedstrijd->team1 . " - " . $wedstrijd->team2;
 
-        $body = file_get_contents("./UseCases/Email/templates/tellerTemplate.txt");
-        $body = str_replace(Template::DATUM, $datum, $body);
-        $body = str_replace(Template::TIJD, $tijd, $body);
-        $body = str_replace(Template::NAAM, $naam, $body);
-        $body = str_replace(Template::USER_ID, $userId, $body);
-        $body = str_replace(Template::TEAMS, $spelendeTeams, $body);
-        $body = str_replace(Template::AFZENDER, $this->scheidsco->naam, $body);
+        $template = file_get_contents("./UseCases/Email/templates/tellerTemplate.txt");
+        $placeholders = [
+            Template::DATUM => $datum,
+            Template::TIJD => $tijd,
+            Template::NAAM => $naam,
+            Template::USER_ID => $userId,
+            Template::TEAMS => $spelendeTeams,
+            Template::AFZENDER => $this->scheidsco->naam
+        ];
+        $body = FillTemplate($template, $placeholders);
 
         $titel = "Tellen " . $spelendeTeams;
         return new Email(
@@ -208,7 +210,7 @@ class QueueWeeklyEmails implements IInteractor
         $body = FillTemplate($template, $placeholders);
 
         return new Email(
-            "Barciedienst " . $datum,
+            "Bardienst " . $datum,
             $body,
             $bardienst->persoon,
             $this->fromAddress
@@ -254,7 +256,7 @@ class QueueWeeklyEmails implements IInteractor
             Template::SCHEIDSRECHTERS => $scheidsrechtersContent,
             Template::TELLERS => $tellersContent,
             Template::ZAALWACHTERS => $zaalwachtersContent,
-            Template::BARCIELEDEN => $barcieContent,
+            Template::BARLEDEN => $barcieContent,
         ];
         $body = FillTemplate($template, $placeholders);
 

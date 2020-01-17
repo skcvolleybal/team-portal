@@ -1,6 +1,6 @@
 <?php
 
-class GetScheidscoOverzicht implements IInteractor
+class GetScheidscoOverzicht implements Interactor
 {
     public function __construct(
         JoomlaGateway $joomlaGateway,
@@ -21,12 +21,14 @@ class GetScheidscoOverzicht implements IInteractor
 
         foreach ($wedstrijddagen as $dag) {
             $zaalwacht = $this->zaalwachtGateway->GetZaalwacht($dag->date);
-            $dag->zaalwacht = $zaalwacht->team ?? null;
+            $dag->zaalwacht = $zaalwacht !== null ? $zaalwacht->team : null;
             foreach ($dag->speeltijden as $speeltijd) {
                 foreach ($speeltijd->wedstrijden as &$wedstrijd) {
                     $indeling = $this->telFluitGateway->GetWedstrijd($wedstrijd->matchId);
-                    $wedstrijd->scheidsrechter = $indeling->scheidsrechter ?? null;
-                    $wedstrijd->telteam = $indeling->telteam ?? null;
+                    if ($indeling !== null) {
+                        $wedstrijd->scheidsrechter = $indeling->scheidsrechter;
+                        $wedstrijd->telteam = $indeling->telteam;
+                    }
                 }
             }
 

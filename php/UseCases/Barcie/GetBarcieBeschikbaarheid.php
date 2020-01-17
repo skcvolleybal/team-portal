@@ -1,7 +1,7 @@
 <?php
 
 
-class GetBarcieBeschikbaarheid extends GetNevoboMatchByDate implements IInteractor
+class GetBarcieBeschikbaarheid implements Interactor
 {
     public function __construct(
         NevoboGateway $nevoboGateway,
@@ -17,33 +17,33 @@ class GetBarcieBeschikbaarheid extends GetNevoboMatchByDate implements IInteract
 
     public function Execute(): array
     {
-        $barcielid = $this->joomlaGateway->GetUser($userId);
-        $team = $this->joomlaGateway->GetTeam($userId);
-        $coachTeam = $this->joomlaGateway->GetCoachTeam($userId);
+        $user = $this->joomlaGateway->GetUser();
+        $team = $this->joomlaGateway->GetTeam($user);
+        $coachTeam = $this->joomlaGateway->GetCoachTeam($user);
 
         $alleWedstrijden = $this->nevoboGateway->GetWedstrijdenForTeam($team);
         $alleCoachWedstrijden = $this->nevoboGateway->GetWedstrijdenForTeam($coachTeam);
 
-        $barciedagen = $this->barcieGateway->GetBarciedagen();
-        $beschikbaarheden = $this->barcieGateway->GetBeschikbaarheden($barcielid);
+        $bardagen = $this->barcieGateway->GetBardagen();
+        $beschikbaarheden = $this->barcieGateway->GetBeschikbaarheden($user);
 
         $response = [];
-        foreach ($barciedagen as $barciedag) {
-            $eigenWedstrijden = array_filter($alleWedstrijden, function ($wedstrijd) use ($barciedag) {
-                return $wedstrijd->timestamp && DateFunctions::AreDatesEqual($wedstrijd->timestamp, $barciedag->date);
+        foreach ($bardagen as $bardag) {
+            $eigenWedstrijden = array_filter($alleWedstrijden, function ($wedstrijd) use ($bardag) {
+                return $wedstrijd->timestamp && DateFunctions::AreDatesEqual($wedstrijd->timestamp, $bardag->date);
             });
 
-            $coachWedstrijden = array_filter($alleCoachWedstrijden, function ($wedstrijd) use ($barciedag) {
-                return $wedstrijd->timestamp && DateFunctions::AreDatesEqual($wedstrijd->timestamp, $barciedag->date);
+            $coachWedstrijden = array_filter($alleCoachWedstrijden, function ($wedstrijd) use ($bardag) {
+                return $wedstrijd->timestamp && DateFunctions::AreDatesEqual($wedstrijd->timestamp, $bardag->date);
             });
 
             $wedstrijden = array_merge($eigenWedstrijden, $coachWedstrijden);
 
-            $isBeschikbaar = $this->GetBeschikbaarheid($beschikbaarheden, $barciedag->date);
+            $isBeschikbaar = $this->GetBeschikbaarheid($beschikbaarheden, $bardag->date);
 
             $response[] = (object) [
-                "datum" => DateFunctions::GetDutchDate($barciedag->date),
-                "date" => DateFunctions::GetYmdNotation($barciedag->date),
+                "datum" => DateFunctions::GetDutchDate($bardag->date),
+                "date" => DateFunctions::GetYmdNotation($bardag->date),
                 "beschikbaarheid" => $isBeschikbaar,
                 "eigenWedstrijden" => $this->MapToUsecase($wedstrijden, $team, $coachTeam),
                 "isMogelijk" => $this->barcieBeschikbaarheidHelper->isMogelijk($wedstrijden),

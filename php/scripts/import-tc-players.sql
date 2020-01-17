@@ -1,7 +1,7 @@
 delete from J3_user_usergroup_map
 where group_id in (
-    select id from J3_usergroups where parent_id = (
-        select id from J3_usergroups where title = 'Teams'
+    SELECT id from J3_usergroups where parent_id = (
+        SELECT id from J3_usergroups where title = 'Teams'
     )
 );
 

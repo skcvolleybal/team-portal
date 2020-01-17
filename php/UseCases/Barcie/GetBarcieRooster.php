@@ -1,7 +1,7 @@
 <?php
 
 
-class GetBarcieRooster implements IInteractor
+class GetBarcieRooster implements Interactor
 {
 
     public function __construct(JoomlaGateway $joomlaGateway, BarcieGateway $barcieGateway)
@@ -13,9 +13,9 @@ class GetBarcieRooster implements IInteractor
     public function Execute()
     {
         $rooster = [];
-        $dagen = $this->barcieGateway->GetBarciedagen();
+        $dagen = $this->barcieGateway->GetBardagen();
         foreach ($dagen as $dag) {
-            $rooster[] = new TeamportalBarciedag($dag);
+            $rooster[] = new TeamportalBardag($dag);
         }
 
         return $rooster;

@@ -1,6 +1,6 @@
 <?php
 
-class CompleteDailyTasks implements IInteractor
+class CompleteDailyTasks implements Interactor
 {
     public function __construct($database)
     {

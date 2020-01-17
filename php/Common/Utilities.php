@@ -28,3 +28,8 @@ function FillTemplate($template, $placeholders)
 
     return $template;
 }
+
+function StringToInt($getal)
+{
+    return $getal ? intval($getal) : null;
+}

@@ -17,7 +17,7 @@ class JoomlaGateway
 
     private function GetUserById(int $userId): Persoon
     {
-        $query = 'SELECT id, name as naam, email
+        $query = 'SELECT id, name AS naam, email
                   FROM J3_users
                   WHERE id = ?';
         $params = [$userId];
@@ -29,23 +29,29 @@ class JoomlaGateway
         return new Persoon($users[0]->id, $users[0]->naam, $users[0]->email);
     }
 
-    public function GetLoggedInUser(): ?int
+    public function GetLoggedInUser(): Persoon
     {
         $this->InitJoomla();
 
-        $user = JFactory::getUser();
-        if ($user->guest) {
+        $joomlaUser = JFactory::getUser();
+        if ($joomlaUser->guest) {
             return null;
         }
 
-        if ($this->IsWebcie($user->id) && isset($_GET['impersonationId'])) {
+        $user = new Persoon(
+            $joomlaUser->id,
+            $joomlaUser->name,
+            $joomlaUser->email
+        );
+
+        if ($this->IsWebcie($user) && isset($_GET['impersonationId'])) {
             $impersonationId = $_GET['impersonationId'];
             if ($this->DoesUserIdExist($impersonationId)) {
                 return $impersonationId;
             }
         }
 
-        return $user->id;
+        return $user;
     }
 
     public function GetScheidsrechter(int $id): Scheidsrechter
@@ -114,47 +120,47 @@ class JoomlaGateway
         return count($result) > 0;
     }
 
-    public function IsScheidsrechter(?int $userId): bool
+    public function IsScheidsrechter(Persoon $user): bool
     {
-        return $this->IsUserInUsergroup($userId, 'Scheidsrechters');
+        return $this->IsUserInUsergroup($user->id, 'Scheidsrechters');
     }
 
-    public function IsWebcie(?int $userId): bool
+    public function IsWebcie(Persoon $user): bool
     {
-        return $this->IsUserInUsergroup($userId, 'Super Users');
+        return $this->IsUserInUsergroup($user->id, 'Super Users');
     }
 
-    public function IsTeamcoordinator(?int $userId): bool
+    public function IsTeamcoordinator(Persoon $user): bool
     {
-        return $this->IsUserInUsergroup($userId, 'Teamcoordinator');
+        return $this->IsUserInUsergroup($user->id, 'Teamcoordinator');
     }
 
-    public function IsBarcie(?int $userId): bool
+    public function IsBarcie(Persoon $user): bool
     {
-        return $this->IsUserInUsergroup($userId, 'Barcie');
+        return $this->IsUserInUsergroup($user->id, 'Barcie');
     }
 
-    public function IsCoach(int $userId): bool
+    public function IsCoach(Persoon $user): bool
     {
         $query = 'SELECT *
                   FROM J3_user_usergroup_map M
                   INNER JOIN J3_usergroups G ON M.group_id = G.id
                   WHERE M.user_id = ? and G.title LIKE "Coach %"';
-        $params = [$userId];
+        $params = [$user->id];
         $result = $this->database->Execute($query, $params);
         return count($result) > 0;
     }
 
-    public function GetTeam(int $userId): ?Team
+    public function GetTeam(Persoon $user): ?Team
     {
         $query = 'SELECT 
                     G.id,
-                    title as naam
+                    title AS naam
                   FROM J3_users U
                   LEFT JOIN J3_user_usergroup_map M on U.id = M.user_id
                   LEFT JOIN J3_usergroups G on G.id = M.group_id
-                  WHERE M.user_id = ? and G.parent_id in (select id from J3_usergroups where title = \'Teams\')';
-        $params = [$userId];
+                  WHERE M.user_id = ? and G.parent_id in (SELECT id from J3_usergroups where title = \'Teams\')';
+        $params = [$user->id];
 
         $team = $this->database->Execute($query, $params);
         if (count($team) != 1) {
@@ -171,7 +177,7 @@ class JoomlaGateway
         }
         $query = 'SELECT 
                     U.id, 
-                    name as naam,
+                    name AS naam,
                     email
                   FROM J3_users U
                   INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
@@ -187,16 +193,16 @@ class JoomlaGateway
         return $result;
     }
 
-    public function GetCoachTeam(int $userId): ?Team
+    public function GetCoachTeam(Persoon $user): ?Team
     {
         $query = 'SELECT 
                     G2.id,
-                    G2.title as naam
+                    G2.title AS naam
                   FROM J3_usergroups G
                   INNER JOIN J3_user_usergroup_map M on G.id = M.group_id
                   INNER JOIN J3_usergroups G2 on G2.title = SUBSTRING(G.title, 7)
                   WHERE M.user_id = ? and G.title like \'Coach %\'';
-        $params = [$userId];
+        $params = [$user->id];
 
         $team = $this->database->Execute($query, $params);
         if (count($team) != 1) {
@@ -220,7 +226,7 @@ class JoomlaGateway
     {
         $query = 'SELECT
                     U.id,
-                    U.name as naam
+                    U.name AS naam
                   FROM J3_users U
                   INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
                   INNER JOIN J3_usergroups G ON M.group_id = G.id
@@ -234,7 +240,7 @@ class JoomlaGateway
         if (defined('_JEXEC')) {
             return;
         }
-        
+
         define('JPATH_BASE', $this->configuration->JpathBase);
         define('_JEXEC', 1);
 

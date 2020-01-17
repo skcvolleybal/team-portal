@@ -1,6 +1,6 @@
 <?php
 
-class UpdateFluitBeschikbaarheid implements IInteractorWithData
+class UpdateFluitBeschikbaarheid implements Interactor
 {
     public function __construct(
         FluitBeschikbaarheidGateway $fluitBeschikbaarheidGateway,
@@ -25,14 +25,8 @@ class UpdateFluitBeschikbaarheid implements IInteractorWithData
             throw new InvalidArgumentException("Unknown beschikbaarheid: $isBeschikbaar");
         }
 
-        $user = $this->joomlaGateway->GetUser($userId);
-        $beschikbaarheid = $this->fluitBeschikbaarheidGateway->GetFluitBeschikbaarheid($userId, $date) ??
-            new Beschikbaarheid(
-                null,
-                new Persoon($user->id, $user->naam),
-                $date,
-                $isBeschikbaar
-            );
+        $user = $this->joomlaGateway->GetUser();
+        $beschikbaarheid = $this->fluitBeschikbaarheidGateway->GetFluitBeschikbaarheid($user->id, $date);
         $beschikbaarheid->isBeschikbaar = $isBeschikbaar;
         if ($beschikbaarheid->id === null) {
             if ($beschikbaarheid->isBeschikbaar !== null) {

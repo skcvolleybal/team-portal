@@ -1,6 +1,6 @@
 <?php
 
-class GetFluitBeschikbaarheid implements IInteractor
+class GetFluitBeschikbaarheid implements Interactor
 {
     private $uscCode = 'LDNUN';
 
@@ -16,9 +16,10 @@ class GetFluitBeschikbaarheid implements IInteractor
 
     public function Execute(): iterable
     {
-        $team = $this->joomlaGateway->GetTeam($userId);
-        $coachTeam = $this->joomlaGateway->GetCoachTeam($userId);
-        $beschikbaarheden = $this->fluitBeschikbaarheidGateway->GetFluitBeschikbaarheden($userId);
+        $user = $this->joomlaGateway->GetUser();
+        $team = $this->joomlaGateway->GetTeam($user);
+        $coachTeam = $this->joomlaGateway->GetCoachTeam($user);
+        $beschikbaarheden = $this->fluitBeschikbaarheidGateway->GetFluitBeschikbaarheden($user);
 
         $wedstrijden = $this->nevoboGateway->GetWedstrijdenForTeam($team);
         $coachWedstrijden = $this->nevoboGateway->GetWedstrijdenForTeam($coachTeam);

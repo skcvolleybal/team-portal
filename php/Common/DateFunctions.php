@@ -37,7 +37,8 @@ class DateFunctions
         }
         $format = DateFunctions::$DATE_FORMAT . " " . DateFunctions::$TIME_FORMAT;
         $timestring = $date . " " . $time;
-        return DateTime::createFromFormat($format, $timestring);
+        $date = DateTime::createFromFormat($format, $timestring);
+        return $date !== false ? $date : null;
     }
 
     static function AreDatesEqual(DateTime $date1, DateTime $date2)
