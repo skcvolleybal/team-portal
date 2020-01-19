@@ -2,12 +2,12 @@
 
 class WedstrijdenImporteren implements Interactor
 {
-    public function __construct($database)
-    {
-        $configuration = include('./../configuration.php');
-
-        $this->dwfGateway = new DwfGateway($configuration->dwfUsername, $configuration->dwfPassword);
-        $this->gespeeldeWedstrijdenGateway = new GespeeldeWedstrijdenGateway($database);
+    public function __construct(
+        DwfGateway $dwfGateway,
+        GespeeldeWedstrijdenGateway $gespeeldeWedstrijdenGateway
+    ) {
+        $this->dwfGateway = $dwfGateway;
+        $this->gespeeldeWedstrijdenGateway = $gespeeldeWedstrijdenGateway;
     }
 
     public function Execute(object $data = null)
@@ -121,7 +121,7 @@ class WedstrijdenImporteren implements Interactor
             return $opstelling;
         }
 
-        throw new Exception("Speler niet gevonden");
+        throw new UnexpectedValueException("Speler niet gevonden");
     }
 
     private function Doordraaien($opstelling)

@@ -1,5 +1,11 @@
 <?php
 
+class Headers
+{
+    public const LOCATION = 'Location';
+    public const SET_COOKIE = 'Set-Cookie';
+}
+
 class DwfGateway
 {
     private $dwfUrl = 'https://dwf.volleybal.nl/application/handlers/dwf/pull/';
@@ -7,44 +13,36 @@ class DwfGateway
     private $cookieFilename = 'cookie.txt';
     private $WID;
 
-    public function __construct(string $username, string $password)
-    {
-        $this->credentials = new Credentials($username, $password);
+    public function __construct(
+        CurlGateway $curlGateway,
+        Configuration $configuration
+    ) {
+        $this->curlGateway = $curlGateway;
+        $this->credentials = new Credentials($configuration->DwfUsername, $configuration->DwfPassword);
 
         if (file_exists($this->cookieFilename)) {
             $this->WID = file_get_contents($this->cookieFilename);
         }
-        if (!$this->IsCookieValid()) {
-            file_put_contents($this->cookieFilename, null);
-            $this->Connect();
-        }
+
+        $this->Connect();
     }
 
-    private function SanitizeQueryString($url)
-    {
-        $url = explode('?', $url);
-        $parts = explode('&', $url[1]);
-        $newParts = [];
-        foreach ($parts as $part) {
-            $params = explode('=', $part);
-            $newParts[] = $params[0] . '=' . rawurlencode($params[1]);
-        }
-        return $url[0] . '?' . implode('&', $newParts);
-    }
-
-    private function Connect()
+    private function asd()
     {
         $oauthPage = $this->SendHeadersRequest($this->dwfOAuthUrl);
         $this->WID = $this->GetCookieValueFromHeader($oauthPage['Set-Cookie']);
 
-        $location = $this->SanitizeQueryString($oauthPage['Location']);
+        $location = SanitizeQueryString($oauthPage['Location']);
         $loginPage = $this->SendHeadersRequest($location);
 
         $sessionId = $this->GetCookieValueFromHeader($loginPage['Set-Cookie']);
-
+        $data = (object) [
+            '_username' => $this->username,
+            '_password' => $this->password,
+        ];
         $headers = ["Cookie: $sessionId"];
         $url = 'https://login.nevobo.nl/login_check';
-        $loginCheck = $this->SendHeadersRequest($url, $headers, $this->credentials);
+        $loginCheck = $this->SendHeadersRequest($url, $headers, $data);
 
         $location = "https://login.nevobo.nl" . $loginCheck['Location'];
         $sessionId = $this->GetCookieValueFromHeader($loginCheck['Set-Cookie']);
@@ -52,92 +50,69 @@ class DwfGateway
 
         $location = $codePage['Location'];
         $this->SendHeadersRequest($location, ["Cookie: $this->WID"]);
+    }
+
+    private function Connect()
+    {
+        $request = new Request($this->dwfOAuthUrl);
+        $response = $this->curlGateway->SendRequest($request);
+        $headers = $this->curlGateway->GetHeaders($response);
+        $location = $this->curlGateway->SanitizeQueryString($headers[HEADERS::LOCATION]);
+        $this->WID = $this->GetWid($headers[HEADERS::SET_COOKIE]);
+
+        $request = new Request($location);
+        $response = $this->curlGateway->SendRequest($request);
+        $headers = $this->curlGateway->GetHeaders($response);
+        $sessionId = $this->GetSessionId($headers[HEADERS::SET_COOKIE]);
+
+        $request = new Request('https://login.nevobo.nl/login_check');
+        $request->headers = ["Cookie: $sessionId"];
+        $request->body = ["_username" => $this->credentials->username, "_password" => $this->credentials->password];
+        $response = $this->curlGateway->SendRequest($request);
+
+        $headers = $this->curlGateway->GetHeaders($response);
+        $location = "https://login.nevobo.nl" . $headers['Location'];
+        $sessionId = $this->GetSessionId($headers['Set-Cookie']);
+        $request = new Request($location);
+        
+        $request->headers = ["Cookie: PHPSESSID=$sessionId"];
+        $response = $this->curlGateway->SendRequest($request);
+
+        $headers = $this->curlGateway->GetHeaders($response);
+        $request = new Request($headers[Headers::LOCATION]);
+        $request->headers = ["Cookie: $this->WID"];
+        $response = $this->curlGateway->SendRequest($request);
 
         $fp = fopen($this->cookieFilename, 'w');
         fwrite($fp, $this->WID);
         fclose($fp);
     }
 
-    private function GetCookieValueFromHeader($header)
+    private function  GetSessionId(string $header): string
     {
-        $semiColonPosition = strpos($header, ';') ?? strlen($header);
-        return trim(substr($header, 0, $semiColonPosition));
+        preg_match('/PHPSESSID=(\S*);/', $header, $matches);
+        return $matches[1];
     }
 
-    private function IsCookieValid()
+    private function GetWid(string $header)
     {
-        if (!$this->WID) {
-            return false;
-        }
-
-        $response = SendPost($this->dwfUrl, 'type=teamSelector', ["Cookie: $this->WID"]);
-        $data = json_decode($response);
-        return $data != null && $data->error->code === 0;
-    }
-
-    private function SendHeadersRequest($url, $headers = null, $postFields = null)
-    {
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_HEADER, 1);
-
-        if ($postFields && !empty($postFields)) {
-            curl_setopt($ch, CURLOPT_POST, 1);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $postFields);
-        }
-
-        if ($headers != null) {
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        }
-
-        $response = curl_exec($ch);
-        $headers = $this->GetHeaders($response);
-
-        if (curl_errno($ch)) {
-            echo 'Error:' . curl_error($ch);
-        }
-        curl_close($ch);
-
-        return $headers;
-    }
-
-    public function GetHeaders($response)
-    {
-        $headers = array();
-
-        $header_text = substr($response, 0, strpos($response, "\r\n\r\n"));
-
-        foreach (explode("\r\n", $header_text) as $i => $line) {
-            if ($i === 0) {
-                $headers['http_code'] = $line;
-            } else {
-                list($key, $value) = explode(': ', $line);
-
-                if (!isset($headers[$key])) {
-                    $headers[$key] = $value;
-                } else {
-                    if ($key == 'Set-Cookie' && strpos($value, 'PHPSESSID') !== false) {
-                        $headers[$key] = $value;
-                    }
-                }
-            }
-        }
-
-        return $headers;
+        preg_match('/WID=(.*); path=\//', $header, $matches);
+        return $matches[1];
     }
 
     public function GetGespeeldeWedstrijden($aantal = 999)
     {
-        $body = (object)  [
+        $request = new Request($this->dwfUrl);
+        $request->headers = [
+            "Cookie: $this->WID",
+        ];
+        $request->body = [
             'type' => 'matchResults',
             'team' => '',
             'limit' => $aantal,
         ];
-        $headers = (object) [
-            "Cookie: $this->WID",
-        ];
-        $response = SendPost($this->dwfUrl, $body, $headers);
+
+        $response = $this->curlGateway->SendRequest($request);
         $data = json_decode($response);
 
         if (!isset($data->results[0]->type)) {

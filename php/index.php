@@ -97,6 +97,7 @@ $entryPoint =
 
         new RouteGroup('/dwf', [
             new GetRoute('/gespeelde-punten', GetGespeeldePunten::class),
+            new GetRoute('/importeer-wedstrijden', WedstrijdenImporteren::class, AuthorizationRole::UNREGISTERED),
         ], AuthorizationRole::USER),
 
         new RouteGroup('/taken',[
