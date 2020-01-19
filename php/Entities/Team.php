@@ -65,6 +65,11 @@ class Team
         return substr($this->naam, 4, 1) === "H";
     }
 
+    function IsSkcTeam()
+    {
+        return "SKC " === substr($this->naam, 0, 4);
+    }
+
     public static function GetAlleHerenTeams()
     {
         return Team::GetAllTeamsByGender("H");

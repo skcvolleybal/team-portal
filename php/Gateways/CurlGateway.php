@@ -5,17 +5,13 @@ class Request
     public string $url;
     public array $headers = []; 
     public $body = null;
+    public bool $receiveHeaders;
 
-    public function __construct(string $url)
+    public function __construct(string $url, bool $receiveHeaders = false)
     {
-        $this->url = $url;
+        $this->receiveHeaders = $receiveHeaders;
+        $this->url = $url;        
     }
-}
-
-class Response
-{
-    public $headers;
-    public $body;
 }
 
 class CurlGateway
@@ -26,12 +22,15 @@ class CurlGateway
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $request->url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_HEADER, 1);
+        
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
 
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
 
+        if($request->receiveHeaders){
+            curl_setopt($ch, CURLOPT_HEADER, 1);
+        }
         if ($request->body) {
             curl_setopt($ch, CURLOPT_POST, 1);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $request->body);

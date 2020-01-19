@@ -27,62 +27,33 @@ class DwfGateway
         $this->Connect();
     }
 
-    private function Connect2()
+    private function Connect(): void
     {
-        $oauthPage = $this->SendHeadersRequest($this->dwfOAuthUrl);
-        $this->WID = $this->GetCookieValueFromHeader($oauthPage['Set-Cookie']);
-
-        $location = SanitizeQueryString($oauthPage['Location']);
-        $loginPage = $this->SendHeadersRequest($location);
-
-        $sessionId = $this->GetCookieValueFromHeader($loginPage['Set-Cookie']);
-        $data = (object) [
-            '_username' => $this->username,
-            '_password' => $this->password,
-        ];
-        $headers = ["Cookie: $sessionId"];
-        $url = 'https://login.nevobo.nl/login_check';
-        $loginCheck = $this->SendHeadersRequest($url, $headers, $data);
-
-        $location = "https://login.nevobo.nl" . $loginCheck['Location'];
-        $sessionId = $this->GetCookieValueFromHeader($loginCheck['Set-Cookie']);
-        $codePage = $this->SendHeadersRequest($location, ["Cookie: $sessionId"]);
-
-        $location = $codePage['Location'];
-        $this->SendHeadersRequest($location, ["Cookie: $this->WID"]);
-
-        $fp = fopen($this->cookieFilename, 'w');
-        fwrite($fp, $this->WID);
-        fclose($fp);
-    }
-
-    private function Connect()
-    {
-        $request = new Request($this->dwfOAuthUrl);
+        $request = new Request($this->dwfOAuthUrl, true);
         $response = $this->curlGateway->SendRequest($request);
         $headers = $this->curlGateway->GetHeaders($response);
         $location = $this->curlGateway->SanitizeQueryString($headers[HEADERS::LOCATION]);
         $this->WID = $this->GetWid($headers[HEADERS::SET_COOKIE]);
 
-        $request = new Request($location);
+        $request = new Request($location, true);
         $response = $this->curlGateway->SendRequest($request);
         $headers = $this->curlGateway->GetHeaders($response);
         $sessionId = $this->GetSessionId($headers[HEADERS::SET_COOKIE]);
 
-        $request = new Request('https://login.nevobo.nl/login_check');
+        $request = new Request('https://login.nevobo.nl/login_check', true);
         $request->headers = ["Cookie: $sessionId"];
         $request->body = ["_username" => $this->credentials->username, "_password" => $this->credentials->password];
         $response = $this->curlGateway->SendRequest($request);
 
         $headers = $this->curlGateway->GetHeaders($response);
         $location = "https://login.nevobo.nl" . $headers['Location'];
-        $request = new Request($location);
+        $request = new Request($location, true);
         $sessionId = $this->GetSessionId($headers['Set-Cookie']);
         $request->headers = ["Cookie: $sessionId"];
         $response = $this->curlGateway->SendRequest($request);
 
         $headers = $this->curlGateway->GetHeaders($response);
-        $request = new Request($headers[Headers::LOCATION]);
+        $request = new Request($headers[Headers::LOCATION], true);
         $request->headers = ["Cookie: $this->WID"];
         $this->curlGateway->SendRequest($request);
 
@@ -97,13 +68,13 @@ class DwfGateway
         return $matches[1];
     }
 
-    private function GetWid(string $header)
+    private function GetWid(string $header): string
     {
         preg_match('/(WID=\S*);/', $header, $matches);
         return $matches[1];
     }
 
-    public function GetGespeeldeWedstrijden($aantal = 999)
+    public function GetGespeeldeWedstrijden($aantal = 999): array
     {
         $request = new Request($this->dwfUrl);
         $request->headers = [
@@ -130,14 +101,12 @@ class DwfGateway
                 if ($item->data->sStartTime == '-') {
                     continue;
                 }
-                $wedstrijden[] = (object) [
-                    'id' => preg_replace('/\s+/', ' ', $item->data->sMatchId),
-                    'date' => $date,
-                    'team1' => $item->data->sHomeName,
-                    'team2' => $item->data->sOutName,
-                    'setsTeam1' => $item->data->sStartTime[0],
-                    'setsTeam2' => $item->data->sStartTime[2],
-                ];
+                $wedstrijd = new Wedstrijd(preg_replace('/\s+/', ' ', $item->data->sMatchId));
+                $wedstrijd->team1 = new Team($item->data->sHomeName);
+                $wedstrijd->team2 = new Team($item->data->sOutName);
+                $wedstrijd->setsTeam1 = $item->data->sStartTime[0];
+                $wedstrijd->setsTeam2 = $item->data->sStartTime[2];
+                $wedstrijden[] = $wedstrijd;
             }
         }
 
@@ -147,10 +116,9 @@ class DwfGateway
     public function GetMatchFormId($matchId)
     {
         $url = 'https://dwf.volleybal.nl/uitslagformulier/' . str_replace(' ', '%20%20%20', $matchId);
-        $headers = (object) [
-            "Cookie: $this->WID",
-        ];
-        $response = SendPost($url, null, $headers);
+        $request = new Request($url);
+        $request->headers = ["Cookie: $this->WID"];
+        $response = $this->curlGateway->SendRequest($request);
 
         if (preg_match_all('/<input type="hidden" id="iMatchFormId" value="(\d*)" name="iMatchFormId"/', $response, $output_array)) {
             return $output_array[1][0];
@@ -159,17 +127,16 @@ class DwfGateway
 
     private function GetWedstrijdVerloopData($matchId)
     {
-        $body = (object) [
+        $request = new Request($this->dwfUrl);
+        $request->headers = ["Cookie: $this->WID"];
+        $request->body = [
             'type' => 'setProgression',
             'iNumberItems' => 8, // blijkbaar 8 = alle punten
             'sMatchId' => $matchId,
             'sPageType' => 'resultForm',
             'iMatchFormId' => $this->GetMatchFormId($matchId),
         ];
-        $headers = (object) [
-            "Cookie: $this->WID",
-        ];
-        $response = SendPost($this->dwfUrl, $body, $headers);
+        $response = $this->curlGateway->SendRequest($request);
         $data = json_decode($response);
         if ($data->error->code != 0) {
             throw new UnexpectedValueException('Kan wedstrijd verloop niet ophalen: ' . print_r($data, 1));

@@ -8,20 +8,33 @@ class GespeeldeWedstrijdenGateway
         $this->database = $database;
     }
 
-    public function GetGespeeldeWedstrijden()
+    public function GetGespeeldeWedstrijden(): array
     {
-        $query = 'SELECT * FROM DWF_wedstrijden';
-        return $this->database->Execute($query);
+        $query = 'SELECT 
+                    *
+                  FROM DWF_wedstrijden';
+        $rows = $this->database->Execute($query);
+        $result = [];
+        foreach ($rows as $row) {
+            $result[] = new DwfWedstrijd(
+                $row->id,
+                $row->skcTeam,
+                $row->otherTeam,
+                $row->setsSkcTeam,
+                $row->setsOtherTeam
+            );
+        }
+        return $result;
     }
 
-    public function AddWedstrijd(Wedstrijd $wedstrijd)
+    public function AddWedstrijd(DwfWedstrijd $wedstrijd)
     {
         $query = 'INSERT INTO DWF_wedstrijden (id, skcTeam, otherTeam, setsSkcTeam, setsOtherTeam)
                   VALUES (?, ?, ?, ?, ?)';
         $params = [
             $wedstrijd->matchId,
-            $wedstrijd->skcTeam,
-            $wedstrijd->otherTeam,
+            $wedstrijd->skcTeam->naam,
+            $wedstrijd->otherTeam->naam,
             $wedstrijd->setsSkcTeam,
             $wedstrijd->setsOtherTeam
         ];
@@ -34,7 +47,7 @@ class GespeeldeWedstrijdenGateway
                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
         $params = [
             $wedstrijdId,
-            $skcTeam,
+            $skcTeam->naam,
             $set,
             $isSkcService ? 'Y' : 'N',
             $isSkcPunt ? 'Y' : 'N',

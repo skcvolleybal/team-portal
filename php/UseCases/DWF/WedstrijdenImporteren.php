@@ -26,10 +26,10 @@ class WedstrijdenImporteren implements Interactor
             }
 
             $teams = [];
-            if (strpos($wedstrijd->team1, "SKC ", 0) === 0) {
+            if ($wedstrijd->team1->IsSkcTeam()) {
                 $teams[] = "thuis";
             }
-            if (strpos($wedstrijd->team2, "SKC ", 0) === 0) {
+            if ($wedstrijd->team2->IsSkcTeam()) {
                 $teams[] = "uit";
             }
             foreach ($teams as $team) {
@@ -83,13 +83,13 @@ class WedstrijdenImporteren implements Interactor
                     }
                 }
 
-                $newWedstrijd = (object) [
-                    "matchId" => $wedstrijd->matchId,
-                    "skcTeam" => $skcTeam,
-                    "otherTeam" => $otherTeam,
-                    "setsSkcTeam" => $setsSkcTeam,
-                    "setsOtherTeam" => $setsOtherTeam,
-                ];
+                $newWedstrijd = new DwfWedstrijd(
+                    $wedstrijd->matchId,
+                    $skcTeam,
+                    $otherTeam,
+                    $setsSkcTeam,
+                    $setsOtherTeam
+                );
 
                 $this->gespeeldeWedstrijdenGateway->AddWedstrijd($newWedstrijd);
             }
