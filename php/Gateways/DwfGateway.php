@@ -20,16 +20,28 @@ class DwfGateway
         }
     }
 
+    private function SanitizeQueryString($url)
+    {
+        $url = explode('?', $url);
+        $parts = explode('&', $url[1]);
+        $newParts = [];
+        foreach ($parts as $part) {
+            $params = explode('=', $part);
+            $newParts[] = $params[0] . '=' . rawurlencode($params[1]);
+        }
+        return $url[0] . '?' . implode('&', $newParts);
+    }
+
     private function Connect()
     {
         $oauthPage = $this->SendHeadersRequest($this->dwfOAuthUrl);
         $this->WID = $this->GetCookieValueFromHeader($oauthPage['Set-Cookie']);
 
-        $location = SanitizeQueryString($oauthPage['Location']);
+        $location = $this->SanitizeQueryString($oauthPage['Location']);
         $loginPage = $this->SendHeadersRequest($location);
 
         $sessionId = $this->GetCookieValueFromHeader($loginPage['Set-Cookie']);
-        
+
         $headers = ["Cookie: $sessionId"];
         $url = 'https://login.nevobo.nl/login_check';
         $loginCheck = $this->SendHeadersRequest($url, $headers, $this->credentials);
