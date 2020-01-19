@@ -27,7 +27,7 @@ class DwfGateway
         $this->Connect();
     }
 
-    private function asd()
+    private function Connect2()
     {
         $oauthPage = $this->SendHeadersRequest($this->dwfOAuthUrl);
         $this->WID = $this->GetCookieValueFromHeader($oauthPage['Set-Cookie']);
@@ -50,6 +50,10 @@ class DwfGateway
 
         $location = $codePage['Location'];
         $this->SendHeadersRequest($location, ["Cookie: $this->WID"]);
+
+        $fp = fopen($this->cookieFilename, 'w');
+        fwrite($fp, $this->WID);
+        fclose($fp);
     }
 
     private function Connect()
@@ -66,15 +70,16 @@ class DwfGateway
         $sessionId = $this->GetSessionId($headers[HEADERS::SET_COOKIE]);
 
         $request = new Request('https://login.nevobo.nl/login_check');
-        $request->headers = ["Cookie: $sessionId"];
+        $request->headers = ["Cookie: PHPSESSID=$sessionId"];
         $request->body = ["_username" => $this->credentials->username, "_password" => $this->credentials->password];
         $response = $this->curlGateway->SendRequest($request);
+        // /oauth/v2/auth?client_id=17_umyxub7qq3hzjpz9glws18irpabwyshcj0raiw8d0novhw8h5q&redirect_uri=https%3A%2F%2Fdwf.volleybal.nl%2Fapplication%2Fhandlers%2Fdwf%2Foauth.php&response_type=code&scope=profile%20profile_relatiecode%20profile_lidmaatschappen%20profile_rollen
 
         $headers = $this->curlGateway->GetHeaders($response);
         $location = "https://login.nevobo.nl" . $headers['Location'];
         $sessionId = $this->GetSessionId($headers['Set-Cookie']);
-        $request = new Request($location);
         
+        $request = new Request($location);        
         $request->headers = ["Cookie: PHPSESSID=$sessionId"];
         $response = $this->curlGateway->SendRequest($request);
 
@@ -104,7 +109,7 @@ class DwfGateway
     {
         $request = new Request($this->dwfUrl);
         $request->headers = [
-            "Cookie: $this->WID",
+            "Cookie: WID=$this->WID",
         ];
         $request->body = [
             'type' => 'matchResults',
