@@ -2,7 +2,7 @@
 
 class GetTeamstanden implements Interactor
 {
-    public function Execute()
+    public function Execute(object $data = null)
     {
         $teams = json_decode(file_get_contents(dirname(__FILE__) . "/teamstanden.json"), false);
         $numberOfSkcTeams = count($teams);

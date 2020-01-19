@@ -13,6 +13,7 @@ class FluitBeschikbaarheidGateway
                     B.id,
                     U.id AS userId,
                     U.name AS naam,
+                    U.email,
                     B.date,
                     SUBSTRING(B.`time`, 1, 5) AS time,
                     B.is_beschikbaar AS isBeschikbaar
@@ -26,7 +27,7 @@ class FluitBeschikbaarheidGateway
         foreach ($rows as $row) {
             $result[] = new Beschikbaarheid(
                 $row->id,
-                new Persoon($row->userId, $row->naam),
+                new Persoon($row->userId, $row->naam, $row->email),
                 DateFunctions::CreateDateTime($row->date, $row->time),
                 $row->isBeschikbaar === "Ja"
             );
@@ -34,12 +35,13 @@ class FluitBeschikbaarheidGateway
         return $result;
     }
 
-    public function GetFluitBeschikbaarheid(Persoon $user, DateTime $date): ?Beschikbaarheid
+    public function GetFluitBeschikbaarheid(Persoon $user, DateTime $date): Beschikbaarheid
     {
         $query = 'SELECT 
                     B.id,
                     U.id AS userId,
                     U.name AS naam,
+                    U.email,
                     date,
                     time,
                     is_beschikbaar AS isBeschikbaar
@@ -54,11 +56,11 @@ class FluitBeschikbaarheidGateway
 
         $rows = $this->database->Execute($query, $params);
         if (count($rows) != 1) {
-            return null;
+            return new Beschikbaarheid(null, $user, $date, null);
         }
         return new Beschikbaarheid(
             $rows[0]->id,
-            new Persoon($rows[0]->id, $rows[0]->naam),
+            new Persoon($rows[0]->id, $rows[0]->naam, $rows[0]->email),
             DateFunctions::CreateDateTime($rows[0]->date),
             $rows[0]->isBeschikbaar === "Ja"
         );
@@ -70,6 +72,7 @@ class FluitBeschikbaarheidGateway
                     F.id,
                     U.id AS userId,
                     U.name AS naam,
+                    U.email,
                     date,
                     time,
                     is_beschikbaar AS isBeschikbaar
@@ -84,7 +87,7 @@ class FluitBeschikbaarheidGateway
         $rows = $this->database->Execute($query, $params);
         $result = [];
         foreach ($rows as $row) {
-            $persoon = new Persoon($row->userId, $row->naam);
+            $persoon = new Persoon($row->userId, $row->naam, $row->email);
             $result[] = new Beschikbaarheid(
                 $row->id,
                 $persoon,

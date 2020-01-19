@@ -10,7 +10,7 @@ class SetAllBarcieBeschikbaarheden implements Interactor
         $this->barcieBeschikbaarheidHelper = new BarcieBeschikbaarheidHelper();
     }
 
-    public function Execute()
+    public function Execute(object $data = null)
     {
         $barleden = $this->barcieGateway->GetBarleden();
         $numberOfAddedBeschikbaarheden = 0;
@@ -19,9 +19,9 @@ class SetAllBarcieBeschikbaarheden implements Interactor
         foreach ($barleden as $barlid) {
             $barlidId = $barlid->id;
             $team = $this->joomlaGateway->GetTeam($barlidId);
-            $coachTeam = $this->joomlaGateway->GetCoachTeam($barlidId);
+            $coachteam = $this->joomlaGateway->GetCoachTeam($barlidId);
             $eigenWedstrijden = $this->nevoboGateway->GetWedstrijdenForTeam($team);
-            $coachWedstrijden = $this->nevoboGateway->GetWedstrijdenForTeam($coachTeam);
+            $coachWedstrijden = $this->nevoboGateway->GetWedstrijdenForTeam($coachteam);
             $beschikbaarheden = $this->barcieGateway->GetBeschikbaarheden($barlidId);
             foreach ($bardagen as $bardag) {
                 $date = $bardag->date;

@@ -16,4 +16,9 @@ class Speeltijd
     {
         $this->time = $time;
     }
+
+    public static function Compare(Speeltijd $speeltijd1, Speeltijd $speeltijd2)
+    {
+        return $speeltijd1->time < $speeltijd2->time;
+    }
 }

@@ -7,7 +7,7 @@ class CompleteDailyTasks implements Interactor
         $this->database = $database;
     }
 
-    public function Execute()
+    public function Execute(object $data = null)
     {
         $result = [];
         // $setAllFluitbeschikbaarhedenInteractor = new SetAllFluitbeschikbaarheden($this->database);

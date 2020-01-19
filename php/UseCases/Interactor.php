@@ -2,5 +2,5 @@
 
 interface Interactor
 {
-    public function Execute();
+    public function Execute(object $data = null);
 }

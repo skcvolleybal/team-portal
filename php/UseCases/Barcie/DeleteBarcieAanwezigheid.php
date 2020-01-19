@@ -10,7 +10,7 @@ class DeleteBarcieAanwezigheid implements Interactor
         $this->joomlaGateway = $joomlaGateway;
     }
 
-    public function Execute(object $data): void
+    public function Execute(object $data = null): void
     {
         if ($data->barlidId === null) {
             throw new InvalidArgumentException("barlidId is leeg");

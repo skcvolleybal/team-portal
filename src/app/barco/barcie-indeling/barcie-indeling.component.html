@@ -28,12 +28,12 @@
   <tbody>
     <tr>
       <ul class="list-group">
-        <li class="list-group-item" *ngFor="let shift of barciedag.shifts; index as i">
-          <h5 class="card-title">Shift {{i + 1}}</h5>
-          <div class="row m-1" *ngFor="let barcielid of shift.barcieleden">
+        <li class="list-group-item" *ngFor="let barshift of barciedag.shifts">
+          <h5 class="card-title">Shift {{barshift.shift}}</h5>
+          <div class="row m-1" *ngFor="let barcielid of barshift.barleden">
             <div class="input-group">
               <div class="input-group-prepend">
-                <button class="input-group-text" (click)="ToggleBhv(barciedag, barcielid, i + 1)">
+                <button class="input-group-text" (click)="ToggleBhv(barciedag, barcielid, barshift.shift)">
                   <fa-icon [icon]="barcielid.isBhv ? bhv: geenBhv"></fa-icon>
                 </button>
               </div>
@@ -43,19 +43,19 @@
                 </button>
               </div>
               <div class="input-group-append">
-                <button class="input-group-text" (click)="DeleteAanwezigheid(barciedag, barcielid, i + 1)">
+                <button class="input-group-text" (click)="DeleteAanwezigheid(barciedag, barcielid, barshift.shift)">
                   <fa-icon [icon]="delete"></fa-icon>
                 </button>
               </div>
             </div>
           </div>
-          <button type="button" class="btn btn-primary btn-block" (click)="SelecteerBarcieLid(barciedag, i + 1)">Barcielid
+          <button type="button" class="btn btn-primary btn-block" (click)="SelecteerBarcieLid(barciedag, barshift.shift)">Barcielid
             Toevoegen</button>
         </li>
         <li style="padding: 10px;">
           <button type="button" class="btn btn-primary btn-block" (click)="AddShift(barciedag.date)">Shift toevoegen</button>
         </li>
-        <li style="padding: 10px;" *ngIf="barciedag.shifts.length === 1 && barciedag.shifts[0].barcieleden.length === 0">
+        <li style="padding: 10px;">
           <button type="button" class="btn btn-danger btn-block" (click)="DeleteBarcieDate(barciedag.date)">Dag
             verwijderen</button>
         </li>

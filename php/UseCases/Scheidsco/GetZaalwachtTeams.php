@@ -12,14 +12,14 @@ class GetZaalwachtTeams implements Interactor
         $this->nevoboGateway = $nevoboGateway;
     }
 
-    public function Execute(object $data): object
+    public function Execute(object $data = null): object
     {
         $date = DateFunctions::CreateDateTime($data->date);
         if ($date === null) {
             throw new InvalidArgumentException("Geen datum meegegeven");
         }
 
-        $uscWedstrijden = $this->nevoboGateway->GetProgrammaForSporthal("LDNUN");
+        $uscWedstrijden = $this->nevoboGateway->GetProgrammaForSporthal();
         $samenvattingen = $this->zaalwachtGateway->GetZaalwachtSamenvatting();
         $spelendeTeams = $this->GetSpelendeTeamsForDate($uscWedstrijden, $date);
 
@@ -48,7 +48,7 @@ class GetZaalwachtTeams implements Interactor
     private function MapToUsecaseModel($samenvatting)
     {
         return (object) [
-            "naam" => $samenvatting->team->naam,
+            "naam" => $samenvatting->team->GetSkcNaam(),
             "aantal" => $samenvatting->aantal,
         ];
     }

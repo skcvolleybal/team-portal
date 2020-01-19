@@ -12,13 +12,13 @@ class GetTelTeams implements Interactor
         $this->nevoboGateway = $nevoboGateway;
     }
 
-    public function Execute(object $data)
+    public function Execute(object $data = null)
     {
         if ($data->matchId === null) {
             throw new InvalidArgumentException("MatchId niet gezet");
         }
         $telWedstrijd = null;
-        $uscWedstrijden = $this->nevoboGateway->GetProgrammaForSporthal("LDNUN");
+        $uscWedstrijden = $this->nevoboGateway->GetProgrammaForSporthal();
         foreach ($uscWedstrijden as $wedstrijd) {
             if ($wedstrijd->matchId == $data->matchId) {
                 $telWedstrijd = $wedstrijd;

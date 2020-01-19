@@ -10,12 +10,12 @@ class GetBarcieRooster implements Interactor
         $this->barcieGateway = $barcieGateway;
     }
 
-    public function Execute()
+    public function Execute(object $data = null)
     {
         $rooster = [];
         $dagen = $this->barcieGateway->GetBardagen();
         foreach ($dagen as $dag) {
-            $rooster[] = new TeamportalBardag($dag);
+            $rooster[] = new BardagModel($dag);
         }
 
         return $rooster;

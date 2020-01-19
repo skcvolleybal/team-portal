@@ -11,7 +11,7 @@ class UpdateBarcieBeschikbaarheid implements Interactor
         $this->barcieGateway = $barcieGateway;
     }
 
-    public function Execute(object $data)
+    public function Execute(object $data = null)
     {
         $date = DateFunctions::CreateDateTime($data->date);
         $user = $this->joomlaGateway->GetUser();

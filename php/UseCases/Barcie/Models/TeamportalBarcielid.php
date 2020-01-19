@@ -1,6 +1,6 @@
 <?php
 
-class TeamportalBarlid
+class BarlidModel
 {
     public int $id;
     public string $naam;

@@ -13,25 +13,25 @@ class SetAllFluitbeschikbaarheden implements Interactor
         $this->fluitBeschikbaarheidGateway = new FluitBeschikbaarheidGateway($database);
     }
 
-    public function Execute()
+    public function Execute(object $data = null)
     {
         $scheidsrechters = $this->telFluitGateway->GetScheidsrechters();
         $numberOfAddedBeschikbaarheden = 0;
         foreach ($scheidsrechters as $scheidsrechter) {
             $scheidsrechterId = $scheidsrechter->id;
             $team = $this->joomlaGateway->GetTeam($scheidsrechterId);
-            $coachTeam = $this->joomlaGateway->GetCoachTeam($scheidsrechterId);
+            $coachteam = $this->joomlaGateway->GetCoachTeam($scheidsrechterId);
             $fluitBeschikbaarheden = $this->fluitBeschikbaarheidGateway->GetFluitBeschikbaarheden($scheidsrechterId);
 
             $programma = $this->nevoboGateway->GetWedstrijdenForTeam($team);
             $coachProgramma = [];
-            if ($coachTeam) {
-                $coachProgramma = $this->nevoboGateway->GetWedstrijdenForTeam($coachTeam);
+            if ($coachteam) {
+                $coachProgramma = $this->nevoboGateway->GetWedstrijdenForTeam($coachteam);
             }
 
-            $skcProgramma = $this->nevoboGateway->GetProgrammaForSporthal('LDNUN');
+            $skcProgramma = $this->nevoboGateway->GetProgrammaForSporthal();
 
-            $rooster = $this->fluitBeschikbaarheidHelper->GetUscRooster($skcProgramma, $team, $coachTeam);
+            $rooster = $this->fluitBeschikbaarheidHelper->GetUscRooster($skcProgramma, $team, $coachteam);
             foreach ($rooster as &$wedstrijdDag) {
                 $date = $wedstrijdDag->date;
                 $speelWedstrijd = $this->fluitBeschikbaarheidHelper->GetWedstrijdWithDate($programma, $date);
@@ -40,9 +40,9 @@ class SetAllFluitbeschikbaarheden implements Interactor
                     return $value !== null;
                 });
 
-                foreach ($wedstrijdDag->speeltijden as $tijdslot) {
+                foreach ($wedstrijdDag->speeltijden as $speeltijd) {
                     $date = $wedstrijdDag->date;
-                    $time = $tijdslot->time;
+                    $time = $speeltijd->time;
 
                     $fluitBeschikbaarheid = $this->fluitBeschikbaarheidHelper->GetFluitBeschikbaarheid($fluitBeschikbaarheden, $date, $time);
                     if ($fluitBeschikbaarheid === null) {

@@ -9,10 +9,7 @@ export class StatistiekService {
   constructor(private httpClient: HttpClient) {}
 
   GetGespeeldePunten() {
-    return this.httpClient.get<any[]>(environment.baseUrl, {
-      params: {
-        action: 'GetGespeeldePunten'
-      }
-    });
+    const url = environment.baseUrl + 'dwf/gespeelde-punten';
+    return this.httpClient.get<any[]>(url);
   }
 }

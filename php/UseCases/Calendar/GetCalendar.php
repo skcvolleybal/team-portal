@@ -17,7 +17,7 @@ class GetCalendar implements Interactor
         $this->telFluitGateway = $telFluitGateway;
     }
 
-    public function Execute(object $data)
+    public function Execute(object $data = null)
     {
         $withFluiten = $data->fluiten;
         $withTellen = $data->tellen;
@@ -32,9 +32,9 @@ class GetCalendar implements Interactor
         }
 
         $team = $this->joomlaGateway->GetTeam($user);
-        $coachTeam = $this->joomlaGateway->GetCoachTeam($user);
+        $coachteam = $this->joomlaGateway->GetCoachTeam($user);
 
-        $this->uscWedstrijden = $this->nevoboGateway->GetProgrammaForSporthal('LDNUN');
+        $this->uscWedstrijden = $this->nevoboGateway->GetProgrammaForSporthal();
 
         $skcTeam = $team->GetSkcNotatie() ?? "je team";
         $title = $this->GetTitle($skcTeam, $withFluiten, $withTellen);

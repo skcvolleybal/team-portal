@@ -7,7 +7,7 @@ class SendQueuedEmails implements Interactor
         $this->emailGateway = new EmailGateway($database);
     }
 
-    public function Execute()
+    public function Execute(object $data = null)
     {
         $this->emailGateway->SendQueuedEmails();
     }

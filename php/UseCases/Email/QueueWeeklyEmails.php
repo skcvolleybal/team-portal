@@ -40,7 +40,7 @@ class QueueWeeklyEmails implements Interactor
         $this->joomlaGateway = $joomlaGateway;
     }
 
-    public function Execute()
+    public function Execute(object $data = null)
     {
         $isServerRequest = $_SERVER['SERVER_ADDR'] === $_SERVER['REMOTE_ADDR'];
         if (!$isServerRequest) {
@@ -51,7 +51,7 @@ class QueueWeeklyEmails implements Interactor
         $this->fromAddress = new Persoon(-1, $this->scheidsco->naam, "scheids@skcvolleybal.nl");
         $this->webcie = $this->joomlaGateway->GetUser(542);
 
-        $wedstrijddagen = $this->nevoboGateway->GetWedstrijddagenForSporthal('LDNUN');
+        $wedstrijddagen = $this->nevoboGateway->GetWedstrijddagenForSporthal();
         foreach ($wedstrijddagen as $dag) {
 
             $dag->barshifts = $this->barcieGateway->GetBardag($dag->date);

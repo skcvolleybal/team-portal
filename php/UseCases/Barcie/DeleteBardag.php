@@ -8,7 +8,7 @@ class DeleteBardag implements Interactor
         $this->barcieGateway = $barcieGateway;
     }
 
-    public function Execute(object $data): void
+    public function Execute(object $data = null): void
     {
         $date = DateFunctions::CreateDateTime($data->date);
         if ($date === null) {
@@ -18,13 +18,12 @@ class DeleteBardag implements Interactor
         $bardag = $this->barcieGateway->GetBardag($date);
         if ($bardag->id === null) {
             return;
-        
+        }
 
-        
         if (count($bardag->shifts) > 0) {
             throw new UnexpectedValueException("Datum heeft nog aanwezigheden");
         }
 
-        $this->barcieGateway->DeleteBarcieDay($bardag);
+        $this->barcieGateway->DeleteBardag($bardag);
     }
 }

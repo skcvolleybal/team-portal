@@ -23,13 +23,13 @@ class JoomlaGateway
         $params = [$userId];
         $users = $this->database->Execute($query, $params);
         if (count($users) != 1) {
-            return null;
+            throw new UnexpectedValueException("Gebruiker met id '$userId' bestaat niet");
         }
 
         return new Persoon($users[0]->id, $users[0]->naam, $users[0]->email);
     }
 
-    public function GetLoggedInUser(): Persoon
+    public function GetLoggedInUser(): ?Persoon
     {
         $this->InitJoomla();
 
@@ -46,15 +46,13 @@ class JoomlaGateway
 
         if ($this->IsWebcie($user) && isset($_GET['impersonationId'])) {
             $impersonationId = $_GET['impersonationId'];
-            if ($this->DoesUserIdExist($impersonationId)) {
-                return $impersonationId;
-            }
+            return $this->GetUserById($impersonationId);
         }
 
         return $user;
     }
 
-    public function GetScheidsrechter(int $id): Scheidsrechter
+    public function GetScheidsrechter(?int $userId): ?Scheidsrechter
     {
         $query = 'SELECT U.id, name, email
                   FROM J3_users U
@@ -64,12 +62,14 @@ class JoomlaGateway
                         G.id in (
                             SELECT id FROM J3_usergroups WHERE title = "Scheidsrechters"
                         )';
-        $params = [$id];
-        $result = $this->database->Execute($query, $params);
-        if (count($result) != 1) {
-            throw new UnexpectedValueException('Unknown scheidsrechter: $scheidsrechter');
+        $params = [$userId];
+        $rows = $this->database->Execute($query, $params);
+        if (count($rows) != 1) {
+            return null;
         };
-        return new Scheidsrechter($result[0]->id, $result[0]->name, $result[0]->email);
+        return new Scheidsrechter(
+            new Persoon($rows[0]->id, $rows[0]->name, $rows[0]->email)
+        );
     }
 
     public function GetTeamByNaam(?string $naam): ?Team
@@ -88,17 +88,12 @@ class JoomlaGateway
         return new Team($result[0]->title, $result[0]->id);
     }
 
-    public function DoesUserIdExist(int $userId): bool
-    {
-        $query = 'SELECT id FROM J3_users WHERE id = ?';
-        $params = [$userId];
-        $result = $this->database->Execute($query, $params);
-        return count($result) > 0;
-    }
-
     public function GetUsersWithName(string $name): array
     {
-        $query = "SELECT * 
+        $query = "SELECT 
+                    id,
+                    name as naam,
+                    email
                   FROM J3_users 
                   WHERE name like '%$name%'
                   ORDER BY 
@@ -106,49 +101,42 @@ class JoomlaGateway
                     WHEN name LIKE '$name%' THEN 0 ELSE 1 end,
                   name  
                   LIMIT 0, 5";
-        return $this->database->Execute($query);
+        $rows = $this->database->Execute($query);
+        return $this->MapToPersonen($rows);
     }
 
-    private function IsUserInUsergroup(?int $userId, string $usergroup): bool
+    private function IsUserInUsergroup(?Persoon $user, string $usergroup): bool
     {
+        if ($user === null) {
+            return false;
+        }
         $query = 'SELECT *
                   FROM J3_user_usergroup_map M
                   INNER JOIN J3_usergroups G ON M.group_id = G.id
                   WHERE M.user_id = ? and G.title = ?';
-        $params = [$userId, $usergroup];
+        $params = [$user->id, $usergroup];
         $result = $this->database->Execute($query, $params);
         return count($result) > 0;
     }
 
-    public function IsScheidsrechter(Persoon $user): bool
+    public function IsScheidsrechter(?Persoon $user): bool
     {
-        return $this->IsUserInUsergroup($user->id, 'Scheidsrechters');
+        return $this->IsUserInUsergroup($user, 'Scheidsrechters');
     }
 
-    public function IsWebcie(Persoon $user): bool
+    public function IsWebcie(?Persoon $user): bool
     {
-        return $this->IsUserInUsergroup($user->id, 'Super Users');
+        return $this->IsUserInUsergroup($user, 'Super Users');
     }
 
-    public function IsTeamcoordinator(Persoon $user): bool
+    public function IsTeamcoordinator(?Persoon $user): bool
     {
-        return $this->IsUserInUsergroup($user->id, 'Teamcoordinator');
+        return $this->IsUserInUsergroup($user, 'Teamcoordinator');
     }
 
-    public function IsBarcie(Persoon $user): bool
+    public function IsBarcie(?Persoon $user): bool
     {
-        return $this->IsUserInUsergroup($user->id, 'Barcie');
-    }
-
-    public function IsCoach(Persoon $user): bool
-    {
-        $query = 'SELECT *
-                  FROM J3_user_usergroup_map M
-                  INNER JOIN J3_usergroups G ON M.group_id = G.id
-                  WHERE M.user_id = ? and G.title LIKE "Coach %"';
-        $params = [$user->id];
-        $result = $this->database->Execute($query, $params);
-        return count($result) > 0;
+        return $this->IsUserInUsergroup($user, 'Barcie');
     }
 
     public function GetTeam(Persoon $user): ?Team
@@ -186,11 +174,7 @@ class JoomlaGateway
                   ORDER BY name';
         $params = [$team->GetSkcNaam($team)];
         $rows =  $this->database->Execute($query, $params);
-        $result = [];
-        foreach ($rows as $row) {
-            $result[] = new Persoon($row->id, $row->naam, $row->email);
-        }
-        return $result;
+        return $this->MapToPersonen($rows);
     }
 
     public function GetCoachTeam(Persoon $user): ?Team
@@ -281,5 +265,14 @@ class JoomlaGateway
         } else {
             return false;
         }
+    }
+
+    private function MapToPersonen(array $rows): array
+    {
+        $result = [];
+        foreach ($rows as $row) {
+            $result[] = new Persoon($row->id, $row->naam, $row->email);
+        }
+        return $result;
     }
 }

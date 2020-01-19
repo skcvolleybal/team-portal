@@ -2,7 +2,7 @@
 
 class GetTeamoverzicht implements Interactor
 {
-    public function Execute(object $data)
+    public function Execute(object $data = null)
     {
         if ($data->teamnaam === null) {
             throw new \InvalidArgumentException("Teamnaam is leeg");

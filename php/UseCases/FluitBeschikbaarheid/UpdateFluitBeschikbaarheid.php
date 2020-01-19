@@ -10,7 +10,7 @@ class UpdateFluitBeschikbaarheid implements Interactor
         $this->joomlaGateway = $joomlaGateway;
     }
 
-    public function Execute(object $data)
+    public function Execute(object $data = null)
     {
         $datum = $data->datum;
         $tijd = $data->tijd;
@@ -26,7 +26,7 @@ class UpdateFluitBeschikbaarheid implements Interactor
         }
 
         $user = $this->joomlaGateway->GetUser();
-        $beschikbaarheid = $this->fluitBeschikbaarheidGateway->GetFluitBeschikbaarheid($user->id, $date);
+        $beschikbaarheid = $this->fluitBeschikbaarheidGateway->GetFluitBeschikbaarheid($user, $date);
         $beschikbaarheid->isBeschikbaar = $isBeschikbaar;
         if ($beschikbaarheid->id === null) {
             if ($beschikbaarheid->isBeschikbaar !== null) {

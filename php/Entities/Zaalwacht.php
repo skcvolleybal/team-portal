@@ -6,7 +6,7 @@ class Zaalwacht
     public DateTime $date;
     public ?int $id;
 
-    public function __construct(DateTime $date, int $id = null, Team $team = null)
+    public function __construct(int $id, DateTime $date, Team $team = null)
     {
         $this->id = $id;
         $this->team = $team;

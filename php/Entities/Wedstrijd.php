@@ -7,12 +7,13 @@ class Wedstrijd
     public Team $team1;
     public Team $team2;
     public string $poule;
-    public DateTime $timestamp;
+    public ?DateTime $timestamp;
+    public bool $isVeranderd;
     public string $locatie;
     public ?Team $telteam = null;
     public ?Persoon $scheidsrechter = null;
 
-    public function __construct($matchId, $id = null)
+    public function __construct(string $matchId, $id = null)
     {
         $this->id = $id;
         $this->matchId = $matchId;
@@ -29,7 +30,7 @@ class Wedstrijd
         return $wedstrijd1->timestamp > $wedstrijd2->timestamp;
     }
 
-    static function CreateFromNevoboWedstrijd(string $matchId, Team $team1, Team $team2, string $poule, DateTime $timestamp, string $locatie)
+    static function CreateFromNevoboWedstrijd(string $matchId, Team $team1, Team $team2, string $poule, ?DateTime $timestamp, string $locatie)
     {
         $newWedstrijd = new Wedstrijd($matchId);
         $newWedstrijd->team1 = $team1;
@@ -92,6 +93,31 @@ class Wedstrijd
     {
         foreach ($programma as $wedstrijd) {
             if ($wedstrijd->timestamp && DateFunctions::GetYmdNotation($wedstrijd->timestamp) === DateFunctions::GetYmdNotation($date)) {
+                return $wedstrijd;
+            }
+        }
+        return null;
+    }
+
+    public function AppendInformation(?Wedstrijd $wedstrijd)
+    {
+        if ($wedstrijd === null) {
+            return;
+        }
+
+        $this->timestamp = $this->timestamp ?? $wedstrijd->timestamp;
+        $this->locatie = $this->locatie ?? $wedstrijd->locatie;
+        $this->poule = $this->poule ?? $wedstrijd->poule;
+        $this->team1 = $this->team1 ?? $wedstrijd->team1;
+        $this->team2 = $this->team2 ?? $wedstrijd->team2;
+        $this->telteam = $this->telteam ?? $wedstrijd->telteam;
+        $this->scheidsrechter = $this->scheidsrechter ?? $wedstrijd->scheidsrechter;
+    }
+
+    public static function GetWedstrijdWithMatchId(array $wedstrijden, string $matchId): ?Wedstrijd
+    {
+        foreach ($wedstrijden as $wedstrijd) {
+            if ($wedstrijd->matchId === $matchId) {
                 return $wedstrijd;
             }
         }

@@ -9,13 +9,13 @@ class GetVoorpaginaRooster implements Interactor
         $this->zaalwachtGateway = new ZaalwachtGateway($database);
     }
 
-    public function Execute()
+    public function Execute(object $data = null)
     {
         $this->telFluitBeurten = $this->telFluitGateway->GetAllFluitEnTelbeurten();
         $this->zaalwachten = $this->zaalwachtGateway->GetZaalwachtIndeling();
 
         $result = [];
-        $wedstrijden = $this->nevoboGateway->GetProgrammaForSporthal('LDNUN');
+        $wedstrijden = $this->nevoboGateway->GetProgrammaForSporthal();
         foreach ($wedstrijden as $counter => $wedstrijd) {
             $i = $this->GetDateWithWedstrijden($result, $wedstrijd);
             if ($i !== null) {

@@ -17,13 +17,12 @@ $container = ContainerFactory::Create();
 AppFactory::setContainer($container);
 $app = AppFactory::create();
 
-// Add Error Middleware
 $errorMiddleware = $app->addErrorMiddleware(true, true, true);
 $errorHandler = new TeamPortalErrorHandler($app);
 $errorMiddleware->setDefaultErrorHandler($errorHandler);
 
 $app->add(function (Request $request, RequestHandlerInterface $handler): Response {
-    $methods = ['GET', 'POST', 'POST', 'DELETE', 'PUT', 'OPTIONS'];
+    $methods = ['GET', 'POST', 'DELETE', 'OPTIONS'];
     $requestHeaders = $request->getHeaderLine('Access-Control-Request-Headers');
 
     $response = $handler->handle($request);
@@ -36,7 +35,7 @@ $app->add(function (Request $request, RequestHandlerInterface $handler): Respons
         ->withHeader('Access-Control-Allow-Credentials', 'true');
 });
 
-$app->options('[/{path:.*}]', function (Request $request, Response $response, iterable $args) {
+$app->options('[/{path:.*}]', function (Request $request, Response $response, array $args) {
     $configuration = $this->get(Configuration::class);
     return $response
         ->withHeader('Access-Control-Allow-Origin', $configuration->AccessControlAllowOrigin)
@@ -53,7 +52,7 @@ $entryPoint =
 
         new RouteGroup('/wedstrijd-overzicht', [
             new GetRoute('', GetWedstrijdOverzicht::class),
-            new PostRoute('', UpdateAanwezigheid::class),
+            new PostRoute('/aanwezigheid', UpdateAanwezigheid::class),
         ], AuthorizationRole::USER),
 
         new RouteGroup('/fluiten', [
@@ -71,12 +70,12 @@ $entryPoint =
             new GetRoute('/rooster', GetBarcieRooster::class),
             new GetRoute('/beschikbaarheden', GetBarcieBeschikbaarheden::class),
             new RouteGroup('/dienst', [
-                new PostRoute('/add', AddBarcieAanwezigheid::class),
-                new PostRoute('/delete', DeleteBarcieAanwezigheid::class)
+                new PostRoute('', AddBarcieAanwezigheid::class),
+                new DeleteRoute('', DeleteBarcieAanwezigheid::class)
             ]),
-            new RouteGroup('/bardag', [
-                new PostRoute('/add', AddBardag::class),
-                new PostRoute('/delete', DeleteBardag::class)
+            new RouteGroup('/dag', [
+                new PostRoute('', AddBardag::class),
+                new DeleteRoute('', DeleteBardag::class)
             ])
         ], AuthorizationRole::TEAMCOORDINATOR),
 
@@ -95,6 +94,14 @@ $entryPoint =
                 new PostRoute('', UpdateTellers::class)
             ])
         ], AuthorizationRole::TEAMCOORDINATOR),
+
+        new RouteGroup('/dwf', [
+            new GetRoute('/gespeelde-punten', GetGespeeldePunten::class),
+        ], AuthorizationRole::USER),
+
+        new RouteGroup('/taken',[
+            new GetRoute('/synchroniseer-wedstrijden', SynchronizeWedstrijden::class)
+        ]),
 
         new RouteGroup('/joomla', [
             new GetRoute('/groepen', GetGroups::class),

@@ -1,16 +1,16 @@
 <?php
 
-class GetGroups
+class GetGroups implements Interactor
 {
     public function __construct(JoomlaGateway $joomlaGateway)
     {
         $this->joomlaGateway = $joomlaGateway;
     }
 
-    public function Execute(): array
+    public function Execute(object $data = null): array
     {
         $result = [];
-        
+
         $user = $this->joomlaGateway->GetUser();
         if ($user === null) {
             return $result;

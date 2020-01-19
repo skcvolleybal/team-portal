@@ -17,12 +17,27 @@ class AanwezigheidGateway
                     A.is_aanwezig AS isAanwezig,
                     U.id AS userId,
                     U.name AS naam,
-                    U.email
+                    U.email,
+                    T.teamId,
+                    T.teamnaam
                   FROM TeamPortal_aanwezigheden A
                   INNER JOIN J3_users U ON A.user_id = U.id
-                  WHERE user_id = ? AND match_id = ? AND rol = ?';
-
-        $params = [$user->id, $matchId, $rol];
+                  LEFT JOIN (
+                    SELECT 
+                        M.user_id as userId, 
+                        G.id as teamId, 
+                        G.title as teamnaam
+                    FROM J3_user_usergroup_map M
+                    INNER JOIN J3_usergroups G ON G.id = M.group_id
+                    WHERE G.id = ?
+                  ) T ON U.id = T.userId
+                  WHERE A.user_id = ? AND match_id = ? AND rol = ?';
+        $params = [
+            $user->team ? $user->team->id : null,
+            $user->id,
+            $matchId,
+            $rol            
+        ];
         $rows = $this->database->Execute($query, $params);
         if (count($rows) == 0) {
             return new Aanwezigheid($matchId, $user, null, $rol);
@@ -44,7 +59,7 @@ class AanwezigheidGateway
                     A.is_aanwezig AS isAanwezig,
                     U.id AS userId,
                     U.name AS naam,
-                    U.email
+                    U.email,
                     G.id AS teamId,
                     G.title AS teamnaam
                   FROM TeamPortal_aanwezigheden A

@@ -30,10 +30,10 @@ export class SelecteerBarcielidComponent implements OnInit {
     this.date = SelecteerBarcielidComponent.date;
     this.datum = SelecteerBarcielidComponent.datum;
     this.shift = SelecteerBarcielidComponent.shift;
-    this.GetBarcieLeden();
+    this.GetBarLeden();
   }
 
-  GetBarcieLeden() {
+  GetBarLeden() {
     this.isLoading = true;
     this.barcoService.GetBarcieBeschikbaarheden(this.date).subscribe(
       response => {

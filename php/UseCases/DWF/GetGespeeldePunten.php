@@ -3,26 +3,28 @@
 class GetGespeeldePunten implements Interactor
 {
 
-    public function __construct($database)
+    public function __construct(
+        StatistiekenGateway $statistiekenGateway,
+        JoomlaGateway $joomlaGateway)
     {
-        $this->statistiekenGateway = new StatistiekenGateway($database);
-        $this->joomlaGateway = new JoomlaGateway($database);
+        $this->statistiekenGateway = $statistiekenGateway;
+        $this->joomlaGateway = $joomlaGateway;
     }
 
-    public function Execute()
+    public function Execute(object $data = null)
     {
         $user = $this->joomlaGateway->GetUser();
         $team = $this->joomlaGateway->GetTeam($user);
         if (!$team) {
             throw new UnexpectedValueException("Je zit niet in een team");
         }
-        $gespeeldePunten = $this->statistiekenGateway->GetGespeeldePunten($team);
+        $spelers = $this->statistiekenGateway->GetGespeeldePunten($team);
         $result = [];
-        foreach ($gespeeldePunten as $row) {
-            if ($row->naam) {
+        foreach ($spelers as $speler) {
+            if ($speler->naam) {
                 $result[] = (object) [
-                    'naam' => implode("", array_map(function ($item) {return $item[0];}, explode(" ", $row->naam))),
-                    "gespeeldePunten" => $row->gespeeldePunten,
+                    'naam' => $speler->GetAfkorting(),
+                    "aantalGespeeldePunten" => $speler->aantalGespeeldePunten,
                 ];
             }
         }

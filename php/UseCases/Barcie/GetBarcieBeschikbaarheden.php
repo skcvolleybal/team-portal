@@ -8,7 +8,7 @@ class GetBarcieBeschikbaarheden implements Interactor
         $this->joomlaGateway = $joomlaGateway;
     }
 
-    public function Execute(object $data)
+    public function Execute(object $data = null)
     {
         $date = DateFunctions::CreateDateTime($data->date);
         if (!$date) {
@@ -17,10 +17,10 @@ class GetBarcieBeschikbaarheden implements Interactor
 
         $barleden = $this->barcieGateway->GetBarleden();
         $beschikbaarheden = $this->barcieGateway->GetBeschikbaarhedenForDate($date);
-        
+
         $result = new Beschikbaarheidssamenvatting();
         foreach ($beschikbaarheden as $beschikbaarheid) {
-            $barlid = $this->GetBarlidById($barleden, $beschikbaarheid);
+            $barlid = $this->GetBarlid($barleden, $beschikbaarheid->persoon);
             if ($beschikbaarheid->isBeschikbaar) {
                 $result->Ja[] = $barlid;
             } else {
@@ -37,7 +37,7 @@ class GetBarcieBeschikbaarheden implements Interactor
         return $result;
     }
 
-    private function GetBarlidById(array $barleden, Persoon $persoon)
+    private function GetBarlid(array $barleden, Persoon $persoon)
     {
         foreach ($barleden as $barlid) {
             if ($barlid->id === $persoon->id) {

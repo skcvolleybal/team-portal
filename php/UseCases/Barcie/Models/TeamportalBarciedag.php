@@ -1,6 +1,6 @@
 <?php
 
-class TeamportalBardag
+class BardagModel
 {
     public string $date;
     public string $datum;
@@ -12,10 +12,14 @@ class TeamportalBardag
         $this->datum = DateFunctions::GetDutchDate($dag->date);
 
         foreach ($dag->shifts as $i => $shift) {
-            $this->shifts[] = new TeamportalBarshift($shift);
+            $this->shifts[] = new BarshiftModel($shift);
             foreach ($shift->barleden as $barlid) {
-                $this->shifts[$i]->barleden[] = new TeamportalBarlid($barlid);
+                $this->shifts[$i]->barleden[] = new BarlidModel($barlid);
             }
+        }
+
+        if (count($this->shifts) == 0) {
+            $this->shifts[] = new BarshiftModel(new Barshift(1));
         }
     }
 }

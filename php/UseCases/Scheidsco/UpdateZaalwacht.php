@@ -10,14 +10,14 @@ class UpdateZaalwacht implements Interactor
         $this->joomlaGateway = $joomlaGateway;
     }
 
-    public function Execute(object $data)
+    public function Execute(object $data = null)
     {
         $date = DateFunctions::CreateDateTime($data->date);
         if (!$date) {
             throw new UnexpectedValueException("Incorrecte datum: $data->date");
         }
 
-        $zaalwacht = $this->zaalwachtGateway->GetZaalwacht($date) ?? new Zaalwacht($date);
+        $zaalwacht = $this->zaalwachtGateway->GetZaalwacht($date);
         $zaalwacht->team = $this->joomlaGateway->GetTeamByNaam($data->team);
         if ($zaalwacht->id === null) {
             $this->zaalwachtGateway->Insert($zaalwacht);

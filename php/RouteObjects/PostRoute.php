@@ -18,7 +18,7 @@ class PostRoute extends CrudRoute
         $interactor = $this->interactor;
         $route = $this;
 
-        $group->post($this->route, function (Request $request, Response $response, iterable $args) use ($interactor, $route) {
+        $group->post($this->route, function (Request $request, Response $response, array $args) use ($interactor, $route) {
             $joomlaGateway = $this->get(JoomlaGateway::class);
             $route->Authorize($joomlaGateway, $route->role);
 

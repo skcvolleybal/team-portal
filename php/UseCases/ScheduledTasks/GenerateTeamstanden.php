@@ -8,7 +8,7 @@ class GenerateTeamstanden implements Interactor
         $this->nevoboGateway = $nevoboGateway;
     }
 
-    public function Execute()
+    public function Execute(object $data = null)
     {
         $teams = Team::GetAlleSkcTeams();
         foreach ($teams as &$team) {

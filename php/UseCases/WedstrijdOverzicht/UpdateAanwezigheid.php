@@ -9,10 +9,11 @@ class UpdateAanwezigheid implements Interactor
         $this->aanwezigheidGateway = $aanwezigheidGateway;
     }
 
-    public function Execute(object $data)
+    public function Execute(object $data = null)
     {
         $spelerId = $data->spelerId;
         $user = $spelerId === null ? $this->joomlaGateway->GetUser() : $this->joomlaGateway->GetUser($spelerId);
+        $user->team = $this->joomlaGateway->GetTeam($user);
         $matchId = $data->matchId;
         $isAanwezig = $data->isAanwezig;
         $rol = $data->rol;

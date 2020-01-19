@@ -14,7 +14,7 @@ class BarcieGateway
                     date,
                     U.id AS userId,
                     U.name AS naam,
-                    U.email
+                    U.email,
                     shift,
                     is_bhv AS isBhv
                   FROM barcie_days D
@@ -24,6 +24,25 @@ class BarcieGateway
                   ORDER BY date, shift, name';
         $rows = $this->database->Execute($query);
         return $this->MapToBardagen($rows);
+    }
+
+    public function GetBardag(DateTime $date): Bardag
+    {
+        $query = 'SELECT 
+                    D.id,
+                    date,
+                    U.id AS userId,
+                    U.name AS naam,
+                    U.email,
+                    shift,
+                    is_bhv AS isBhv
+                  FROM barcie_days D
+                  LEFT JOIN barcie_schedule_map M ON D.id = M.day_id
+                  LEFT JOIN J3_users U ON U.id = M.user_id
+                  WHERE D.date = ?';
+        $params = [DateFunctions::GetYmdNotation($date)];
+        $rows = $this->database->Execute($query, $params);
+        return count($rows) > 0 ? $this->MapToBardagen($rows)[0] : new Bardag(null, $date);
     }
 
     public function AddBardag(DateTime $date)
@@ -39,7 +58,9 @@ class BarcieGateway
                     A.id,
                     U.id AS userId,
                     U.name AS naam,
-                    D.date, 
+                    U.email,
+                    D.id as dagId,
+                    D.date,
                     A.is_beschikbaar AS isBeschikbaar
                   FROM barcie_availability A
                   INNER JOIN J3_users U ON A.user_id = U.id
@@ -48,7 +69,7 @@ class BarcieGateway
         $params = [$persoon->id];
         $rows = $this->database->Execute($query, $params);
         $beschikbaarheden = $this->MapToBeschikbaarheden($rows);
-        return count($beschikbaarheden) > 0 ? $beschikbaarheden[0] : null;
+        return count($beschikbaarheden) > 0 ? $beschikbaarheden : [];
     }
 
     public function GetBeschikbaarhedenForDate(DateTime $date): array
@@ -57,6 +78,8 @@ class BarcieGateway
                     A.id,
                     U.id AS userId,
                     U.name AS naam,
+                    U.email,
+                    D.id as dagId,
                     D.date,
                     A.is_beschikbaar AS isBeschikbaar
                   FROM barcie_availability A
@@ -68,23 +91,26 @@ class BarcieGateway
         return $this->MapToBeschikbaarheden($rows);
     }
 
-    public function GetBeschikbaarheid(Persoon $user, int $dayId): ?Barciebeschikbaarheid
+    public function GetBeschikbaarheid(Persoon $user, Bardag $bardag): Barciebeschikbaarheid
     {
         $query = 'SELECT
                     A.id,
                     U.id AS userId,
                     U.name AS naam,
                     U.email,
+                    D.id as dagId,
                     D.date, 
                     A.is_beschikbaar AS isBeschikbaar
                   FROM barcie_availability A
                   INNER JOIN barcie_days D ON A.day_id = D.id
                   INNER JOIN J3_users U ON A.user_id = U.id
                   WHERE user_id = ? and day_id = ?';
-        $params = [$user->id, $dayId];
+        $params = [$user->id, $bardag->id];
         $rows = $this->database->Execute($query, $params);
         $beschikbaarheden = $this->MapToBeschikbaarheden($rows);
-        return count($beschikbaarheden) > 0 ? $beschikbaarheden[0] : null;
+        return count($beschikbaarheden) > 0 ?
+            $beschikbaarheden[0] :
+            new Barciebeschikbaarheid($bardag, $user, null);
     }
 
     public function UpdateBeschikbaarheid(Barciebeschikbaarheid $beschikbaarheid): void
@@ -118,14 +144,16 @@ class BarcieGateway
         $this->database->Execute($query, $params);
     }
 
-    public function GetBardienst(int $dayId, int $userId, int $shift): ?Bardienst
+    public function GetBardienst(Bardag $dag, Persoon $user, int $shift): Bardienst
     {
         $query = 'SELECT 
                     M.id,
+                    D.id as dayId,
                     D.date,
                     M.day_id AS dayId,
                     U.id AS userId,
                     U.name AS naam,
+                    U.email,
                     shift,
                     is_bhv AS isBhv
                   FROM barcie_schedule_map M
@@ -134,10 +162,18 @@ class BarcieGateway
                   WHERE day_id = ? and
                         user_id = ? and
                         shift = ?';
-        $params = [$dayId, $userId, $shift];
+        $params = [$dag->id, $user->id, $shift];
         $rows = $this->database->Execute($query, $params);
-        $beschikbaarheden = $this->MapToBeschikbaarheden($rows);
-        return count($beschikbaarheden) > 0 ? $beschikbaarheden[0] : null;
+
+        return count($rows) > 0 ?
+            new Bardienst(
+                new Bardag($rows[0]->dayId, DateFunctions::CreateDateTime($rows[0]->date)),
+                new Persoon($rows[0]->userId, $rows[0]->naam, $rows[0]->email),
+                $rows[0]->shift,
+                $rows[0]->isBhv,
+                $rows[0]->id
+            ) :
+            new Bardienst($dag, $user, $shift, false);
     }
 
     public function GetBardiensten(): array
@@ -145,6 +181,7 @@ class BarcieGateway
         $query = 'SELECT
                     M.userId,
                     M.naam,
+                    M.email,
                     M.is_bhv AS isBhv,
                     D.date,
                     M.shift
@@ -155,6 +192,7 @@ class BarcieGateway
                         M.shift,
                         U.id AS userId,                        
                         U.name AS naam,
+                        U.email,
                         M.is_bhv
                     FROM barcie_schedule_map M
                     INNER JOIN J3_users U on U.id = M.user_id
@@ -164,9 +202,9 @@ class BarcieGateway
         $rows = $this->database->Execute($query);
         $result = [];
         foreach ($rows as $row) {
-            $persoon = $row->userId ? new Persoon($row->userId, $row->naam) : null;
+            $persoon = $row->userId ? new Persoon($row->userId, $row->naam, $row->email) : null;
             $result[] = new Bardienst(
-                DateFunctions::CreateDateTime($row->date),
+                new Bardag($row->id, DateFunctions::CreateDateTime($row->date)),
                 $persoon,
                 $row->shift,
                 $row->isBhv
@@ -175,44 +213,12 @@ class BarcieGateway
         return $result;
     }
 
-    public function GetBardienstenForDate(DateTime $date): array
-    {
-        $query = "SELECT
-                    D.date,
-                    U.id AS userId,
-                    U.name AS naam,
-                    U.email,
-                    shift,
-                    is_bhv AS isBhv
-                  FROM barcie_schedule_map M
-                  INNER JOIN J3_users U ON M.user_id = U.id
-                  INNER JOIN barcie_days D ON M.day_id = D.id
-                  WHERE D.date = ?";
-        $params = [$date->format("Y-m-d")];
-        $result = $this->database->Execute($query, $params);
-
-        $diensten = [];
-        foreach ($result as $dienst) {
-            $diensten[] = new Bardienst(
-                $dienst->date,
-                new Persoon(
-                    $dienst->userId,
-                    $dienst->naam,
-                    $dienst->email
-                ),
-                $dienst->shift,
-                $dienst->isBhv
-            );
-        }
-
-        return $diensten;
-    }
-
     public function GetBarleden(): array
     {
         $query = 'SELECT
                     U.id AS userId,
                     U.name AS naam,
+                    U.email,
                     count(B.id) AS aantalDiensten
                   FROM J3_users U
                   INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
@@ -224,18 +230,20 @@ class BarcieGateway
         $rows =  $this->database->Execute($query);
         $result = [];
         foreach ($rows as $row) {
-            $barlid = new Barlid($row->userId, $row->naam);
-            $barlid->aantalDiensten = $row->aantalDiensten;
+            $barlid = new Barlid(
+                new Persoon($row->userId, $row->naam, $row->email),
+                $row->aantalDiensten
+            );
             $result[] = $barlid;
         }
         return $result;
     }
 
-    public function InsertBardienst(Bardienst $dienst, int $dayId)
+    public function InsertBardienst(Bardienst $dienst)
     {
         $query = 'INSERT INTO barcie_schedule_map (day_id, user_id, shift)
                   VALUES (?, ?, ?)';
-        $params = [$dayId, $dienst->persoon->id, $dienst->shift];
+        $params = [$dienst->bardag->id, $dienst->persoon->id, $dienst->shift];
 
         return $this->database->Execute($query, $params);
     }
@@ -249,11 +257,11 @@ class BarcieGateway
         $this->database->Execute($query, $params);
     }
 
-    public function DeleteBarcieDay(int $id)
+    public function DeleteBardag(Bardag $bardag)
     {
         $query = 'DELETE FROM barcie_days
                   WHERE id = ?';
-        $params = [$id];
+        $params = [$bardag->id];
 
         $this->database->Execute($query, $params);
     }
@@ -274,20 +282,21 @@ class BarcieGateway
                     U.id AS userId, 
                     U.name AS naam, 
                     U.email,
+                    D.id as dayId,
                     D.date, 
                     M.shift, 
                     M.is_bhv AS isBhv
                   FROM J3_users U
                   INNER JOIN barcie_schedule_map M ON M.user_id = U.id
                   INNER JOIN barcie_days D ON M.day_id = D.id
-                  WHERE U.id = ? AND D.date >= NOW()';
+                  WHERE U.id = ? AND D.date >= CURDATE()';
         $params = [$user->id];
 
         $rows = $this->database->Execute($query, $params);
         $diensten = [];
         foreach ($rows as $row) {
             $diensten[] = new Bardienst(
-                new Bardag(DateFunctions::CreateDateTime($row->date)),
+                new Bardag($row->dayId, DateFunctions::CreateDateTime($row->date)),
                 new Persoon(
                     $row->userId,
                     $row->naam,
@@ -306,14 +315,14 @@ class BarcieGateway
         $result = [];
         foreach ($rows as $row) {
             $result[] = new Barciebeschikbaarheid(
-                $row->id,
+                new Bardag($row->dagId, DateFunctions::CreateDateTime($row->date)),
                 new Persoon(
                     $row->userId,
                     $row->naam,
                     $row->email
                 ),
-                DateFunctions::CreateDateTime($row->date),
-                $row->isBeschikbaar == "Ja"
+                $row->isBeschikbaar == "Ja",
+                $row->id
             );
         }
         return $result;
@@ -325,10 +334,9 @@ class BarcieGateway
         $currentDag = null;
         $currentShift = null;
         foreach ($rows as $row) {
-            $date = DateFunctions::CreateDateTime($row->date);
             if ($currentDag !== $row->date) {
                 $currentDag = $row->date;
-                $result[] = new Bardag($date);
+                $result[] = new Bardag($row->id, DateFunctions::CreateDateTime($row->date));
                 $currentShift = null;
             }
             $i = count($result) - 1;
@@ -348,9 +356,11 @@ class BarcieGateway
             $j = count($result[$i]->shifts) - 1;
 
             $barlid = new Barlid(
-                $row->userId,
-                $row->naam,
-                $row->email
+                new Persoon(
+                    $row->userId,
+                    $row->naam,
+                    $row->email
+                )
             );
             $barlid->shift = $row->shift;
             $barlid->isBhv = $row->isBhv == 1;

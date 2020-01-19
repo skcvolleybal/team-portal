@@ -23,8 +23,8 @@ class ZaalwachtGateway
         $result = [];
         foreach ($rows as $row) {
             $result[] = new Zaalwacht(
-                $row->date,
                 $row->id,
+                DateFunctions::CreateDateTime($row->date),
                 new Team($row->teamnaam, $row->teamId)
             );
         }
@@ -90,8 +90,8 @@ class ZaalwachtGateway
             return null;
         }
         return new Zaalwacht(
-            DateFunctions::CreateDateTime($result[0]->date),
             $result[0]->id,
+            DateFunctions::CreateDateTime($result[0]->date),
             new Team($result[0]->teamnaam, $result[0]->teamId)
         );
     }

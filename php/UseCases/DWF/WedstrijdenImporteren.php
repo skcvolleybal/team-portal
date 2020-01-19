@@ -10,7 +10,7 @@ class WedstrijdenImporteren implements Interactor
         $this->gespeeldeWedstrijdenGateway = new GespeeldeWedstrijdenGateway($database);
     }
 
-    public function Execute()
+    public function Execute(object $data = null)
     {
         $this->gespeeldeWedstrijden = $this->dwfGateway->GetGespeeldeWedstrijden();
         $this->opgeslagenWedstrijden = $this->gespeeldeWedstrijdenGateway->GetGespeeldeWedstrijden();

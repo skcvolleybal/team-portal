@@ -6,7 +6,7 @@
 
 
 
-//     // public function GetUscRooster($skcProgramma, Team $team, Team $coachTeam): array
+//     // public function GetUscRooster($skcProgramma, Team $team, Team $coachteam): array
 //     // {
 //     //     $rooster = [];
 //     //     foreach ($skcProgramma as $wedstrijd) {
@@ -34,10 +34,10 @@
 //     //         $rooster[$i]->speeltijden[$j]->wedstrijden[] = (object) [
 //     //             "team1" => $wedstrijd->team1->naam,
 //     //             "isTeam1" => $wedstrijd->team1->Equals($team),
-//     //             "isCoachTeam1" => $wedstrijd->team1->Equals($coachTeam),
+//     //             "isCoachTeam1" => $wedstrijd->team1->Equals($coachteam),
 //     //             "team2" => $wedstrijd->team2->naam,
 //     //             "isTeam2" => $wedstrijd->team2->Equals($team),
-//     //             "isCoachTeam2" => $wedstrijd->team2->Equals($coachTeam),
+//     //             "isCoachTeam2" => $wedstrijd->team2->Equals($coachteam),
 //     //         ];
 //     //     }
 

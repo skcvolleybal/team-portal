@@ -8,7 +8,7 @@ class AddBarcieAanwezigheid implements Interactor
         $this->joomlaGateway = $joomlaGateway;
     }
 
-    public function Execute(object $data): void
+    public function Execute(object $data = null): void
     {
         if ($data->barlidId === null) {
             throw new InvalidArgumentException("barlidId is leeg");
@@ -21,7 +21,7 @@ class AddBarcieAanwezigheid implements Interactor
         }
 
         $date = DateFunctions::CreateDateTime($data->date);
-        $barlid = $this->barcieGateway->GetUser($data->barlidId);
+        $barlid = $this->joomlaGateway->GetUser($data->barlidId);
 
         $bardag = $this->barcieGateway->GetBardag($date);
         if ($bardag->id === null) {

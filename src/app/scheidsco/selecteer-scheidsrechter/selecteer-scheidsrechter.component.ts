@@ -32,7 +32,7 @@ export class SelecteerScheidsrechterComponent implements OnInit {
     this.wedstrijd = SelecteerScheidsrechterComponent.wedstrijd;
     this.teams = this.wedstrijd.teams;
     this.tijd = SelecteerScheidsrechterComponent.tijd;
-    this.getScheidsrechterOpties(this.wedstrijd.id);
+    this.getScheidsrechterOpties(this.wedstrijd.matchId);
   }
 
   getScheidsrechterOpties(matchId: string) {
@@ -84,7 +84,7 @@ export class SelecteerScheidsrechterComponent implements OnInit {
 
   UpdateScheidsrechter(scheidsrechter) {
     this.scheidscoService
-      .UpdateScheidsrechter(this.wedstrijd.id, scheidsrechter.id)
+      .UpdateScheidsrechter(this.wedstrijd.matchId, scheidsrechter.id)
       .subscribe(() => {
         this.modal.close(scheidsrechter.naam);
       });

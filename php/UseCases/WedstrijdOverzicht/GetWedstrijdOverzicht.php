@@ -15,7 +15,7 @@ class GetWedstrijdOverzicht implements Interactor
         $this->nevoboGateway = $nevoboGateway;
     }
 
-    public function Execute()
+    public function Execute(object $data = null)
     {
         $overzicht = [];
         $user = $this->joomlaGateway->GetUser();
@@ -53,7 +53,7 @@ class GetWedstrijdOverzicht implements Interactor
             $invalTeamInfo = null;
             $onbekendForMatch = [];
 
-            $isEigenWedstrijd = $wedstrijd->isEigenWedstrijd($team);
+            $isEigenWedstrijd = $wedstrijd->IsEigenWedstrijd($team);
             if ($isEigenWedstrijd) {
                 $aanwezighedenForMatch = $this->GetAanwezighedenForWedstrijd($matchId, $aanwezigheden, $team);
                 $invalTeamInfo = $this->GetInvalTeamInfo($wedstrijd);
@@ -176,12 +176,12 @@ class GetWedstrijdOverzicht implements Interactor
         foreach ($bekendeAanwezigheden as $aanwezigheid) {
             for ($i = 0; $i < count($teamgenoten); $i++) {
                 if ($aanwezigheid->id === $teamgenoten[$i]->id) {
-                    array_splice($spelers, $i, 1);
+                    array_splice($teamgenoten, $i, 1);
                     break;
                 }
             }
         }
-        return $spelers;
+        return $teamgenoten;
     }
 
     private function IsAanwezig(array $aanwezigheden, string $matchId, Persoon $user)

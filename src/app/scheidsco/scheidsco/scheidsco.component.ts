@@ -70,10 +70,11 @@ export class ScheidscoComponent implements OnInit {
   SetZaalwacht(date, team) {
     this.speeldagen.forEach(speeldag => {
       if (speeldag.date === date) {
-        speeldag.zaalwacht =
+        speeldag.zaalwacht = team;
+        speeldag.zaalwachtShortNotation =
           team == null
             ? null
-            : (speeldag.zaalwacht = `${team[4]}${team.substring(7)}`);
+            : (speeldag.zaalwacht = `${team[0]}${team.substring(6)}`);
         return;
       }
     });
@@ -89,7 +90,11 @@ export class ScheidscoComponent implements OnInit {
     this.modalService
       .open(component)
       .result.then(uitvoerder => {
-        this.SetUitvoerderOnTaak(geselecteerdeWedstrijd.id, taak, uitvoerder);
+        this.SetUitvoerderOnTaak(
+          geselecteerdeWedstrijd.matchId,
+          taak,
+          uitvoerder
+        );
       })
       .catch(() => {});
   }
@@ -98,7 +103,7 @@ export class ScheidscoComponent implements OnInit {
     this.speeldagen.forEach(speeldag => {
       speeldag.speeltijden.forEach(speeltijd => {
         speeltijd.wedstrijden.forEach(wedstrijd => {
-          if (wedstrijd.id === matchId) {
+          if (wedstrijd.matchId === matchId) {
             wedstrijd[taak] = uitvoerder;
             return;
           }

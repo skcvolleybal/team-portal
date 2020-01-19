@@ -18,7 +18,7 @@ class GetRoute extends CrudRoute
         $interactor = $this->interactor;
         $route = $this;
 
-        $group->get($this->route, function (Request $request, Response $response, iterable $args) use ($interactor, $route) {
+        $group->get($this->route, function (Request $request, Response $response, array $args) use ($interactor, $route) {
             $joomlaGateway = $this->get(JoomlaGateway::class);
             $route->Authorize($joomlaGateway, $route->role);
 

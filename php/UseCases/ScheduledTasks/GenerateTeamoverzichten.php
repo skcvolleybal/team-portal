@@ -11,7 +11,7 @@ class GenerateTeamoverzichten implements Interactor
         $this->joomlaGateway = $joomlaGateway;
     }
 
-    public function Execute()
+    public function Execute(object $data = null)
     {
         $teams = Team::GetAlleSkcTeams();
         $result = [];

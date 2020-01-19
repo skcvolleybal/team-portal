@@ -1,18 +1,14 @@
 <?php
 
-class GetCurrentUser
+class GetCurrentUser implements Interactor
 {
     public function __construct(JoomlaGateway $joomlaGateway)
     {
         $this->joomlaGateway = $joomlaGateway;
     }
 
-    public function Execute()
+    public function Execute(object $data = null)
     {
-        $user = $this->joomlaGateway->GetUser();
-        return (object) [
-            'naam' => $user->naam,
-            'id' => $user->id
-        ];
+        return $this->joomlaGateway->GetUser();
     }
 }

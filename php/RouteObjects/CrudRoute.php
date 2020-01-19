@@ -11,7 +11,7 @@ abstract class CrudRoute
         return $response;
     }
 
-    function MergeInputObjects(iterable $queryParameters, iterable $postBody): object
+    function MergeInputObjects(array $queryParameters, array $postBody): object
     {
         $result = (object) [];
         foreach ($queryParameters as $key => $value) {
@@ -35,23 +35,27 @@ abstract class CrudRoute
                 $isAuthorized = $user !== null;
                 break;
             case 2:
-                $isAuthorized = $joomlaGateway->isBarcie($user);
+                $isAuthorized = $joomlaGateway->IsBarcie($user);
                 break;
             case 3:
-                $isAuthorized =  $joomlaGateway->isScheidsrechter($user);
+                $isAuthorized =  $joomlaGateway->IsScheidsrechter($user);
                 break;
             case 4:
-                $isAuthorized =  $joomlaGateway->isTeamcoordinator($user);
+                $isAuthorized =  $joomlaGateway->IsTeamcoordinator($user);
                 break;
             case 5:
-                $isAuthorized =  $joomlaGateway->isWebcie($user);
+                $isAuthorized =  $joomlaGateway->IsWebcie($user);
                 break;
             default:
                 $isAuthorized = false;
         }
 
         if (!$isAuthorized) {
-            throw new UnauthorizedException();
+            if ($user !== null) {
+                throw new UnexpectedValueException("Je bent hier niet voor geautoriseerd");
+            } else {
+                throw new UnauthorizedException();
+            }
         }
     }
 

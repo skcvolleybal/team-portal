@@ -15,14 +15,14 @@ class GetScheidsrechters implements Interactor
         $this->fluitBeschikbaarheidGateway = $fluitBeschikbaarheidGateway;
     }
 
-    public function Execute(object $data): array
+    public function Execute(object $data = null): array
     {
         if ($data->matchId === null) {
             throw new InvalidArgumentException("MatchId niet gezet");
         }
 
         $fluitWedstrijd = null;
-        $uscWedstrijden = $this->nevoboGateway->GetProgrammaForSporthal('LDNUN');
+        $uscWedstrijden = $this->nevoboGateway->GetProgrammaForSporthal();
         foreach ($uscWedstrijden as $wedstrijd) {
             if ($wedstrijd->matchId == $data->matchId) {
                 $fluitWedstrijd = $wedstrijd;
@@ -30,7 +30,7 @@ class GetScheidsrechters implements Interactor
             }
         }
         if ($fluitWedstrijd === null) {
-            throw new UnexpectedValueException("Wedstrijd met id $matchId niet gevonden");
+            throw new UnexpectedValueException("Wedstrijd met id $data->matchId niet gevonden");
         }
 
         $date = $fluitWedstrijd->timestamp;

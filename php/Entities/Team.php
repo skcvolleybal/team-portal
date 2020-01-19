@@ -26,7 +26,7 @@ class Team
         $this->teamgenoten = $teamgenoten;
 
         foreach (Team::$alleSkcTeams as $team) {
-            if ($team === $this->naam) {
+            if ($team->naam === $this->naam) {
                 $this->niveau = $team->niveau;
                 break;
             }

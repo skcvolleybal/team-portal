@@ -5,7 +5,8 @@ class Wedstrijddag
     private $date;
     public array $speeltijden = [];
     public array $barshifts = [];
-    public ?Team $zaalwacht = null;
+    public array $bardiensten = [];
+    public ?Zaalwacht $zaalwacht = null;
 
     public function __get($property)
     {
@@ -32,5 +33,10 @@ class Wedstrijddag
         }
         $this->speeltijden[] = new Speeltijd($wedstrijd->timestamp);
         $this->speeltijden[0]->wedstrijden[] = $wedstrijd;
+    }
+
+    public static function Compare(Wedstrijddag $dag1, Wedstrijddag $dag2)
+    {
+        return $dag1->date > $dag2->date;
     }
 }

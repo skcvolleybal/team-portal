@@ -9,44 +9,44 @@ export class BarcoService {
   constructor(private httpClient: HttpClient) {}
 
   AddBarcieDag(date: any) {
-    return this.httpClient.post<any>(
-      environment.baseUrl + 'barcie/barciedag/add',
-      {
-        date: `${date.year}-${date.month}-${date.day}`
-      }
-    );
+    return this.httpClient.post<any>(environment.baseUrl + 'barco/dag/add', {
+      date: `${date.year}-${date.month}-${date.day}`
+    });
   }
 
   DeleteBarcieDag(date: string) {
-    return this.httpClient.post<any>(
-      environment.baseUrl + 'barcie/barciedag/delete',
+    return this.httpClient.delete<any>(
+      environment.baseUrl + 'barco/dag',
       {
-        date
+        params: {
+          date
+        }
       }
     );
   }
 
-  ToggleBhv(date: string, shift: string, barcielidId: number): void {
+  ToggleBhv(date: string, shift: string, barlidId: number): void {
     this.httpClient
-      .post<any>( environment.baseUrl + 'barcie/toggle-bhv',
-        {
-          date,
-          barcielidId,
-          shift
-        }
-      )
+      .post<any>(environment.baseUrl + 'barco/toggle-bhv', {
+        date,
+        barlidId,
+        shift
+      })
       .subscribe();
   }
 
   GetBarcieBeschikbaarheden(date: string) {
-    return this.httpClient.get<any>(environment.baseUrl + 'barcie/beschikbaarheden', {
-      params: {
-        date
+    return this.httpClient.get<any>(
+      environment.baseUrl + 'barco/beschikbaarheden',
+      {
+        params: {
+          date
+        }
       }
-    });
+    );
   }
 
   GetBarcieRooster() {
-    return this.httpClient.get<any>(environment.baseUrl + 'barcie/rooster');
+    return this.httpClient.get<any>(environment.baseUrl + 'barco/rooster');
   }
 }

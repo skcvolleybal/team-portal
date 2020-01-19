@@ -1,0 +1,19 @@
+<?php
+
+class DwfWedstrijd
+{
+    public string $id;
+    public Team $team1;
+    public Team $team2;
+    public int $setsTeam1;
+    public int $setsTeam2;
+
+    public function __construct(int $id, Team $team1, Team $team2, int $setsTeam1, int $setsTeam2)
+    {
+        $this->id = $id;
+        $this->team1 = $team1;
+        $this->team2 = $team2;
+        $this->setsTeam1 = $setsTeam1;
+        $this->setsTeam2 = $setsTeam2;
+    }
+}

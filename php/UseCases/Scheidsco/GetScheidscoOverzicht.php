@@ -14,15 +14,14 @@ class GetScheidscoOverzicht implements Interactor
         $this->zaalwachtGateway = $zaalwachtGateway;
     }
 
-    public function Execute(): array
+    public function Execute(object $data = null): array
     {
         $result = [];
         $wedstrijddagen = $this->nevoboGateway->GetWedstrijddagenForSporthal('LDNUN', 365);
 
-        foreach ($wedstrijddagen as $dag) {
-            $zaalwacht = $this->zaalwachtGateway->GetZaalwacht($dag->date);
-            $dag->zaalwacht = $zaalwacht !== null ? $zaalwacht->team : null;
-            foreach ($dag->speeltijden as $speeltijd) {
+        foreach ($wedstrijddagen as $wedstrijddag) {
+            $wedstrijddag->zaalwacht = $this->zaalwachtGateway->GetZaalwacht($wedstrijddag->date);
+            foreach ($wedstrijddag->speeltijden as $speeltijd) {
                 foreach ($speeltijd->wedstrijden as &$wedstrijd) {
                     $indeling = $this->telFluitGateway->GetWedstrijd($wedstrijd->matchId);
                     if ($indeling !== null) {
@@ -32,8 +31,7 @@ class GetScheidscoOverzicht implements Interactor
                 }
             }
 
-
-            $result[] = $this->MapToUseCaseModel($dag);
+            $result[] = $this->MapToUseCaseModel($wedstrijddag);
         }
 
         return $result;
@@ -41,24 +39,18 @@ class GetScheidscoOverzicht implements Interactor
 
     private function MapToUseCaseModel(Wedstrijddag $dag)
     {
-        $result = (object) [
-            "datum" => DateFunctions::GetDutchDate($dag->date),
-            "date" => DateFunctions::GetYmdNotation($dag->date),
-            "speeltijden" => [],
-            "zaalwacht" => $dag->zaalwacht ? $dag->zaalwacht->GetShortNotation() : null
-        ];
+        $result = new WedstrijddagModel($dag);
+
         foreach ($dag->speeltijden as $i => $speeltijd) {
-            $result->speeltijden[] = (object) [
-                'tijd' => DateFunctions::GetTime($speeltijd->time),
-                'wedstrijden' => [],
-            ];
+            $result->speeltijden[] = new SpeeltijdModel($speeltijd);
+
             foreach ($speeltijd->wedstrijden as $wedstrijd) {
-                $result->speeltijden[$i]->wedstrijden[] = (object) [
-                    "id" => $wedstrijd->matchId,
-                    "teams" => $wedstrijd->team1->naam . " - " . $wedstrijd->team2->naam,
-                    "scheidsrechter" => $wedstrijd->scheidsrechter ? $wedstrijd->scheidsrechter->naam : null,
-                    "tellers" => $wedstrijd->telteam ? $wedstrijd->telteam->naam : null,
-                ];
+                $newWedstrijd = new WedstrijdModel($wedstrijd);
+                $newWedstrijd->teams = $wedstrijd->team1->naam . " - " . $wedstrijd->team2->naam;
+                $newWedstrijd->scheidsrechter = $wedstrijd->scheidsrechter ? $wedstrijd->scheidsrechter->naam : null;
+                $newWedstrijd->tellers = $wedstrijd->telteam ? $wedstrijd->telteam->GetSkcNaam() : null;
+
+                $result->speeltijden[$i]->wedstrijden[] = $newWedstrijd;
             }
         }
         return $result;

@@ -15,14 +15,14 @@ class GetBarcieBeschikbaarheid implements Interactor
         $this->barcieBeschikbaarheidHelper = $barcieBeschikbaarheidHelper;
     }
 
-    public function Execute(): array
+    public function Execute(object $data = null): array
     {
         $user = $this->joomlaGateway->GetUser();
         $team = $this->joomlaGateway->GetTeam($user);
-        $coachTeam = $this->joomlaGateway->GetCoachTeam($user);
+        $coachteam = $this->joomlaGateway->GetCoachTeam($user);
 
         $alleWedstrijden = $this->nevoboGateway->GetWedstrijdenForTeam($team);
-        $alleCoachWedstrijden = $this->nevoboGateway->GetWedstrijdenForTeam($coachTeam);
+        $alleCoachWedstrijden = $this->nevoboGateway->GetWedstrijdenForTeam($coachteam);
 
         $bardagen = $this->barcieGateway->GetBardagen();
         $beschikbaarheden = $this->barcieGateway->GetBeschikbaarheden($user);
@@ -45,7 +45,7 @@ class GetBarcieBeschikbaarheid implements Interactor
                 "datum" => DateFunctions::GetDutchDate($bardag->date),
                 "date" => DateFunctions::GetYmdNotation($bardag->date),
                 "beschikbaarheid" => $isBeschikbaar,
-                "eigenWedstrijden" => $this->MapToUsecase($wedstrijden, $team, $coachTeam),
+                "eigenWedstrijden" => $this->MapToUsecase($wedstrijden, $team, $coachteam),
                 "isMogelijk" => $this->barcieBeschikbaarheidHelper->isMogelijk($wedstrijden),
             ];
         }
@@ -53,7 +53,7 @@ class GetBarcieBeschikbaarheid implements Interactor
         return $response;
     }
 
-    private function MapToUsecase(array $wedstrijden, ?Team $team, ?Team $coachTeam)
+    private function MapToUsecase(array $wedstrijden, ?Team $team, ?Team $coachteam)
     {
         $result = [];
         foreach ($wedstrijden as $wedstrijd) {
@@ -62,10 +62,10 @@ class GetBarcieBeschikbaarheid implements Interactor
                 "tijd" => $wedstrijd->timestamp->format('H:i'),
                 "team1" => $wedstrijd->team1->naam,
                 "isTeam1" => $wedstrijd->team1->Equals($team),
-                "isCoachTeam1" => $wedstrijd->team1->Equals($coachTeam),
+                "isCoachTeam1" => $wedstrijd->team1->Equals($coachteam),
                 "team2" => $wedstrijd->team2->naam,
                 "isTeam2" => $wedstrijd->team2->Equals($team),
-                "isCoachTeam2" => $wedstrijd->team2->Equals($coachTeam),
+                "isCoachTeam2" => $wedstrijd->team2->Equals($coachteam),
                 "locatie" => $wedstrijd->GetShortLocatie(),
             ];
         }

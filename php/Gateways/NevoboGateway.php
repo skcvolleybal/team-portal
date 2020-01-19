@@ -80,13 +80,13 @@ class NevoboGateway
         return $this->GetProgramma($url);
     }
 
-    public function GetProgrammaForSporthal($sporthal)
+    public function GetProgrammaForSporthal($sporthal = 'LDNUN')
     {
         $url = sprintf($this->sporthalprogrammaUrl, $sporthal, $this->exportType);
         return $this->GetProgramma($url);
     }
 
-    public function GetWedstrijddagenForSporthal($sporthal, $dagen = 7)
+    public function GetWedstrijddagenForSporthal($sporthal = 'LDNUN', $dagen = 7)
     {
         $endDate = new DateTime("+$dagen days");
         $wedstrijden = $this->GetProgrammaForSporthal($sporthal);
@@ -245,10 +245,6 @@ class NevoboGateway
 
             if (preg_match('/Wedstrijd: (.*), Datum: (.*), Speellocatie: (.*)/', $description, $descriptionMatches)) {
                 $date = $this->ConvertNevoboDate($descriptionMatches[2]);
-                if ($date === null) {
-                    continue;
-                }
-
                 $matchId = preg_replace('/\s+/', ' ', $descriptionMatches[1]);
                 $locatie = preg_replace('/\s+/', ' ', stripslashes($descriptionMatches[3]));
 

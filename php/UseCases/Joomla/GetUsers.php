@@ -7,19 +7,13 @@ class GetUsers implements Interactor
         $this->joomlaGateway = $joomlaGateway;
     }
 
-    public function Execute(object $data)
+    public function Execute(object $data = null)
     {
         $name = $data->naam ?? null;
         $result = [];
 
-        if ($name && 3 <= strlen($name)) {
-            $users = $this->joomlaGateway->GetUsersWithName($name);
-            foreach ($users as $user) {
-                $result[] = (object) [
-                    "naam" => $user->name,
-                    "id" => $user->id,
-                ];
-            }
+        if (strlen($name) >= 3) {
+            $result = $this->joomlaGateway->GetUsersWithName($name);
         }
 
         return $result;

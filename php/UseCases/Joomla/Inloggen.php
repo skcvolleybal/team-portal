@@ -7,7 +7,7 @@ class Inloggen implements Interactor
         $this->joomlaGateway = $joomlaGateway;
     }
 
-    public function Execute(object $data)
+    public function Execute(object $data = null)
     {
         if (empty($data->username) || empty($data->password)) {
             throw new InvalidArgumentException("Vul alle gegevens in");

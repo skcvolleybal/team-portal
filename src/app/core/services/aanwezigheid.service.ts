@@ -8,29 +8,6 @@ import { environment } from '../../../environments/environment';
 export class AanwezigheidService {
   constructor(private httpClient: HttpClient) {}
 
-  UpdateCoachAanwezigheid(matchId: number, isAanwezig: string) {
-    this.httpClient
-      .post(
-        environment.baseUrl,
-        {
-          matchId,
-          isAanwezig
-        },
-        {
-          params: { action: 'UpdateCoachAanwezigheid' }
-        }
-      )
-      .subscribe();
-  }
-
-  GetCoachAanwezigheid() {
-    return this.httpClient.get<any>(environment.baseUrl, {
-      params: {
-        action: 'GetCoachAanwezigheid'
-      }
-    });
-  }
-
   UpdateAanwezigheid(
     matchId: number,
     isAanwezig: boolean,
@@ -38,7 +15,7 @@ export class AanwezigheidService {
     rol: string
   ) {
     this.httpClient
-      .post<any>(environment.baseUrl + 'aanwezigheid', {
+      .post<any>(environment.baseUrl + 'wedstrijd-overzicht/aanwezigheid', {
         matchId,
         spelerId,
         isAanwezig,
@@ -47,32 +24,26 @@ export class AanwezigheidService {
       .subscribe();
   }
 
-  GetWedstrijdAanwezigheid() {
-    return this.httpClient.get<any[]>(environment.baseUrl, {
-      params: {
-        action: 'GetWedstrijdAanwezigheid'
-      }
-    });
-  }
-
-  DeleteBarcieAanwezigheid(date: string, shift: string, barcielidId: string) {
-    return this.httpClient.post<any>(
-      environment.baseUrl + 'barcie/dienst/delete',
+  DeleteBarcieAanwezigheid(date: string, shift: string, barlidId: string) {
+    return this.httpClient.delete<any>(
+      environment.baseUrl + 'barco/dienst',
       {
-        date,
-        barcielidId,
-        shift
+        params: {
+          date,
+          barlidId,
+          shift
+        }
       }
     );
   }
 
-  AddBarcieAanwezigheid(date: string, shift: number, barcielidId: string) {
+  AddBarcieAanwezigheid(date: string, shift: number, barlidId: string) {
     return this.httpClient.post<any>(
-      environment.baseUrl + 'barcie/dienst/add',
+      environment.baseUrl + 'barco/dienst/add',
       {
         date,
         shift,
-        barcielidId
+        barlidId
       }
     );
   }

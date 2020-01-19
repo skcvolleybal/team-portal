@@ -264,20 +264,20 @@ class DwfGateway
             foreach (["thuis", "uit"] as $team) {
                 $opstelling = [null, null, null, null, null, null];
                 $serveerder = null;
-                $gespeeldePunten = 0;
+                $aantalGespeeldePunten = 0;
                 $numberOfServeerders = 0;
                 foreach ($set->punten as $punt) {
                     if ($punt->type == "punt" && $punt->serverendTeam == $team && $serveerder != $punt->serveerder) {
                         $serveerder = $punt->serveerder;
                         $opstelling[$numberOfServeerders++] = $serveerder;
                     }
-                    $gespeeldePunten++;
+                    $aantalGespeeldePunten++;
                     if ($numberOfServeerders == 6) {
                         break;
                     }
                 }
 
-                for ($i = $gespeeldePunten - 1; $i >= 0; $i--) {
+                for ($i = $aantalGespeeldePunten - 1; $i >= 0; $i--) {
                     $punt = $set->punten[$i];
                     if ($punt->type == "wissel" && $punt->team == $team) {
                         for ($j = 0; $j < 6; $j++) {

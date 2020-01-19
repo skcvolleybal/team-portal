@@ -46,4 +46,9 @@ class DateFunctions
         $dateFormat = DateFunctions::$DATE_FORMAT;
         return $date1->format($dateFormat) === $date2->format($dateFormat);
     }
+
+    static function GetMySqlTimestamp(DateTime $date)
+    {
+        return $date->format('Y-m-d H:i:s');
+    }
 }
