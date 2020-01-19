@@ -84,7 +84,7 @@ class DwfGateway
         $headers = $this->curlGateway->GetHeaders($response);
         $request = new Request($headers[Headers::LOCATION]);
         $request->headers = ["Cookie: $this->WID"];
-        $response = $this->curlGateway->SendRequest($request);
+        $this->curlGateway->SendRequest($request);
 
         $fp = fopen($this->cookieFilename, 'w');
         fwrite($fp, $this->WID);
