@@ -70,17 +70,15 @@ class DwfGateway
         $sessionId = $this->GetSessionId($headers[HEADERS::SET_COOKIE]);
 
         $request = new Request('https://login.nevobo.nl/login_check');
-        $request->headers = ["Cookie: PHPSESSID=$sessionId"];
+        $request->headers = ["Cookie: $sessionId"];
         $request->body = ["_username" => $this->credentials->username, "_password" => $this->credentials->password];
         $response = $this->curlGateway->SendRequest($request);
-        // /oauth/v2/auth?client_id=17_umyxub7qq3hzjpz9glws18irpabwyshcj0raiw8d0novhw8h5q&redirect_uri=https%3A%2F%2Fdwf.volleybal.nl%2Fapplication%2Fhandlers%2Fdwf%2Foauth.php&response_type=code&scope=profile%20profile_relatiecode%20profile_lidmaatschappen%20profile_rollen
 
         $headers = $this->curlGateway->GetHeaders($response);
         $location = "https://login.nevobo.nl" . $headers['Location'];
+        $request = new Request($location);
         $sessionId = $this->GetSessionId($headers['Set-Cookie']);
-        
-        $request = new Request($location);        
-        $request->headers = ["Cookie: PHPSESSID=$sessionId"];
+        $request->headers = ["Cookie: $sessionId"];
         $response = $this->curlGateway->SendRequest($request);
 
         $headers = $this->curlGateway->GetHeaders($response);
@@ -93,15 +91,15 @@ class DwfGateway
         fclose($fp);
     }
 
-    private function  GetSessionId(string $header): string
+    private function GetSessionId(string $header): string
     {
-        preg_match('/PHPSESSID=(\S*);/', $header, $matches);
+        preg_match('/(PHPSESSID=\S*);/', $header, $matches);
         return $matches[1];
     }
 
     private function GetWid(string $header)
     {
-        preg_match('/WID=(.*); path=\//', $header, $matches);
+        preg_match('/(WID=\S*);/', $header, $matches);
         return $matches[1];
     }
 
@@ -109,7 +107,7 @@ class DwfGateway
     {
         $request = new Request($this->dwfUrl);
         $request->headers = [
-            "Cookie: WID=$this->WID",
+            "Cookie: $this->WID",
         ];
         $request->body = [
             'type' => 'matchResults',
