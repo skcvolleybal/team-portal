@@ -239,10 +239,7 @@ class JoomlaGateway
     {
         $this->InitJoomla();
 
-        $credentials = (object) [
-            'username' => $username,
-            'password' => $password,
-        ];
+        $credentials = new Credentials($username, $password);
 
         $joomlaApp = JFactory::getApplication('site');
 

@@ -59,16 +59,16 @@ class NevoboGateway
             $puntenVoor = $team['puntenvoor'][0]['data'];
             $puntenTegen = $team['puntentegen'][0]['data'];
 
-            $results[] = (object) [
-                'nummer' => $nummer,
-                'team' => $teamnaam,
-                'wedstrijden' => $wedstrijden,
-                'punten' => $punten,
-                'setsVoor' => $setsVoor,
-                'setsTegen' => $setsTegen,
-                'puntenVoor' => $puntenVoor,
-                'puntenTegen' => $puntenTegen,
-            ];
+            $results[] = new Stand(
+                $nummer,
+                $teamnaam,
+                $wedstrijden,
+                $punten,
+                $setsVoor,
+                $setsTegen,
+                $puntenVoor,
+                $puntenTegen
+            );
         }
 
         return $results;
@@ -257,10 +257,7 @@ class NevoboGateway
                     $locatie
                 );
             } else if (preg_match('/Vervallen wedstrijd: (.*), Datum: (.*), (.*), Speellocatie: (.*), (.*)/', $description, $descriptionMatches)) {
-                // Nothing
-            } else {
-                // $currentTime = (new DateTime())->format('Y-m-d H.i.s.u');
-                // WriteToErrorLog($currentTime, "Deze wedstrijd kon niet geparsed worden:\n$description");
+                // nothing
             }
         }
 
@@ -292,12 +289,12 @@ class NevoboGateway
                 preg_match('/Wedstrijd: (.*), Uitslag: (.*), Setstanden: (.*)/', $description, $descriptionMatches);
                 $setstanden = $descriptionMatches[3];
 
-                $uitslagen[] = (object) [
-                    'team1' => $team1,
-                    'team2' => $team2,
-                    'uitslag' => $uitslag,
-                    'setstanden' => explode(', ', $setstanden),
-                ];
+                $uitslagen[] = new Uitslag(
+                    $team1,
+                    $team2,
+                    $uitslag,
+                    $setstanden
+                );
             } else if (preg_match('/Vervallen wedstrijd: (.*), Datum: (.*), (.*), Speellocatie: (.*), (.*)/', $description, $descriptionMatches)) {
                 // Nothing
             }
@@ -314,7 +311,7 @@ class NevoboGateway
         }
 
         if (!preg_match('/(.*) (.*) (.*), (.*):(.*)/', $date, $dateMatches)) {
-            return 'Unparseble date: $date';
+            throw new UnexpectedValueException('Unparseble date: $date');
         }
         $day = $dateMatches[2];
         $month = $dateMatches[3];
@@ -322,7 +319,7 @@ class NevoboGateway
         $minutes = $dateMatches[5];
 
         if (!array_key_exists(strtolower($month), $this->monthTranslations)) {
-            return 'Unknown month: $month';
+            throw new UnexpectedValueException('Unknown month: $month');
         }
 
         $month = $this->monthTranslations[$month];

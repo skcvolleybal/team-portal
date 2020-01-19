@@ -3,6 +3,4 @@
 - mijn overzicht model
 - beschikbaarheden opslaan niet als ja/nee, maar ja/nee/onbekend
 - Nergens meer '(object) ['
-- Nergens meer '?? null'
-- elke GetEntiteit moet een Entiteit returnen, niet null
 - "je team" checken of weghalen

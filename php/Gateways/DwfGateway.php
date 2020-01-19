@@ -7,10 +7,9 @@ class DwfGateway
     private $cookieFilename = 'cookie.txt';
     private $WID;
 
-    public function __construct($username, $password)
+    public function __construct(string $username, string $password)
     {
-        $this->username = $username;
-        $this->password = $password;
+        $this->credentials = new Credentials($username, $password);
 
         if (file_exists($this->cookieFilename)) {
             $this->WID = file_get_contents($this->cookieFilename);
@@ -30,13 +29,10 @@ class DwfGateway
         $loginPage = $this->SendHeadersRequest($location);
 
         $sessionId = $this->GetCookieValueFromHeader($loginPage['Set-Cookie']);
-        $data = (object) [
-            '_username' => $this->username,
-            '_password' => $this->password,
-        ];
+        
         $headers = ["Cookie: $sessionId"];
         $url = 'https://login.nevobo.nl/login_check';
-        $loginCheck = $this->SendHeadersRequest($url, $headers, $data);
+        $loginCheck = $this->SendHeadersRequest($url, $headers, $this->credentials);
 
         $location = "https://login.nevobo.nl" . $loginCheck['Location'];
         $sessionId = $this->GetCookieValueFromHeader($loginCheck['Set-Cookie']);
