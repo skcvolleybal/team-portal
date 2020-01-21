@@ -85,7 +85,7 @@ class StatistiekenGateway
     {
         $result = [];
         foreach ($rows as $row) {
-            $result[] = new DwfPunt(
+            $result[] = new Wedstrijdpunt(
                 $this->id,
                 $this->matchId,
                 $this->skcTeam,

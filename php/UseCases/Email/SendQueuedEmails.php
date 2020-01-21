@@ -2,9 +2,9 @@
 
 class SendQueuedEmails implements Interactor
 {
-    public function __construct($database)
+    public function __construct(EmailGateway $emailGateway)
     {
-        $this->emailGateway = new EmailGateway($database);
+        $this->emailGateway = $emailGateway;
     }
 
     public function Execute(object $data = null)

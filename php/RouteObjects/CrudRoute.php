@@ -7,7 +7,15 @@ abstract class CrudRoute
 {
     function FillBody(Response $response, $data)
     {
-        $response->getBody()->write(json_encode($data));
+        if (!empty($data)) {
+            $jsonData = json_encode($data);
+            if ($data === false) {
+                $response->getBody()->write($data);
+            } else {
+                $response->getBody()->write($jsonData);
+            }
+        }
+
         return $response;
     }
 

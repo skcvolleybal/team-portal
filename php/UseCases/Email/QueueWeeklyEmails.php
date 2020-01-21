@@ -1,23 +1,5 @@
 <?php
 
-
-class Template
-{
-    public const NAAM = "{{naam}}";
-    public const DATUM = "{{datum}}";
-    public const TIJD = "{{tijd}}";
-    public const USER_ID = "{{userId}}";
-    public const TEAM = "{{team}}";
-    public const TEAMS = "{{teams}}";
-    public const AFZENDER = "{{afzender}}";
-    public const SHIFT = "{{shift}}";
-    public const BHV = "{{bhv}}";
-    public const SCHEIDSRECHTERS = "{{scheidsrechters}}";
-    public const TELLERS = "{{tellers}}";
-    public const ZAALWACHTERS = "{{zaalwachters}}";
-    public const BARLEDEN = "{{barleden}}";
-}
-
 class QueueWeeklyEmails implements Interactor
 {
     private $scheidsco;
@@ -42,30 +24,25 @@ class QueueWeeklyEmails implements Interactor
 
     public function Execute(object $data = null)
     {
-        $isServerRequest = $_SERVER['SERVER_ADDR'] === $_SERVER['REMOTE_ADDR'];
-        if (!$isServerRequest) {
-            throw new UnexpectedValueException("Dit is niet een publieke api...");
-        }
-
         $this->scheidsco = $this->joomlaGateway->GetUser(2223); // E. vd B.
         $this->fromAddress = new Persoon(-1, $this->scheidsco->naam, "scheids@skcvolleybal.nl");
         $this->webcie = $this->joomlaGateway->GetUser(542);
 
         $wedstrijddagen = $this->nevoboGateway->GetWedstrijddagenForSporthal();
         foreach ($wedstrijddagen as $dag) {
-
-            $dag->barshifts = $this->barcieGateway->GetBardag($dag->date);
+            $bardag = $this->barcieGateway->GetBardag($dag->date);
+            $dag->barshifts = $bardag->shifts;
             $dag->zaalwacht = $this->zaalwachtGateway->GetZaalwacht($dag->date);
             if ($dag->zaalwacht) {
-                $dag->zaalwacht->teamgenoten = $this->joomlaGateway->GetTeamgenoten($dag->zaalwacht->naam);
+                $dag->zaalwacht->teamgenoten = $this->joomlaGateway->GetTeamgenoten($dag->zaalwacht->team);
             }
             foreach ($dag->speeltijden as $speeltijd) {
                 foreach ($speeltijd->wedstrijden as $wedstrijd) {
-                    list($scheidsrechter, $telteam) = $this->telFluitGateway->GetWedstrijd($wedstrijd->matchId);
-                    $wedstrijd->scheidsrechter = $scheidsrechter;
-                    $wedstrijd->telteam = $telteam;
+                    $fluitwedstrijd = $this->telFluitGateway->GetWedstrijd($wedstrijd->matchId);
+                    $wedstrijd->scheidsrechter = $fluitwedstrijd->scheidsrechter;
+                    $wedstrijd->telteam = $fluitwedstrijd->telteam;
                     if ($wedstrijd->telteam) {
-                        $wedstrijd->telteam->teamgenoten = $this->joomlaGateway->GetTeamgenoten($telteam->naam);
+                        $wedstrijd->telteam->teamgenoten = $this->joomlaGateway->GetTeamgenoten($fluitwedstrijd->telteam);
                     }
                 }
             }
@@ -76,41 +53,48 @@ class QueueWeeklyEmails implements Interactor
         $this->mailQueueGateway->QueueEmails($emails);
     }
 
-    private function GetAllEmails(array $wedstrijdagen)
+    private function GetAllEmails(array $wedstrijdagen): array
     {
         $emails = [];
 
+        $samenvatting = new Emailsamenvatting();
         foreach ($wedstrijdagen as $dag) {
-            foreach ($dag->wedstrijden as $wedstrijd) {
-                if ($wedstrijd->scheidsrechter) {
-                    $emails[] = $this->CreateScheidsrechterMail($wedstrijd);
-                }
+            foreach ($dag->speeltijden as $speeltijd) {
+                foreach ($speeltijd->wedstrijden as $wedstrijd) {
+                    if ($wedstrijd->scheidsrechter) {
+                        $emails[] = $this->CreateScheidsrechterMail($wedstrijd);
+                        $samenvatting->scheidsrechters[] = $wedstrijd->scheidsrechter;
+                    }
 
-                if ($wedstrijd->telteam) {
-                    foreach ($wedstrijd->telteam->teamgenoten as $teller) {
-                        $emails[] = $this->CreateTellerMail($teller, $wedstrijd);
+                    if ($wedstrijd->telteam) {
+                        foreach ($wedstrijd->telteam->teamgenoten as $teller) {
+                            $emails[] = $this->CreateTellerMail($wedstrijd, $teller);
+                        }
+                        $samenvatting->telteams[] = $wedstrijd->telteam;
                     }
                 }
             }
 
             if ($dag->zaalwacht) {
-                foreach ($dag->zaalwacht->teamgenoten as $zaalwachter) {
-                    $emails[] = $this->CreateZaalwachtMail($zaalwachter, $dag);
+                foreach ($dag->zaalwacht->teamgenoten as $teamgenoot) {
+                    $emails[] = $this->CreateZaalwachtMail($dag, $teamgenoot);
                 }
+                $samenvatting->zaalwachtteams[] = $dag->zaalwacht;
             }
 
             foreach ($dag->bardiensten as $bardienst) {
                 $emails[] = $this->CreateBarcieMail($bardienst, $dag);
+                $samenvatting->barleden[] = $bardienst->persoon;
             }
         }
 
-        $emails[] = $this->CreateSamenvattingMail($wedstrijdagen, $this->webcie);
-        $emails[] = $this->CreateSamenvattingMail($wedstrijdagen, $this->scheidsco);
+        $emails[] = $this->CreateSamenvattingMail($samenvatting, $this->webcie);
+        $emails[] = $this->CreateSamenvattingMail($samenvatting, $this->scheidsco);
 
         return $emails;
     }
 
-    private function CreateScheidsrechterMail(Wedstrijd $wedstrijd)
+    private function CreateScheidsrechterMail(Wedstrijd $wedstrijd): Email
     {
         $datum = DateFunctions::GetDutchDate($wedstrijd->timestamp);
         $tijd = DateFunctions::GetTime($wedstrijd->timestamp);
@@ -119,21 +103,22 @@ class QueueWeeklyEmails implements Interactor
         $naam = $scheidsrechter->naam;
         $userId = $scheidsrechter->id;
         $team = $scheidsrechter->team ?? "je team";
-        $spelendeTeams = $wedstrijd->team1 . " - " . $wedstrijd->team2;
+        $spelendeTeams = $wedstrijd->team1->naam . " - " . $wedstrijd->team2->naam;
 
         $template = file_get_contents("./UseCases/Email/templates/scheidsrechterTemplate.txt");
         $placeholders = [
-            Template::DATUM => $datum,
-            Template::TIJD => $tijd,
-            Template::NAAM => $naam,
-            Template::USER_ID => $userId,
-            Template::TEAM => $team,
-            Template::TEAMS => $spelendeTeams,
-            Template::AFZENDER => $this->scheidsco->naam
+            Placeholder::DATUM => $datum,
+            Placeholder::TIJD => $tijd,
+            Placeholder::NAAM => $naam,
+            Placeholder::USER_ID => $userId,
+            Placeholder::TEAM => $team,
+            Placeholder::TEAMS => $spelendeTeams,
+            Placeholder::AFZENDER => $this->scheidsco->naam
         ];
         $body = FillTemplate($template, $placeholders);
 
-        $titel = "Fluiten " . $spelendeTeams;
+        $tijdAanwezig = DateFunctions::AddMinutes($wedstrijd->timestamp, -30, true);
+        $titel = "Fluiten $spelendeTeams ($tijdAanwezig aanwezig)";
         return new Email(
             $titel,
             $body,
@@ -142,26 +127,27 @@ class QueueWeeklyEmails implements Interactor
         );
     }
 
-    private function CreateTellerMail(Persoon $teller, $wedstrijd)
+    private function CreateTellerMail(Wedstrijd $wedstrijd, Persoon $teller): Email
     {
         $datum = DateFunctions::GetDutchDate($wedstrijd->timestamp);
         $tijd = $wedstrijd->timestamp->format('G:i');
         $naam = $teller->naam;
         $userId = $teller->id;
-        $spelendeTeams = $wedstrijd->team1 . " - " . $wedstrijd->team2;
+        $spelendeTeams = $wedstrijd->team1->naam . " - " . $wedstrijd->team2->naam;
 
         $template = file_get_contents("./UseCases/Email/templates/tellerTemplate.txt");
         $placeholders = [
-            Template::DATUM => $datum,
-            Template::TIJD => $tijd,
-            Template::NAAM => $naam,
-            Template::USER_ID => $userId,
-            Template::TEAMS => $spelendeTeams,
-            Template::AFZENDER => $this->scheidsco->naam
+            Placeholder::DATUM => $datum,
+            Placeholder::TIJD => $tijd,
+            Placeholder::NAAM => $naam,
+            Placeholder::USER_ID => $userId,
+            Placeholder::TEAMS => $spelendeTeams,
+            Placeholder::AFZENDER => $this->scheidsco->naam
         ];
         $body = FillTemplate($template, $placeholders);
 
-        $titel = "Tellen " . $spelendeTeams;
+        $tijdAanwezig = DateFunctions::AddMinutes($wedstrijd->timestamp, -15, true);
+        $titel = "Tellen $spelendeTeams ($tijdAanwezig aanwezig)";
         return new Email(
             $titel,
             $body,
@@ -170,20 +156,22 @@ class QueueWeeklyEmails implements Interactor
         );
     }
 
-    private function CreateZaalwachtMail($zaalwachter, $wedstrijddag)
+    private function CreateZaalwachtMail(Wedstrijddag $wedstrijddag, Persoon $zaalwachter): Email
     {
         $naam = $zaalwachter->naam;
         $datum = DateFunctions::GetDutchDateLong($wedstrijddag->date);
 
         $template = file_get_contents("./UseCases/Email/templates/zaalwachtTemplate.txt");
         $placeholders = [
-            Template::NAAM => $naam,
-            Template::DATUM => $datum,
-            Template::AFZENDER => $this->scheidsco->naam,
+            Placeholder::NAAM => $naam,
+            Placeholder::DATUM => $datum,
+            Placeholder::AFZENDER => $this->scheidsco->naam,
         ];
         $body = FillTemplate($template, $placeholders);
 
-        $titel = "Zaalwacht " . $datum;
+        $earliestMatch = $wedstrijddag->speeltijden[0]->wedstrijden[0];
+        $tijdAanwezig = DateFunctions::AddMinutes($earliestMatch->timestamp, -60, true);
+        $titel = "Zaalwacht $datum ($tijdAanwezig aanwezig)";
         return new Email(
             $titel,
             $body,
@@ -192,7 +180,7 @@ class QueueWeeklyEmails implements Interactor
         );
     }
 
-    private function CreateBarcieMail($bardienst, $dag)
+    private function CreateBarcieMail(Bardienst $bardienst, DateTime $dag): Email
     {
         $datum = DateFunctions::GetDutchDateLong($dag->date);
         $naam = $bardienst->persoon->naam;
@@ -201,11 +189,11 @@ class QueueWeeklyEmails implements Interactor
 
         $template = file_get_contents("./UseCases/Email/templates/barcieTemplate.txt");
         $placeholders = [
-            Template::DATUM => $datum,
-            Template::NAAM => $naam,
-            Template::SHIFT => $shift,
-            Template::BHV => $bhv,
-            Template::AFZENDER => $this->scheidsco->naam
+            Placeholder::DATUM => $datum,
+            Placeholder::NAAM => $naam,
+            Placeholder::SHIFT => $shift,
+            Placeholder::BHV => $bhv,
+            Placeholder::AFZENDER => $this->scheidsco->naam
         ];
         $body = FillTemplate($template, $placeholders);
 
@@ -217,46 +205,42 @@ class QueueWeeklyEmails implements Interactor
         );
     }
 
-    private function CreateSamenvattingMail($wedstrijddagen, $receiver)
+    private function CreateSamenvattingMail(Emailsamenvatting $samenvatting, Persoon $receiver): Email
     {
-        $barcieContent = "";
-        $scheidsrechtersContent = "";
-        $tellersContent = "";
-        $zaalwachtersContent = "";
+        $barcieContent = $this->GetBoldHeader(count($samenvatting->barleden) > 0 ? "Barleden" : "Geen barleden");
+        $scheidsrechtersContent = $this->GetBoldHeader(count($samenvatting->scheidsrechters) > 0 ? "Scheidsrechters" : "Geen scheidsrechters");
+        $tellersContent = $this->GetBoldHeader(count($samenvatting->telteams) > 0 ? "Tellers" : "Geen tellers");
+        $zaalwachtersContent = $this->GetBoldHeader(count($samenvatting->zaalwachtteams) > 0 ? "Zaalwacht" : "Geen zaalwacht");
 
-        foreach ($wedstrijddagen as $dag) {
-            foreach ($dag->bardiensten as $bardienst) {
-                $barcieContent  .= $this->GetNaamAndEmail($bardienst->persoon);
-            }
-            if ($dag->zaalwacht) {
-                $zaalwachtersContent .= $this->GetBoldHeader($dag->zaalwacht->naam);
-                foreach ($dag->zaalwacht->teamgenoten as $persoon) {
-                    $zaalwachtersContent .= $this->GetNaamAndEmail($persoon);
-                }
-                $zaalwachtersContent .= $this->GetNewLine();
-            }
+        foreach ($samenvatting->scheidsrechters as $scheidsrechter) {
+            $scheidsrechtersContent .= $this->GetNaamAndEmail($scheidsrechter);
+        }
 
-            foreach ($dag->wedstrijden as $wedstrijd) {
-                if ($wedstrijd->scheidsrechter) {
-                    $scheidsrechtersContent .= $this->GetNaamAndEmail($wedstrijd->scheidsrechter);
-                }
-                if ($wedstrijd->telteam) {
-                    $tellersContent .= $this->GetBoldHeader($wedstrijd->telteam->naam);
-                    foreach ($wedstrijd->telteam->teamgenoten as $teller) {
-                        $tellersContent .= $this->GetNaamAndEmail($teller);
-                    }
-                    $tellersContent .= $this->GetNewLine();
-                }
+        foreach ($samenvatting->zaalwachtteams as $team) {
+            $zaalwachtersContent .= $this->GetBoldHeader($team->team->naam);
+            foreach ($team->teamgenoten as $teamgenoot) {
+                $zaalwachtersContent .= $this->GetNaamAndEmail($teamgenoot);
             }
+        }
+
+        foreach ($samenvatting->telteams as $team) {
+            $tellersContent .= $this->GetBoldHeader($team->naam);
+            foreach ($team->teamgenoten as $teamgenoot) {
+                $tellersContent .= $this->GetNaamAndEmail($teamgenoot);
+            }
+        }
+
+        foreach ($samenvatting->barleden as $barlid) {
+            $barcieContent  .= $this->GetNaamAndEmail($barlid);
         }
 
         $template = file_get_contents("./UseCases/Email/templates/samenvattingTemplate.txt");
         $placeholders = [
-            Template::NAAM => $this->scheidsco->naam,
-            Template::SCHEIDSRECHTERS => $scheidsrechtersContent,
-            Template::TELLERS => $tellersContent,
-            Template::ZAALWACHTERS => $zaalwachtersContent,
-            Template::BARLEDEN => $barcieContent,
+            Placeholder::NAAM => $this->scheidsco->naam,
+            Placeholder::SCHEIDSRECHTERS => $scheidsrechtersContent,
+            Placeholder::TELLERS => $tellersContent,
+            Placeholder::ZAALWACHTERS => $zaalwachtersContent,
+            Placeholder::BARLEDEN => $barcieContent,
         ];
         $body = FillTemplate($template, $placeholders);
 
@@ -269,17 +253,17 @@ class QueueWeeklyEmails implements Interactor
         );
     }
 
-    private function GetNaamAndEmail($persoon)
+    private function GetNaamAndEmail(Persoon $persoon): string
     {
         return $persoon->naam .  " (" . $persoon->email . ")" . $this->GetNewLine();
     }
 
-    private function GetBoldHeader($titel)
+    private function GetBoldHeader(string $titel): string
     {
         return "<b>" . $titel . "</b>" . $this->GetNewLine();
     }
 
-    private function GetNewLine()
+    private function GetNewLine(): string
     {
         return "<br>";
     }

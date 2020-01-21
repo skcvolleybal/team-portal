@@ -5,16 +5,12 @@ Beste {{naam}},<br>
 <br>
 De volgende mensen hebben zojuist een mail gekregen vanuit de webserver over het fluit/tel/zaalwacht schema:<br>
 <br>
-<b>Scheidsrechters</b><br>
 {{scheidsrechters}}
 <br>
-<b>Tellers</b><br>
 {{tellers}}
 <br>
-<b>Zaalwacht</b><br>
 {{zaalwachters}}
 <br>
-<b>Barcie</b><br>
 {{barleden}}
 <br>
 Met vriendelijke groet,<br>

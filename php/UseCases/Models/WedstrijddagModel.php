@@ -19,7 +19,7 @@ class WedstrijddagModel
             $this->zaalwachtShortNotation = $dag->zaalwacht->team->GetShortNotation();
         }
 
-        foreach ($dag->bardiensten as $bardienst){
+        foreach ($dag->bardiensten as $bardienst) {
             $this->bardiensten[] = new BardienstModel($bardienst);
         }
     }

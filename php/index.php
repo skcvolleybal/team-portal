@@ -100,8 +100,10 @@ $entryPoint =
             new GetRoute('/importeer-wedstrijden', WedstrijdenImporteren::class, AuthorizationRole::UNREGISTERED),
         ], AuthorizationRole::USER),
 
-        new RouteGroup('/taken',[
-            new GetRoute('/synchroniseer-wedstrijden', SynchronizeWedstrijden::class)
+        new RouteGroup('/taken', [
+            new GetRoute('/synchroniseer-wedstrijden', SynchronizeWedstrijden::class),
+            new GetRoute('/queue-weekly-emails', QueueWeeklyEmails::class, AuthorizationRole::UNREGISTERED),
+            new GetRoute('/send-emails', SendQueuedEmails::class, AuthorizationRole::UNREGISTERED)
         ]),
 
         new RouteGroup('/joomla', [

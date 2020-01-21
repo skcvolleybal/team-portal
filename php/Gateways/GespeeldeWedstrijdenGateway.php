@@ -18,8 +18,8 @@ class GespeeldeWedstrijdenGateway
         foreach ($rows as $row) {
             $result[] = new DwfWedstrijd(
                 $row->id,
-                $row->skcTeam,
-                $row->otherTeam,
+                new Team($row->skcTeam),
+                new Team($row->otherTeam),
                 $row->setsSkcTeam,
                 $row->setsOtherTeam
             );
@@ -33,10 +33,10 @@ class GespeeldeWedstrijdenGateway
                   VALUES (?, ?, ?, ?, ?)';
         $params = [
             $wedstrijd->matchId,
-            $wedstrijd->skcTeam->naam,
-            $wedstrijd->otherTeam->naam,
-            $wedstrijd->setsSkcTeam,
-            $wedstrijd->setsOtherTeam
+            $wedstrijd->team1->naam,
+            $wedstrijd->team2->naam,
+            $wedstrijd->setsTeam1,
+            $wedstrijd->setsTeam2
         ];
         $this->database->Execute($query, $params);
     }

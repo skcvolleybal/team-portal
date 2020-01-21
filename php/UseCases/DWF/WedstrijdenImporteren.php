@@ -20,22 +20,22 @@ class WedstrijdenImporteren implements Interactor
                 continue;
             }
 
-            $wedstrijdverloop = $this->dwfGateway->GetWedstrijdVerloop($wedstrijd->matchId);
+            $wedstrijdverloop = $this->dwfGateway->GetWedstrijdVerloop($wedstrijd);
             if ($wedstrijdverloop === null) {
                 continue;
             }
 
             $teams = [];
             if ($wedstrijd->team1->IsSkcTeam()) {
-                $teams[] = "thuis";
+                $teams[] = ThuisUit::THUIS;
             }
             if ($wedstrijd->team2->IsSkcTeam()) {
-                $teams[] = "uit";
+                $teams[] = ThuisUit::UIT;
             }
             foreach ($teams as $team) {
                 foreach ($wedstrijdverloop->sets as $currentSet => $set) {
-                    $opstelling = $set->beginopstellingen->{$team};
-                    if ($team == "thuis") {
+                    $opstelling = $set->{$team . "opstelling"};
+                    if ($team == ThuisUit::THUIS) {
                         $skcTeam = $wedstrijd->team1;
                         $otherTeam = $wedstrijd->team2;
                         $setsSkcTeam = $wedstrijd->setsTeam1;
@@ -48,9 +48,9 @@ class WedstrijdenImporteren implements Interactor
                     }
 
                     foreach ($set->punten as $punt) {
-                        switch ($punt->type) {
-                            case "punt":
-                                if ($team == "thuis") {
+                        switch (get_class($punt)) {
+                            case DwfPunt::class:
+                                if ($team == ThuisUit::THUIS) {
                                     $skcPunten = $punt->puntenThuisTeam;
                                     $tegenstandPunten  = $punt->puntenUitTeam;
                                 } else {
@@ -72,7 +72,7 @@ class WedstrijdenImporteren implements Interactor
                                     $opstelling = $this->Doordraaien($opstelling);
                                 }
                                 break;
-                            case "wissel":
+                            case DwfWissel::class:
                                 if ($punt->team == $team) {
                                     $opstelling = $this->Wisselen($opstelling, $punt->spelerUit, $punt->spelerIn);
                                 }
@@ -98,7 +98,7 @@ class WedstrijdenImporteren implements Interactor
         return "Done!";
     }
 
-    private function IsWedstrijdAlOpgeslagen($wedstrijd)
+    private function IsWedstrijdAlOpgeslagen(DwfWedstrijd $wedstrijd)
     {
         foreach ($this->opgeslagenWedstrijden as $gespeeldeWedstrijd) {
             if ($wedstrijd->matchId == $gespeeldeWedstrijd->matchId) {
