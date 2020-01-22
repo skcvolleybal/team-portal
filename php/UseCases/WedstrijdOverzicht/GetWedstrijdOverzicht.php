@@ -1,10 +1,7 @@
 <?php
 
-
 class GetWedstrijdOverzicht implements Interactor
 {
-    private array $invalTeams;
-
     public function __construct(
         JoomlaGateway $joomlaGateway,
         AanwezigheidGateway $aanwezigheidGateway,
@@ -19,15 +16,12 @@ class GetWedstrijdOverzicht implements Interactor
     {
         $overzicht = [];
         $user = $this->joomlaGateway->GetUser();
-        $team = $this->joomlaGateway->GetTeam($user);
-        if ($team !== null) {
-            $team->teamgenoten = $this->joomlaGateway->GetTeamgenoten($team);
+        if ($user->team !== null) {
+            $user->team->teamgenoten = $this->joomlaGateway->GetTeamgenoten($user->team);
         }
 
-        $coachteam = $this->joomlaGateway->GetCoachTeam($user);
-
-        $teamprogramma = $this->nevoboGateway->GetWedstrijdenForTeam($team);
-        $coachProgramma = $this->nevoboGateway->GetWedstrijdenForTeam($coachteam);
+        $teamprogramma = $this->nevoboGateway->GetWedstrijdenForTeam($user->team);
+        $coachProgramma = $this->nevoboGateway->GetWedstrijdenForTeam($user->coachteam);
         $wedstrijden = array_merge(
             $teamprogramma,
             $coachProgramma
@@ -44,51 +38,43 @@ class GetWedstrijdOverzicht implements Interactor
 
         $aanwezigheden = $this->aanwezigheidGateway->GetAanwezighedenForMatchIds($allMatchIds);
 
-        $this->GetAllInvalTeamsForTeam($team);
+        $invalteams = $this->GetInvalteamsForTeam($user->team);
         foreach ($wedstrijden as $wedstrijd) {
-            $matchId = $wedstrijd->matchId;
-            $isAanwezig = $this->IsAanwezig($aanwezigheden, $matchId, $user);
-
-            $aanwezighedenForMatch = [];
-            $invalTeamInfo = null;
-            $onbekendForMatch = [];
-
-            $isEigenWedstrijd = $wedstrijd->IsEigenWedstrijd($team);
-            if ($isEigenWedstrijd) {
-                $aanwezighedenForMatch = $this->GetAanwezighedenForWedstrijd($matchId, $aanwezigheden, $team);
-                $invalTeamInfo = $this->GetInvalTeamInfo($wedstrijd);
-                $onbekendForMatch = $this->GetOnbekenden($aanwezighedenForMatch, $team);
-            }
-
             if ($wedstrijd->timestamp) {
-                $overzicht[] = (object) [
-                    'matchId' => $wedstrijd->matchId,
-                    'datum' => DateFunctions::GetDutchDate($wedstrijd->timestamp),
-                    'tijd' => $wedstrijd->timestamp->format('G:i'),
-                    'team1' => $wedstrijd->team1->naam,
-                    'isTeam1' => $wedstrijd->team1->Equals($team),
-                    'isCoachTeam1' => $wedstrijd->team1->Equals($coachteam),
-                    'team2' => $wedstrijd->team2->naam,
-                    'isTeam2' => $wedstrijd->team2->Equals($team),
-                    'isCoachTeam2' => $wedstrijd->team2->Equals($coachteam),
-                    'aanwezigen' => $aanwezighedenForMatch != null ? $aanwezighedenForMatch->aanwezigen : [],
-                    'afwezigen' => $aanwezighedenForMatch != null ? $aanwezighedenForMatch->afwezigen : [],
-                    'onbekend' => $onbekendForMatch,
-                    'coaches' => $aanwezighedenForMatch != null ? $aanwezighedenForMatch->coaches : [],
-                    'invalTeams' => $invalTeamInfo,
-                    'isEigenWedstrijd' => $isEigenWedstrijd,
-                    'isAanwezig' => $isAanwezig
-                ];
+                $newWedstrijd = new WedstrijdModel($wedstrijd);
+
+                $aanwezighedenForMatch = new Aanwezigheidssamenvatting();
+
+                $isEigenWedstrijd = $wedstrijd->IsEigenWedstrijd($user);
+                if ($isEigenWedstrijd) {
+                    $teams = $this->GetInvalteams($invalteams, $wedstrijd);
+                    foreach ($teams as $team) {
+                        $newWedstrijd->invalTeams[] = new InvalteamModel($team);
+                    }
+
+                    $aanwezighedenForMatch = $this->GetAanwezighedenForWedstrijd($wedstrijd->matchId, $aanwezigheden, $user->team);
+                    $aanwezighedenForMatch->onbekend = $this->GetOnbekenden($aanwezighedenForMatch, $user->team);
+                }
+
+                $newWedstrijd->isAanwezig = $this->IsAanwezig($aanwezigheden, $wedstrijd->matchId, $user);
+                $newWedstrijd->aanwezigen = $aanwezighedenForMatch->aanwezigen;
+                $newWedstrijd->afwezigen = $aanwezighedenForMatch->afwezigen;
+                $newWedstrijd->onbekend = $aanwezighedenForMatch->onbekend;
+                $newWedstrijd->coaches = $aanwezighedenForMatch->coaches;
+                $newWedstrijd->isEigenWedstrijd = $isEigenWedstrijd;
+
+                $overzicht[] = $newWedstrijd;
             }
         }
 
         return $overzicht;
     }
 
-    private function GetInvalTeamInfo(Wedstrijd $eigenWedstrijd)
+    private function GetInvalteams(array $invalteams, Wedstrijd $eigenWedstrijd)
     {
+        $result = [];
         $datumWedstrijd = DateFunctions::GetYmdNotation($eigenWedstrijd->timestamp);
-        foreach ($this->invalTeams as $invalTeam) {
+        foreach ($invalteams as $invalTeam) {
             $invalTeamWedstrijd = null;
             foreach ($invalTeam->programma as $wedstrijd) {
                 $datumInvalwedstrijd = DateFunctions::GetYmdNotation($wedstrijd->timestamp);
@@ -105,40 +91,36 @@ class GetWedstrijdOverzicht implements Interactor
                 }
             }
 
-            $invalTeams[] = (object) [
-                'naam' => $invalTeam->GetSkcNaam(),
-                'wedstrijd' => $invalTeamWedstrijd != null ? (object) [
-                    'team1' => $invalTeamWedstrijd->team1->naam,
-                    'team2' => $invalTeamWedstrijd->team2->naam,
-                    'locatie' => $invalTeamWedstrijd->locatie,
-                    'tijd' => DateFunctions::GetTime($invalTeamWedstrijd->timestamp)
-                ] : null,
-                'isMogelijk' => $wedstrijd->IsMogelijk($invalTeamWedstrijd),
-                'teamgenoten' => $invalTeam->teamgenoten,
-            ];
+            $newInvalteam = new Invalteam($invalTeam, $invalTeamWedstrijd);
+            $newInvalteam->isMogelijk = $wedstrijd->IsMogelijk($invalTeamWedstrijd);
+            $result[] = $newInvalteam;
         }
-        return $invalTeams;
+        return $result;
     }
 
-    private function GetAllInvalTeamsForTeam(?Team $eigenTeam)
+    private function GetInvalteamsForTeam(?Team $eigenTeam): array
     {
+        $invalTeams = [];
+
         if ($eigenTeam === null) {
-            return;
+            return $invalTeams;
         }
         $teams = $eigenTeam->IsMale() ? Team::GetAlleHerenTeams() : Team::GetAlleDamesTeams();
 
-        $this->invalTeams = [];
+
         foreach ($teams as $team) {
             if ($team->naam != $eigenTeam->naam && $team->niveau >= $eigenTeam->niveau) {
                 $team->teamgenoten = $this->joomlaGateway->GetTeamgenoten($team);
                 $team->programma = $this->nevoboGateway->GetWedstrijdenForTeam($team);
-                $this->invalTeams[] =  $team;
+                $invalTeams[] =  $team;
             }
 
-            if (count($this->invalTeams) >= 5) {
-                return;
+            if (count($invalTeams) >= 5) {
+                return $invalTeams;
             }
         }
+
+        return $invalTeams;
     }
 
     private function GetAanwezighedenForWedstrijd(string $matchId, array $aanwezigheden, Team $team): Aanwezigheidssamenvatting
@@ -149,11 +131,7 @@ class GetWedstrijdOverzicht implements Interactor
                 if ($aanwezigheid->IsCoach()) {
                     $result->coaches[] = $aanwezigheid;
                 } else {
-                    $newAanwezigheid = (object) [
-                        "id" => $aanwezigheid->persoon->id,
-                        "naam" => $aanwezigheid->persoon->naam,
-                        "isInvaller" => !$team->Equals($aanwezigheid->persoon->team)
-                    ];
+                    $newAanwezigheid = new Speler($aanwezigheid->persoon->id, $aanwezigheid->persoon->naam, !$team->Equals($aanwezigheid->persoon->team));
                     if ($aanwezigheid->isAanwezig) {
                         $result->aanwezigen[] = $newAanwezigheid;
                     } else {

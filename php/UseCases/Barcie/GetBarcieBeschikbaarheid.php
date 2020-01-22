@@ -18,11 +18,9 @@ class GetBarcieBeschikbaarheid implements Interactor
     public function Execute(object $data = null): array
     {
         $user = $this->joomlaGateway->GetUser();
-        $team = $this->joomlaGateway->GetTeam($user);
-        $coachteam = $this->joomlaGateway->GetCoachTeam($user);
 
-        $alleWedstrijden = $this->nevoboGateway->GetWedstrijdenForTeam($team);
-        $alleCoachWedstrijden = $this->nevoboGateway->GetWedstrijdenForTeam($coachteam);
+        $alleWedstrijden = $this->nevoboGateway->GetWedstrijdenForTeam($user->team);
+        $alleCoachWedstrijden = $this->nevoboGateway->GetWedstrijdenForTeam($user->coachteam);
 
         $bardagen = $this->barcieGateway->GetBardagen();
         $beschikbaarheden = $this->barcieGateway->GetBeschikbaarheden($user);
@@ -45,7 +43,7 @@ class GetBarcieBeschikbaarheid implements Interactor
                 "datum" => DateFunctions::GetDutchDate($bardag->date),
                 "date" => DateFunctions::GetYmdNotation($bardag->date),
                 "beschikbaarheid" => $isBeschikbaar,
-                "eigenWedstrijden" => $this->MapToUsecase($wedstrijden, $team, $coachteam),
+                "eigenWedstrijden" => $this->MapToUsecase($wedstrijden, $user->team, $user->coachteam),
                 "isMogelijk" => $this->barcieBeschikbaarheidHelper->isMogelijk($wedstrijden),
             ];
         }

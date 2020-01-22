@@ -106,12 +106,16 @@ $entryPoint =
             new GetRoute('/send-emails', SendQueuedEmails::class, AuthorizationRole::UNREGISTERED)
         ]),
 
+        new RouteGroup('/website', [
+            new GetRoute('/voorpagina-rooster', GetVoorpaginaRooster::class)
+        ], AuthorizationRole::UNREGISTERED),
+
         new RouteGroup('/joomla', [
             new GetRoute('/groepen', GetGroups::class),
             new GetRoute('/user', GetCurrentUser::class),
             new GetRoute('/users', GetUsers::class, AuthorizationRole::WEBCIE),
             new PostRoute('/inloggen', Inloggen::class, AuthorizationRole::UNREGISTERED)
-        ], AuthorizationRole::USER),
+        ], AuthorizationRole::USER)
     ]);
 $entryPoint->RegisterRoutes($app);
 

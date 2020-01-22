@@ -31,7 +31,7 @@ class GetScheidscoOverzicht implements Interactor
                 }
             }
 
-            $result[] = $this->MapToUseCaseModel($wedstrijddag);
+            $result[] = new WedstrijddagModel($wedstrijddag);
         }
 
         return $result;

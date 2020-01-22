@@ -2,7 +2,7 @@
 
 class Wedstrijdpunt
 {
-    public int $id;
+    public ?int $id;
     public string $matchId;
     public Team $skcTeam;
     public int $set;
@@ -18,7 +18,7 @@ class Wedstrijdpunt
     public ?int $midAchter;
 
     public function __construct(
-        int $id,
+        ?int $id,
         string $matchId,
         Team $skcTeam,
         int $set,

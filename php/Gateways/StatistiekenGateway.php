@@ -50,24 +50,24 @@ class StatistiekenGateway
         return $result;
     }
 
-    public function GetAllePuntenByTeam($team): array
+    public function GetAllePuntenByTeam(Team $team): array
     {
         $query = 'SELECT * FROM DWF_punten P
                   INNER JOIN DWF_wedstrijden W ON P.matchId = W.id
                   WHERE P.skcTeam = ?
                   ORDER BY P.id';
-        $params = [$team];
+        $params = [$team->naam];
         $rows = $this->database->Execute($query, $params);
         return $this->MapToDwfPunten($rows);
     }
 
-    public function GetAllePuntenByMatchId($matchId, $team): array
+    public function GetAllePuntenByMatchId(string $matchId, Team $team): array
     {
         $query = 'SELECT * FROM DWF_punten P
                   INNER JOIN DWF_wedstrijden W ON P.matchId = W.id
                   WHERE P.matchId = ? AND P.skcTeam = ?
                   ORDER BY P.id';
-        $params = [$matchId, $team];
+        $params = [$matchId, $team->naam];
         $rows = $this->database->Execute($query, $params);
         return $this->MapToDwfPunten($rows);
     }
@@ -86,20 +86,20 @@ class StatistiekenGateway
         $result = [];
         foreach ($rows as $row) {
             $result[] = new Wedstrijdpunt(
-                $this->id,
-                $this->matchId,
-                $this->skcTeam,
-                $this->set,
-                $this->isSkcService,
-                $this->isSkcPunt,
-                $this->puntenSkcTeam,
-                $this->puntenOtherTeam,
-                $this->rechtsAchter,
-                $this->rechtsVoor,
-                $this->midVoor,
-                $this->linksVoor,
-                $this->linksAchter,
-                $this->midAchter,
+                $row->id,
+                $row->matchId,
+                $row->skcTeam,
+                $row->set,
+                $row->isSkcService,
+                $row->isSkcPunt,
+                $row->puntenSkcTeam,
+                $row->puntenOtherTeam,
+                $row->rechtsAchter,
+                $row->rechtsVoor,
+                $row->midVoor,
+                $row->linksVoor,
+                $row->linksAchter,
+                $row->midAchter,
             );
         }
 

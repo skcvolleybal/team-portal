@@ -21,7 +21,6 @@ class MijnOverzicht implements Interactor
         $overzicht = [];
 
         $user = $this->joomlaGateway->GetUser();
-        $user->team = $this->joomlaGateway->GetTeam($user);
 
         $zaalwachten = $this->zaalwachtGateway->GetZaalwachtenOfUser($user);
         foreach ($zaalwachten as $zaalwacht) {
@@ -50,9 +49,8 @@ class MijnOverzicht implements Interactor
             $this->AddWedstrijdToOverzicht($overzicht, $wedstrijd);
         }
 
-        $coachteam = $this->joomlaGateway->GetCoachTeam($user);
-        if ($coachteam) {
-            $wedstrijden = $this->nevoboGateway->GetWedstrijdenForTeam($coachteam);
+        if ($user->coachteam) {
+            $wedstrijden = $this->nevoboGateway->GetWedstrijdenForTeam($user->coachteam);
             foreach ($wedstrijden as $wedstrijd) {
                 $this->AddWedstrijdToOverzicht($overzicht, $wedstrijd);
             }
@@ -63,24 +61,18 @@ class MijnOverzicht implements Interactor
             usort($dag->speeltijden, Speeltijd::class . "::Compare");
         }
 
-        return $this->MapToUseCaseModel($overzicht, $user, $team, $coachteam);
+        return $this->MapToUseCaseModel($overzicht, $user);
     }
 
-    private function MapToUseCaseModel(array $wedstrijddagen, Persoon $persoon, ?Team $team, ?Team $coachteam): array
+    private function MapToUseCaseModel(array $wedstrijddagen, Persoon $persoon): array
     {
         $result = [];
         foreach ($wedstrijddagen as $wedstrijddag) {
             $newWedstrijddag = new WedstrijddagModel($wedstrijddag);
-
-            foreach ($wedstrijddag->speeltijden as $speeltijd) {
-                $newSpeeltijd = new SpeeltijdModel($speeltijd);
+            foreach ($newWedstrijddag->speeltijden as $speeltijd) {
                 foreach ($speeltijd->wedstrijden as $wedstrijd) {
-                    $newWedstrijd = new WedstrijdModel($wedstrijd);
-                    $newWedstrijd->SetPersonalInformation($wedstrijd, $persoon, $team, $coachteam);
-                    $newSpeeltijd->wedstrijden[] = $newWedstrijd;
+                    $wedstrijd->SetPersonalInformation($persoon);
                 }
-
-                $newWedstrijddag->speeltijden[] = $newSpeeltijd;
             }
             $result[] = $newWedstrijddag;
         }

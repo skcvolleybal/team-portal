@@ -79,9 +79,9 @@ class Wedstrijd
         return strpos($this->locatie, 'Universitair SC') !== false;
     }
 
-    function IsEigenWedstrijd(Team $team)
+    function IsEigenWedstrijd(Persoon $user)
     {
-        return $this->team1->naam === $team->naam || $this->team2->naam === $team->naam;
+        return $user !== null && ($this->team1->naam === $user->team->naam || $this->team2->naam === $user->team->naam);
     }
 
     public function GetTeams(): string

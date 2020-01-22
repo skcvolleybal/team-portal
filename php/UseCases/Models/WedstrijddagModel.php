@@ -22,6 +22,14 @@ class WedstrijddagModel
         foreach ($dag->bardiensten as $bardienst) {
             $this->bardiensten[] = new BardienstModel($bardienst);
         }
+
+        foreach ($dag->speeltijden as $speeltijd) {
+            $this->speeltijden[] = new SpeeltijdModel($speeltijd);
+        }
+
+        foreach ($dag->eigenWedstrijden as $wedstrijd) {
+            $this->eigenWedstrijden[] = new WedstrijdModel($wedstrijd);
+        }
     }
 
     public function AddSpeeltijd(Speeltijd $speeltijd)

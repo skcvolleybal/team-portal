@@ -6,6 +6,7 @@ class Persoon
     public string $naam;
     public ?string $email;
     public ?Team $team;
+    public ?Team $coachteam;
 
     function __construct(int $id, string $naam, string $email)
     {

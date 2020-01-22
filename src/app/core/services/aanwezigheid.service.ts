@@ -39,7 +39,7 @@ export class AanwezigheidService {
 
   AddBarcieAanwezigheid(date: string, shift: number, barlidId: string) {
     return this.httpClient.post<any>(
-      environment.baseUrl + 'barco/dienst/add',
+      environment.baseUrl + 'barco/dienst',
       {
         date,
         shift,

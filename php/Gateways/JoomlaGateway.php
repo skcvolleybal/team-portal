@@ -12,7 +12,15 @@ class JoomlaGateway
 
     public function GetUser(?int $userId = null): ?Persoon
     {
-        return empty($userId) ? $this->GetLoggedInUser() : $this->GetUserById($userId);
+        $user = empty($userId) ? $this->GetLoggedInUser() : $this->GetUserById($userId);
+        if (!$user) {
+            return null;
+        }
+
+        $user->team = $this->GetTeam($user);
+        $user->coachteam = $this->GetCoachTeam($user);
+
+        return $user;
     }
 
     private function GetUserById(int $userId): Persoon

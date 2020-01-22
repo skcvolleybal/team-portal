@@ -5,7 +5,6 @@ class AanwezigheidGateway
     public function __construct(Database $database)
     {
         $this->database = $database;
-        $this->nevoboGateway = new NevoboGateway();
     }
 
     public function GetAanwezigheid(Persoon $user, string $matchId, string $rol): Aanwezigheid
@@ -36,7 +35,7 @@ class AanwezigheidGateway
             $user->team ? $user->team->id : null,
             $user->id,
             $matchId,
-            $rol            
+            $rol
         ];
         $rows = $this->database->Execute($query, $params);
         if (count($rows) == 0) {

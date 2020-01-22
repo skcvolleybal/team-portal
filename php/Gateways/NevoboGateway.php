@@ -109,7 +109,6 @@ class NevoboGateway
                 $currentSpeeltijd = DateFunctions::GetTime($wedstrijd->timestamp);
                 $wedstrijddagen[$i]->speeltijden[] = new Speeltijd(DateFunctions::CreateDateTime($currentDag, $currentSpeeltijd));
             }
-            $j = count($wedstrijddagen[$i]->speeltijden) - 1;
 
             $wedstrijddagen[$i]->AddWedstrijd($wedstrijd);
         }

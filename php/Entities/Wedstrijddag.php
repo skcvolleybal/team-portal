@@ -6,6 +6,7 @@ class Wedstrijddag
     public array $speeltijden = [];
     public array $barshifts = [];
     public array $bardiensten = [];
+    public array $eigenWedstrijden = [];
     public ?Zaalwacht $zaalwacht = null;
 
     public function __get($property)

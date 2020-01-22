@@ -27,16 +27,13 @@ class GetCalendar implements Interactor
         }
 
         $user = $this->JoomlaGateway->GetUser($data->userid);
-        if ($user === null) {
-            throw new UnexpectedValueException();
+        if ($user === null || $user->team === null) {
+            return null;
         }
-
-        $team = $this->joomlaGateway->GetTeam($user);
-        $coachteam = $this->joomlaGateway->GetCoachTeam($user);
 
         $this->uscWedstrijden = $this->nevoboGateway->GetProgrammaForSporthal();
 
-        $skcTeam = $team->GetSkcNotatie() ?? "je team";
+        $skcTeam = $user->team->GetSkcNotatie() ?? "je team";
         $title = $this->GetTitle($skcTeam, $withFluiten, $withTellen);
 
         $this->CreateCalendar($title);

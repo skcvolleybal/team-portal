@@ -10,6 +10,6 @@ class Overzichtsitem
     {
         $this->type = $type;
         $this->date = DateFunctions::GetYmdNotation($date);
-        $this->date = DateFunctions::GetDutchDate($date);
+        $this->datum = DateFunctions::GetDutchDate($date);
     }
 }

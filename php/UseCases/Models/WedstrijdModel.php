@@ -5,15 +5,15 @@ class WedstrijdModel extends Overzichtsitem
     public string $wedstrijdId;
     public string $tijd;
     public string $team1;
-    public bool $isTeam1;
-    public bool $isCoachTeam1;
+    public bool $isTeam1 = false;
+    public bool $isCoachTeam1 = false;
     public string $team2;
-    public bool $isTeam2;
-    public bool $isCoachTeam2;
+    public bool $isTeam2 = false;
+    public bool $isCoachTeam2 = false;
     public ?string $scheidsrechter;
-    public bool $isScheidsrechter;
+    public bool $isScheidsrechter = false;
     public ?string $tellers;
-    public bool $isTellers;
+    public bool $isTellers = false;
     public string $locatie;
 
     public function __construct(Wedstrijd $wedstrijd)
@@ -31,13 +31,19 @@ class WedstrijdModel extends Overzichtsitem
         parent::__construct("wedstrijd", $wedstrijd->timestamp);
     }
 
-    public function SetPersonalInformation(Wedstrijd $wedstrijd, Persoon $user, Team $team, Team $coachteam)
+    public function SetPersonalInformation(Persoon $user)
     {
-        $this->isTeam1 = $wedstrijd->team1->Equals($team);
-        $this->isCoachTeam1 = $wedstrijd->team1->Equals($coachteam);
-        $this->isTeam2 = $wedstrijd->team2->Equals($team);
-        $this->isCoachTeam2 = $wedstrijd->team2->Equals($coachteam);
-        $this->isScheidsrechter = $user->Equals($wedstrijd->scheidsrechter);
-        $this->isTellers = $team->Equals($wedstrijd->telteam);
+        if ($user->team) {
+            $this->isTeam1 = $this->team1 ===  $user->team->naam;
+            $this->isTeam2 = $this->team2 === $user->team->naam;
+            $this->isTellers = $this->tellers === $user->team->naam;
+        }
+
+        if ($user->coachteam) {
+            $this->isCoachTeam1 = $this->team1 === $user->coachteam->naam;
+            $this->isCoachTeam2 = $this->team2 === $user->coachteam->naam;
+        }
+
+        $this->isScheidsrechter = $user->naam === $this->scheidsrechter;
     }
 }

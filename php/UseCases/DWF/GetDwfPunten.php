@@ -3,9 +3,9 @@
 class GetDwfPunten implements Interactor
 {
     public function __construct(
-        StatistiekenGateway $statistiekenGateway, 
-        JoomlaGateway $joomlaGateway)
-    {
+        StatistiekenGateway $statistiekenGateway,
+        JoomlaGateway $joomlaGateway
+    ) {
         $this->statistiekenGateway = $statistiekenGateway;
         $this->joomlaGateway = $joomlaGateway;
     }
@@ -17,7 +17,7 @@ class GetDwfPunten implements Interactor
         if (!preg_match_all($matchIdregex, $matchId)) {
             throw new UnexpectedValueException("matchId klopt niet: '$data->matchId'. Bv: 3000 H4G DG");
         }
-        $skcTeams = Team::GetAlleSkcTeams();
+        $skcTeams = Team::$alleSkcTeams;
         foreach ($skcTeams as $skcTeam) {
             if ($skcTeam->naam == $data->team) {
                 $team = $this->joomlaGateway->GetTeamByNaam($data->team);
@@ -40,26 +40,23 @@ class GetDwfPunten implements Interactor
 
         $result = [];
         foreach ($punten as $punt) {
-            $result[] = (object) [
-                "matchId" => $punt->matchId,
-                "set" =>  intval($punt->set),
-                "skcTeam" => $punt->skcTeam,
-                "otherTeam" => $punt->otherTeam,
-                "setsSkcTeam" => intval($punt->setsSkcTeam),
-                "setsOtherTeam" => intval($punt->setsOtherTeam),
-                "isSkcService" => $punt->isSkcService == "Y",
-                "isSkcPunt" => $punt->isSkcPunt == "Y",
-                "puntenSkcTeam" => intval($punt->puntenSkcTeam),
-                "puntenOtherTeam" => intval($punt->puntenOtherTeam),
-                "ra" => StringToInt($punt->ra),
-                "rv" => StringToInt($punt->rv),
-                "mv" => StringToInt($punt->mv),
-                "lv" => StringToInt($punt->lv),
-                "la" => StringToInt($punt->la),
-                "ma" => StringToInt($punt->ma)
-            ];
+            $result[] = new Wedstrijdpunt(
+                null,
+                $punt->matchId,
+                $punt->skcTeam,
+                intval($punt->set),
+                $punt->isSkcService == "Y",
+                $punt->isSkcPunt == "Y",
+                intval($punt->puntenSkcTeam),
+                intval($punt->puntenOtherTeam),
+                StringToInt($punt->ra),
+                StringToInt($punt->rv),
+                StringToInt($punt->mv),
+                StringToInt($punt->lv),
+                StringToInt($punt->la),
+                StringToInt($punt->ma)
+            );
         }
-
 
         return $result;
     }
