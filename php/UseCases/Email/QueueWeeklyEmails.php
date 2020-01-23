@@ -111,7 +111,6 @@ class QueueWeeklyEmails implements Interactor
             Placeholder::TIJD => $tijd,
             Placeholder::NAAM => $naam,
             Placeholder::USER_ID => $userId,
-            Placeholder::TEAM => $team,
             Placeholder::TEAMS => $spelendeTeams,
             Placeholder::AFZENDER => $this->scheidsco->naam
         ];
@@ -165,6 +164,7 @@ class QueueWeeklyEmails implements Interactor
         $placeholders = [
             Placeholder::NAAM => $naam,
             Placeholder::DATUM => $datum,
+            Placeholder::USER_ID => $zaalwachter->id,
             Placeholder::AFZENDER => $this->scheidsco->naam,
         ];
         $body = FillTemplate($template, $placeholders);

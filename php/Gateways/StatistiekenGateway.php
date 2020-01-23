@@ -52,7 +52,8 @@ class StatistiekenGateway
 
     public function GetAllePuntenByTeam(Team $team): array
     {
-        $query = 'SELECT * FROM DWF_punten P
+        $query = 'SELECT P.* 
+                  FROM DWF_punten P
                   INNER JOIN DWF_wedstrijden W ON P.matchId = W.id
                   WHERE P.skcTeam = ?
                   ORDER BY P.id';
@@ -63,7 +64,8 @@ class StatistiekenGateway
 
     public function GetAllePuntenByMatchId(string $matchId, Team $team): array
     {
-        $query = 'SELECT * FROM DWF_punten P
+        $query = 'SELECT P.* 
+                  FROM DWF_punten P
                   INNER JOIN DWF_wedstrijden W ON P.matchId = W.id
                   WHERE P.matchId = ? AND P.skcTeam = ?
                   ORDER BY P.id';
@@ -74,7 +76,8 @@ class StatistiekenGateway
 
     public function GetAlleSkcPunten(): array
     {
-        $query = 'SELECT * FROM DWF_punten P
+        $query = 'SELECT P.* 
+                  FROM DWF_punten P
                   INNER JOIN DWF_wedstrijden W ON P.matchId = W.id
                   ORDER BY P.id';
         $rows = $this->database->Execute($query);
@@ -88,18 +91,18 @@ class StatistiekenGateway
             $result[] = new Wedstrijdpunt(
                 $row->id,
                 $row->matchId,
-                $row->skcTeam,
+                new Team($row->skcTeam),
                 $row->set,
                 $row->isSkcService,
                 $row->isSkcPunt,
                 $row->puntenSkcTeam,
                 $row->puntenOtherTeam,
-                $row->rechtsAchter,
-                $row->rechtsVoor,
-                $row->midVoor,
-                $row->linksVoor,
-                $row->linksAchter,
-                $row->midAchter,
+                $row->ra,
+                $row->rv,
+                $row->mv,
+                $row->lv,
+                $row->la,
+                $row->ma,
             );
         }
 

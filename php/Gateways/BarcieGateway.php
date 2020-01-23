@@ -276,7 +276,7 @@ class BarcieGateway
         $this->database->Execute($query, $params);
     }
 
-    public function GetBardienstenForUser(Persoon $user)
+    public function GetBardienstenForUser(Persoon $user): array
     {
         $query = 'SELECT 
                     U.id AS userId, 
@@ -291,8 +291,12 @@ class BarcieGateway
                   INNER JOIN barcie_days D ON M.day_id = D.id
                   WHERE U.id = ? AND D.date >= CURDATE()';
         $params = [$user->id];
-
         $rows = $this->database->Execute($query, $params);
+        return $this->MapToBardiensten($rows);
+    }
+
+    private function MapToBardiensten(array $rows): array
+    {
         $diensten = [];
         foreach ($rows as $row) {
             $diensten[] = new Bardienst(
@@ -310,7 +314,7 @@ class BarcieGateway
         return $diensten;
     }
 
-    private function MapToBeschikbaarheden(array $rows)
+    private function MapToBeschikbaarheden(array $rows): array
     {
         $result = [];
         foreach ($rows as $row) {

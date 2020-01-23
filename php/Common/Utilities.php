@@ -33,3 +33,14 @@ function StringToInt($getal)
 {
     return $getal ? intval($getal) : null;
 }
+
+function GetCurrentSeizoen()
+{
+    $month = StringToInt(date('m', time()));
+    $year = StringToInt(date('Y', time()));
+    if ($month >= 7) {
+        return $year . "/" . ($year + 1);
+    } else {
+        return ($year - 1) . "/" . $year;
+    }
+}

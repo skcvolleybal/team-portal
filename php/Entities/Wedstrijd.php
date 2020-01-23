@@ -105,6 +105,7 @@ class Wedstrijd
             return;
         }
 
+        $this->id = $this->id ?? $wedstrijd->id;
         $this->timestamp = $this->timestamp ?? $wedstrijd->timestamp;
         $this->locatie = $this->locatie ?? $wedstrijd->locatie;
         $this->poule = $this->poule ?? $wedstrijd->poule;

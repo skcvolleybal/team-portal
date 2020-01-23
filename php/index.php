@@ -97,14 +97,18 @@ $entryPoint =
 
         new RouteGroup('/dwf', [
             new GetRoute('/gespeelde-punten', GetGespeeldePunten::class),
+            new GetRoute('/dwf-punten', GetDwfPunten::class, AuthorizationRole::UNREGISTERED),
             new GetRoute('/importeer-wedstrijden', WedstrijdenImporteren::class, AuthorizationRole::UNREGISTERED),
         ], AuthorizationRole::USER),
 
-        new RouteGroup('/taken', [
-            new GetRoute('/synchroniseer-wedstrijden', SynchronizeWedstrijden::class),
-            new GetRoute('/queue-weekly-emails', QueueWeeklyEmails::class, AuthorizationRole::UNREGISTERED),
-            new GetRoute('/send-emails', SendQueuedEmails::class, AuthorizationRole::UNREGISTERED)
-        ]),
+        new GetRoute('/calendar', GetCalendar::class, AuthorizationRole::UNREGISTERED),
+
+        new RouteGroup('/tasks', [
+            new GetRoute('/sync-matches', SynchronizeWedstrijden::class),
+            new GetRoute('/queue-weekly-emails', QueueWeeklyEmails::class),
+            new GetRoute('/send-emails', SendQueuedEmails::class),
+            new GetRoute('/daily-tasks', CompleteDailyTasks::class)
+        ], AuthorizationRole::UNREGISTERED),
 
         new RouteGroup('/website', [
             new GetRoute('/voorpagina-rooster', GetVoorpaginaRooster::class)

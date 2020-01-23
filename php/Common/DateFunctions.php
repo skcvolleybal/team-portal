@@ -54,12 +54,12 @@ class DateFunctions
 
     static function AddMinutes(DateTime $date, int $minutes, bool $returnString = false)
     {
-        $newDate = DateTimeImmutable::createFromMutable ($date);
+        $newDate = DateTimeImmutable::createFromMutable($date);
         $interval = new DateInterval("PT" . abs($minutes) . "M");
         if ($minutes < 0) {
             $interval->invert = 1;
         }
         $newDate = $newDate->add($interval);
-        return $returnString ? $newDate->format("H:i") : $newDate;
+        return $returnString ? $newDate->format("H:i") : DateTime::createFromImmutable($newDate);
     }
 }
