@@ -15,7 +15,7 @@ class GetTeamoverzicht implements Interactor
         if ($data->teamnaam === null) {
             throw new InvalidArgumentException("Teamnaam is leeg");
         }
-        $data->teamnaam = "Dames 3";
+        
         $team = new Team($data->teamnaam);
 
 
