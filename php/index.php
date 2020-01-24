@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 setlocale(LC_ALL, 'nl_NL');
 
+use DI\Container;
 use Slim\Factory\AppFactory;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -11,9 +12,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 require 'vendor/autoload.php';
 
-Doctrine\Common\Annotations\AnnotationRegistry::registerLoader('class_exists');
-
-$container = ContainerFactory::Create();
+$container = new Container();
 AppFactory::setContainer($container);
 $app = AppFactory::create();
 
@@ -107,11 +106,12 @@ $entryPoint =
             new GetRoute('/sync-matches', SynchronizeWedstrijden::class),
             new GetRoute('/queue-weekly-emails', QueueWeeklyEmails::class),
             new GetRoute('/send-emails', SendQueuedEmails::class),
-            new GetRoute('/daily-tasks', CompleteDailyTasks::class)
+            new GetRoute('/daily-tasks', DailyTasks::class)
         ], AuthorizationRole::UNREGISTERED),
 
         new RouteGroup('/website', [
-            new GetRoute('/voorpagina-rooster', GetVoorpaginaRooster::class)
+            new GetRoute('/voorpagina-rooster', GetVoorpaginaRooster::class),
+            new GetRoute('/teamoverzicht', GetTeamoverzicht::class),
         ], AuthorizationRole::UNREGISTERED),
 
         new RouteGroup('/joomla', [

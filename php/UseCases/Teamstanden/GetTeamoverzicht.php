@@ -2,110 +2,47 @@
 
 class GetTeamoverzicht implements Interactor
 {
+    public function __construct(
+        JoomlaGateway $joomlaGateway,
+        NevoboGateway $nevoboGateway
+    ) {
+        $this->nevoboGateway = $nevoboGateway;
+        $this->joomlaGateway = $joomlaGateway;
+    }
+
     public function Execute(object $data = null)
     {
         if ($data->teamnaam === null) {
-            throw new \InvalidArgumentException("Teamnaam is leeg");
+            throw new InvalidArgumentException("Teamnaam is leeg");
         }
+        $data->teamnaam = "Dames 3";
+        $team = new Team($data->teamnaam);
 
-        $filename = dirname(__FILE__) . '/teamoverzichten.json';
-        if (!file_exists($filename)) {
-            return "Overzichtsbestand bestaat niet";
-        }
 
-        $overzichten = json_decode(file_get_contents($filename));
-        $teamoverzicht = $this->GetOverzichtForTeam($overzichten, $data->teamnaam);
-
-        $poule = GetKlasse($teamoverzicht->poule);
-        $klasseUrl = "https://www.volleybal.nl/competitie/poule/" . $teamoverzicht->poule . "/regio-west";
-        $klasse = GetKlasse($teamoverzicht->poule);
-        $trainers = [];
-        foreach ($teamoverzicht->trainer as $trainer) {
-            $trainers[] = $trainer->naam;
-        }
-
-        $stand = $teamoverzicht->stand;
-        $uitslagen = $teamoverzicht->uitslagen;
-        $programma = $teamoverzicht->programma;
-        $trainingstijden = $teamoverzicht->trainingstijden;
-
-        $coaches = [];
-        foreach ($teamoverzicht->coaches as $coach) {
-            $coaches[] = $coach->naam;
-        }
-        $facebook = $teamoverzicht->facebook;
-
-        $template = file_get_contents("./UseCases/Teamstanden/templates/teamoverzicht.html");
-        $template = str_replace("{{TEAMNAAM}}", $teamnaam, $template);
-        $template = str_replace("{{KLASSE}}", GetKlasse($teamoverzicht->poule), $template);
-        $template = str_replace("{{KLASSE_URL}}", $klasseUrl, $template);
-        $template = str_replace("{{TRAINER}}", implode(", ", $trainers), $template);
-        $template = str_replace("{{TRAININGSTIJDEN}}", $trainingstijden, $template);
-        $template = str_replace("{{COACHES}}", implode(", ", $coaches), $template);
-        $template = str_replace("{{POULE}}", $poule, $template);
-        $facebookTemplate = "";
-        if ($facebook) {
-            $facebookTemplate = "<div href='#' class='list-group-item'><a style='color: #337ab7;' target='_blank' href='$facebook'><i class='fa fa-2x fa-facebook-official'></i></a></div>";
-        }
-        $template = str_replace("{{FACEBOOK}}", $facebookTemplate, $template);
-
-        $html = "";
-        foreach ($stand as $team) {
-            $style = "";
-            $number = substr($data->teamnaam, 5);
-
-            $html .= "<tr style=" . ($team->team == $data->teamnaam ? "font-weight: bold;" : "") . ">
-                        <td>" . $team->nummer . "</td>
-                        <td>" . $team->team . "</td>
-                        <td>" . $team->wedstrijden . "</td>
-                        <td>" . $team->punten . "</td>
-                      </tr>";
-        }
-        $template = str_replace("{{STAND}}", $html, $template);
-
-        if (empty($uitslagen)) {
-            $html = "<tr><td colspan=3>Nog geen uitslagen</td></tr>";
-        } else {
-            $html = "";
-            foreach ($uitslagen as $uitslag) {
-                $html .= "<tr>
-                            <td>" . $uitslag->team1 . " - " . $uitslag->team2 . "</td>
-                            <td>" . $uitslag->uitslag . "</td>
-                            <td>" . implode(", ", $uitslag->setstanden) . "</td>
-                          </tr>";
+        $teams = Team::$alleSkcTeams;
+        foreach ($teams as $team) {
+            if ($data->teamnaam !== $team->GetSkcNaam()) {
+                continue;
             }
-        }
-        $template = str_replace("{{UITSLAGEN}}", $html, $template);
 
-        if (empty($programma)) {
-            $html = "<tr><td colspan=3>Geen programma</td></tr>";
-        } else {
-            $html = "";
-            foreach ($programma as $wedstrijd) {
-                if (!$wedstrijd->timestamp){
-                    continue;
-                }
-                $dateTime = new DateTime($wedstrijd->timestamp->date);
-                $html .= "<tr>
-                            <td>" . $dateTime->format("d-m-Y") . "</td>
-                            <td>" . $dateTime->format("H:i") . "</td>
-                            <td>" . $wedstrijd->team1 . " - " . $wedstrijd->team2 . "</td>
-                            <td>" . $wedstrijd->locatie . "</td>
-                          </tr>";
+            $uitslagen = $this->nevoboGateway->GetUitslagenForTeam($team);
+            $programma = $this->nevoboGateway->GetWedstrijdenForTeam($team);
+
+            $team->coaches = $this->joomlaGateway->GetCoaches($team);
+            $team->trainers = $this->joomlaGateway->GetTrainers($team);
+            $team->standen = $this->nevoboGateway->GetStandForPoule($team->poule);
+            $team->uitslagen = array_slice($uitslagen, 0, 3);
+            $team->programma = array_slice($programma, 0, 3);
+
+            $dirname = dirname(__FILE__) . "/../../../Teamstanden";
+            if (!file_exists($dirname)) {
+                mkdir($dirname);
             }
-        }
-        $template = str_replace("{{PROGRAMMA}}", $html, $template);
 
-        return $template;
-    }
-
-    private function GetOverzichtForTeam($overzichten, $teamnaam)
-    {
-        foreach ($overzichten as $overzicht) {
-            if ($overzicht->naam == $teamnaam) {
-                return $overzicht;
-            }
+            $result = new TeamoverzichtModel($team);
+            break;
         }
-        return "Team $teamnaam niet gevonden in overzichtsbestand";
+
+        return $result;
     }
 }

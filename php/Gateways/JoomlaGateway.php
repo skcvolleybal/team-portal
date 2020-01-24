@@ -218,13 +218,19 @@ class JoomlaGateway
     {
         $query = 'SELECT
                     U.id,
-                    U.name AS naam
+                    U.name AS naam,
+                    U.email
                   FROM J3_users U
                   INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
                   INNER JOIN J3_usergroups G ON M.group_id = G.id
                   WHERE G.title = ?';
         $params = [$groupname];
-        return $this->database->Execute($query, $params);
+        $rows = $this->database->Execute($query, $params);
+        $result = [];
+        foreach ($rows as $row) {
+            $result[]  = new Persoon($row->id, $row->naam, $row->email);
+        }
+        return $result;
     }
 
     public function InitJoomla()

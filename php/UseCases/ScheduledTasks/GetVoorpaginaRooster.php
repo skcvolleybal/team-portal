@@ -14,19 +14,19 @@ class GetVoorpaginaRooster implements Interactor
 
     public function Execute(object $data = null)
     {
-        $this->telFluitBeurten = $this->telFluitGateway->GetAllFluitEnTelbeurten();
-        $this->zaalwachten = $this->zaalwachtGateway->GetZaalwachtIndeling();
+        $telEnFluitWedstrijden = $this->telFluitGateway->GetAllFluitEnTelbeurten();
 
         $result = [];
         $wedstrijddagen = $this->nevoboGateway->GetWedstrijddagenForSporthal();
         foreach ($wedstrijddagen as $wedstrijddag) {
-            $dag = new WedstrijddagModel($wedstrijddag);
-            foreach ($dag->speeltijden as $speeltijd){
-                foreach ($speeltijd->wedstrijden as $wedstrijd){
-                    
+            $wedstrijddag->zaalwacht = $this->zaalwachtGateway->GetZaalwacht($wedstrijddag->date);
+            foreach ($wedstrijddag->speeltijden as $speeltijd) {
+                foreach ($speeltijd->wedstrijden as $wedstrijd) {
+                    $telEnFluitWedstrijd = Wedstrijd::GetWedstrijdWithMatchId($telEnFluitWedstrijden, $wedstrijd->matchId);
+                    $wedstrijd->AppendInformation($telEnFluitWedstrijd);
                 }
             }
-            $result[] = $dag;
+            $result[] = new WedstrijddagModel($wedstrijddag);
         }
 
         return $result;

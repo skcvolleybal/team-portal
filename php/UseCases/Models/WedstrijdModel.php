@@ -14,7 +14,7 @@ class WedstrijdModel extends Overzichtsitem
     public bool $isScheidsrechter = false;
     public ?string $tellers;
     public bool $isTellers = false;
-    public string $locatie;
+    public ?string $locatie;
 
     public function __construct(Wedstrijd $wedstrijd)
     {
@@ -27,6 +27,8 @@ class WedstrijdModel extends Overzichtsitem
         $this->scheidsrechterId = $wedstrijd->scheidsrechter !== null ? $wedstrijd->scheidsrechter->id : null;
         $this->tellers = $wedstrijd->telteam !== null ? $wedstrijd->telteam->GetShortNotation() : null;
         $this->locatie = $wedstrijd->locatie;
+        $this->uitslag = $wedstrijd->uitslag;
+        $this->setstanden = $wedstrijd->setstanden;
 
         parent::__construct("wedstrijd", $wedstrijd->timestamp);
     }

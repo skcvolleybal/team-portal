@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.0"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js"></script>
     <title>Teamoverzicht</title>
   </head>
   <body>
@@ -14,23 +16,15 @@
         </div>
         <div href="#" class="list-group-item">
           Niveau:
-          <a
-            rel="noopener noreferrer"
-            target="_blank"
-            v-bind:[href]="team.klassUrl"
-            >team.niveau</a
-          >
+          <a rel="noopener noreferrer" target="_blank">team.niveau</a>
         </div>
-        <div href="#" class="list-group-item">Trainer: {{ team.trainer }}</div>
+        <div href="#" class="list-group-item">Trainer: {{ team.trainers }}</div>
         <div href="#" class="list-group-item">
           Trainingstijden: {{ team.trainingstijden }}
         </div>
         <div href="#" class="list-group-item">Coaches: {{ team.coaches }}</div>
         <div href="#" class="list-group-item">
-          <a
-            style="color: #337ab7;"
-            target="_blank"
-            v-bind:[href]="team.facebook"
+          <a style="color: #337ab7;" target="_blank" v-bind:href="team.facebook"
             ><i class="fa fa-2x fa-facebook-official"></i
           ></a>
         </div>
@@ -54,8 +48,8 @@
               </tr>
               <tr v-for="stand in team.standen">
                 <td>{{ stand.nummer }}</td>
-                <td>{{ stand.team }}</td>
-                <td>{{ stand.wedstrijden }}</td>
+                <td>{{ stand.team.naam }}</td>
+                <td>{{ stand.aantalWedstrijden }}</td>
                 <td>{{ stand.punten }}</td>
               </tr>
             </tbody>
@@ -74,13 +68,13 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-if="team.uitslagen">
+              <tr v-if="team.uitslagen.length == 0">
                 Nog geen uitslagen
               </tr>
               <tr v-for="wedstrijd in team.uitslagen">
-                <td>{{ wedstrijd.team1 . " - " . wedstrijd.team2 }}</td>
+                <td>{{ wedstrijd.teams }}</td>
                 <td>{{ wedstrijd.uitslag }}</td>
-                <td>{{ wedstrijd.setstanden.join(", "))}}</td>
+                <td>{{ wedstrijd.setstanden }}</td>
               </tr>
             </tbody>
           </table>
@@ -101,9 +95,9 @@
                 Geen programma
               </tr>
               <tr v-for="wedstrijd in team.programma">
-                <td>{{ wedstrijd.dag }}</td>
+                <td>{{ wedstrijd.datum }}</td>
                 <td>{{ wedstrijd.tijd }}</td>
-                <td>{{ wedstrijd.team1 + ' - ' + wedstrijd.team2 }}</td>
+                <td>{{ wedstrijd.teams }}</td>
                 <td>{{ wedstrijd.locatie }}</td>
               </tr>
             </tbody>
@@ -112,4 +106,25 @@
       </div>
     </div>
   </body>
+  <script>
+    var url = window.location.href;
+    var urlParts = url.split("/");
+    var teamnaam = urlParts[urlParts.length - 1];
+    const params = {
+      teamnaam: teamnaam
+    };
+    axios("/team-portal/api/website/teamoverzicht", { params: params }).then(
+      function(response) {
+        console.log(response.data);
+        new Vue({
+          el: "#team-overzicht",
+          data() {
+            return {
+              team: response.data
+            };
+          }
+        });
+      }
+    );
+  </script>
 </html>

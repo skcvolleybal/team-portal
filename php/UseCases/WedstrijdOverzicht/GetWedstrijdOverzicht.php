@@ -42,6 +42,7 @@ class GetWedstrijdOverzicht implements Interactor
         foreach ($wedstrijden as $wedstrijd) {
             if ($wedstrijd->timestamp) {
                 $newWedstrijd = new WedstrijdModel($wedstrijd);
+                $newWedstrijd->SetPersonalInformation($user);
 
                 $aanwezighedenForMatch = new Aanwezigheidssamenvatting();
 

@@ -9,9 +9,11 @@ class Wedstrijd
     public string $poule;
     public ?DateTime $timestamp;
     public bool $isVeranderd;
-    public string $locatie;
+    public ?string $locatie = null;
     public ?Team $telteam = null;
     public ?Persoon $scheidsrechter = null;
+    public ?string $uitslag = null;
+    public ?string $setstanden = null;
 
     public function __construct(string $matchId, $id = null)
     {

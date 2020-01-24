@@ -13,8 +13,7 @@
     "slim/slim": "^4.3",
     "guzzlehttp/psr7": "^1.6",
     "http-interop/http-factory-guzzle": "^1.0",
-    "php-di/php-di": "^6.0",
-    "jms/serializer": "^3.4"
+    "php-di/php-di": "^6.0"
   },
   "autoload": {
     "classmap": [
@@ -23,11 +22,11 @@
       "Gateways",
       "Common",
       "TeamPortalErrorHandler.php",
-      "container.php",
       "RouteObjects"
     ],
     "files": [
-      "Common/Utilities.php"
+      "Common/Utilities.php",
+      "../Configuration.php"
     ]
   },
   "require-dev": {

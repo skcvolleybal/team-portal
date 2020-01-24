@@ -50,7 +50,7 @@ class NevoboGateway
         foreach ($rankings as $ranking) {
             $team = $ranking['child'][$this->xmlns];
 
-            $nummer = $team['nummer'][0]['data'];
+            $nummer = StringToInt($team['nummer'][0]['data']);
             $teamnaam = $team['team'][0]['data'];
             $wedstrijden = $team['wedstrijden'][0]['data'];
             $punten = $team['punten'][0]['data'];
@@ -61,7 +61,7 @@ class NevoboGateway
 
             $results[] = new Stand(
                 $nummer,
-                $teamnaam,
+                new Team($teamnaam),
                 $wedstrijden,
                 $punten,
                 $setsVoor,
@@ -132,7 +132,7 @@ class NevoboGateway
         return $this->GetProgramma($url);
     }
 
-    public function GetUitslagenForTeam($team)
+    public function GetUitslagenForTeam(?Team $team)
     {
         if (!$team) {
             return [];
@@ -288,12 +288,13 @@ class NevoboGateway
                 preg_match('/Wedstrijd: (.*), Uitslag: (.*), Setstanden: (.*)/', $description, $descriptionMatches);
                 $setstanden = $descriptionMatches[3];
 
-                $uitslagen[] = new Uitslag(
-                    $team1,
-                    $team2,
-                    $uitslag,
-                    $setstanden
-                );
+                $wedstrijd = new Wedstrijd("geen");
+                $wedstrijd->timestamp = DateFunctions::CreateDateTime(substr($match->date, 0, 10), substr($match->date, 11, 8));
+                $wedstrijd->team1 = new Team($team1);
+                $wedstrijd->team2 = new Team($team2);
+                $wedstrijd->uitslag = $uitslag;
+                $wedstrijd->setstanden = $setstanden;
+                $uitslagen[] = $wedstrijd;
             } else if (preg_match('/Vervallen wedstrijd: (.*), Datum: (.*), (.*), Speellocatie: (.*), (.*)/', $description, $descriptionMatches)) {
                 // Nothing
             }
@@ -368,6 +369,7 @@ class NevoboGateway
         for ($i = 0; $i < $feed->get_item_quantity(); $i++) {
             $result[] = (object) [
                 'title' => $feed->get_item($i)->get_title(),
+                'date' => $feed->get_item($i)->get_date("Y-m-d G:i:s"),
                 'description' => $feed->get_item($i)->get_description(),
             ];
         }
