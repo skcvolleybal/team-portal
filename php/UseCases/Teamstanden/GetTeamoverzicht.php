@@ -16,12 +16,11 @@ class GetTeamoverzicht implements Interactor
             throw new InvalidArgumentException("Teamnaam is leeg");
         }
 
-        $teamnaam = str_replace("-", " ", $data->teamnaam);
-        $team = new Team($teamnaam);
+        $currentTeam = new Team($data->teamnaam);
 
         $teams = Team::$alleSkcTeams;
         foreach ($teams as $team) {
-            if ($teamnaam !== $team->GetSkcNaam()) {
+            if ($currentTeam->naam !== $team->naam) {
                 continue;
             }
 
