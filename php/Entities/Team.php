@@ -16,7 +16,8 @@ class Team
 
         if ($this->isSkcFormat($naam)) {
             $sequence = substr($naam, 6);
-            $this->naam = substr($naam, 0, 6) === 'Dames ' ? 'SKC DS ' . $sequence : 'SKC HS ' . $sequence;
+            $gender = strtolower(substr($naam, 0, 5));
+            $this->naam = $gender === 'dames' ? 'SKC DS ' . $sequence : 'SKC HS ' . $sequence;
         } else if ($this->isNevoboFormat($naam)) {
             $this->naam = strtoupper($naam);
         } else {

@@ -21,7 +21,7 @@ class GetTeamoverzicht implements Interactor
 
         $teams = Team::$alleSkcTeams;
         foreach ($teams as $team) {
-            if ($data->teamnaam !== $team->GetSkcNaam()) {
+            if ($teamnaam !== $team->GetSkcNaam()) {
                 continue;
             }
 
