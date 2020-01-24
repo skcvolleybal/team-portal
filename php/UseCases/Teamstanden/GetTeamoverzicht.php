@@ -15,9 +15,9 @@ class GetTeamoverzicht implements Interactor
         if ($data->teamnaam === null) {
             throw new InvalidArgumentException("Teamnaam is leeg");
         }
-        
-        $team = new Team($data->teamnaam);
 
+        $teamnaam = str_replace("-", " ", $data->teamnaam);
+        $team = new Team($teamnaam);
 
         $teams = Team::$alleSkcTeams;
         foreach ($teams as $team) {
