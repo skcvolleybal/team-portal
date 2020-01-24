@@ -31,7 +31,7 @@
       </div>
       <div id="one">
         <div class="panel panel-primary">
-          <div class="panel-heading">Stand ({{ team.poule }})</div>
+          <div class="panel-heading">Stand</div>
           <table class="table">
             <caption></caption>
             <thead>
@@ -43,7 +43,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-if="team.standen">
+              <tr v-if="team.standen.length == 0">
                 Nog geen uitslagen
               </tr>
               <tr v-for="stand in team.standen">
@@ -91,7 +91,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-if="team.programma == null">
+              <tr v-if="team.programma.length == 0 ">
                 Geen programma
               </tr>
               <tr v-for="wedstrijd in team.programma">
