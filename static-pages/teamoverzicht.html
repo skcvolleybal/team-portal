@@ -43,9 +43,6 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-if="team.standen.length == 0">
-                Nog geen uitslagen
-              </tr>
               <tr v-for="stand in team.standen">
                 <td>{{ stand.nummer }}</td>
                 <td>{{ stand.team.naam }}</td>
@@ -68,9 +65,6 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-if="team.uitslagen.length == 0">
-                Nog geen uitslagen
-              </tr>
               <tr v-for="wedstrijd in team.uitslagen">
                 <td>{{ wedstrijd.teams }}</td>
                 <td>{{ wedstrijd.uitslag }}</td>
@@ -91,9 +85,6 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-if="team.programma.length == 0 ">
-                Geen programma
-              </tr>
               <tr v-for="wedstrijd in team.programma">
                 <td>{{ wedstrijd.datum }}</td>
                 <td>{{ wedstrijd.tijd }}</td>
