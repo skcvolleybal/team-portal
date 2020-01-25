@@ -5,17 +5,17 @@ class DateFunctions
     private static $DATE_FORMAT = 'Y-m-d';
     private static $TIME_FORMAT = 'H:i:s';
 
-    static function GetDutchDate($datetime): string
+    static function GetDutchDate(DateTime $date): string
     {
-        if ($datetime) {
-            return trim(strftime('%e %B %Y', $datetime->getTimestamp()));
+        if ($date) {
+            return strftime('%e %B %Y', $date->getTimestamp());
         }
     }
 
-    static function GetDutchDateLong($datetime): string
+    static function GetDutchDateLong(DateTime $date): string
     {
-        if ($datetime) {
-            return trim(strftime('%A %e %B %Y', $datetime->getTimestamp()));
+        if ($date) {
+            return strftime('%A %e %B %Y', $date->getTimestamp());
         }
         return null;
     }

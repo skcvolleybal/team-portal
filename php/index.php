@@ -112,6 +112,7 @@ $entryPoint =
         new RouteGroup('/website', [
             new GetRoute('/voorpagina-rooster', GetVoorpaginaRooster::class),
             new GetRoute('/teamoverzicht', GetTeamoverzicht::class),
+            new GetRoute('/teamstanden', GetTeamstanden::class),
         ], AuthorizationRole::UNREGISTERED),
 
         new RouteGroup('/joomla', [

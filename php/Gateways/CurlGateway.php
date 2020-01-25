@@ -1,19 +1,5 @@
 <?php
 
-class Request
-{
-    public string $url;
-    public array $headers = []; 
-    public $body = null;
-    public bool $receiveHeaders;
-
-    public function __construct(string $url, bool $receiveHeaders = false)
-    {
-        $this->receiveHeaders = $receiveHeaders;
-        $this->url = $url;        
-    }
-}
-
 class CurlGateway
 {
     function SendRequest(Request $request): string
@@ -22,13 +8,13 @@ class CurlGateway
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $request->url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        
+
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
 
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
 
-        if($request->receiveHeaders){
+        if ($request->receiveHeaders) {
             curl_setopt($ch, CURLOPT_HEADER, 1);
         }
         if ($request->body) {
@@ -50,9 +36,9 @@ class CurlGateway
         return $response;
     }
 
-    public function GetHeaders(string $response)
+    public function GetHeaders(string $response): array
     {
-        $headers = array();
+        $headers = [];
 
         $header_text = substr($response, 0, strpos($response, "\r\n\r\n"));
 
@@ -75,13 +61,13 @@ class CurlGateway
         return $headers;
     }
 
-    function GetCookieValueFromHeader($header)
+    function GetCookieValueFromHeader($header): string
     {
         $semiColonPosition = strpos($header, ';') ?? strlen($header);
         return trim(substr($header, 0, $semiColonPosition));
     }
 
-    function SanitizeQueryString($url)
+    function SanitizeQueryString(string $url): string
     {
         $url = explode('?', $url);
         $parts = explode('&', $url[1]);

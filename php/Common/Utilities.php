@@ -7,15 +7,6 @@ function IsNullOrEmpty($obj)
 
 function FillTemplate($template, $placeholders)
 {
-    $pattern = "/{{[a-zA-Z_]*}}/";
-    if (!preg_match_all($pattern, $template, $matches)) {
-        throw new UnexpectedValueException("Fout bij matchen van template placeholders: matchen kon niet");
-    }
-
-    if (count($matches[0]) != count($placeholders)) {
-        throw new UnexpectedValueException("aantal placeholders matcht niet met aantal variabelen: " . print_r($template, true) . " - " . print_r($placeholders, true));
-    }
-
     foreach ($placeholders as $placeholder => $value) {
         if ($value === null) {
             throw new UnexpectedValueException("Fout bij matchen van template placeholders: value === null");

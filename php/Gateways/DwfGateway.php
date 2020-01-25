@@ -1,11 +1,5 @@
 <?php
 
-class Headers
-{
-    public const LOCATION = 'Location';
-    public const SET_COOKIE = 'Set-Cookie';
-}
-
 class DwfGateway
 {
     private $dwfUrl = 'https://dwf.volleybal.nl/application/handlers/dwf/pull/';
@@ -32,13 +26,13 @@ class DwfGateway
         $request = new Request($this->dwfOAuthUrl, true);
         $response = $this->curlGateway->SendRequest($request);
         $headers = $this->curlGateway->GetHeaders($response);
-        $location = $this->curlGateway->SanitizeQueryString($headers[HEADERS::LOCATION]);
-        $this->WID = $this->GetWid($headers[HEADERS::SET_COOKIE]);
+        $location = $this->curlGateway->SanitizeQueryString($headers[HEADER::LOCATION]);
+        $this->WID = $this->GetWid($headers[HEADER::SET_COOKIE]);
 
         $request = new Request($location, true);
         $response = $this->curlGateway->SendRequest($request);
         $headers = $this->curlGateway->GetHeaders($response);
-        $sessionId = $this->GetSessionId($headers[HEADERS::SET_COOKIE]);
+        $sessionId = $this->GetSessionId($headers[HEADER::SET_COOKIE]);
 
         $request = new Request('https://login.nevobo.nl/login_check', true);
         $request->headers = ["Cookie: $sessionId"];
