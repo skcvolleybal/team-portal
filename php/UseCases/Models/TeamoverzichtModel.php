@@ -10,7 +10,7 @@ class TeamoverzichtModel
         foreach ($team->teamgenoten as $teamgenoot) {
             $this->teamgenoten[] = new PersoonModel($teamgenoot);
         }
-        $this->niveau = $team->niveau;
+        $this->niveau = Niveau::GetNiveauString($team->niveau);
         $this->facebook = $team->facebook;
         $this->trainingstijden = $team->trainingstijden;
 

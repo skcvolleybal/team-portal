@@ -53,4 +53,43 @@ class Niveau
 
         return $niveau;
     }
+
+    public static function GetNiveauString(int $niveau)
+    {
+        switch ($niveau) {
+            case 0;
+                $niveauString =  "Eredivisie";
+                break;
+            case 1;
+                $niveauString =  "Topdivisie";
+                break;
+            case 2;
+                $niveauString =  '1e divisie';
+                break;
+            case 3;
+                $niveauString =  "2e divisie";
+                break;
+            case 4;
+                $niveauString =  "3e divisie";
+                break;
+            case 5;
+                $niveauString =  "Promotieklasse";
+                break;
+            case 6;
+                $niveauString = "1e klasse";
+                break;
+            case 7;
+                $niveauString = "2e klasse";
+                break;
+            case 8;
+                $niveauString = "3e klasse";
+                break;
+            case 9;
+                $niveauString = "4e klasse";
+                break;
+            default:
+                throw new UnexpectedValueException("Niveau bestaat niet: $niveau");
+        }
+        return $niveauString;
+    }
 }
