@@ -2,7 +2,10 @@
 
 declare(strict_types=1);
 
+namespace TeamPortal\Tests;
+
 use PHPUnit\Framework\TestCase;
+use TeamPortal\Common\Database;
 
 class BarcieTest extends TestCase
 {
@@ -10,7 +13,7 @@ class BarcieTest extends TestCase
     {
         // arrange
         $database = $this->createMock(Database::class);
-        $configuration = include(__DIR__ . "/../../configuration.php");
+        
         $interactor = new AddBarcieAanwezigheid($configuration, $database);
         $data = (object) [
             "barlidId" => 1,

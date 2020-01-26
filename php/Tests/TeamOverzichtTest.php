@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+namespace TeamPortal\Tests;
+
 use PHPUnit\Framework\TestCase;
 
 class TeamoverzichtTest extends TestCase

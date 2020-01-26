@@ -2,23 +2,26 @@
 
 declare(strict_types=1);
 
+namespace TeamPortal\Tests;
+
 use PHPUnit\Framework\TestCase;
+use TeamPortal\Common\Utilities;
 
 class TemplateTest extends TestCase
 {
-    function test_template()
+    public function testTemplate()
     {
         // arrange
         $template = "{{thomas}} blalasd {{jonathan}}";
-        $variables = (object)[
+        $variables = (object) [
             "{{thomas}}" => "thomas",
             "{{jonathan}}" => "jonathan"
         ];
-        
+
         // act
-        $result = FillTemplate($template, $variables);
+        $result = Utilities::FillTemplate($template, $variables);
 
         // assert
-        $this->assertEquals($result, "THomas blalasd Jonathan");
+        $this->assertEquals($result, "thomas blalasd jonathan");
     }
 }
