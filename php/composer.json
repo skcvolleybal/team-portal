@@ -24,14 +24,11 @@
       "Gateways",
       "Common",
       "TeamPortalErrorHandler.php",
-      "RouteObjects"
-    ],
-    "files": [
-      "../Configuration.php"
+      "RouteObjects",
+      "Configuration.php"
     ]
   },
   "require-dev": {
-    "phpunit/phpunit": "^8.5",
-    "phpstan/phpstan": "^0.12.7"
+    "phpunit/phpunit": "^8.5"
   }
 }

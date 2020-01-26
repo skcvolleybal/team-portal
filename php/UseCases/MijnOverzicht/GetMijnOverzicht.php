@@ -86,7 +86,7 @@ class MijnOverzicht implements Interactor
         return $result;
     }
 
-    private function AddZaalwachtToOverzicht(array &$dagen, Zaalwacht $zaalwacht): void
+    private function AddZaalwachtToOverzicht(array &$dagen, Entities\Zaalwacht $zaalwacht): void
     {
         foreach ($dagen as $dag) {
             if (DateFunctions::AreDatesEqual($dag->date, $zaalwacht->date)) {
