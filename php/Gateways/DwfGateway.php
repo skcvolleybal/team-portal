@@ -2,7 +2,21 @@
 
 namespace TeamPortal\Gateways;
 
-use TeamPortal\Entities;
+use TeamPortal\Common\Curl;
+use TeamPortal\Common\Header;
+use TeamPortal\Common\Request;
+use TeamPortal\Configuration;
+use TeamPortal\Entities\Credentials;
+use TeamPortal\Entities\DwfKaart;
+use TeamPortal\Entities\DwfPunt;
+use TeamPortal\Entities\DwfSet;
+use TeamPortal\Entities\DwfSpelophoud;
+use TeamPortal\Entities\DwfTimeout;
+use TeamPortal\Entities\DwfWedstrijd;
+use TeamPortal\Entities\DwfWissel;
+use TeamPortal\Entities\Punttype;
+use TeamPortal\Entities\Team;
+use TeamPortal\Entities\ThuisUit;
 
 class DwfGateway
 {
@@ -12,11 +26,11 @@ class DwfGateway
     private $WID;
 
     public function __construct(
-        Gateway\CurlGateway $curlGateway,
+        Curl $curl,
         Configuration $configuration
     ) {
-        $this->curlGateway = $curlGateway;
-        $this->credentials = new Entities\Credentials($configuration->DwfUsername, $configuration->DwfPassword);
+        $this->curl = $curl;
+        $this->credentials = new Credentials($configuration->DwfUsername, $configuration->DwfPassword);
 
         if (file_exists($this->cookieFilename)) {
             $this->WID = file_get_contents($this->cookieFilename);
@@ -28,32 +42,32 @@ class DwfGateway
     private function Connect(): void
     {
         $request = new Request($this->dwfOAuthUrl, true);
-        $response = $this->curlGateway->SendRequest($request);
-        $headers = $this->curlGateway->GetHeaders($response);
-        $location = $this->curlGateway->SanitizeQueryString($headers[HEADER::LOCATION]);
-        $this->WID = $this->GetWid($headers[HEADER::SET_COOKIE]);
+        $response = $this->curl->SendRequest($request);
+        $headers = $this->curl->GetHeaders($response);
+        $location = $this->curl->SanitizeQueryString($headers[Header::LOCATION]);
+        $this->WID = $this->GetWid($headers[Header::SET_COOKIE]);
 
         $request = new Request($location, true);
-        $response = $this->curlGateway->SendRequest($request);
-        $headers = $this->curlGateway->GetHeaders($response);
-        $sessionId = $this->GetSessionId($headers[HEADER::SET_COOKIE]);
+        $response = $this->curl->SendRequest($request);
+        $headers = $this->curl->GetHeaders($response);
+        $sessionId = $this->GetSessionId($headers[Header::SET_COOKIE]);
 
         $request = new Request('https://login.nevobo.nl/login_check', true);
         $request->headers = ["Cookie: $sessionId"];
         $request->body = ["_username" => $this->credentials->username, "_password" => $this->credentials->password];
-        $response = $this->curlGateway->SendRequest($request);
+        $response = $this->curl->SendRequest($request);
 
-        $headers = $this->curlGateway->GetHeaders($response);
+        $headers = $this->curl->GetHeaders($response);
         $location = "https://login.nevobo.nl" . $headers['Location'];
         $request = new Request($location, true);
         $sessionId = $this->GetSessionId($headers['Set-Cookie']);
         $request->headers = ["Cookie: $sessionId"];
-        $response = $this->curlGateway->SendRequest($request);
+        $response = $this->curl->SendRequest($request);
 
-        $headers = $this->curlGateway->GetHeaders($response);
-        $request = new Request($headers[Headers::LOCATION], true);
+        $headers = $this->curl->GetHeaders($response);
+        $request = new Request($headers[Header::LOCATION], true);
         $request->headers = ["Cookie: $this->WID"];
-        $this->curlGateway->SendRequest($request);
+        $this->curl->SendRequest($request);
 
         $fp = fopen($this->cookieFilename, 'w');
         fwrite($fp, $this->WID);
@@ -84,7 +98,7 @@ class DwfGateway
             'limit' => $aantal,
         ];
 
-        $response = $this->curlGateway->SendRequest($request);
+        $response = $this->curl->SendRequest($request);
         $data = json_decode($response);
 
         if (!isset($data->results[0]->type)) {
@@ -99,8 +113,8 @@ class DwfGateway
                 }
                 $wedstrijd = new DwfWedstrijd(
                     preg_replace('/\s+/', ' ', $item->data->sMatchId),
-                    new Entities\Team($item->data->sHomeName),
-                    new Entities\Team($item->data->sOutName),
+                    new Team($item->data->sHomeName),
+                    new Team($item->data->sOutName),
                     $item->data->sStartTime[0],
                     $item->data->sStartTime[2]
                 );
@@ -113,17 +127,19 @@ class DwfGateway
 
     public function GetMatchFormId(string $matchId): string
     {
-        $url = 'https://dwf.volleybal.nl/uitslagformulier/' . str_replace(' ', '%20%20%20', $matchId);
+        $length = strlen($matchId);
+        $replacement = str_repeat("%20", 12 - ($length - 1)); // 12 is de standaard lengte van een dwf matchId
+        $url = 'https://dwf.volleybal.nl/uitslagformulier/' . str_replace(' ', $replacement, $matchId);
         $request = new Request($url);
         $request->headers = ["Cookie: $this->WID"];
-        $response = $this->curlGateway->SendRequest($request);
+        $response = $this->curl->SendRequest($request);
 
         if (preg_match_all('/<input type="hidden" id="iMatchFormId" value="(\d*)" name="iMatchFormId"/', $response, $output_array)) {
             return $output_array[1][0];
         }
     }
 
-    private function GetWedstrijdVerloopData(Entities\DwfWedstrijd $wedstrijd): Entities\DwfWedstrijd
+    private function GetWedstrijdVerloopData(DwfWedstrijd $wedstrijd): DwfWedstrijd
     {
         $request = new Request($this->dwfUrl);
         $request->headers = ["Cookie: $this->WID"];
@@ -134,7 +150,7 @@ class DwfGateway
             'sPageType' => 'resultForm',
             'iMatchFormId' => $this->GetMatchFormId($wedstrijd->matchId),
         ];
-        $response = $this->curlGateway->SendRequest($request);
+        $response = $this->curl->SendRequest($request);
         $data = json_decode($response);
         if ($data->error->code != 0) {
             throw new \UnexpectedValueException('Kan wedstrijd verloop niet ophalen: ' . print_r($data, 1));
@@ -212,7 +228,7 @@ class DwfGateway
         return $wedstrijd;
     }
 
-    private function DetermineBeginopstelling(Entities\DwfWedstrijd &$wedstrijd): void
+    private function DetermineBeginopstelling(DwfWedstrijd &$wedstrijd): void
     {
         foreach ($wedstrijd->sets as $currenSet => $set) {
             foreach ([ThuisUit::THUIS, ThuisUit::UIT] as $team) {
@@ -247,7 +263,7 @@ class DwfGateway
         }
     }
 
-    public function GetWedstrijdVerloop(Entities\DwfWedstrijd $wedstrijd): Entities\DwfWedstrijd
+    public function GetWedstrijdVerloop(DwfWedstrijd $wedstrijd): ?DwfWedstrijd
     {
         $wedstrijdverloop = $this->GetWedstrijdVerloopData($wedstrijd);
         if (count($wedstrijdverloop->sets) == 0) {

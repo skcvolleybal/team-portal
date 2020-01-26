@@ -1,10 +1,12 @@
 <?php
 
-
 namespace TeamPortal\Gateways;
 
 use TeamPortal\Common\Database;
-use TeamPortal\Email;
+use TeamPortal\Entities\DwfPunt;
+use TeamPortal\Entities\DwfWedstrijd;
+use TeamPortal\Entities\Team;
+use TeamPortal\Entities\ThuisUit;
 
 class GespeeldeWedstrijdenGateway
 {
@@ -23,8 +25,8 @@ class GespeeldeWedstrijdenGateway
         foreach ($rows as $row) {
             $result[] = new DwfWedstrijd(
                 $row->id,
-                new Entities\Team($row->skcTeam),
-                new Entities\Team($row->otherTeam),
+                new Team($row->skcTeam),
+                new Team($row->otherTeam),
                 $row->setsSkcTeam,
                 $row->setsOtherTeam
             );
@@ -32,7 +34,7 @@ class GespeeldeWedstrijdenGateway
         return $result;
     }
 
-    public function AddWedstrijd(Entities\DwfWedstrijd $wedstrijd): void
+    public function AddWedstrijd(DwfWedstrijd $wedstrijd): void
     {
         $query = 'INSERT INTO DWF_wedstrijden (id, skcTeam, otherTeam, setsSkcTeam, setsOtherTeam)
                   VALUES (?, ?, ?, ?, ?)';
@@ -48,23 +50,31 @@ class GespeeldeWedstrijdenGateway
 
     public function AddPunt(
         string $wedstrijdId,
-        Entities\Team $skcTeam,
+        string $location,
+        Team $team,
         int $set,
-        bool $isSkcService,
-        bool $isSkcPunt,
-        int $puntenSkcTeam,
-        int $puntenOtherTeam,
+        DwfPunt $punt,
         array $opstelling
     ): void {
+        if ($location == ThuisUit::THUIS) {
+            $puntenSkc = $punt->puntenThuisTeam;
+            $puntenOtherTeam  = $punt->puntenUitTeam;
+        } else {
+            $puntenSkc = $punt->puntenUitTeam;
+            $puntenOtherTeam  = $punt->puntenThuisTeam;
+        }
+        $isSkcService = $punt->serverendTeam == $location;
+        $isSkcPunt = $punt->scorendTeam == $location;
+
         $query = 'INSERT INTO DWF_punten (matchId, skcTeam, `set`, isSkcService, isSkcPunt, puntenSkcTeam, puntenOtherTeam, ra, rv, mv, lv, la, ma)
                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
         $params = [
             $wedstrijdId,
-            $skcTeam->naam,
+            $team->naam,
             $set,
             $isSkcService ? 'Y' : 'N',
             $isSkcPunt ? 'Y' : 'N',
-            $puntenSkcTeam,
+            $puntenSkc,
             $puntenOtherTeam,
             $opstelling[0],
             $opstelling[1],

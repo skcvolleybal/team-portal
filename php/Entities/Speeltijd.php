@@ -2,8 +2,6 @@
 
 namespace TeamPortal\Entities;
 
-use \DateTime;
-
 class Speeltijd
 {
     private \DateTime $time;

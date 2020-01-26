@@ -2,8 +2,6 @@
 
 namespace TeamPortal\Entities;
 
-use \DateTime;
-
 class Bardag
 {
     public ?int $id;

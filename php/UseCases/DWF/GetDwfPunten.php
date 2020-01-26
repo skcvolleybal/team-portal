@@ -2,6 +2,7 @@
 
 namespace TeamPortal\UseCases;
 
+use TeamPortal\Entities\Team;
 use TeamPortal\Gateways;
 
 class GetDwfPunten implements Interactor
@@ -23,7 +24,7 @@ class GetDwfPunten implements Interactor
         }
 
         if (!empty($data->team)) {
-            $team = new Entities\Team($data->naam);
+            $team = new Team($data->team);
         }
 
         $teamRegex = "/SKC [HD]S \d{1,2}/";

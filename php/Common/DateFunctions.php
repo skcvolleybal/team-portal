@@ -2,8 +2,6 @@
 
 namespace TeamPortal\Common;
 
-use \DateTime;
-
 class DateFunctions
 {
     private static $DATE_FORMAT = 'Y-m-d';

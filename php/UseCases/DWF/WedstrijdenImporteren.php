@@ -3,6 +3,10 @@
 namespace TeamPortal\UseCases;
 
 use TeamPortal\Gateways;
+use TeamPortal\Entities\DwfPunt;
+use TeamPortal\Entities\DwfWedstrijd;
+use TeamPortal\Entities\DwfWissel;
+use TeamPortal\Entities\ThuisUit;
 
 class WedstrijdenImporteren implements Interactor
 {
@@ -24,67 +28,25 @@ class WedstrijdenImporteren implements Interactor
                 continue;
             }
 
-            $wedstrijdverloop = $this->dwfGateway->GetWedstrijdVerloop($wedstrijd);
-            if ($wedstrijdverloop === null) {
-                continue;
-            }
-
-            $teams = [];
+            $locations = [];
             if ($wedstrijd->team1->IsSkcTeam()) {
-                $teams[] = ThuisUit::THUIS;
+                $locations[] = ThuisUit::THUIS;
             }
             if ($wedstrijd->team2->IsSkcTeam()) {
-                $teams[] = ThuisUit::UIT;
+                $locations[] = ThuisUit::UIT;
             }
-            foreach ($teams as $team) {
-                foreach ($wedstrijdverloop->sets as $currentSet => $set) {
-                    $opstelling = $set->{$team . "opstelling"};
-                    if ($team == ThuisUit::THUIS) {
-                        $skcTeam = $wedstrijd->team1;
-                        $otherTeam = $wedstrijd->team2;
-                        $setsSkcTeam = $wedstrijd->setsTeam1;
-                        $setsOtherTeam = $wedstrijd->setsTeam2;
-                    } else {
-                        $skcTeam = $wedstrijd->team2;
-                        $otherTeam = $wedstrijd->team1;
-                        $setsSkcTeam = $wedstrijd->setsTeam2;
-                        $setsOtherTeam = $wedstrijd->setsTeam1;
-                    }
 
-                    foreach ($set->punten as $punt) {
-                        switch (get_class($punt)) {
-                            case DwfPunt::class:
-                                if ($team == ThuisUit::THUIS) {
-                                    $skcPunten = $punt->puntenThuisTeam;
-                                    $tegenstandPunten  = $punt->puntenUitTeam;
-                                } else {
-                                    $skcPunten = $punt->puntenUitTeam;
-                                    $tegenstandPunten  = $punt->puntenThuisTeam;
-                                }
-
-                                $this->gespeeldeWedstrijdenGateway->AddPunt(
-                                    $wedstrijd->matchId,
-                                    $skcTeam,
-                                    $currentSet + 1,
-                                    $punt->serverendTeam == $team,
-                                    $punt->scorendTeam == $team,
-                                    $skcPunten,
-                                    $tegenstandPunten,
-                                    $opstelling
-                                );
-                                if ($punt->serverendTeam != $punt->scorendTeam && $punt->scorendTeam == $team) {
-                                    $opstelling = $this->Doordraaien($opstelling);
-                                }
-                                break;
-                            case DwfWissel::class:
-                                if ($punt->team == $team) {
-                                    $opstelling = $this->Wisselen($opstelling, $punt->spelerUit, $punt->spelerIn);
-                                }
-                                break;
-                            default:
-                                break;
-                        }
-                    }
+            foreach ($locations as $location) {
+                if ($location == ThuisUit::THUIS) {
+                    $skcTeam = $wedstrijd->team1;
+                    $otherTeam = $wedstrijd->team2;
+                    $setsSkcTeam = $wedstrijd->setsTeam1;
+                    $setsOtherTeam = $wedstrijd->setsTeam2;
+                } else {
+                    $skcTeam = $wedstrijd->team2;
+                    $otherTeam = $wedstrijd->team1;
+                    $setsSkcTeam = $wedstrijd->setsTeam2;
+                    $setsOtherTeam = $wedstrijd->setsTeam1;
                 }
 
                 $newWedstrijd = new DwfWedstrijd(
@@ -96,13 +58,55 @@ class WedstrijdenImporteren implements Interactor
                 );
 
                 $this->gespeeldeWedstrijdenGateway->AddWedstrijd($newWedstrijd);
+                echo $skcTeam->naam . " - " . $otherTeam->naam . "<br>";
+                ob_flush();
+                flush();
+
+                $wedstrijdverloop = $this->dwfGateway->GetWedstrijdVerloop($newWedstrijd);
+                if ($wedstrijdverloop === null) {
+                    continue;
+                }
+
+                foreach ($wedstrijdverloop->sets as $currentSet => $set) {
+                    $opstelling = $set->{$location . "opstelling"};
+
+                    foreach ($set->punten as $punt) {
+                        switch (true) {
+                            case $punt instanceof DwfPunt:
+                                $this->gespeeldeWedstrijdenGateway->AddPunt(
+                                    $wedstrijd->matchId,
+                                    $location,
+                                    $skcTeam,
+                                    $currentSet + 1,
+                                    $punt,
+                                    $opstelling
+                                );
+                                if ($punt->serverendTeam != $punt->scorendTeam && $punt->scorendTeam == $location) {
+                                    $opstelling = $this->Doordraaien($opstelling);
+                                }
+                                break;
+                            case $punt instanceof DwfWissel:
+                                if ($punt->team == $location) {
+                                    try {
+                                        $opstelling = $this->Wisselen($opstelling, $punt->spelerUit, $punt->spelerIn);
+                                    } catch (\UnexpectedValueException $exception) {
+                                        // This exception is only thrown with very rare cases where
+                                        // a 'Uitzonderlijke spelerswissel' occurs. Only 1 match so far
+                                    }
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
             }
         }
 
-        return "Done!";
+        echo "Done!";
     }
 
-    private function IsWedstrijdAlOpgeslagen(DwfWedstrijd $wedstrijd)
+    private function IsWedstrijdAlOpgeslagen(DwfWedstrijd $wedstrijd): bool
     {
         foreach ($this->opgeslagenWedstrijden as $gespeeldeWedstrijd) {
             if ($wedstrijd->matchId == $gespeeldeWedstrijd->matchId) {
@@ -112,7 +116,7 @@ class WedstrijdenImporteren implements Interactor
         return false;
     }
 
-    private function Wisselen($opstelling, $uit, $in)
+    private function Wisselen(array $opstelling, int $uit, int $in): array
     {
         foreach ($opstelling as $i => $speler) {
             if ($speler == $uit) {
@@ -128,7 +132,7 @@ class WedstrijdenImporteren implements Interactor
         throw new \UnexpectedValueException("Speler niet gevonden");
     }
 
-    private function Doordraaien($opstelling)
+    private function Doordraaien(array $opstelling): array
     {
         $tmp = $opstelling[0];
         $opstelling[0] = $opstelling[1];

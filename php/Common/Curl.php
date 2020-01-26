@@ -1,8 +1,8 @@
 <?php
 
-namespace TeamPortal\Gateways;
+namespace TeamPortal\Common;
 
-class CurlGateway
+class Curl
 {
     function SendRequest(Request $request): string
     {

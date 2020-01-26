@@ -3,6 +3,10 @@
 namespace TeamPortal\Gateways;
 
 use TeamPortal\Common\Database;
+use TeamPortal\Entities\DwfSpeler;
+use TeamPortal\Entities\Persoon;
+use TeamPortal\Entities\Team;
+use TeamPortal\Entities\Wedstrijdpunt;
 
 class StatistiekenGateway
 {
@@ -11,7 +15,7 @@ class StatistiekenGateway
         $this->database = $database;
     }
 
-    public function GetGespeeldePunten(Entities\Team $team): array
+    public function GetGespeeldePunten(Team $team): array
     {
         $query = 'SELECT 
                     U.id, 
@@ -48,14 +52,14 @@ class StatistiekenGateway
         $result = [];
         foreach ($rows as $row) {
             $result[] = new DwfSpeler(
-                new Entities\Persoon($row->id, $row->naam, $row->email),
+                new Persoon($row->id, $row->naam, $row->email),
                 $row->aantalGespeeldePunten ?? 0
             );
         }
         return $result;
     }
 
-    public function GetAllePuntenByTeam(Entities\Team $team): array
+    public function GetAllePuntenByTeam(Team $team): array
     {
         $query = 'SELECT P.* 
                   FROM DWF_punten P
@@ -67,7 +71,7 @@ class StatistiekenGateway
         return $this->MapToDwfPunten($rows);
     }
 
-    public function GetAllePuntenByMatchId(string $matchId, Entities\Team $team): array
+    public function GetAllePuntenByMatchId(string $matchId, Team $team): array
     {
         $query = 'SELECT P.* 
                   FROM DWF_punten P
@@ -96,7 +100,7 @@ class StatistiekenGateway
             $result[] = new Wedstrijdpunt(
                 $row->id,
                 $row->matchId,
-                new Entities\Team($row->skcTeam),
+                new Team($row->skcTeam),
                 $row->set,
                 $row->isSkcService,
                 $row->isSkcPunt,

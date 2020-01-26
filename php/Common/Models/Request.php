@@ -1,5 +1,7 @@
 <?php
 
+namespace TeamPortal\Common;
+
 class Request
 {
     public string $url;
