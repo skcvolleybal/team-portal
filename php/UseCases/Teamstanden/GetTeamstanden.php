@@ -45,10 +45,10 @@ class GetTeamstanden implements Interactor
         $template = file_get_contents("./UseCases/Teamstanden/templates/teamstanden.html");
         $placeholders = [
             "__ACTUAL_RANKS__" => implode(", ", $actualRanks),
-            "__NUMBER_OF_TEAMS__" => implode(", ", $numberOfTeamsInPoule),
+            "__NUMBER_OF_TEAMS_IN_POULE__" => implode(", ", $numberOfTeamsInPoule),
+            "__ALL_TEAMS__" => implode(", ", $teamnames),
             "__BLACKBARS__" => implode(", ", $blackBars),
             "__RANKINGS__" => implode(", ", $rankings),
-            "__ALLTEAMS__" => implode(", ", $teamnames),
             "__BACKGROUNDCOLOR__" => implode(", ", array_fill(0, $numberOfSkcTeams, "'rgba(0, 0, 0, 0.05)'")),
             "__BORDERCOLOR__" => implode(", ", array_fill(0, $numberOfSkcTeams, "'rgba(0, 0, 0, 0.5)'")),
             "__DATABACKGROUNDCOLOR__" => implode(", ", $backgroundcolor),
