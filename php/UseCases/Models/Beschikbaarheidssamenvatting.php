@@ -1,5 +1,7 @@
 <?php
 
+namespace TeamPortal\UseCases;
+
 class Beschikbaarheidssamenvatting
 {
     public ?string $type;

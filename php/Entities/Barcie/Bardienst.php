@@ -1,5 +1,7 @@
 <?php
 
+namespace TeamPortal\Entities;
+
 class Bardienst
 {
     public ?int $id;
@@ -33,7 +35,7 @@ class Bardienst
             case 6:
                 return DateFunctions::CreateDateTime($date, "18:00");
             default:
-                throw new UnexpectedValueException();
+                throw new \UnexpectedValueException();
         }
     }
 }

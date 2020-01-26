@@ -1,5 +1,9 @@
 <?php
 
+namespace TeamPortal\UseCases;
+
+use TeamPortal\Entities\Barlid;
+
 class BarlidModel
 {
     public int $id;

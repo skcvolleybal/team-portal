@@ -1,10 +1,17 @@
 <?php
 
+namespace TeamPortal\UseCases;
+
+use TeamPortal\Common\DateFunctions;
+use TeamPortal\Gateways;
+
 class ToggleBhv implements Interactor
 {
 
-    public function __construct(JoomlaGateway $joomlaGateway, BarcieGateway $barcieGateway)
-    {
+    public function __construct(
+        Gateways\JoomlaGateway $joomlaGateway,
+        Gateways\BarcieGateway $barcieGateway
+    ) {
         $this->joomlaGateway = $joomlaGateway;
         $this->barcieGateway = $barcieGateway;
     }
@@ -13,7 +20,7 @@ class ToggleBhv implements Interactor
     {
         if ($data->barlidId === null) {
             throw new InvalidArgumentException("barlidId is leeg");
-        }        
+        }
         if ($data->shift === null) {
             throw new InvalidArgumentException("Shift is leeg");
         }

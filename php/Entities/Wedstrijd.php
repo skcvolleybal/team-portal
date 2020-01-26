@@ -1,5 +1,9 @@
 <?php
 
+namespace TeamPortal\Entities;
+
+use TeamPortal\Common\DateFunctions;
+
 class Wedstrijd
 {
     public ?int $id;
@@ -7,7 +11,7 @@ class Wedstrijd
     public Team $team1;
     public Team $team2;
     public string $poule;
-    public ?DateTime $timestamp;
+    public ?\DateTime $timestamp;
     public bool $isVeranderd;
     public ?string $locatie = null;
     public ?Team $telteam = null;
@@ -21,7 +25,7 @@ class Wedstrijd
         $this->matchId = $matchId;
     }
 
-    static function Compare(Wedstrijd $wedstrijd1, Wedstrijd $wedstrijd2)
+    static function Compare(Wedstrijd $wedstrijd1, Wedstrijd $wedstrijd2): bool
     {
         if (!$wedstrijd1->timestamp) {
             return -1;
@@ -32,8 +36,14 @@ class Wedstrijd
         return $wedstrijd1->timestamp > $wedstrijd2->timestamp;
     }
 
-    static function CreateFromNevoboWedstrijd(string $matchId, Team $team1, Team $team2, string $poule, ?DateTime $timestamp, string $locatie)
-    {
+    static function CreateFromNevoboWedstrijd(
+        string $matchId,
+        Team $team1,
+        Team $team2,
+        string $poule,
+        ?\DateTime $timestamp,
+        string $locatie
+    ): Wedstrijd {
         $newWedstrijd = new Wedstrijd($matchId);
         $newWedstrijd->team1 = $team1;
         $newWedstrijd->team2 = $team2;
@@ -54,7 +64,7 @@ class Wedstrijd
         return $firstPart . ', ' . $lastPart;
     }
 
-    function IsMogelijk($wedstrijd): bool
+    function IsMogelijk(?Wedstrijd $wedstrijd): bool
     {
         if (!$wedstrijd) {
             return true;
@@ -76,12 +86,12 @@ class Wedstrijd
         return $isMogelijk;
     }
 
-    function IsThuis()
+    function IsThuis(): bool
     {
         return strpos($this->locatie, 'Universitair SC') !== false;
     }
 
-    function IsEigenWedstrijd(Persoon $user)
+    function IsEigenWedstrijd(Persoon $user): bool
     {
         return $user !== null && ($this->team1->naam === $user->team->naam || $this->team2->naam === $user->team->naam);
     }
@@ -91,7 +101,7 @@ class Wedstrijd
         return $this->team1->naam . " - " . $this->team2->naam;
     }
 
-    static public function GetWedstrijdWithDate(array $programma, DateTime $date): ?Wedstrijd
+    static public function GetWedstrijdWithDate(array $programma, \DateTime $date): ?Wedstrijd
     {
         foreach ($programma as $wedstrijd) {
             if ($wedstrijd->timestamp && DateFunctions::GetYmdNotation($wedstrijd->timestamp) === DateFunctions::GetYmdNotation($date)) {
@@ -101,7 +111,7 @@ class Wedstrijd
         return null;
     }
 
-    public function AppendInformation(?Wedstrijd $wedstrijd)
+    public function AppendInformation(?Wedstrijd $wedstrijd): void
     {
         if ($wedstrijd === null) {
             return;

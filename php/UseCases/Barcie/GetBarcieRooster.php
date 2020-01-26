@@ -1,11 +1,16 @@
 <?php
 
+namespace TeamPortal\UseCases;
+
+use TeamPortal\Gateways;
 
 class GetBarcieRooster implements Interactor
 {
 
-    public function __construct(JoomlaGateway $joomlaGateway, BarcieGateway $barcieGateway)
-    {
+    public function __construct(
+        Gateways\JoomlaGateway $joomlaGateway,
+        Gateways\BarcieGateway $barcieGateway
+    ) {
         $this->joomlaGateway = $joomlaGateway;
         $this->barcieGateway = $barcieGateway;
     }

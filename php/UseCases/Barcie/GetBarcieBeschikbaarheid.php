@@ -1,18 +1,21 @@
 <?php
 
+namespace TeamPortal\UseCases;
+
+use TeamPortal\Common\DateFunctions;
+use TeamPortal\Entities;
+use TeamPortal\Gateways;
 
 class GetBarcieBeschikbaarheid implements Interactor
 {
     public function __construct(
-        NevoboGateway $nevoboGateway,
-        BarcieGateway $barcieGateway,
-        JoomlaGateway $joomlaGateway,
-        BarcieBeschikbaarheidHelper $barcieBeschikbaarheidHelper
+        Gateways\NevoboGateway $nevoboGateway,
+        Gateways\BarcieGateway $barcieGateway,
+        Gateways\JoomlaGateway $joomlaGateway
     ) {
         $this->nevoboGateway = $nevoboGateway;
         $this->barcieGateway = $barcieGateway;
         $this->joomlaGateway = $joomlaGateway;
-        $this->barcieBeschikbaarheidHelper = $barcieBeschikbaarheidHelper;
     }
 
     public function Execute(object $data = null): array
@@ -44,14 +47,14 @@ class GetBarcieBeschikbaarheid implements Interactor
                 "date" => DateFunctions::GetYmdNotation($bardag->date),
                 "beschikbaarheid" => $isBeschikbaar,
                 "eigenWedstrijden" => $this->MapToUsecase($wedstrijden, $user->team, $user->coachteam),
-                "isMogelijk" => $this->barcieBeschikbaarheidHelper->isMogelijk($wedstrijden),
+                "isMogelijk" => Entities\Barbeschikbaarheid::IsMogelijk($wedstrijden),
             ];
         }
 
         return $response;
     }
 
-    private function MapToUsecase(array $wedstrijden, ?Team $team, ?Team $coachteam)
+    private function MapToUsecase(array $wedstrijden, ?Entities\Team $team, ?Entities\Team $coachteam)
     {
         $result = [];
         foreach ($wedstrijden as $wedstrijd) {
@@ -70,7 +73,7 @@ class GetBarcieBeschikbaarheid implements Interactor
         return $result;
     }
 
-    private function GetBeschikbaarheid(array $beschikbaarheden, DateTime $date)
+    private function GetBeschikbaarheid(array $beschikbaarheden, \DateTime $date)
     {
         foreach ($beschikbaarheden as $beschikbaarheid) {
             if ($beschikbaarheid->date == $date) {

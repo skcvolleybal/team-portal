@@ -1,11 +1,15 @@
 <?php
 
-class Invalteam extends Team
+namespace TeamPortal\UseCases;
+
+use TeamPortal\Entities;
+
+class Invalteam extends Entities\Team
 {
-    public ?Wedstrijd $eigenWedstrijd;
+    public ?Entities\Wedstrijd $eigenWedstrijd;
     public bool $isMogelijk;
 
-    public function __construct(Team $team, ?Wedstrijd $eigenWedstrijd)
+    public function __construct(Entities\Team $team, ?Entities\Wedstrijd $eigenWedstrijd)
     {
         $this->eigenWedstrijd = $eigenWedstrijd;
         parent::__construct($team->naam, $team->id, $team->teamgenoten);

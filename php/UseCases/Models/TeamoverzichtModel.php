@@ -1,8 +1,10 @@
 <?php
 
+namespace TeamPortal\UseCases;
+
 class TeamoverzichtModel
 {
-    public function __construct(Team $team)
+    public function __construct(Entities\Team $team)
     {
         $this->id = $team->id;
         $this->naam = $team->naam;
@@ -25,12 +27,12 @@ class TeamoverzichtModel
             $this->programma[] = new WedstrijdModel($wedstrijd);
         }
 
-        $trainers = array_map(function (Persoon $trainer) {
+        $trainers = array_map(function (Entities\Persoon $trainer) {
             return $trainer->naam;
         }, $team->trainers);
         $this->trainers = implode(", ", $trainers);
 
-        $coaches = array_map(function (Persoon $coach) {
+        $coaches = array_map(function (Entities\Persoon $coach) {
             return $coach->naam;
         }, $team->coaches);
         $this->coaches = implode(", ", $coaches);

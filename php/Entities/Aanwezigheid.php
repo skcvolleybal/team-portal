@@ -1,5 +1,7 @@
 <?php
 
+namespace TeamPortal\Entities;
+
 class Aanwezigheid
 {
     public ?int $id;

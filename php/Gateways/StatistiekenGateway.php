@@ -1,4 +1,9 @@
 <?php
+
+namespace TeamPortal\Gateways;
+
+use TeamPortal\Common\Database;
+
 class StatistiekenGateway
 {
     public function __construct(Database $database)
@@ -6,7 +11,7 @@ class StatistiekenGateway
         $this->database = $database;
     }
 
-    public function GetGespeeldePunten(Team $team): array
+    public function GetGespeeldePunten(Entities\Team $team): array
     {
         $query = 'SELECT 
                     U.id, 
@@ -43,14 +48,14 @@ class StatistiekenGateway
         $result = [];
         foreach ($rows as $row) {
             $result[] = new DwfSpeler(
-                new Persoon($row->id, $row->naam, $row->email),
+                new Entities\Persoon($row->id, $row->naam, $row->email),
                 $row->aantalGespeeldePunten ?? 0
             );
         }
         return $result;
     }
 
-    public function GetAllePuntenByTeam(Team $team): array
+    public function GetAllePuntenByTeam(Entities\Team $team): array
     {
         $query = 'SELECT P.* 
                   FROM DWF_punten P
@@ -62,7 +67,7 @@ class StatistiekenGateway
         return $this->MapToDwfPunten($rows);
     }
 
-    public function GetAllePuntenByMatchId(string $matchId, Team $team): array
+    public function GetAllePuntenByMatchId(string $matchId, Entities\Team $team): array
     {
         $query = 'SELECT P.* 
                   FROM DWF_punten P
@@ -91,7 +96,7 @@ class StatistiekenGateway
             $result[] = new Wedstrijdpunt(
                 $row->id,
                 $row->matchId,
-                new Team($row->skcTeam),
+                new Entities\Team($row->skcTeam),
                 $row->set,
                 $row->isSkcService,
                 $row->isSkcPunt,

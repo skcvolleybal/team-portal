@@ -1,5 +1,7 @@
 <?php
 
+namespace TeamPortal\Entities;
+
 class Wedstrijddag
 {
     private $date;
@@ -9,7 +11,7 @@ class Wedstrijddag
     public array $eigenWedstrijden = [];
     public ?Zaalwacht $zaalwacht = null;
 
-    public function __get($property)
+    public function __get(string $property)
     {
         if (property_exists($this, $property)) {
             return $this->$property;
@@ -21,7 +23,7 @@ class Wedstrijddag
         $this->date = $date;
     }
 
-    function AddWedstrijd(Wedstrijd $wedstrijd)
+    function AddWedstrijd(Wedstrijd $wedstrijd): void
     {
         if ($wedstrijd === null) {
             return;
@@ -32,11 +34,11 @@ class Wedstrijddag
                 return;
             }
         }
-        $this->speeltijden[] = new Speeltijd($wedstrijd->timestamp);
+        $this->speeltijden[] = new Entities\Speeltijd($wedstrijd->timestamp);
         $this->speeltijden[0]->wedstrijden[] = $wedstrijd;
     }
 
-    public static function Compare(Wedstrijddag $dag1, Wedstrijddag $dag2)
+    public static function Compare(Wedstrijddag $dag1, Wedstrijddag $dag2): bool
     {
         return $dag1->date > $dag2->date;
     }

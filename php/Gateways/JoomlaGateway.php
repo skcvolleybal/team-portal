@@ -1,5 +1,11 @@
 <?php
 
+namespace TeamPortal\Gateways;
+
+use TeamPortal\Configuration;
+use TeamPortal\Common\Database;
+use TeamPortal\Entities;
+
 class JoomlaGateway
 {
     public function __construct(
@@ -10,7 +16,7 @@ class JoomlaGateway
         $this->database = $database;
     }
 
-    public function GetUser(?int $userId = null): ?Persoon
+    public function GetUser(?int $userId = null): ?Entities\Persoon
     {
         $user = empty($userId) ? $this->GetLoggedInUser() : $this->GetUserById($userId);
         if (!$user) {
@@ -23,7 +29,7 @@ class JoomlaGateway
         return $user;
     }
 
-    private function GetUserById(int $userId): Persoon
+    private function GetUserById(int $userId): Entities\Persoon
     {
         $query = 'SELECT id, name AS naam, email
                   FROM J3_users
@@ -31,22 +37,22 @@ class JoomlaGateway
         $params = [$userId];
         $users = $this->database->Execute($query, $params);
         if (count($users) != 1) {
-            throw new UnexpectedValueException("Gebruiker met id '$userId' bestaat niet");
+            throw new \UnexpectedValueException("Gebruiker met id '$userId' bestaat niet");
         }
 
-        return new Persoon($users[0]->id, $users[0]->naam, $users[0]->email);
+        return new Entities\Persoon($users[0]->id, $users[0]->naam, $users[0]->email);
     }
 
-    public function GetLoggedInUser(): ?Persoon
+    public function GetLoggedInUser(): ?Entities\Persoon
     {
         $this->InitJoomla();
 
-        $joomlaUser = JFactory::getUser();
+        $joomlaUser = \JFactory::getUser();
         if ($joomlaUser->guest) {
             return null;
         }
 
-        $user = new Persoon(
+        $user = new Entities\Persoon(
             $joomlaUser->id,
             $joomlaUser->name,
             $joomlaUser->email
@@ -60,7 +66,7 @@ class JoomlaGateway
         return $user;
     }
 
-    public function GetScheidsrechter(?int $userId): ?Scheidsrechter
+    public function GetScheidsrechter(?int $userId): ?Entities\Scheidsrechter
     {
         $query = 'SELECT U.id, name, email
                   FROM J3_users U
@@ -75,17 +81,17 @@ class JoomlaGateway
         if (count($rows) != 1) {
             return null;
         };
-        return new Scheidsrechter(
-            new Persoon($rows[0]->id, $rows[0]->name, $rows[0]->email)
+        return new Entities\Scheidsrechter(
+            new Entities\Persoon($rows[0]->id, $rows[0]->name, $rows[0]->email)
         );
     }
 
-    public function GetTeamByNaam(?string $naam): ?Team
+    public function GetTeamByNaam(?string $naam): ?Entities\Team
     {
         if (empty($naam)) {
             return null;
         }
-        $team = new Team($naam);
+        $team = new Entities\Team($naam);
         $query = 'SELECT * FROM J3_usergroups
                   WHERE title = ?';
         $params = [$team->GetSkcNaam()];
@@ -93,7 +99,7 @@ class JoomlaGateway
         if (count($result) != 1) {
             return null;
         }
-        return new Team($result[0]->title, $result[0]->id);
+        return new Entities\Team($result[0]->title, $result[0]->id);
     }
 
     public function GetUsersWithName(string $name): array
@@ -113,7 +119,7 @@ class JoomlaGateway
         return $this->MapToPersonen($rows);
     }
 
-    private function IsUserInUsergroup(?Persoon $user, string $usergroup): bool
+    private function IsUserInUsergroup(?Entities\Persoon $user, string $usergroup): bool
     {
         if ($user === null) {
             return false;
@@ -127,27 +133,27 @@ class JoomlaGateway
         return count($result) > 0;
     }
 
-    public function IsScheidsrechter(?Persoon $user): bool
+    public function IsScheidsrechter(?Entities\Persoon $user): bool
     {
         return $this->IsUserInUsergroup($user, 'Scheidsrechters');
     }
 
-    public function IsWebcie(?Persoon $user): bool
+    public function IsWebcie(?Entities\Persoon $user): bool
     {
         return $this->IsUserInUsergroup($user, 'Super Users');
     }
 
-    public function IsTeamcoordinator(?Persoon $user): bool
+    public function IsTeamcoordinator(?Entities\Persoon $user): bool
     {
         return $this->IsUserInUsergroup($user, 'Teamcoordinator');
     }
 
-    public function IsBarcie(?Persoon $user): bool
+    public function IsBarcie(?Entities\Persoon $user): bool
     {
         return $this->IsUserInUsergroup($user, 'Barcie');
     }
 
-    public function GetTeam(Persoon $user): ?Team
+    public function GetTeam(Entities\Persoon $user): ?Entities\Team
     {
         $query = 'SELECT 
                     G.id,
@@ -163,10 +169,10 @@ class JoomlaGateway
             return null;
         }
 
-        return new Team($team[0]->naam, $team[0]->id);
+        return new Entities\Team($team[0]->naam, $team[0]->id);
     }
 
-    public function GetTeamgenoten(?Team $team): array
+    public function GetTeamgenoten(?Entities\Team $team): array
     {
         if ($team === null) {
             return [];
@@ -185,7 +191,7 @@ class JoomlaGateway
         return $this->MapToPersonen($rows);
     }
 
-    public function GetCoachTeam(Persoon $user): ?Team
+    public function GetCoachTeam(Entities\Persoon $user): ?Entities\Team
     {
         $query = 'SELECT 
                     G2.id,
@@ -201,15 +207,15 @@ class JoomlaGateway
             return null;
         }
 
-        return new Team($team[0]->naam, $team[0]->id);
+        return new Entities\Team($team[0]->naam, $team[0]->id);
     }
 
-    public function GetCoaches(Team $team): array
+    public function GetCoaches(Entities\Team $team): array
     {
         return $this->GetUsersInGroup('Coach ' . $team->GetSkcNaam());
     }
 
-    public function GetTrainers(Team $team): array
+    public function GetTrainers(Entities\Team $team): array
     {
         return $this->GetUsersInGroup('Trainer ' . $team->GetSkcNaam());
     }
@@ -228,12 +234,12 @@ class JoomlaGateway
         $rows = $this->database->Execute($query, $params);
         $result = [];
         foreach ($rows as $row) {
-            $result[]  = new Persoon($row->id, $row->naam, $row->email);
+            $result[]  = new Entities\Persoon($row->id, $row->naam, $row->email);
         }
         return $result;
     }
 
-    public function InitJoomla()
+    public function InitJoomla(): void
     {
         if (defined('_JEXEC')) {
             return;
@@ -245,19 +251,19 @@ class JoomlaGateway
         require_once JPATH_BASE . '/includes/defines.php';
         require_once JPATH_BASE . '/includes/framework.php';
 
-        $mainframe = JFactory::getApplication('site');
+        $mainframe = \JFactory::getApplication('site');
         $mainframe->initialise();
     }
 
-    public function Login(string $username, string $password)
+    public function Login(string $username, string $password): bool
     {
         $this->InitJoomla();
 
-        $credentials = new Credentials($username, $password);
+        $credentials = new Entities\Credentials($username, $password);
 
-        $joomlaApp = JFactory::getApplication('site');
+        $joomlaApp = \JFactory::getApplication('site');
 
-        $db = JFactory::getDbo();
+        $db = \JFactory::getDbo();
         $query = $db->getQuery(true)
             ->select('id, password')
             ->from('#__users')
@@ -266,7 +272,7 @@ class JoomlaGateway
         $db->setQuery($query);
         $result = $db->loadObject();
         if ($result) {
-            $match = JUserHelper::verifyPassword($credentials->password, $result->password, $result->id);
+            $match = \JUserHelper::verifyPassword($credentials->password, $result->password, $result->id);
             if ($match === true) {
                 $joomlaApp->login((array) $credentials);
                 return true;
@@ -282,7 +288,7 @@ class JoomlaGateway
     {
         $result = [];
         foreach ($rows as $row) {
-            $result[] = new Persoon($row->id, $row->naam, $row->email);
+            $result[] = new Entities\Persoon($row->id, $row->naam, $row->email);
         }
         return $result;
     }

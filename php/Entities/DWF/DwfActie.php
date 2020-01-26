@@ -1,5 +1,7 @@
 <?php
 
-abstract class DwfActie
+namespace TeamPortal\Entities;
+
+class DwfActie
 {
 }

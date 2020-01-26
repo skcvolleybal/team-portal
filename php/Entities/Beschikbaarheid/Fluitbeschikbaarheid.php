@@ -1,10 +1,14 @@
 <?php
 
+namespace TeamPortal\Entities;
+
+use TeamPortal\Common\DateFunctions;
+
 class Fluitbeschikbaarheid extends Beschikbaarheid
 {
     public Speeltijd $speeltijd;
 
-    public static function isFluitenMogelijk(array $wedstrijden, DateTime $tijd): ?bool
+    public static function isFluitenMogelijk(array $wedstrijden, \DateTime $tijd): ?bool
     {
         $bestResult = true;
         foreach ($wedstrijden as $wedstrijd) {
@@ -12,7 +16,7 @@ class Fluitbeschikbaarheid extends Beschikbaarheid
             $timestring = DateFunctions::GetYmdNotation($tijd) . " " . DateFunctions::GetTime($tijd);
 
             $fluitwedstrijd = new Wedstrijd("fluitwedstrijd");
-            $fluitwedstrijd->timestamp =  DateTime::createFromFormat($format, $timestring);
+            $fluitwedstrijd->timestamp =  \DateTime::createFromFormat($format, $timestring);
             $fluitwedstrijd->locatie = "Universitair SC";
 
             $isMogelijk = $wedstrijd->isMogelijk($fluitwedstrijd);

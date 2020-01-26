@@ -1,11 +1,17 @@
 <?php
 
+namespace TeamPortal\UseCases;
+
+use TeamPortal\Common\DateFunctions;
+use TeamPortal\Gateways;
+use TeamPortal\Entities;
+
 class GetTelTeams implements Interactor
 {
     public function __construct(
-        JoomlaGateway $joomlaGateway,
-        TelFluitGateway $telFluitGateway,
-        NevoboGateway $nevoboGateway
+        Gateways\JoomlaGateway $joomlaGateway,
+        Gateways\TelFluitGateway $telFluitGateway,
+        Gateways\NevoboGateway $nevoboGateway
     ) {
         $this->joomlaGateway = $joomlaGateway;
         $this->telFluitGateway =  $telFluitGateway;
@@ -26,7 +32,7 @@ class GetTelTeams implements Interactor
             }
         }
         if ($telWedstrijd === null) {
-            throw new UnexpectedValueException("Wedstrijd met $data->matchId niet bekend");
+            throw new \UnexpectedValueException("Wedstrijd met $data->matchId niet bekend");
         }
 
         $teams = $this->telFluitGateway->GetTelTeams();
@@ -58,7 +64,7 @@ class GetTelTeams implements Interactor
         return $result;
     }
 
-    private function MapToUsecaseModel(Team $team, bool $isMogelijk, ?string $eigenTijd)
+    private function MapToUsecaseModel(Entities\Team $team, bool $isMogelijk, ?string $eigenTijd)
     {
         return (object) [
             "naam" => $team->naam,

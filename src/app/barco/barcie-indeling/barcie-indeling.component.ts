@@ -53,9 +53,14 @@ export class BarcieIndelingComponent implements OnInit {
   }
 
   DeleteBarcieDate(date) {
-    this.barcoService.DeleteBarcieDag(date).subscribe(() => {
-      this.GetBarcieRooster();
-    });
+    this.barcoService.DeleteBarcieDag(date).subscribe(
+      () => {
+        this.GetBarcieRooster();
+      },
+      response => {
+        this.errorMessage = response.error.message;
+      }
+    );
   }
 
   ToggleBhv(selectedBarcieDag, selectedBarcielid, shift) {
@@ -112,7 +117,7 @@ export class BarcieIndelingComponent implements OnInit {
       },
       response => {
         this.isLoading = true;
-        this.errorMessage = response.error;
+        this.errorMessage = response.error.message;
       }
     );
   }

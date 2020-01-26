@@ -1,8 +1,12 @@
 <?php
 
+namespace TeamPortal\RouteObjects;
+
+use TeamPortal\Gateways\JoomlaGateway;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Routing\RouteCollectorProxy;
+use TeamPortal\RouteObjects\CrudRoute;
 
 class PostRoute extends CrudRoute
 {

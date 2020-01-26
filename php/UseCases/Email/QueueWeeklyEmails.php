@@ -1,5 +1,12 @@
 <?php
 
+namespace TeamPortal\UseCases;
+
+use TeamPortal\Common\DateFunctions;
+use TeamPortal\Common\Utilities;
+use TeamPortal\Gateways;
+use TeamPortal\Entities;
+
 class QueueWeeklyEmails implements Interactor
 {
     private $scheidsco;
@@ -7,12 +14,12 @@ class QueueWeeklyEmails implements Interactor
     private $fromAddress;
 
     public function __construct(
-        NevoboGateway $nevoboGateway,
-        TelFluitGateway $telFluitGateway,
-        ZaalwachtGateway $zaalwachtGateway,
-        EmailGateway $emailGateway,
-        BarcieGateway $barcieGateway,
-        JoomlaGateway $joomlaGateway
+        Gateways\NevoboGateway $nevoboGateway,
+        Gateways\TelFluitGateway $telFluitGateway,
+        Gateways\ZaalwachtGateway $zaalwachtGateway,
+        Gateways\EmailGateway $emailGateway,
+        Gateways\BarcieGateway $barcieGateway,
+        Gateways\JoomlaGateway $joomlaGateway
     ) {
         $this->nevoboGateway = $nevoboGateway;
         $this->telFluitGateway = $telFluitGateway;
@@ -25,7 +32,7 @@ class QueueWeeklyEmails implements Interactor
     public function Execute(object $data = null)
     {
         $this->scheidsco = $this->joomlaGateway->GetUser(2223); // E. vd B.
-        $this->fromAddress = new Persoon(-1, $this->scheidsco->naam, "scheids@skcvolleybal.nl");
+        $this->fromAddress = new Entities\Persoon(-1, $this->scheidsco->naam, "scheids@skcvolleybal.nl");
         $this->webcie = $this->joomlaGateway->GetUser(542);
 
         $wedstrijddagen = $this->nevoboGateway->GetWedstrijddagenForSporthal();
@@ -94,7 +101,7 @@ class QueueWeeklyEmails implements Interactor
         return $emails;
     }
 
-    private function CreateScheidsrechterMail(Wedstrijd $wedstrijd): Email
+    private function CreateScheidsrechterMail(Entities\Wedstrijd $wedstrijd): Entities\Email
     {
         $datum = DateFunctions::GetDutchDate($wedstrijd->timestamp);
         $tijd = DateFunctions::GetTime($wedstrijd->timestamp);
@@ -102,7 +109,6 @@ class QueueWeeklyEmails implements Interactor
         $scheidsrechter = $wedstrijd->scheidsrechter;
         $naam = $scheidsrechter->naam;
         $userId = $scheidsrechter->id;
-        $team = $scheidsrechter->team ?? "je team";
         $spelendeTeams = $wedstrijd->team1->naam . " - " . $wedstrijd->team2->naam;
 
         $template = file_get_contents("./UseCases/Email/templates/scheidsrechterTemplate.txt");
@@ -114,11 +120,11 @@ class QueueWeeklyEmails implements Interactor
             Placeholder::TEAMS => $spelendeTeams,
             Placeholder::AFZENDER => $this->scheidsco->naam
         ];
-        $body = FillTemplate($template, $placeholders);
+        $body = Utilities::FillTemplate($template, $placeholders);
 
         $tijdAanwezig = DateFunctions::AddMinutes($wedstrijd->timestamp, -30, true);
         $titel = "Fluiten $spelendeTeams ($tijdAanwezig aanwezig)";
-        return new Email(
+        return new Entities\Email(
             $titel,
             $body,
             $scheidsrechter,
@@ -126,7 +132,7 @@ class QueueWeeklyEmails implements Interactor
         );
     }
 
-    private function CreateTellerMail(Wedstrijd $wedstrijd, Persoon $teller): Email
+    private function CreateTellerMail(Entities\Wedstrijd $wedstrijd, Entities\Persoon $teller): Entities\Email
     {
         $datum = DateFunctions::GetDutchDate($wedstrijd->timestamp);
         $tijd = $wedstrijd->timestamp->format('G:i');
@@ -143,11 +149,11 @@ class QueueWeeklyEmails implements Interactor
             Placeholder::TEAMS => $spelendeTeams,
             Placeholder::AFZENDER => $this->scheidsco->naam
         ];
-        $body = FillTemplate($template, $placeholders);
+        $body = Utilities::FillTemplate($template, $placeholders);
 
         $tijdAanwezig = DateFunctions::AddMinutes($wedstrijd->timestamp, -15, true);
         $titel = "Tellen $spelendeTeams ($tijdAanwezig aanwezig)";
-        return new Email(
+        return new Entities\Email(
             $titel,
             $body,
             $teller,
@@ -155,7 +161,7 @@ class QueueWeeklyEmails implements Interactor
         );
     }
 
-    private function CreateZaalwachtMail(Wedstrijddag $wedstrijddag, Persoon $zaalwachter): Email
+    private function CreateZaalwachtMail(Entities\Wedstrijddag $wedstrijddag, Entities\Persoon $zaalwachter): Entities\Email
     {
         $naam = $zaalwachter->naam;
         $datum = DateFunctions::GetDutchDateLong($wedstrijddag->date);
@@ -167,12 +173,12 @@ class QueueWeeklyEmails implements Interactor
             Placeholder::USER_ID => $zaalwachter->id,
             Placeholder::AFZENDER => $this->scheidsco->naam,
         ];
-        $body = FillTemplate($template, $placeholders);
+        $body = Utilities::FillTemplate($template, $placeholders);
 
         $earliestMatch = $wedstrijddag->speeltijden[0]->wedstrijden[0];
         $tijdAanwezig = DateFunctions::AddMinutes($earliestMatch->timestamp, -60, true);
         $titel = "Zaalwacht $datum ($tijdAanwezig aanwezig)";
-        return new Email(
+        return new Entities\Email(
             $titel,
             $body,
             $zaalwachter,
@@ -180,7 +186,7 @@ class QueueWeeklyEmails implements Interactor
         );
     }
 
-    private function CreateBarcieMail(Bardienst $bardienst, DateTime $dag): Email
+    private function CreateBarcieMail(Entities\Bardienst $bardienst, \DateTime $dag): Entities\Email
     {
         $datum = DateFunctions::GetDutchDateLong($dag->date);
         $naam = $bardienst->persoon->naam;
@@ -195,9 +201,9 @@ class QueueWeeklyEmails implements Interactor
             Placeholder::BHV => $bhv,
             Placeholder::AFZENDER => $this->scheidsco->naam
         ];
-        $body = FillTemplate($template, $placeholders);
+        $body = Utilities::FillTemplate($template, $placeholders);
 
-        return new Email(
+        return new Entities\Email(
             "Bardienst " . $datum,
             $body,
             $bardienst->persoon,
@@ -205,8 +211,10 @@ class QueueWeeklyEmails implements Interactor
         );
     }
 
-    private function CreateSamenvattingMail(Emailsamenvatting $samenvatting, Persoon $receiver): Email
-    {
+    private function CreateSamenvattingMail(
+        Emailsamenvatting $samenvatting,
+        Entities\Persoon $receiver
+    ): Entities\Email {
         $barcieContent = $this->GetBoldHeader(count($samenvatting->barleden) > 0 ? "Barleden" : "Geen barleden");
         $scheidsrechtersContent = $this->GetBoldHeader(count($samenvatting->scheidsrechters) > 0 ? "Scheidsrechters" : "Geen scheidsrechters");
         $tellersContent = $this->GetBoldHeader(count($samenvatting->telteams) > 0 ? "Tellers" : "Geen tellers");
@@ -242,18 +250,18 @@ class QueueWeeklyEmails implements Interactor
             Placeholder::ZAALWACHTERS => $zaalwachtersContent,
             Placeholder::BARLEDEN => $barcieContent,
         ];
-        $body = FillTemplate($template, $placeholders);
+        $body = Utilities::FillTemplate($template, $placeholders);
 
         $title = "Samenvatting fluit/tel/zaalwacht mails " . date("j-M-Y");
 
-        return new Email(
+        return new Entities\Email(
             $title,
             $body,
             $receiver
         );
     }
 
-    private function GetNaamAndEmail(Persoon $persoon): string
+    private function GetNaamAndEmail(Entities\Persoon $persoon): string
     {
         return $persoon->naam .  " (" . $persoon->email . ")" . $this->GetNewLine();
     }

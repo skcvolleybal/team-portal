@@ -1,5 +1,7 @@
 <?php
 
+namespace TeamPortal\Entities;
+
 class DwfSet
 {
     public array $thuisopstelling = [];

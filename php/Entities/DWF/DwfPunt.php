@@ -1,5 +1,7 @@
 <?php
 
+namespace TeamPortal\Entities;
+
 class DwfPunt extends DwfActie
 {
     public function __construct(

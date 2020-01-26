@@ -1,9 +1,18 @@
 <?php
 
+namespace TeamPortal\UseCases;
+
+use TeamPortal\Common\DateFunctions;
+use TeamPortal\Entities\Persoon;
+use TeamPortal\Gateways;
+
+
 class GetBarcieBeschikbaarheden implements Interactor
 {
-    public function __construct(BarcieGateway $barcieGateway, JoomlaGateway $joomlaGateway)
-    {
+    public function __construct(
+        Gateways\BarcieGateway $barcieGateway,
+        Gateways\JoomlaGateway $joomlaGateway
+    ) {
         $this->barcieGateway = $barcieGateway;
         $this->joomlaGateway = $joomlaGateway;
     }
@@ -37,7 +46,7 @@ class GetBarcieBeschikbaarheden implements Interactor
         return $result;
     }
 
-    private function GetBarlid(array $barleden, Persoon $persoon)
+    private function GetBarlid(array $barleden, Persoon $persoon): ?Persoon
     {
         foreach ($barleden as $barlid) {
             if ($barlid->id === $persoon->id) {

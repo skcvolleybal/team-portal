@@ -1,12 +1,17 @@
 <?php
 
+namespace TeamPortal\UseCases;
+
+use TeamPortal\Gateways;
+use TeamPortal\Entities;
+
 class GetScheidscoOverzicht implements Interactor
 {
     public function __construct(
-        JoomlaGateway $joomlaGateway,
-        TelFluitGateway $telFluitGateway,
-        NevoboGateway $NevoboGateway,
-        ZaalwachtGateway $zaalwachtGateway
+        Gateways\JoomlaGateway $joomlaGateway,
+        Gateways\TelFluitGateway $telFluitGateway,
+        Gateways\NevoboGateway $NevoboGateway,
+        Gateways\ZaalwachtGateway $zaalwachtGateway
     ) {
         $this->joomlaGateway = $joomlaGateway;
         $this->telFluitGateway = $telFluitGateway;
@@ -34,25 +39,6 @@ class GetScheidscoOverzicht implements Interactor
             $result[] = new WedstrijddagModel($wedstrijddag);
         }
 
-        return $result;
-    }
-
-    private function MapToUseCaseModel(Wedstrijddag $dag)
-    {
-        $result = new WedstrijddagModel($dag);
-
-        foreach ($dag->speeltijden as $i => $speeltijd) {
-            $result->speeltijden[] = new SpeeltijdModel($speeltijd);
-
-            foreach ($speeltijd->wedstrijden as $wedstrijd) {
-                $newWedstrijd = new WedstrijdModel($wedstrijd);
-                $newWedstrijd->teams = $wedstrijd->team1->naam . " - " . $wedstrijd->team2->naam;
-                $newWedstrijd->scheidsrechter = $wedstrijd->scheidsrechter ? $wedstrijd->scheidsrechter->naam : null;
-                $newWedstrijd->tellers = $wedstrijd->telteam ? $wedstrijd->telteam->GetSkcNaam() : null;
-
-                $result->speeltijden[$i]->wedstrijden[] = $newWedstrijd;
-            }
-        }
         return $result;
     }
 }

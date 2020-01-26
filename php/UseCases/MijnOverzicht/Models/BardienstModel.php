@@ -1,5 +1,9 @@
 <?php
 
+namespace TeamPortal\UseCases;
+
+use TeamPortal\Entities\Bardienst;
+
 class BardienstModel extends Overzichtsitem
 {
     public function __construct(Bardienst $dienst)

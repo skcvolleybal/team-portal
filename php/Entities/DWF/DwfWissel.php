@@ -1,5 +1,7 @@
 <?php
 
+namespace TeamPortal\Entities;
+
 class DwfWissel extends DwfActie
 {
     public function __construct(int $spelerIn, int $spelerUit, string $team)

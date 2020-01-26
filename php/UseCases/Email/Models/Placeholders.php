@@ -1,5 +1,7 @@
 <?php
 
+namespace TeamPortal\UseCases;
+
 class Placeholder
 {
     public const NAAM = "{{naam}}";

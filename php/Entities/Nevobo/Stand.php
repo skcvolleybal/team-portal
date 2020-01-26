@@ -1,5 +1,7 @@
 <?php
 
+namespace TeamPortal\Entities;
+
 class Stand
 {
     public ?int $nummer;
@@ -11,8 +13,16 @@ class Stand
     public int $puntenVoor;
     public int $puntenTegen;
 
-    public function __construct(?int $nummer, Team $team, int $aantalWedstrijden, int $punten, int $setsVoor, int $setsTegen, int $puntenVoor, int $puntenTegen)
-    {
+    public function __construct(
+        ?int $nummer,
+        Team $team,
+        int $aantalWedstrijden,
+        int $punten,
+        int $setsVoor,
+        int $setsTegen,
+        int $puntenVoor,
+        int $puntenTegen
+    ) {
         $this->nummer = $nummer;
         $this->team = $team;
         $this->aantalWedstrijden = $aantalWedstrijden;

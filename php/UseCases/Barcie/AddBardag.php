@@ -1,10 +1,15 @@
 <?php
 
+namespace TeamPortal\UseCases;
+
+use TeamPortal\Common\DateFunctions;
+use TeamPortal\Gateways;
+
 class AddBardag implements Interactor
 {
     public function __construct(
-        JoomlaGateway $joomlaGateway,
-        BarcieGateway $barcieGateway
+        Gateways\JoomlaGateway $joomlaGateway,
+        Gateways\BarcieGateway $barcieGateway
     ) {
         $this->joomlaGateway = $joomlaGateway;
         $this->barcieGateway = $barcieGateway;
@@ -17,8 +22,8 @@ class AddBardag implements Interactor
             throw new InvalidArgumentException("Incorrecte dag: $data->data");
         }
 
-        if (DateFunctions::GetYmdNotation($date) < DateFunctions::GetYmdNotation(new DateTime())) {
-            throw new UnexpectedValueException("Dag ligt in het verleden");
+        if (DateFunctions::GetYmdNotation($date) < DateFunctions::GetYmdNotation(new \DateTime())) {
+            throw new \UnexpectedValueException("Dag ligt in het verleden");
         }
 
         $bardag = $this->barcieGateway->GetBardag($date);

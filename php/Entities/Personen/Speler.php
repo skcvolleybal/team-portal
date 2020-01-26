@@ -1,5 +1,7 @@
 <?php
 
+namespace TeamPortal\Entities;
+
 class Speler extends Persoon
 {
     public bool $isInvaller;

@@ -1,15 +1,18 @@
 <?php
 
+namespace TeamPortal\UseCases;
+
+use TeamPortal\Gateways;
 use Kigkonsult\Icalcreator\Vcalendar;
 
 class GetCalendar implements Interactor
 {
     public function __construct(
-        ZaalwachtGateway $zaalwachtGateway,
-        JoomlaGateway $joomlaGateway,
-        NevoboGateway $nevoboGateway,
-        TelFluitGateway $telFluitGateway,
-        BarcieGateway $barcieGateway
+        Gateways\ZaalwachtGateway $zaalwachtGateway,
+        Gateways\JoomlaGateway $joomlaGateway,
+        Gateways\NevoboGateway $nevoboGateway,
+        Gateways\TelFluitGateway $telFluitGateway,
+        Gateways\BarcieGateway $barcieGateway
     ) {
         $this->zaalwachtGateway = $zaalwachtGateway;
         $this->joomlaGateway = $joomlaGateway;
@@ -62,7 +65,7 @@ class GetCalendar implements Interactor
             foreach ($wedstrijddag->speeltijden as $speeltijd) {
                 foreach ($speeltijd->wedstrijden as $wedstrijd) {
                     if ($isTeller) {
-                        $telWedstrijd = Wedstrijd::GetWedstrijdWithMatchId($telbeurten, $wedstrijd->matchId);
+                        $telWedstrijd = Entities\Wedstrijd::GetWedstrijdWithMatchId($telbeurten, $wedstrijd->matchId);
                         if ($telWedstrijd) {
                             $telWedstrijd->AppendInformation($wedstrijd);
                             $start = $telWedstrijd->timestamp;
@@ -73,7 +76,7 @@ class GetCalendar implements Interactor
                     }
 
                     if ($isScheidsrechter) {
-                        $fluitWedstrijd = Wedstrijd::GetWedstrijdWithMatchId($fluitbeurten, $wedstrijd->matchId);
+                        $fluitWedstrijd = Entities\Wedstrijd::GetWedstrijdWithMatchId($fluitbeurten, $wedstrijd->matchId);
                         if ($fluitWedstrijd) {
                             $fluitWedstrijd->AppendInformation($wedstrijd);
                             $start = $fluitWedstrijd->timestamp;
@@ -88,7 +91,7 @@ class GetCalendar implements Interactor
         echo $calendar->createCalendar();
     }
 
-    private function GetBardienstenForDate(array $allBardiensten, DateTime $date): array
+    private function GetBardienstenForDate(array $allBardiensten, \DateTime $date): array
     {
         $result = [];
         foreach ($allBardiensten as $bardienst) {
@@ -99,7 +102,7 @@ class GetCalendar implements Interactor
         return $result;
     }
 
-    private function GetTitle(Persoon $persoon, bool $isScheidsrechter): string
+    private function GetTitle(Entities\Persoon $persoon, bool $isScheidsrechter): string
     {
         $seizoen = GetCurrentSeizoen();
         $title = null;
@@ -119,7 +122,7 @@ class GetCalendar implements Interactor
         return $title;
     }
 
-    private function CreateCalendar(Persoon $persoon, string $title): Vcalendar
+    private function CreateCalendar(Entities\Persoon $persoon, string $title): Vcalendar
     {
         $postfix = $persoon->team ? $persoon->team->GetSkcNaam() : "jou";
         return Vcalendar::factory([Vcalendar::UNIQUE_ID => "https://www.skcvolleybal.nl/team-portal/"])
@@ -130,7 +133,7 @@ class GetCalendar implements Interactor
             ->setXprop(Vcalendar::X_WR_TIMEZONE, "Europe/Amsterdam");
     }
 
-    private function AddEvent(Vcalendar $calendar, DateTime $start, DateTime $end, string $location, string $summary, string $description = null)
+    private function AddEvent(Vcalendar $calendar, \DateTime $start, \DateTime $end, string $location, string $summary, string $description = null)
     {
         if ($start && $end) {
             $event = $calendar->newVevent()

@@ -1,5 +1,7 @@
 <?php
 
+namespace TeamPortal\Entities;
+
 class Wedstrijduitslag
 {
     public string $team1;

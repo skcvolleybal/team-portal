@@ -1,6 +1,8 @@
 <?php
 
-class Barciebeschikbaarheid extends Beschikbaarheid
+namespace TeamPortal\Entities;
+
+class Barbeschikbaarheid extends Beschikbaarheid
 {
     public Bardag $bardag;
 
@@ -8,5 +10,28 @@ class Barciebeschikbaarheid extends Beschikbaarheid
     {
         $this->bardag = $bardag;
         parent::__construct($id, $persoon, $bardag->date, $isBeschikbaar);
+    }
+
+    public static function IsMogelijk(array $wedstrijden): ?bool
+    {
+        if (count($wedstrijden) == 0) {
+            return null;
+        }
+
+        $bestResult = true;
+        foreach ($wedstrijden as $wedstrijd) {
+            if (!$wedstrijd->IsThuis()) {
+                return false;
+            }
+
+            $time = DateFunctions::GetTime($wedstrijd->timestamp);
+            if ($time == "19:30" || $time == "16:00") {
+                $bestResult = $bestResult ? true : null;
+            } else {
+                $bestResult = null;
+            }
+        }
+
+        return $bestResult;
     }
 }

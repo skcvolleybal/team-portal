@@ -1,4 +1,7 @@
 <?php
+
+namespace TeamPortal\Entities;
+
 class Barshift
 {
     public ?int $id;

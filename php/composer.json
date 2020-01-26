@@ -27,7 +27,6 @@
       "RouteObjects"
     ],
     "files": [
-      "Common/Utilities.php",
       "../Configuration.php"
     ]
   },

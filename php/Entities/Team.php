@@ -1,5 +1,7 @@
 <?php
 
+namespace TeamPortal\Entities;
+
 class Team
 {
     public ?int $id;
@@ -10,7 +12,7 @@ class Team
     public static $alleSkcTeams = [];
     public ?string $facebook;
 
-    public function __construct($naam, $id = null, $teamgenoten = [])
+    public function __construct(string $naam, int $id = null, array $teamgenoten = [])
     {
         $this->id = $id;
 
@@ -36,27 +38,27 @@ class Team
         }
     }
 
-    function GetShortNotation()
+    function GetShortNotation(): string
     {
         return $this->naam[4] . substr($this->naam, 7);
     }
 
-    function GetSkcNaam()
+    function GetSkcNaam(): string
     {
         return ($this->naam[4] === 'D' ? 'Dames ' : 'Heren ') . substr($this->naam, 7);
     }
 
-    private function isNevoboFormat($naam)
+    private function isNevoboFormat(string $naam): bool
     {
         return preg_match('/^SKC [D|H]S \d+$/i', $naam);
     }
 
-    private function isSkcFormat($naam)
+    private function isSkcFormat(string $naam): bool
     {
         return preg_match('/^(Heren|Dames) \d+$/i', $naam);
     }
 
-    static function CreateTeamWithPoule($naam, $poule): Team
+    static function CreateTeamWithPoule(string $naam, string $poule): Team
     {
         $newTeam = new Team($naam);
         $newTeam->poule = $poule;
@@ -68,22 +70,22 @@ class Team
         return substr($this->naam, 4, 1) === "H";
     }
 
-    function IsSkcTeam()
+    function IsSkcTeam(): bool
     {
         return "SKC " === substr($this->naam, 0, 4);
     }
 
-    public static function GetAlleHerenTeams()
+    public static function GetAlleHerenTeams(): array
     {
         return Team::GetAllTeamsByGender("H");
     }
 
-    public static function GetAlleDamesTeams()
+    public static function GetAlleDamesTeams(): array
     {
         return Team::GetAllTeamsByGender("D");
     }
 
-    private static function GetAllTeamsByGender($genderCharacter)
+    private static function GetAllTeamsByGender(string $genderCharacter): array
     {
         $result = [];
         foreach (Team::$alleSkcTeams as $team) {
@@ -94,7 +96,7 @@ class Team
         return $result;
     }
 
-    public function Equals(?Team $team)
+    public function Equals(?Team $team): bool
     {
         if ($team === null) {
             return false;

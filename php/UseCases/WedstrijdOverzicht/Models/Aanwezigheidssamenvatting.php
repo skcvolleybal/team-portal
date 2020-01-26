@@ -1,5 +1,7 @@
 <?php
 
+namespace TeamPortal\UseCases;
+
 class Aanwezigheidssamenvatting
 {
     public array $aanwezigen = [];

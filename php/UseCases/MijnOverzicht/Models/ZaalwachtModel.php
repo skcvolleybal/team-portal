@@ -1,5 +1,7 @@
 <?php
 
+namespace TeamPortal\UseCases;
+
 class ZaalwachtModel extends Overzichtsitem
 {
     public string $team;

@@ -1,5 +1,9 @@
 <?php
 
+namespace TeamPortal\UseCases;
+
+use TeamPortal\Gateways\EmailGateway;
+
 class SendQueuedEmails implements Interactor
 {
     public function __construct(EmailGateway $emailGateway)

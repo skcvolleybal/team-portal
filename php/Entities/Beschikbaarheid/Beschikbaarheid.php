@@ -1,13 +1,15 @@
 <?php
 
+namespace TeamPortal\Entities;
+
 class Beschikbaarheid
 {
     public ?int $id;
     public Persoon $persoon;
-    public DateTime $date;
+    public \DateTime $date;
     public ?bool $isBeschikbaar;
 
-    public function __construct(?int $id, Persoon $persoon, DateTime $date, ?bool $isBeschikbaar)
+    public function __construct(?int $id, Persoon $persoon, \DateTime $date, ?bool $isBeschikbaar)
     {
         $this->id = $id;
         $this->persoon = $persoon;
@@ -15,7 +17,7 @@ class Beschikbaarheid
         $this->isBeschikbaar = $isBeschikbaar;
     }
 
-    public static function IsBeschikbaar(array $beschikbaarheden, DateTime $date): ?bool
+    public static function IsBeschikbaar(array $beschikbaarheden, \DateTime $date): ?bool
     {
         foreach ($beschikbaarheden as $beschikbaarheid) {
             if ($beschikbaarheid->date == $date) {

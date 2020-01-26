@@ -1,5 +1,7 @@
 <?php
 
+namespace TeamPortal\UseCases;
+
 class InvalteamModel
 {
     public ?WedstrijdModel $wedstrijd = null;

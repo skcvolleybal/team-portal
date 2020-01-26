@@ -1,11 +1,16 @@
 <?php
 
+namespace TeamPortal\UseCases;
+
+use TeamPortal\Common\DateFunctions;
+use TeamPortal\Gateways;
+
 class UpdateBarcieBeschikbaarheid implements Interactor
 {
 
     public function __construct(
-        JoomlaGateway $joomlaGateway,
-        BarcieGateway $barcieGateway
+        Gateways\JoomlaGateway $joomlaGateway,
+        Gateways\BarcieGateway $barcieGateway
     ) {
         $this->joomlaGateway = $joomlaGateway;
         $this->barcieGateway = $barcieGateway;
@@ -19,7 +24,7 @@ class UpdateBarcieBeschikbaarheid implements Interactor
 
         $bardag = $this->barcieGateway->GetBardag($date);
         if ($bardag->id === null) {
-            throw new UnexpectedValueException("Dag '$date' bestaat niet");
+            throw new \UnexpectedValueException("Dag '$date' bestaat niet");
         }
 
         $beschikbaarheid = $this->barcieGateway->GetBeschikbaarheid($user, $bardag);

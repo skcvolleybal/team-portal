@@ -1,13 +1,18 @@
 <?php
 
+namespace TeamPortal\UseCases;
+
+use TeamPortal\Common\DateFunctions;
+use TeamPortal\Gateways;
+use TeamPortal\Entities;
 
 class GetScheidsrechters implements Interactor
 {
     public function __construct(
-        JoomlaGateway $joomlaGateway,
-        TelFluitGateway $telFluitGateway,
-        NevoboGateway $nevoboGateway,
-        FluitBeschikbaarheidGateway $fluitBeschikbaarheidGateway
+        Gateways\JoomlaGateway $joomlaGateway,
+        Gateways\TelFluitGateway $telFluitGateway,
+        Gateways\NevoboGateway $nevoboGateway,
+        Gateways\FluitBeschikbaarheidGateway $fluitBeschikbaarheidGateway
     ) {
         $this->joomlaGateway = $joomlaGateway;
         $this->telFluitGateway = $telFluitGateway;
@@ -30,7 +35,7 @@ class GetScheidsrechters implements Interactor
             }
         }
         if ($fluitWedstrijd === null) {
-            throw new UnexpectedValueException("Wedstrijd met id $data->matchId niet gevonden");
+            throw new \UnexpectedValueException("Wedstrijd met id $data->matchId niet gevonden");
         }
 
         $date = $fluitWedstrijd->timestamp;
@@ -59,7 +64,7 @@ class GetScheidsrechters implements Interactor
         return $result;
     }
 
-    private function GetFluitbeschikbaarheid(Persoon $scheidsrechter, array $fluitBeschikbaarheden)
+    private function GetFluitbeschikbaarheid(Entities\Persoon $scheidsrechter, array $fluitBeschikbaarheden)
     {
         foreach ($fluitBeschikbaarheden as $fluitBeschikbaarheid) {
             if ($fluitBeschikbaarheid->persoon->id == $scheidsrechter->id) {
@@ -69,7 +74,7 @@ class GetScheidsrechters implements Interactor
         return null;
     }
 
-    private function MapToUsecaseModel(Persoon $scheidsrechter, ?bool $isBeschikbaar, ?Wedstrijd $wedstrijd)
+    private function MapToUsecaseModel(Entities\Persoon $scheidsrechter, ?bool $isBeschikbaar, ?Entities\Wedstrijd $wedstrijd)
     {
         return (object) [
             "id" => $scheidsrechter->id,

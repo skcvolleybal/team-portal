@@ -1,5 +1,7 @@
 <?php
 
+namespace TeamPortal\Entities;
+
 class Punttype
 {
     public const RESTART_SET = "restartSet";

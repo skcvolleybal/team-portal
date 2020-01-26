@@ -1,10 +1,14 @@
 <?php
 
+namespace TeamPortal\UseCases;
+
+use TeamPortal\Gateways;
+
 class DailyTasks implements Interactor
 {
     public function __construct(
-        NevoboGateway $nevoboGateway,
-        JoomlaGateway $joomlaGateway
+        Gateways\NevoboGateway $nevoboGateway,
+        Gateways\JoomlaGateway $joomlaGateway
     ) {
         $this->nevoboGateway = $nevoboGateway;
         $this->joomlaGateway = $joomlaGateway;

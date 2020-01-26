@@ -1,5 +1,7 @@
 <?php
 
+namespace TeamPortal\Gateways;
+
 class CurlGateway
 {
     function SendRequest(Request $request): string
@@ -61,7 +63,7 @@ class CurlGateway
         return $headers;
     }
 
-    function GetCookieValueFromHeader($header): string
+    function GetCookieValueFromHeader(string $header): string
     {
         $semiColonPosition = strpos($header, ';') ?? strlen($header);
         return trim(substr($header, 0, $semiColonPosition));

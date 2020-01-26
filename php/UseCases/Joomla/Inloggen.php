@@ -1,5 +1,9 @@
 <?php
 
+namespace TeamPortal\UseCases;
+
+use TeamPortal\Gateways\JoomlaGateway;
+
 class Inloggen implements Interactor
 {
     public function __construct(JoomlaGateway $joomlaGateway)
@@ -14,7 +18,7 @@ class Inloggen implements Interactor
         }
 
         if (!$this->joomlaGateway->Login($data->username, $data->password)) {
-            throw new UnexpectedValueException("Gebruikersnaam/wachtwoord combinatie klopt niet");
+            throw new \UnexpectedValueException("Gebruikersnaam/wachtwoord combinatie klopt niet");
         }
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+namespace TeamPortal\RouteObjects;
+
 use Slim\Routing\RouteCollectorProxy;
 
 class RouteGroup

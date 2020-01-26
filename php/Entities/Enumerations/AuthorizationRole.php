@@ -1,5 +1,7 @@
 <?php
 
+namespace TeamPortal\Entities;
+
 class AuthorizationRole
 {
     public const WEBCIE = 5;

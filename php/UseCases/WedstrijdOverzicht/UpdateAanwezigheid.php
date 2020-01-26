@@ -1,10 +1,15 @@
 <?php
 
+namespace TeamPortal\UseCases;
+
+use TeamPortal\Gateways;
 
 class UpdateAanwezigheid implements Interactor
 {
-    public function __construct(JoomlaGateway $joomlaGateway, AanwezigheidGateway $aanwezigheidGateway)
-    {
+    public function __construct(
+        Gateways\JoomlaGateway $joomlaGateway,
+        Gateways\AanwezigheidGateway $aanwezigheidGateway
+    ) {
         $this->joomlaGateway = $joomlaGateway;
         $this->aanwezigheidGateway = $aanwezigheidGateway;
     }

@@ -1,11 +1,16 @@
 <?php
 
+namespace TeamPortal\UseCases;
+
+use TeamPortal\Gateways;
+use TeamPortal\Entities;
+
 class UpdateScheidsrechter implements Interactor
 {
     public function __construct(
-        TelFluitGateway $telFluitGateway,
-        JoomlaGateway $joomlaGateway,
-        NevoboGateway $nevoboGateway
+        Gateways\TelFluitGateway $telFluitGateway,
+        Gateways\JoomlaGateway $joomlaGateway,
+        Gateways\NevoboGateway $nevoboGateway
     ) {
         $this->telFluitGateway = $telFluitGateway;
         $this->joomlaGateway = $joomlaGateway;
@@ -22,7 +27,7 @@ class UpdateScheidsrechter implements Interactor
         $wedstrijd->scheidsrechter = $this->joomlaGateway->GetScheidsrechter($data->scheidsrechterId);
 
         $uscWedstrijden = $this->nevoboGateway->GetProgrammaForSporthal();
-        $uscWedstrijd = Wedstrijd::GetWedstrijdWithMatchId($uscWedstrijden, $data->matchId);
+        $uscWedstrijd = Entities\Wedstrijd::GetWedstrijdWithMatchId($uscWedstrijden, $data->matchId);
         $wedstrijd->AppendInformation($uscWedstrijd);
 
         if ($wedstrijd->id === null) {

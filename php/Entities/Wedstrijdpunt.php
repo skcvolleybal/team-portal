@@ -1,5 +1,7 @@
 <?php
 
+namespace TeamPortal\Entities;
+
 class Wedstrijdpunt
 {
     public ?int $id;

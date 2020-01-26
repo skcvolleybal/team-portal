@@ -1,5 +1,7 @@
 <?php
 
+namespace TeamPortal\Entities;
+
 class Barlid extends Persoon
 {
     public int $aantalDiensten;

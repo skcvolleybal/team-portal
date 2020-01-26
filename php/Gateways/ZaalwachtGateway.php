@@ -1,5 +1,11 @@
 <?php
 
+namespace TeamPortal\Gateways;
+
+use TeamPortal\Common\Database;
+use TeamPortal\Common\DateFunctions;
+use TeamPortal\Entities;
+
 class ZaalwachtGateway
 {
     public function __construct(Database $database)
@@ -7,7 +13,7 @@ class ZaalwachtGateway
         $this->database = $database;
     }
 
-    public function GetZaalwachtenOfUser(Persoon $user): array
+    public function GetZaalwachtenOfUser(Entities\Persoon $user): array
     {
         $query = 'SELECT 
                     Z.id,
@@ -22,10 +28,10 @@ class ZaalwachtGateway
         $rows = $this->database->Execute($query, $params);
         $result = [];
         foreach ($rows as $row) {
-            $result[] = new Zaalwacht(
+            $result[] = new Entities\Zaalwacht(
                 $row->id,
                 DateFunctions::CreateDateTime($row->date),
-                new Team($row->teamnaam, $row->teamId)
+                new Entities\Team($row->teamnaam, $row->teamId)
             );
         }
         return $result;
@@ -50,7 +56,7 @@ class ZaalwachtGateway
         $result = [];
         foreach ($rows as $row) {
             $result[] = (object) [
-                'team' => new Team($row->teamnaam, $row->teamId),
+                'team' => new Entities\Team($row->teamnaam, $row->teamId),
                 'aantal' => $row->aantal
             ];
         }
@@ -69,12 +75,12 @@ class ZaalwachtGateway
 
         $response = [];
         foreach ($rows as $row) {
-            $rows[$row->date] = new Team($row->team, $row->teamId);
+            $rows[$row->date] = new Entities\Team($row->team, $row->teamId);
         }
         return $response;
     }
 
-    public function GetZaalwacht(DateTime $date): ?Zaalwacht
+    public function GetZaalwacht(\DateTime $date): ?Entities\Zaalwacht
     {
         $query = 'SELECT
                     Z.id,
@@ -89,14 +95,14 @@ class ZaalwachtGateway
         if (count($result) != 1) {
             return null;
         }
-        return new Zaalwacht(
+        return new Entities\Zaalwacht(
             $result[0]->id,
             DateFunctions::CreateDateTime($result[0]->date),
-            new Team($result[0]->teamnaam, $result[0]->teamId)
+            new Entities\Team($result[0]->teamnaam, $result[0]->teamId)
         );
     }
 
-    public function Update(Zaalwacht $zaalwacht): void
+    public function Update(Entities\Zaalwacht $zaalwacht): void
     {
         $query = 'UPDATE TeamPortal_zaalwacht
                   SET team_id = ?
@@ -105,7 +111,7 @@ class ZaalwachtGateway
         $this->database->Execute($query, $params);
     }
 
-    public function Insert(Zaalwacht $zaalwacht): void
+    public function Insert(Entities\Zaalwacht $zaalwacht): void
     {
         $query = 'INSERT INTO TeamPortal_zaalwacht (date, team_id)
                   VALUES (?, ?)';
@@ -116,7 +122,7 @@ class ZaalwachtGateway
         $this->database->Execute($query, $params);
     }
 
-    public function Delete(Zaalwacht $zaalwacht): void
+    public function Delete(Entities\Zaalwacht $zaalwacht): void
     {
         $query = 'DELETE FROM TeamPortal_zaalwacht WHERE id = ?';
         $params = [$zaalwacht->id];

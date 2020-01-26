@@ -1,5 +1,11 @@
 <?php
 
+namespace TeamPortal\Gateways;
+
+use TeamPortal\Common\Database;
+use TeamPortal\Common\DateFunctions;
+use TeamPortal\Entities;
+
 class TelFluitGateway
 {
     public function __construct(Database $database)
@@ -26,7 +32,7 @@ class TelFluitGateway
         return $this->MapToWedstrijden($rows);
     }
 
-    public function GetFluitEnTelbeurten(Persoon $user): array
+    public function GetFluitEnTelbeurten(Entities\Persoon $user): array
     {
         $query = 'SELECT
                     W.id,
@@ -51,7 +57,7 @@ class TelFluitGateway
         return $this->MapToWedstrijden($rows);
     }
 
-    public function GetFluitbeurten(Persoon $user): array
+    public function GetFluitbeurten(Entities\Persoon $user): array
     {
         $query = 'SELECT
                     W.id,
@@ -73,7 +79,7 @@ class TelFluitGateway
         return $this->MapToWedstrijden($rows);
     }
 
-    public function GetTelbeurten(Persoon $user): array
+    public function GetTelbeurten(Entities\Persoon $user): array
     {
         $query = 'SELECT
                     W.id,
@@ -125,18 +131,18 @@ class TelFluitGateway
         $rows = $this->database->Execute($query);
         $result = [];
         foreach ($rows as $row) {
-            $scheidsrechter = new Scheidsrechter(
-                new Persoon($row->id, $row->naam, $row->email),
+            $scheidsrechter = new Entities\Scheidsrechter(
+                new Entities\Persoon($row->id, $row->naam, $row->email),
                 $row->niveau,
                 $row->gefloten
             );
-            $scheidsrechter->team = $row->teamId != null ? new Team($row->teamnaam, $row->teamId) : null;
+            $scheidsrechter->team = $row->teamId != null ? new Entities\Team($row->teamnaam, $row->teamId) : null;
             $result[] = $scheidsrechter;
         }
         return $result;
     }
 
-    public function GetWedstrijd(string $matchId): ?Wedstrijd
+    public function GetWedstrijd(string $matchId): ?Entities\Wedstrijd
     {
         $query = 'SELECT
                     W.id,
@@ -154,7 +160,7 @@ class TelFluitGateway
                    WHERE W.match_id = ?';
         $params = [$matchId];
         $rows = $this->database->Execute($query, $params);
-        return count($rows) > 0 ? $this->MapToWedstrijden($rows)[0] : new Wedstrijd($matchId);
+        return count($rows) > 0 ? $this->MapToWedstrijden($rows)[0] : new Entities\Wedstrijd($matchId);
     }
 
     public function GetTelTeams(): array
@@ -175,14 +181,14 @@ class TelFluitGateway
         $rows = $this->database->Execute($query);
         $result = [];
         foreach ($rows as $row) {
-            $team  = new Team($row->teamnaam, $row->telteamId);
+            $team  = new Entities\Team($row->teamnaam, $row->telteamId);
             $team->aantalKeerGeteld = $row->geteld;
             $result[] = $team;
         }
         return $result;
     }
 
-    public function Insert(Wedstrijd $wedstrijd)
+    public function Insert(Entities\Wedstrijd $wedstrijd): void
     {
         $query = 'INSERT INTO TeamPortal_wedstrijden (match_id, scheidsrechter_id, telteam_id)
                   VALUES (?, ?, ?)';
@@ -194,7 +200,7 @@ class TelFluitGateway
         $this->database->Execute($query, $params);
     }
 
-    public function Update(Wedstrijd $wedstrijd)
+    public function Update(Entities\Wedstrijd $wedstrijd): void
     {
         $query = 'UPDATE TeamPortal_wedstrijden
                   SET scheidsrechter_id = ?, telteam_id = ?, is_veranderd = ?, timestamp = ?
@@ -209,7 +215,7 @@ class TelFluitGateway
         $this->database->Execute($query, $params);
     }
 
-    public function Delete(Wedstrijd $wedstrijd)
+    public function Delete(Entities\Wedstrijd $wedstrijd): void
     {
         $query = 'DELETE FROM TeamPortal_wedstrijden WHERE match_id = ?';
         $params = [$wedstrijd->matchId];
@@ -220,11 +226,11 @@ class TelFluitGateway
     {
         $result = [];
         foreach ($rows as $row) {
-            $newWedstrijd = new Wedstrijd($row->matchId, $row->id);
+            $newWedstrijd = new Entities\Wedstrijd($row->matchId, $row->id);
             $newWedstrijd->timestamp = $row->timestamp !== null ? DateFunctions::CreateDateTime(substr($row->timestamp, 0, 10), substr($row->timestamp, 11, 8)) : null;
             $newWedstrijd->isVeranderd = $row->isVeranderd;
-            $newWedstrijd->telteam = $row->telteamId ? new Team($row->telteam, $row->telteamId) : null;
-            $newWedstrijd->scheidsrechter = $row->userId ? new Persoon($row->userId, $row->naam, $row->email) : null;
+            $newWedstrijd->telteam = $row->telteamId ? new Entities\Team($row->telteam, $row->telteamId) : null;
+            $newWedstrijd->scheidsrechter = $row->userId ? new Entities\Persoon($row->userId, $row->naam, $row->email) : null;
 
             $result[] = $newWedstrijd;
         }

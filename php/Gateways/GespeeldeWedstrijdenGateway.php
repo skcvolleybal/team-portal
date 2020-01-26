@@ -1,6 +1,11 @@
 <?php
 
 
+namespace TeamPortal\Gateways;
+
+use TeamPortal\Common\Database;
+use TeamPortal\Email;
+
 class GespeeldeWedstrijdenGateway
 {
     public function __construct(Database $database)
@@ -18,8 +23,8 @@ class GespeeldeWedstrijdenGateway
         foreach ($rows as $row) {
             $result[] = new DwfWedstrijd(
                 $row->id,
-                new Team($row->skcTeam),
-                new Team($row->otherTeam),
+                new Entities\Team($row->skcTeam),
+                new Entities\Team($row->otherTeam),
                 $row->setsSkcTeam,
                 $row->setsOtherTeam
             );
@@ -27,7 +32,7 @@ class GespeeldeWedstrijdenGateway
         return $result;
     }
 
-    public function AddWedstrijd(DwfWedstrijd $wedstrijd)
+    public function AddWedstrijd(Entities\DwfWedstrijd $wedstrijd): void
     {
         $query = 'INSERT INTO DWF_wedstrijden (id, skcTeam, otherTeam, setsSkcTeam, setsOtherTeam)
                   VALUES (?, ?, ?, ?, ?)';
@@ -41,8 +46,16 @@ class GespeeldeWedstrijdenGateway
         $this->database->Execute($query, $params);
     }
 
-    public function AddPunt(string $wedstrijdId, Team $skcTeam, int $set, bool $isSkcService, bool $isSkcPunt, int $puntenSkcTeam, int $puntenOtherTeam, array $opstelling)
-    {
+    public function AddPunt(
+        string $wedstrijdId,
+        Entities\Team $skcTeam,
+        int $set,
+        bool $isSkcService,
+        bool $isSkcPunt,
+        int $puntenSkcTeam,
+        int $puntenOtherTeam,
+        array $opstelling
+    ): void {
         $query = 'INSERT INTO DWF_punten (matchId, skcTeam, `set`, isSkcService, isSkcPunt, puntenSkcTeam, puntenOtherTeam, ra, rv, mv, lv, la, ma)
                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
         $params = [

@@ -24,11 +24,11 @@
           <div class="alert-succes" *ngIf="wedstrijd.coaches.length == 0">
             Nog geen coach(es)
           </div>
-          <div class="coaches">
+          <div class="coaches" *ngIf="wedstrijd.coaches.length > 0">
             {{ wedstrijd.coaches.length == 1 ? "Coach" : "Coaches" }}:
             <span
               *ngFor="let coach of wedstrijd.coaches; last as isLast"
-              [ngClass]="{ 'striped-through': coach.is_aanwezig === 'Nee' }"
+              [ngClass]="{ 'striped-through': coach.isAanwezig === false }"
               >{{ coach.naam }}<span *ngIf="!isLast">, {{ last }}</span></span
             >
           </div>

@@ -1,10 +1,14 @@
 <?php
 
+namespace TeamPortal\UseCases;
+
+use TeamPortal\Gateways;
+
 class GetTeamoverzicht implements Interactor
 {
     public function __construct(
-        JoomlaGateway $joomlaGateway,
-        NevoboGateway $nevoboGateway
+        Gateways\JoomlaGateway $joomlaGateway,
+        Gateways\NevoboGateway $nevoboGateway
     ) {
         $this->nevoboGateway = $nevoboGateway;
         $this->joomlaGateway = $joomlaGateway;
@@ -16,7 +20,7 @@ class GetTeamoverzicht implements Interactor
             throw new InvalidArgumentException("Teamnaam is leeg");
         }
 
-        $currentTeam = new Team($data->teamnaam);
+        $currentTeam = new Entities\Team($data->teamnaam);
 
         $teams = Team::$alleSkcTeams;
         foreach ($teams as $team) {

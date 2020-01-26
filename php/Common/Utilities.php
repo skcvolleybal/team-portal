@@ -1,37 +1,42 @@
 <?php
 
-function IsNullOrEmpty($obj)
-{
-    return !$obj || empty($obj);
-}
+namespace TeamPortal\Common;
 
-function FillTemplate($template, $placeholders)
+class Utilities
 {
-    foreach ($placeholders as $placeholder => $value) {
-        if ($value === null) {
-            throw new UnexpectedValueException("Fout bij matchen van template placeholders: value === null");
-        }
-        if (strpos($template, $placeholder) == -1) {
-            throw new UnexpectedValueException("Kan placeholder '$placeholder' niet vinden");
-        }
-        $template = str_replace("$placeholder", $value, $template);
+    public static function IsNullOrEmpty($obj)
+    {
+        return !$obj || empty($obj);
     }
 
-    return $template;
-}
+    public static function FillTemplate($template, $placeholders)
+    {
+        foreach ($placeholders as $placeholder => $value) {
+            if ($value === null) {
+                throw new \UnexpectedValueException("Fout bij matchen van template placeholders: value === null");
+            }
+            if (strpos($template, $placeholder) == -1) {
+                throw new \UnexpectedValueException("Kan placeholder '$placeholder' niet vinden");
+            }
+            $template = str_replace("$placeholder", $value, $template);
+        }
 
-function StringToInt($getal)
-{
-    return $getal ? intval($getal) : null;
-}
+        return $template;
+    }
 
-function GetCurrentSeizoen()
-{
-    $month = StringToInt(date('m', time()));
-    $year = StringToInt(date('Y', time()));
-    if ($month >= 7) {
-        return $year . "/" . ($year + 1);
-    } else {
-        return ($year - 1) . "/" . $year;
+    public static function StringToInt($getal)
+    {
+        return $getal ? intval($getal) : null;
+    }
+
+    public static function GetCurrentSeizoen()
+    {
+        $month = Utilities::StringToInt(date('m', time()));
+        $year = Utilities::StringToInt(date('Y', time()));
+        if ($month >= 7) {
+            return $year . "/" . ($year + 1);
+        } else {
+            return ($year - 1) . "/" . $year;
+        }
     }
 }

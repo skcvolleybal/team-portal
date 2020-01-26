@@ -1,10 +1,14 @@
 <?php
 
+namespace TeamPortal\UseCases;
+
+use TeamPortal\Gateways;
+
 class WedstrijdenImporteren implements Interactor
 {
     public function __construct(
-        DwfGateway $dwfGateway,
-        GespeeldeWedstrijdenGateway $gespeeldeWedstrijdenGateway
+        Gateways\DwfGateway $dwfGateway,
+        Gateways\GespeeldeWedstrijdenGateway $gespeeldeWedstrijdenGateway
     ) {
         $this->dwfGateway = $dwfGateway;
         $this->gespeeldeWedstrijdenGateway = $gespeeldeWedstrijdenGateway;
@@ -121,7 +125,7 @@ class WedstrijdenImporteren implements Interactor
             return $opstelling;
         }
 
-        throw new UnexpectedValueException("Speler niet gevonden");
+        throw new \UnexpectedValueException("Speler niet gevonden");
     }
 
     private function Doordraaien($opstelling)

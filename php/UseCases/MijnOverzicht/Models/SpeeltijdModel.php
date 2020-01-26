@@ -1,5 +1,10 @@
 <?php
 
+namespace TeamPortal\UseCases;
+
+use TeamPortal\Common\DateFunctions;
+use TeamPortal\Entities\Speeltijd;
+
 class SpeeltijdModel
 {
     public string $tijd;

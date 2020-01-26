@@ -1,5 +1,7 @@
 <?php
 
+namespace TeamPortal\Entities;
+
 class Scheidsrechter extends Persoon
 {
     public int $aantalGeflotenWedstrijden;

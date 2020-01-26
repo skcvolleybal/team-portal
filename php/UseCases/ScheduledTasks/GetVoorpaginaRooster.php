@@ -1,11 +1,15 @@
 <?php
 
+namespace TeamPortal\UseCases;
+
+use TeamPortal\Gateways;
+
 class GetVoorpaginaRooster implements Interactor
 {
     public function __construct(
-        TelFluitGateway $telFluitGateway,
-        NevoboGateway $nevoboGateway,
-        ZaalwachtGateway $zaalwachtGateway
+        Gateways\TelFluitGateway $telFluitGateway,
+        Gateways\NevoboGateway $nevoboGateway,
+        Gateways\ZaalwachtGateway $zaalwachtGateway
     ) {
         $this->telFluitGateway = $telFluitGateway;
         $this->nevoboGateway = $nevoboGateway;
@@ -22,7 +26,7 @@ class GetVoorpaginaRooster implements Interactor
             $wedstrijddag->zaalwacht = $this->zaalwachtGateway->GetZaalwacht($wedstrijddag->date);
             foreach ($wedstrijddag->speeltijden as $speeltijd) {
                 foreach ($speeltijd->wedstrijden as $wedstrijd) {
-                    $telEnFluitWedstrijd = Wedstrijd::GetWedstrijdWithMatchId($telEnFluitWedstrijden, $wedstrijd->matchId);
+                    $telEnFluitWedstrijd = Entities\Wedstrijd::GetWedstrijdWithMatchId($telEnFluitWedstrijden, $wedstrijd->matchId);
                     $wedstrijd->AppendInformation($telEnFluitWedstrijd);
                 }
             }

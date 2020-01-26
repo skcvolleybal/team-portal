@@ -1,12 +1,14 @@
 <?php
 
+namespace TeamPortal\Entities;
+
 class Persoon
 {
     public int $id;
     public string $naam;
     public ?string $email;
     public ?Team $team;
-    public ?Team $coachteam;
+    public ?Team $coachteam = null;
 
     function __construct(int $id, string $naam, string $email)
     {
@@ -29,6 +31,6 @@ class Persoon
         $eersteLetters = array_map(function ($item) {
             return $item[0];
         }, $namen);
-        return  implode("", $eersteLetters);
+        return implode("", $eersteLetters);
     }
 }

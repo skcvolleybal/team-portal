@@ -1,5 +1,9 @@
 <?php
 
+namespace TeamPortal\Gateways;
+
+use TeamPortal\Entities;
+
 class DwfGateway
 {
     private $dwfUrl = 'https://dwf.volleybal.nl/application/handlers/dwf/pull/';
@@ -8,11 +12,11 @@ class DwfGateway
     private $WID;
 
     public function __construct(
-        CurlGateway $curlGateway,
+        Gateway\CurlGateway $curlGateway,
         Configuration $configuration
     ) {
         $this->curlGateway = $curlGateway;
-        $this->credentials = new Credentials($configuration->DwfUsername, $configuration->DwfPassword);
+        $this->credentials = new Entities\Credentials($configuration->DwfUsername, $configuration->DwfPassword);
 
         if (file_exists($this->cookieFilename)) {
             $this->WID = file_get_contents($this->cookieFilename);
@@ -68,7 +72,7 @@ class DwfGateway
         return $matches[1];
     }
 
-    public function GetGespeeldeWedstrijden($aantal = 999): array
+    public function GetGespeeldeWedstrijden(int $aantal = 999): array
     {
         $request = new Request($this->dwfUrl);
         $request->headers = [
@@ -84,21 +88,19 @@ class DwfGateway
         $data = json_decode($response);
 
         if (!isset($data->results[0]->type)) {
-            throw new UnexpectedValueException("Kan gespeelde wedstrijden niet ophalen: $response");
+            throw new \UnexpectedValueException("Kan gespeelde wedstrijden niet ophalen: $response");
         }
 
         $wedstrijden = [];
         foreach ($data->results[0]->data as $item) {
-            if ($item->type == 'title') {
-                $date = $item->data->sDate;
-            } else if ($item->type == 'item') {
+            if ($item->type == 'item') {
                 if ($item->data->sStartTime == '-') {
                     continue;
                 }
                 $wedstrijd = new DwfWedstrijd(
                     preg_replace('/\s+/', ' ', $item->data->sMatchId),
-                    new Team($item->data->sHomeName),
-                    new Team($item->data->sOutName),
+                    new Entities\Team($item->data->sHomeName),
+                    new Entities\Team($item->data->sOutName),
                     $item->data->sStartTime[0],
                     $item->data->sStartTime[2]
                 );
@@ -109,7 +111,7 @@ class DwfGateway
         return $wedstrijden;
     }
 
-    public function GetMatchFormId(string $matchId)
+    public function GetMatchFormId(string $matchId): string
     {
         $url = 'https://dwf.volleybal.nl/uitslagformulier/' . str_replace(' ', '%20%20%20', $matchId);
         $request = new Request($url);
@@ -121,7 +123,7 @@ class DwfGateway
         }
     }
 
-    private function GetWedstrijdVerloopData(DwfWedstrijd $wedstrijd)
+    private function GetWedstrijdVerloopData(Entities\DwfWedstrijd $wedstrijd): Entities\DwfWedstrijd
     {
         $request = new Request($this->dwfUrl);
         $request->headers = ["Cookie: $this->WID"];
@@ -135,7 +137,7 @@ class DwfGateway
         $response = $this->curlGateway->SendRequest($request);
         $data = json_decode($response);
         if ($data->error->code != 0) {
-            throw new UnexpectedValueException('Kan wedstrijd verloop niet ophalen: ' . print_r($data, 1));
+            throw new \UnexpectedValueException('Kan wedstrijd verloop niet ophalen: ' . print_r($data, 1));
         }
 
         $currentSet = null;
@@ -203,7 +205,6 @@ class DwfGateway
                     );
                     break;
                 default:
-                    $var = 1;
                     break;
             }
         }
@@ -211,7 +212,7 @@ class DwfGateway
         return $wedstrijd;
     }
 
-    private function DetermineBeginopstelling(&$wedstrijd)
+    private function DetermineBeginopstelling(Entities\DwfWedstrijd &$wedstrijd): void
     {
         foreach ($wedstrijd->sets as $currenSet => $set) {
             foreach ([ThuisUit::THUIS, ThuisUit::UIT] as $team) {
@@ -246,7 +247,7 @@ class DwfGateway
         }
     }
 
-    public function GetWedstrijdVerloop(DwfWedstrijd $wedstrijd)
+    public function GetWedstrijdVerloop(Entities\DwfWedstrijd $wedstrijd): Entities\DwfWedstrijd
     {
         $wedstrijdverloop = $this->GetWedstrijdVerloopData($wedstrijd);
         if (count($wedstrijdverloop->sets) == 0) {

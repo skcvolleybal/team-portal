@@ -1,5 +1,9 @@
 <?php
 
+namespace TeamPortal\UseCases;
+
+use TeamPortal\Entities\Barshift;
+
 class BarshiftModel
 {
     public int $shift;

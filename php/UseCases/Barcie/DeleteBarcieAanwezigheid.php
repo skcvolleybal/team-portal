@@ -1,10 +1,15 @@
 <?php
 
+namespace TeamPortal\UseCases;
+
+use TeamPortal\Common\DateFunctions;
+use TeamPortal\Gateways;
+
 class DeleteBarcieAanwezigheid implements Interactor
 {
     public function __construct(
-        BarcieGateway $barcieGateway,
-        JoomlaGateway $joomlaGateway
+        Gateways\BarcieGateway $barcieGateway,
+        Gateways\JoomlaGateway $joomlaGateway
     ) {
         $this->barcieGateway = $barcieGateway;
         $this->joomlaGateway = $joomlaGateway;

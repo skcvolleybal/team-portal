@@ -1,11 +1,16 @@
 <?php
 
+namespace TeamPortal\UseCases;
+
+use TeamPortal\Common\DateFunctions;
+use TeamPortal\Gateways;
+
 class GetZaalwachtTeams implements Interactor
 {
     public function __construct(
-        ZaalwachtGateway $zaalwachtGateway,
-        JoomlaGateway $joomlaGateway,
-        NevoboGateway $nevoboGateway
+        Gateways\ZaalwachtGateway $zaalwachtGateway,
+        Gateways\JoomlaGateway $joomlaGateway,
+        Gateways\NevoboGateway $nevoboGateway
     ) {
         $this->zaalwachtGateway = $zaalwachtGateway;
         $this->joomlaGateway = $joomlaGateway;

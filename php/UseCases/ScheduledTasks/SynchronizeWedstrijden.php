@@ -1,11 +1,15 @@
 <?php
 
+namespace TeamPortal\UseCases;
+
+use TeamPortal\Gateways;
+
 class SynchronizeWedstrijden implements Interactor
 {
     public function __construct(
-        Database $database,
-        TelFluitGateway $telFluitGateway,
-        NevoboGateway $nevoboWedstrijd
+        Gateways\Database $database,
+        Gateways\TelFluitGateway $telFluitGateway,
+        Gateways\NevoboGateway $nevoboWedstrijd
     ) {
         $this->database = $database;
         $this->telFluitGateway = $telFluitGateway;
@@ -19,7 +23,7 @@ class SynchronizeWedstrijden implements Interactor
         $dbWedstrijden = $this->telFluitGateway->GetAllFluitEnTelbeurten();
 
         foreach ($dbWedstrijden as $wedstrijd) {
-            $nevoboWedstrijd = Wedstrijd::GetWedstrijdWithMatchId($nevoboWedstrijden, $wedstrijd->matchId);
+            $nevoboWedstrijd = Entities\Wedstrijd::GetWedstrijdWithMatchId($nevoboWedstrijden, $wedstrijd->matchId);
             if ($nevoboWedstrijd === null) {
                 continue;
             }

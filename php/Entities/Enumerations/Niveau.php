@@ -1,5 +1,7 @@
 <?php
 
+namespace TeamPortal\Entities;
+
 class Niveau
 {
     const EREDIVISIE = 0;
@@ -48,7 +50,7 @@ class Niveau
                 $niveau = NIVEAU::VIERDE_KLASSE;
                 break;
             default:
-                throw new UnexpectedValueException("Niveau bestaat niet: $niveau");
+                throw new \UnexpectedValueException("Niveau bestaat niet: $niveau");
         }
 
         return $niveau;
@@ -88,7 +90,7 @@ class Niveau
                 $niveauString = "4e klasse";
                 break;
             default:
-                throw new UnexpectedValueException("Niveau bestaat niet: $niveau");
+                throw new \UnexpectedValueException("Niveau bestaat niet: $niveau");
         }
         return $niveauString;
     }

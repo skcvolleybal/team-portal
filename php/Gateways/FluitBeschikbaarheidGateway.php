@@ -1,5 +1,11 @@
 <?php
 
+namespace TeamPortal\Gateways;
+
+use TeamPortal\Common\Database;
+use TeamPortal\Common\DateFunctions;
+use TeamPortal\Entities;
+
 class FluitBeschikbaarheidGateway
 {
     public function __construct(Database $database)
@@ -7,7 +13,7 @@ class FluitBeschikbaarheidGateway
         $this->database = $database;
     }
 
-    public function GetFluitBeschikbaarheden(Persoon $user): array
+    public function GetFluitBeschikbaarheden(Entities\Persoon $user): array
     {
         $query = 'SELECT 
                     B.id,
@@ -25,9 +31,9 @@ class FluitBeschikbaarheidGateway
         $rows = $this->database->Execute($query, $params);
         $result = [];
         foreach ($rows as $row) {
-            $result[] = new Beschikbaarheid(
+            $result[] = new Entities\Beschikbaarheid(
                 $row->id,
-                new Persoon($row->userId, $row->naam, $row->email),
+                new Entities\Persoon($row->userId, $row->naam, $row->email),
                 DateFunctions::CreateDateTime($row->date, $row->time),
                 $row->isBeschikbaar === "Ja"
             );
@@ -35,7 +41,7 @@ class FluitBeschikbaarheidGateway
         return $result;
     }
 
-    public function GetFluitBeschikbaarheid(Persoon $user, DateTime $date): Beschikbaarheid
+    public function GetFluitBeschikbaarheid(Entities\Persoon $user, \DateTime $date): Entities\Beschikbaarheid
     {
         $query = 'SELECT 
                     B.id,
@@ -56,17 +62,17 @@ class FluitBeschikbaarheidGateway
 
         $rows = $this->database->Execute($query, $params);
         if (count($rows) != 1) {
-            return new Beschikbaarheid(null, $user, $date, null);
+            return new Entities\Beschikbaarheid(null, $user, $date, null);
         }
-        return new Beschikbaarheid(
+        return new Entities\Beschikbaarheid(
             $rows[0]->id,
-            new Persoon($rows[0]->id, $rows[0]->naam, $rows[0]->email),
+            new Entities\Persoon($rows[0]->id, $rows[0]->naam, $rows[0]->email),
             DateFunctions::CreateDateTime($rows[0]->date),
             $rows[0]->isBeschikbaar === "Ja"
         );
     }
 
-    public function GetAllBeschikbaarheden(DateTime $date): array
+    public function GetAllBeschikbaarheden(\DateTime $date): array
     {
         $query = 'SELECT         
                     F.id,
@@ -87,18 +93,18 @@ class FluitBeschikbaarheidGateway
         $rows = $this->database->Execute($query, $params);
         $result = [];
         foreach ($rows as $row) {
-            $persoon = new Persoon($row->userId, $row->naam, $row->email);
-            $result[] = new Beschikbaarheid(
+            $persoon = new Entities\Persoon($row->userId, $row->naam, $row->email);
+            $result[] = new Entities\Beschikbaarheid(
                 $row->id,
                 $persoon,
-                DateTime::createFromFormat('Y-m-d H:i:s', $row->date . ' ' . $row->time),
+                \DateTime::createFromFormat('Y-m-d H:i:s', $row->date . ' ' . $row->time),
                 $row->isBeschikbaar === "Ja"
             );
         }
         return $result;
     }
 
-    public function Insert(Beschikbaarheid $beschikbaarheid)
+    public function Insert(Entities\Beschikbaarheid $beschikbaarheid): void
     {
         $query = 'INSERT INTO TeamPortal_fluitbeschikbaarheid (user_id, date, time, is_beschikbaar) 
                   VALUES (?, ?, ?, ?)';
@@ -112,7 +118,7 @@ class FluitBeschikbaarheidGateway
         $this->database->Execute($query, $params);
     }
 
-    public function Update(Beschikbaarheid $beschikbaarheid)
+    public function Update(Entities\Beschikbaarheid $beschikbaarheid): void
     {
         $query = 'UPDATE TeamPortal_fluitbeschikbaarheid
                   SET is_beschikbaar = ?
@@ -126,7 +132,7 @@ class FluitBeschikbaarheidGateway
         $this->database->Execute($query, $params);
     }
 
-    public function Delete(Beschikbaarheid $beschikbaarheid)
+    public function Delete(Entities\Beschikbaarheid $beschikbaarheid): void
     {
         $query = 'DELETE FROM TeamPortal_fluitbeschikbaarheid
                   WHERE id = ?';

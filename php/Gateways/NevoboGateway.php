@@ -1,5 +1,11 @@
 <?php
 
+namespace TeamPortal\Gateways;
+
+use SimplePie;
+use TeamPortal\Common\DateFunctions;
+use TeamPortal\Entities;
+
 class NevoboGateway
 {
     public $cacheDuration = 3600 * 24; // 24 uur
@@ -39,7 +45,7 @@ class NevoboGateway
         $this->regio = $regio;
     }
 
-    public function GetStandForPoule($poule)
+    public function GetStandForPoule(string $poule): array
     {
         $url = sprintf($this->poulestandUrl, $this->regio, $poule, $this->exportType);
 
@@ -61,7 +67,7 @@ class NevoboGateway
 
             $results[] = new Stand(
                 $nummer,
-                new Team($teamnaam),
+                new Entities\Team($teamnaam),
                 $wedstrijden,
                 $punten,
                 $setsVoor,
@@ -74,23 +80,23 @@ class NevoboGateway
         return $results;
     }
 
-    public function GetProgrammaForPoule($poule)
+    public function GetProgrammaForPoule(string $poule): array
     {
         $url = sprintf($this->pouleprogrammaUrl, $this->regio, $poule, $this->exportType);
         return $this->GetProgramma($url);
     }
 
-    public function GetProgrammaForSporthal($sporthal = 'LDNUN')
+    public function GetProgrammaForSporthal(string $sporthal = 'LDNUN'): array
     {
         $url = sprintf($this->sporthalprogrammaUrl, $sporthal, $this->exportType);
         return $this->GetProgramma($url);
     }
 
-    public function GetWedstrijddagenForSporthal($sporthal = 'LDNUN', $dagen = 7)
+    public function GetWedstrijddagenForSporthal(string $sporthal = 'LDNUN', int $dagen = 7): array
     {
-        $endDate = new DateTime("+$dagen days");
+        $endDate = new \DateTime("+$dagen days");
         $wedstrijden = $this->GetProgrammaForSporthal($sporthal);
-        usort($wedstrijden, Wedstrijd::class . "::Compare");
+        usort($wedstrijden, Entities\Wedstrijd::class . "::Compare");
         $wedstrijddagen = [];
         $currentDag = null;
         $currentSpeeltijd = null;
@@ -101,13 +107,13 @@ class NevoboGateway
             if ($currentDag !== DateFunctions::GetYmdNotation($wedstrijd->timestamp)) {
                 $currentDag = DateFunctions::GetYmdNotation($wedstrijd->timestamp);
                 $currentSpeeltijd = null;
-                $wedstrijddagen[] = new Wedstrijddag(DateFunctions::CreateDateTime($currentDag));
+                $wedstrijddagen[] = new Entities\Wedstrijddag(DateFunctions::CreateDateTime($currentDag));
             }
             $i = count($wedstrijddagen) - 1;
 
             if ($currentSpeeltijd !== DateFunctions::GetTime($wedstrijd->timestamp)) {
                 $currentSpeeltijd = DateFunctions::GetTime($wedstrijd->timestamp);
-                $wedstrijddagen[$i]->speeltijden[] = new Speeltijd(DateFunctions::CreateDateTime($currentDag, $currentSpeeltijd));
+                $wedstrijddagen[$i]->speeltijden[] = new Entities\Speeltijd(DateFunctions::CreateDateTime($currentDag, $currentSpeeltijd));
             }
 
             $wedstrijddagen[$i]->AddWedstrijd($wedstrijd);
@@ -115,13 +121,13 @@ class NevoboGateway
         return $wedstrijddagen;
     }
 
-    public function GetProgrammaForVereniging()
+    public function GetProgrammaForVereniging(): array
     {
         $url = sprintf($this->verenigingsprogrammaUrl, $this->verenigingscode, $this->exportType);
         return $this->GetProgramma($url);
     }
 
-    public function GetWedstrijdenForTeam(?Team $team)
+    public function GetWedstrijdenForTeam(?Entities\Team $team): array
     {
         if (!$team) {
             return [];
@@ -132,7 +138,7 @@ class NevoboGateway
         return $this->GetProgramma($url);
     }
 
-    public function GetUitslagenForTeam(?Team $team)
+    public function GetUitslagenForTeam(?Entities\Team $team): array
     {
         if (!$team) {
             return [];
@@ -143,20 +149,20 @@ class NevoboGateway
         return $this->GetUitslagen($url);
     }
 
-    public function GetUitslagenForVereniging()
+    public function GetUitslagenForVereniging(): array
     {
         $url = sprintf($this->verenigingsuitslagenUrl, $this->verenigingscode, $this->exportType);
         return $this->GetUitslagen($url);
     }
 
-    public function DoesTeamExist($vereniging, $gender, $sequence)
+    public function DoesTeamExist(string $vereniging, string $gender, int $sequence): bool
     {
         $url = sprintf($this->teamprogrammaUrl, $vereniging, $gender, $sequence, $this->exportType);
         $handle = curl_init($url);
         curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
 
         /* Get the HTML or whatever is linked in $url. */
-        $response = curl_exec($handle);
+        curl_exec($handle);
 
         /* Check for 404 (file not found). */
         $httpCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
@@ -165,32 +171,7 @@ class NevoboGateway
         return $httpCode == 200;
     }
 
-    public function GetLowestTeamOf($gender)
-    {
-        $gender = strtolower($gender);
-        if ($gender != 'heren' && $gender != 'dames') {
-            throw new InvalidArgumentException('Input mag alleen \'Heren\' of \'Dames\' zijn');
-        }
-
-        $currentTeamExists = $this->DoesTeamExist($this->verenigingscode, $gender, 10);
-        if ($currentTeamExists) {
-            for ($i = 11; $i < 50; $i++) {
-                $currentTeamExists = $this->DoesTeamExist($this->verenigingscode, $gender, $i);
-                if (!$currentTeamExists) {
-                    return $i - 1;
-                }
-            }
-        } else {
-            for ($i = 9; $i >= 1; $i--) {
-                $currentTeamExists = $this->DoesTeamExist($this->verenigingscode, $gender, $i);
-                if ($currentTeamExists) {
-                    return $i;
-                }
-            }
-        }
-    }
-
-    private function GetGender(Team $team)
+    private function GetGender(Entities\Team $team): string
     {
         if (substr($team->naam, 4, 2) == 'HS') {
             return 'heren';
@@ -203,7 +184,7 @@ class NevoboGateway
         throw new InvalidArgumentException("Onbekend geslacht in team '$team'");
     }
 
-    private function GetSequence(Team $team)
+    private function GetSequence(Entities\Team $team): int
     {
         $sequence = substr($team->naam, 7);
         if (empty($sequence)) {
@@ -213,7 +194,7 @@ class NevoboGateway
         return $sequence;
     }
 
-    private function GetProgramma($url): array
+    private function GetProgramma(string $url): array
     {
         /*
         Voorbeeld:
@@ -247,10 +228,10 @@ class NevoboGateway
                 $matchId = preg_replace('/\s+/', ' ', $descriptionMatches[1]);
                 $locatie = preg_replace('/\s+/', ' ', stripslashes($descriptionMatches[3]));
 
-                $programma[] = Wedstrijd::CreateFromNevoboWedstrijd(
+                $programma[] = Entities\Wedstrijd::CreateFromNevoboWedstrijd(
                     $matchId,
-                    new Team($team1),
-                    new Team($team2),
+                    new Entities\Team($team1),
+                    new Entities\Team($team2),
                     substr($matchId, 4, 3),
                     $date,
                     $locatie
@@ -263,7 +244,7 @@ class NevoboGateway
         return $programma;
     }
 
-    private function GetUitslagen($url)
+    private function GetUitslagen(string $url): array
     {
         /*
         Voorbeeld:
@@ -290,8 +271,8 @@ class NevoboGateway
 
                 $wedstrijd = new Wedstrijd("geen");
                 $wedstrijd->timestamp = DateFunctions::CreateDateTime(substr($match->date, 0, 10), substr($match->date, 11, 8));
-                $wedstrijd->team1 = new Team($team1);
-                $wedstrijd->team2 = new Team($team2);
+                $wedstrijd->team1 = new Entities\Team($team1);
+                $wedstrijd->team2 = new Entities\Team($team2);
                 $wedstrijd->uitslag = $uitslag;
                 $wedstrijd->setstanden = $setstanden;
                 $uitslagen[] = $wedstrijd;
@@ -303,7 +284,7 @@ class NevoboGateway
         return $uitslagen;
     }
 
-    private function ConvertNevoboDate($date)
+    private function ConvertNevoboDate(string $date): \DateTime
     {
         /* Voorbeeld: donderdag 20 september, 21:00 */
         if (empty($date)) {
@@ -311,7 +292,7 @@ class NevoboGateway
         }
 
         if (!preg_match('/(.*) (.*) (.*), (.*):(.*)/', $date, $dateMatches)) {
-            throw new UnexpectedValueException('Unparseble date: $date');
+            throw new \UnexpectedValueException('Unparseble date: $date');
         }
         $day = $dateMatches[2];
         $month = $dateMatches[3];
@@ -319,7 +300,7 @@ class NevoboGateway
         $minutes = $dateMatches[5];
 
         if (!array_key_exists(strtolower($month), $this->monthTranslations)) {
-            throw new UnexpectedValueException('Unknown month: $month');
+            throw new \UnexpectedValueException('Unknown month: $month');
         }
 
         $month = $this->monthTranslations[$month];
@@ -343,10 +324,10 @@ class NevoboGateway
             }
         }
 
-        return DateTime::createFromFormat('d F Y H:i', "$day $month $year $hours:$minutes");
+        return \DateTime::createFromFormat('d F Y H:i', "$day $month $year $hours:$minutes");
     }
 
-    private function CreateSimplePieFeed($url)
+    private function CreateSimplePieFeed(string $url): SimplePie
     {
         $feed = new SimplePie();
         $feed->set_feed_url($url);
@@ -361,7 +342,7 @@ class NevoboGateway
         return $feed;
     }
 
-    private function ParseFeed($url)
+    private function ParseFeed(string $url): array
     {
         $feed = $this->CreateSimplePieFeed($url);
 

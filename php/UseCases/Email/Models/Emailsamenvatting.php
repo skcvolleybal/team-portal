@@ -1,5 +1,7 @@
 <?php
 
+namespace TeamPortal\UseCases;
+
 class Emailsamenvatting
 {
     public array $scheidsrechters = [];

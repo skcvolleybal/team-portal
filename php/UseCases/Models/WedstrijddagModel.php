@@ -1,5 +1,10 @@
 <?php
 
+namespace TeamPortal\UseCases;
+
+use TeamPortal\Common\DateFunctions;
+use TeamPortal\Entities;
+
 class WedstrijddagModel
 {
     public string $date;
@@ -7,10 +12,10 @@ class WedstrijddagModel
     public array $speeltijden = [];
     public array $bardiensten = [];
     public array $eigenWedstrijden = [];
-    public string $zaalwacht;
-    public string $zaalwachtShortNotation;
+    public ?string $zaalwacht = null;
+    public ?string $zaalwachtShortNotation = null;
 
-    public function __construct(Wedstrijddag $dag)
+    public function __construct(Entities\Wedstrijddag $dag)
     {
         $this->date = DateFunctions::GetYmdNotation($dag->date);
         $this->datum = DateFunctions::GetDutchDate($dag->date);
@@ -32,7 +37,7 @@ class WedstrijddagModel
         }
     }
 
-    public function AddSpeeltijd(Speeltijd $speeltijd)
+    public function AddSpeeltijd(Entities\Speeltijd $speeltijd)
     {
         $tijd = new SpeeltijdModel($speeltijd);
         $tijd->isBeschikbaar = $speeltijd->isBeschikbaar;

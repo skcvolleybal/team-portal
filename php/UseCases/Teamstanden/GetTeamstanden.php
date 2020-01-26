@@ -1,5 +1,9 @@
 <?php
 
+namespace TeamPortal\UseCases;
+
+use TeamPortal\Common\Utilities;
+
 class GetTeamstanden implements Interactor
 {
     public function Execute(object $data = null)
@@ -51,7 +55,7 @@ class GetTeamstanden implements Interactor
             "__DATABORDERCOLOR__" => implode(", ", $bordercolors),
         ];
 
-        $body = FillTemplate($template, $placeholders, ["__", "__"]);
+        $body = Utilities::FillTemplate($template, $placeholders, ["__", "__"]);
         echo $body;
     }
 }

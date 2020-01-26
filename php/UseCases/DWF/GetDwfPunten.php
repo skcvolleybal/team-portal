@@ -1,10 +1,14 @@
 <?php
 
+namespace TeamPortal\UseCases;
+
+use TeamPortal\Gateways;
+
 class GetDwfPunten implements Interactor
 {
     public function __construct(
-        StatistiekenGateway $statistiekenGateway,
-        JoomlaGateway $joomlaGateway
+        Gateways\StatistiekenGateway $statistiekenGateway,
+        Gateways\JoomlaGateway $joomlaGateway
     ) {
         $this->statistiekenGateway = $statistiekenGateway;
         $this->joomlaGateway = $joomlaGateway;
@@ -15,16 +19,16 @@ class GetDwfPunten implements Interactor
         $matchId = $data->matchId ?? null;
         $matchIdregex = "/3000(B){0,1}[H|D]\d[A-Z] [(\d{2})|[A-Z]{2}/";
         if (!preg_match_all($matchIdregex, $matchId)) {
-            throw new UnexpectedValueException("matchId klopt niet: '$matchId'. Bv: 3000 H4G DG");
+            throw new \UnexpectedValueException("matchId klopt niet: '$matchId'. Bv: 3000 H4G DG");
         }
 
         if (!empty($data->team)) {
-            $team = new Team($data->naam);
+            $team = new Entities\Team($data->naam);
         }
 
         $teamRegex = "/SKC [HD]S \d{1,2}/";
         if ($team && !preg_match_all($teamRegex, $team->naam)) {
-            throw new UnexpectedValueException("team klopt niet: '$team->naam'. Bv: SKC HS 2");
+            throw new \UnexpectedValueException("team klopt niet: '$team->naam'. Bv: SKC HS 2");
         }
 
         if ($team === null && $matchId === null) {
@@ -34,7 +38,7 @@ class GetDwfPunten implements Interactor
         } else if ($team !== null) {
             $punten = $this->statistiekenGateway->GetAllePuntenByTeam($team);
         } else {
-            throw new UnexpectedValueException("Error: team: '$matchId', '$team'");
+            throw new \UnexpectedValueException("Error: team: '$matchId', '$team'");
         }
 
         return $punten;

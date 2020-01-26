@@ -1,6 +1,10 @@
 <?php
 
+namespace TeamPortal\Gateways;
+
 use PHPMailer\PHPMailer\PHPMailer;
+use TeamPortal\Common\Database;
+use TeamPortal\Entities;
 
 class EmailGateway
 {
@@ -9,14 +13,9 @@ class EmailGateway
         $this->database = $database;
     }
 
-    public function QueueEmails($emails)
+    public function QueueEmails(array $emails): void
     {
-        if (!$emails) {
-            return;
-        }
-        if (!is_array($emails)) {
-            return;
-        }
+        $verzondenEmails = 0;
 
         foreach ($emails as $email) {
             if (!$emails) {
@@ -28,6 +27,8 @@ class EmailGateway
             if ($this->DoesEmailExist($email)) {
                 continue;
             }
+
+            $verzondenEmails++;
 
             $query = "INSERT INTO teamportal_email (
                         sender_naam,
@@ -50,29 +51,44 @@ class EmailGateway
             $this->database->Execute($query, $params);
             $this->PrintEmail($email);
         }
+
+        echo "Er zijn $verzondenEmails emails gequeued";
     }
 
-    public function SendQueuedEmails()
+    public function SendQueuedEmails(): void
     {
-        $query = "SELECT * FROM teamportal_email WHERE send_date is null";
-        $emails = $this->database->Execute($query);
+        $query = "SELECT 
+                    id,
+                    sender_email as senderEmail,
+                    sender_naam as sender,
+                    receiver_email as receiverEmail,
+                    receiver_naam as receiver,
+                    titel,
+                    body
+                  FROM teamportal_email WHERE send_date is null";
+        $rows = $this->database->Execute($query);
 
-        if (count($emails) == 0) {
+        if (count($rows) == 0) {
             echo "Geen emails te verzenden";
             return;
         }
 
-        foreach ($emails as $email) {
-            $sender = new Persoon(-1, $email->sender_naam, $email->sender_email);
-            $receiver = new Persoon(-1, $email->receiver_naam, $email->receiver_email);
-            $newEmail = new Email($email->titel, $email->body, $receiver, $sender);
+        foreach ($rows as $row) {
+            $newEmail = new Entities\Email(
+                $row->titel,
+                $row->body,
+                new Entities\Persoon(-1, $row->receiver, $row->receiverEmail),
+                new Entities\Persoon(-1, $row->sender, $row->senderEmail),
+                $row->id
+            );
+
             if ($this->SendMail($newEmail)) {
-                $this->MarkEmailAsSent($email);
+                $this->MarkEmailAsSent($newEmail);
             }
         }
     }
 
-    private function DoesEmailExist($email)
+    private function DoesEmailExist(Entities\Email $email): bool
     {
         $signature = $email->signature;
         $query = "SELECT id FROM teamportal_email WHERE signature = '$signature'";
@@ -81,14 +97,14 @@ class EmailGateway
         return count($emails) > 0;
     }
 
-    private function MarkEmailAsSent($email)
+    private function MarkEmailAsSent(Entities\Email $email): void
     {
         $query = "UPDATE teamportal_email set send_date = NOW() where id = ?";
         $params = [$email->id];
         $this->database->Execute($query, $params);
     }
 
-    private function SendMail($email)
+    private function SendMail(Entities\Email $email): bool
     {
         if (
             !filter_var($email->sender->email, FILTER_VALIDATE_EMAIL) ||
@@ -115,7 +131,7 @@ class EmailGateway
         return true;
     }
 
-    private function PrintEmail($email)
+    private function PrintEmail(Entities\Email $email): void
     {
         echo "From: " . $email->sender->naam . " (" . $email->sender->email .  ")<br>";
         echo "To: " . $email->receiver->naam . " (" . $email->receiver->email . ")<br>";

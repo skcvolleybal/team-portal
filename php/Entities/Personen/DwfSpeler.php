@@ -1,5 +1,7 @@
 <?php
 
+namespace TeamPortal\Entities;
+
 class DwfSpeler extends Persoon
 {
     public int $aantalGespeeldePunten;

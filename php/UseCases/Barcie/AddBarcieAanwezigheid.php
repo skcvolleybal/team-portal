@@ -1,9 +1,16 @@
 <?php
 
+namespace TeamPortal\UseCases;
+
+use TeamPortal\Common\DateFunctions;
+use TeamPortal\Gateways;
+
 class AddBarcieAanwezigheid implements Interactor
 {
-    public function __construct(BarcieGateway $barcieGateway, JoomlaGateway $joomlaGateway)
-    {
+    public function __construct(
+        Gateways\BarcieGateway $barcieGateway,
+        Gateways\JoomlaGateway $joomlaGateway
+    ) {
         $this->barcieGateway = $barcieGateway;
         $this->joomlaGateway = $joomlaGateway;
     }
@@ -25,7 +32,7 @@ class AddBarcieAanwezigheid implements Interactor
 
         $bardag = $this->barcieGateway->GetBardag($date);
         if ($bardag->id === null) {
-            throw new UnexpectedValueException("Er bestaat geen bardag $date");
+            throw new \UnexpectedValueException("Er bestaat geen bardag $date");
         }
 
         $bardienst = $this->barcieGateway->GetBardienst($bardag, $barlid, $data->shift);
