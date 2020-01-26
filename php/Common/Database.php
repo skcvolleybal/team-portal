@@ -1,19 +1,20 @@
 <?php
 
-include_once 'Param.php';
-include_once 'Column.php';
+namespace TeamPortal\Common;
+
+use TeamPortal\Configuration;
 
 class Database
 {
     private $dbc;
 
-    public function __construct($host, $database, $user, $password, $options)
+    public function __construct(Configuration $config)
     {
-        $this->host = $host;
-        $this->database = $database;
-        $this->user = $user;
-        $this->password = $password;
-        $this->options = $options;
+        $this->host = $config->Database->Hostname;
+        $this->database = $config->Database->Name;
+        $this->username = $config->Database->Username;
+        $this->password = $config->Database->Password;
+        $this->options = $config->Database->Options;
     }
 
     private function getDbConnection()
@@ -22,41 +23,14 @@ class Database
             return $this->dbc;
         }
 
-        $this->dbc = new PDO("mysql:host=$this->host;dbname=$this->database", $this->user, $this->password, $this->options);
+        $this->dbc = new \PDO("mysql:host=$this->host;dbname=$this->database;charset=UTF8", $this->username, $this->password);
         return $this->dbc;
     }
 
-    public function Execute($query, $params = array())
+    public function Execute(string $query, array $params = [])
     {
         if (empty($query)) {
-            throw new UnexpectedValueException('Query is empty');
-        }
-
-        $stmt = $this->getDbConnection()->prepare($query);
-        foreach ($params as $param) {
-            $stmt->bindValue($param->getName(), $param->getValue(), $param->getType());
-        }
-
-        if (!$stmt->execute()) {
-            $message = 'Fout bij het uitvoeren van query ( query:\n' .
-                print_r($query, true) .
-                '\n\nparams:\n' .
-                print_r($params, true) .
-                ') ' .
-                print_r($stmt->errorInfo(), true) .
-                ' om ' .
-                date('H:i:s:(u) d-m-Y');
-
-            throw new mysqli_sql_exception($message);
-        }
-
-        return $stmt->fetchAll(PDO::FETCH_OBJ);
-    }
-
-    public function Execute2($query, $params = null)
-    {
-        if (empty($query)) {
-            throw new UnexpectedValueException('Query is empty');
+            throw new \UnexpectedValueException('Query is empty');
         }
 
         $stmt = $this->getDbConnection()->prepare($query);
@@ -74,6 +48,6 @@ class Database
             throw new mysqli_sql_exception($message);
         }
 
-        return $stmt->fetchAll(PDO::FETCH_OBJ);
+        return $stmt->fetchAll(\PDO::FETCH_OBJ);
     }
 }

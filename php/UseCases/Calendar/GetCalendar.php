@@ -1,162 +1,149 @@
 <?php
-include_once 'IInteractor.php';
-require_once 'iCalcreator/autoload.php';
-include_once 'ZaalwachtGateway.php';
-include_once 'NevoboGateway.php';
-include_once 'TelFluitGateway.php';
-include_once 'JoomlaGateway.php';
 
-class GetCalendar implements IInteractor
+namespace TeamPortal\UseCases;
+
+use TeamPortal\Gateways;
+use Kigkonsult\Icalcreator\Vcalendar;
+
+class GetCalendar implements Interactor
 {
-    public function __construct($database)
-    {
-        $this->zaalwachtGateway = new ZaalwachtGateway($database);
-        $this->joomlaGateway = new JoomlaGateway($database);
-        $this->nevoboGateway = new NevoboGateway();
-        $this->telFluitGateway = new TelFluitGateway($database);
+    public function __construct(
+        Gateways\ZaalwachtGateway $zaalwachtGateway,
+        Gateways\JoomlaGateway $joomlaGateway,
+        Gateways\NevoboGateway $nevoboGateway,
+        Gateways\TelFluitGateway $telFluitGateway,
+        Gateways\BarcieGateway $barcieGateway
+    ) {
+        $this->zaalwachtGateway = $zaalwachtGateway;
+        $this->joomlaGateway = $joomlaGateway;
+        $this->nevoboGateway = $nevoboGateway;
+        $this->telFluitGateway = $telFluitGateway;
+        $this->barcieGateway = $barcieGateway;
     }
 
-    public function Execute()
+    public function Execute(object $data = null)
     {
-        $userId = GetQueryStringParamater('userid');
-
-        $withFluiten = GetQueryStringParamater('fluiten');
-        $withTellen = GetQueryStringParamater('tellen');
-
-        if (!$userId) {
+        if (!$data->userid) {
             throw new InvalidArgumentException("userid is not set");
         }
 
-        if (!$this->joomlaGateway->DoesUserIdExist($userId)) {
-            throw new UnexpectedValueException();
+        $user = $this->joomlaGateway->GetUser($data->userid);
+        if ($user === null) {
+            return null;
         }
 
-        $team = $this->joomlaGateway->GetTeam($userId);
-        $coachTeam = $this->joomlaGateway->GetCoachTeam($userId);
+        $isScheidsrechter = $this->joomlaGateway->IsScheidsrechter($user);
+        $isTeller = !$isScheidsrechter;
+
+        $title = $this->GetTitle($user, $isScheidsrechter);
+        $calendar = $this->CreateCalendar($user, $title);
         $uscLocatie = "Universitair SC, Einsteinweg 6, 2333CC LEIDEN";
-        $this->uscWedstrijden = $this->nevoboGateway->GetProgrammaForSporthal('LDNUN');
 
-        $skcTeam = ToSkcName($team) ?? "je team";
-        if ($withTellen !== null && $withFluiten !== null) {
-            $title = "Fluit-, tel- en zaalwachtrooster van $skcTeam";
-        } else if ($withTellen !== null) {
-            $title = "Tel- en zaalwachtrooster van $skcTeam";
+        $allBardiensten = $this->barcieGateway->GetBardienstenForUser($user);
+        $telbeurten = $isTeller ? $this->telFluitGateway->GetTelbeurten($user) : [];
+        $fluitbeurten = $isScheidsrechter ? $this->telFluitGateway->GetFluitbeurten($user) : [];
+
+        $wedstrijddagen = $this->nevoboGateway->GetWedstrijddagenForSporthal('LDNUN', 355);
+        foreach ($wedstrijddagen as $wedstrijddag) {
+            $zaalwacht = $this->zaalwachtGateway->GetZaalwacht($wedstrijddag->date);
+            if ($zaalwacht && $zaalwacht->team->Equals($user->team)) {
+                $firstMatch = $wedstrijddag->speeltijden[0]->wedstrijden[0];
+                $i = count($wedstrijddag->speeltijden) - 1;
+                $lastMatch = $wedstrijddag->speeltijden[$i]->wedstrijden[0];
+                $start = $firstMatch->timestamp;
+                $end = DateFunctions::AddMinutes($lastMatch->timestamp, 120);
+                $this->AddEvent($calendar, $start, $end, $uscLocatie, "Zaalwacht");
+            }
+
+            $bardiensten = $this->GetBardienstenForDate($allBardiensten, $wedstrijddag->date);
+            foreach ($bardiensten as $bardienst) {
+                $start = $bardienst->GetStartTime();
+                $end = DateFunctions::AddMinutes($start, 4 * 60); // 4uur?
+                $this->AddEvent($calendar, $start, $end, $uscLocatie, "Bardienst");
+            }
+
+            foreach ($wedstrijddag->speeltijden as $speeltijd) {
+                foreach ($speeltijd->wedstrijden as $wedstrijd) {
+                    if ($isTeller) {
+                        $telWedstrijd = Entities\Wedstrijd::GetWedstrijdWithMatchId($telbeurten, $wedstrijd->matchId);
+                        if ($telWedstrijd) {
+                            $telWedstrijd->AppendInformation($wedstrijd);
+                            $start = $telWedstrijd->timestamp;
+                            $end = DateFunctions::AddMinutes($start, 120);
+                            $teams = $telWedstrijd->team1 . ' ' . $telWedstrijd->team2;
+                            $this->AddEvent($calendar, $start, $end, $uscLocatie, "Tellen", "Tellen: $teams");
+                        }
+                    }
+
+                    if ($isScheidsrechter) {
+                        $fluitWedstrijd = Entities\Wedstrijd::GetWedstrijdWithMatchId($fluitbeurten, $wedstrijd->matchId);
+                        if ($fluitWedstrijd) {
+                            $fluitWedstrijd->AppendInformation($wedstrijd);
+                            $start = $fluitWedstrijd->timestamp;
+                            $end = DateFunctions::AddMinutes($start, 120);
+                            $teams = $fluitWedstrijd->team1->naam . ' ' . $fluitWedstrijd->team2->naam;
+                            $this->AddEvent($calendar, $start, $end, $uscLocatie, "Tellen", $teams);
+                        }
+                    }
+                }
+            }
+        }
+        echo $calendar->createCalendar();
+    }
+
+    private function GetBardienstenForDate(array $allBardiensten, \DateTime $date): array
+    {
+        $result = [];
+        foreach ($allBardiensten as $bardienst) {
+            if (DateFunctions::AreDatesEqual($bardienst->bardag->date, $date)) {
+                $result[] = $bardienst;
+            }
+        }
+        return $result;
+    }
+
+    private function GetTitle(Entities\Persoon $persoon, bool $isScheidsrechter): string
+    {
+        $seizoen = GetCurrentSeizoen();
+        $title = null;
+        if ($persoon->team === null) {
+            if ($isScheidsrechter) {
+                $title = "Jouw SKC-fluitrooster, seizoen $seizoen";
+            }
         } else {
-            $title = "Fluit- en zaalwachtrooster van $skcTeam";
-        }
-
-        $this->CreateCalendar($title);
-
-        $zaalwachten = $this->zaalwachtGateway->GetZaalwachtForUserId($userId);
-        foreach ($zaalwachten as $zaalwacht) {
-            [$start, $end] = $this->GetStartAndEndDateOfZaalwacht($zaalwacht);
-            $this->AddEvent($start, $end, $uscLocatie, "Zaalwacht");
-        }
-
-        if ($withTellen !== null) {
-            $telbeurten = $this->telFluitGateway->GetTelbeurten($userId);
-            foreach ($telbeurten as $telbeurt) {
-                $telWedstrijd = $this->GetMatchWithId($telbeurt->id);
-                if ($telWedstrijd) {
-                    $start = $telWedstrijd->timestamp;
-                    $end = (clone $start)->add(new DateInterval('PT2H'));
-                    $teams = $telWedstrijd->team1 . ' ' . $telWedstrijd->team2;
-                    $this->AddEvent($start, $end, $uscLocatie, "Tellen", $teams);
-                }
+            $team = $persoon->team->GetSkcNaam();
+            if ($isScheidsrechter) {
+                $title = "Fluit- en zaalwachtrooster van $team, seizoen $seizoen";
+            } else {
+                $title = "Tel- en zaalwachtrooster van $team, seizoen $seizoen";
             }
         }
 
-        if ($withFluiten !== null) {
-            $fluitbeurten = $this->telFluitGateway->GetFluitbeurten($userId);
-            foreach ($fluitbeurten as $fluitbeurt) {
-                $fluitWedstrijd = $this->GetMatchWithId($fluitbeurt->id);
-                if ($fluitWedstrijd) {
-                    $start = $fluitWedstrijd->timestamp;
-                    $end = (clone $start)->add(new DateInterval('PT2H'));
-                    $teams = $fluitWedstrijd->team1 . ' ' . $fluitWedstrijd->team2;
-                    $this->AddEvent($start, $end, $uscLocatie, "Tellen", $teams);
-                }
-            }
-        }
-
-        exit($this->calendar->createCalendar());
+        return $title;
     }
 
-    private function GetMatchWithId($matchId)
+    private function CreateCalendar(Entities\Persoon $persoon, string $title): Vcalendar
     {
-        foreach ($this->uscWedstrijden as $wedstrijd) {
-            if ($wedstrijd->id == $matchId) {
-                return $wedstrijd;
-            }
-        }
-        return null;
+        $postfix = $persoon->team ? $persoon->team->GetSkcNaam() : "jou";
+        return Vcalendar::factory([Vcalendar::UNIQUE_ID => "https://www.skcvolleybal.nl/team-portal/"])
+            ->setMethod(Vcalendar::PUBLISH)
+            ->setXprop(Vcalendar::X_WR_CALNAME, $title)
+            ->setXprop(Vcalendar::X_WR_CALDESC, "Alle Fluit-, telwedstrijden of zaalwachtendiensten van $postfix")
+            ->setXprop(Vcalendar::X_WR_RELCALID, "")
+            ->setXprop(Vcalendar::X_WR_TIMEZONE, "Europe/Amsterdam");
     }
 
-    private function GetStartAndEndDateOfZaalwacht($zaalwacht)
-    {
-        $wedstrijden = [];
-        foreach ($this->uscWedstrijden as $wedstrijd) {
-            if ($wedstrijd->timestamp && $wedstrijd->timestamp->format('Y-m-d') == $zaalwacht->date) {
-                $wedstrijden[] = $wedstrijd;
-            }
-        }
-        if (count($wedstrijden) == 0) {
-            throw new UnexpectedValueException();
-        }
-
-        $firstWedstrijd = $wedstrijden[0];
-        $lastWedstrijd = $wedstrijden[0];
-        foreach ($wedstrijden as $wedstrijd) {
-            if ($wedstrijd->timestamp < $firstWedstrijd->timestamp) {
-                $firstWedstrijd = $wedstrijd;
-            }
-            if ($lastWedstrijd->timestamp < $wedstrijd->timestamp) {
-                $lastWedstrijd = $wedstrijd;
-            }
-        }
-        return [
-            $firstWedstrijd->timestamp,
-            $lastWedstrijd->timestamp->add(new DateInterval('PT2H'))
-        ];
-    }
-
-    private function CreateCalendar($title)
-    {
-        $timezone = "Europe/Amsterdam";
-        $config = array(
-            "UNIQUE_ID" => "https://www.skcvolleybal.nl/team-portal/",
-            "TZID" => $timezone,
-        );
-        $this->calendar = new kigkonsult\iCalcreator\vcalendar($config);
-        $this->calendar->setProperty(kigkonsult\iCalcreator\util\util::$METHOD, "PUBLISH");
-        $this->calendar->setProperty("x-wr-calname", $title);
-        $this->calendar->setProperty("X-WR-CALDESC", "Alle Fluit-, telwedstrijden of zaalwachtendiensten van jouw team");
-        $this->calendar->setProperty("X-WR-TIMEZONE", $timezone);
-    }
-
-    private function AddEvent(DateTime $start, DateTime $end, $location, $summary, $description = null)
+    private function AddEvent(Vcalendar $calendar, \DateTime $start, \DateTime $end, string $location, string $summary, string $description = null)
     {
         if ($start && $end) {
-            $event = $this->calendar->newVevent();
-            $event->setProperty(kigkonsult\iCalcreator\util\util::$DTSTART, $this->GetDateArray($start));
-            $event->setProperty(kigkonsult\iCalcreator\util\util::$DTEND, $this->GetDateArray($end));
-            $event->setProperty(kigkonsult\iCalcreator\util\util::$LOCATION, $location);
-            $event->setProperty(kigkonsult\iCalcreator\util\util::$SUMMARY, $summary);
+            $event = $calendar->newVevent()
+                ->setDtstart($start)
+                ->setDtend($end)
+                ->setLocation($location)
+                ->setSummary($summary);
             if ($description) {
-                $event->setProperty(kigkonsult\iCalcreator\util\util::$DESCRIPTION, $description);
+                $event->setDescription($description);
             }
         }
-    }
-
-    private function GetDateArray($date)
-    {
-        return array(
-            "year" => $date->format('Y'),
-            "month" => $date->format('n'),
-            "day" => $date->format('j'),
-            "hour" => $date->format('G'),
-            "min" => $date->format('i'),
-            "sec" => 0,
-        );
     }
 }

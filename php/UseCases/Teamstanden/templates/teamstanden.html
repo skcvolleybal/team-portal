@@ -1,4 +1,10 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+<script>
+  window.jQuery ||
+    document.write(
+      '<script src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.1.min.js"><\/script>'
+    );
+</script>
 <div style="max-width:260px;max-height: 400px;">
   <canvas id="myChart" width="260" height="400"></canvas>
   <div id="chartjs-tooltip"></div>
@@ -20,17 +26,22 @@
   <div>
     <script>
       function GetTooltipText(team, rank) {
+        console.log(team, rank);
         var ranks = [__ACTUAL_RANKS__];
-        var numberOfTeams = [__NUMBER_OF_TEAMS__];
-        var i = team[0] == 'H' ? 15 : 0;
-        i += parseInt(team.substr(1)) - 1;
-        return team + ': #' + ranks[i] + '/' + numberOfTeams[i];
+        var allTeams = [__ALL_TEAMS__];
+        var numberOfTeamsInPoule = [__NUMBER_OF_TEAMS_IN_POULE__];
+
+        for (var i = 0; i < allTeams.length; i++) {
+          if (allTeams[i] == team) {
+            return team + ": #" + ranks[i] + "/" + numberOfTeamsInPoule[i];
+          }
+        }
       }
-      var ctx = document.getElementById('myChart').getContext('2d');
+      var ctx = document.getElementById("myChart").getContext("2d");
       var myBarChart = new Chart(ctx, {
-        type: 'horizontalBar',
+        type: "horizontalBar",
         data: {
-          labels: [__ALLTEAMS__],
+          labels: [__ALL_TEAMS__],
           datasets: [
             {
               data: [__BLACKBARS__],
@@ -49,7 +60,7 @@
         options: {
           title: {
             display: true,
-            text: 'Team Standen'
+            text: "Team Standen"
           },
           legend: {
             display: false
@@ -73,12 +84,11 @@
           tooltips: {
             enabled: false,
             custom: function(tooltipModel) {
-              console.log(tooltipModel.dataPoints);
               var positionY = this._chart.canvas.offsetTop;
               var positionX = this._chart.canvas.offsetLeft;
 
               // Tooltip Element
-              var tooltipEl = document.getElementById('chartjs-tooltip');
+              var tooltipEl = document.getElementById("chartjs-tooltip");
 
               // Hide if no tooltip
               if (tooltipModel.opacity === 0) {
@@ -91,21 +101,22 @@
                   if (dataPoint.datasetIndex == 0) {
                     return;
                   }
+                  console.log(dataPoint);
                   var content = GetTooltipText(
                     dataPoint.yLabel,
                     dataPoint.xLabel
                   );
 
-                  var $tooltip = jQuery('#chartjs-tooltip');
+                  var $tooltip = jQuery("#chartjs-tooltip");
 
                   $tooltip.html(content);
                   $tooltip.css({
                     opacity: 1,
-                    top: positionY + dataPoint.y + 'px',
-                    left: positionX + dataPoint.x + 'px'
+                    top: positionY + dataPoint.y + "px",
+                    left: positionX + dataPoint.x + "px"
                   });
 
-                  $tooltip.addClass('chartjs-tooltip');
+                  $tooltip.addClass("chartjs-tooltip");
                 });
               }
             }

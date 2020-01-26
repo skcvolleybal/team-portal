@@ -1,178 +1,194 @@
 <?php
 
-include_once 'NevoboGateway.php';
-include_once 'Barciedienst.php';
+namespace TeamPortal\Gateways;
+
+use TeamPortal\Common\Database;
+use TeamPortal\Common\DateFunctions;
+use TeamPortal\Entities;
 
 class BarcieGateway
 {
-    public function __construct($database)
+    public function __construct(Database $database)
     {
         $this->database = $database;
-        $this->nevoboGateway = new NevoboGateway();
     }
 
-    public function GetDateId($date)
+    public function GetBardagen(): array
     {
-        $query = 'SELECT id
-                  FROM barcie_days
-                  WHERE date = :date';
-        $params = [
-            new Param(Column::Date, $date, PDO::PARAM_STR),
-        ];
-
-        $result = $this->database->Execute($query, $params);
-        if (count($result) == 0) {
-            return null;
-        }
-        return $result[0]->id;
+        $query = 'SELECT 
+                    D.id,
+                    date,
+                    U.id AS userId,
+                    U.name AS naam,
+                    U.email,
+                    shift,
+                    is_bhv AS isBhv
+                  FROM barcie_days D
+                  LEFT JOIN barcie_schedule_map M ON D.id = M.day_id
+                  LEFT JOIN J3_users U ON U.id = M.user_id
+                  WHERE CURRENT_DATE() <= D.date
+                  ORDER BY date, shift, name';
+        $rows = $this->database->Execute($query);
+        return $this->MapToBardagen($rows);
     }
 
-    public function GetBarcieDagen()
+    public function GetBardag(\DateTime $date): Entities\Bardag
     {
-        $query = 'SELECT *
-                  FROM barcie_days
-                  WHERE CURRENT_DATE() <= date';
-        return $this->database->Execute($query);
+        $query = 'SELECT 
+                    D.id,
+                    date,
+                    U.id AS userId,
+                    U.name AS naam,
+                    U.email,
+                    shift,
+                    is_bhv AS isBhv
+                  FROM barcie_days D
+                  LEFT JOIN barcie_schedule_map M ON D.id = M.day_id
+                  LEFT JOIN J3_users U ON U.id = M.user_id
+                  WHERE D.date = ?';
+        $params = [DateFunctions::GetYmdNotation($date)];
+        $rows = $this->database->Execute($query, $params);
+        return count($rows) > 0 ? $this->MapToBardagen($rows)[0] : new Entities\Bardag(null, $date);
     }
 
-    public function AddBarcieDag($date)
+    public function AddBardag(\DateTime $date)
     {
-        $query = 'INSERT INTO barcie_days (date)
-                  VALUES (:date)';
-        $params = [
-            new Param(Column::Date, $date, PDO::PARAM_STR),
-        ];
-
-        return $this->database->Execute($query, $params);
+        $query = 'INSERT INTO barcie_days (date) VALUES (?)';
+        $params = [DateFunctions::GetYmdNotation($date)];
+        $this->database->Execute($query, $params);
     }
 
-    public function GetBeschikbaarheden($userId)
+    public function GetBeschikbaarheden(Entities\Persoon $persoon): array
     {
-        $query = 'SELECT D.date, A.is_beschikbaar
+        $query = 'SELECT 
+                    A.id,
+                    U.id AS userId,
+                    U.name AS naam,
+                    U.email,
+                    D.id as dagId,
+                    D.date,
+                    A.is_beschikbaar AS isBeschikbaar
                   FROM barcie_availability A
+                  INNER JOIN J3_users U ON A.user_id = U.id
                   INNER JOIN barcie_days D on A.day_id = D.id
-                  WHERE A.user_id = :userId and D.date >= CURRENT_DATE()';
-        $params = [
-            new Param(Column::UserId, $userId, PDO::PARAM_INT),
-        ];
-
-        return $this->database->Execute($query, $params);
+                  WHERE A.user_id = ? and D.date >= CURRENT_DATE()';
+        $params = [$persoon->id];
+        $rows = $this->database->Execute($query, $params);
+        $beschikbaarheden = $this->MapToBeschikbaarheden($rows);
+        return count($beschikbaarheden) > 0 ? $beschikbaarheden : [];
     }
 
-    public function GetBeschikbaarhedenForDate($date)
+    public function GetBeschikbaarhedenForDate(\DateTime $date): array
     {
         $query = 'SELECT
-                    A.user_id,
-                    A.is_beschikbaar
+                    A.id,
+                    U.id AS userId,
+                    U.name AS naam,
+                    U.email,
+                    D.id as dagId,
+                    D.date,
+                    A.is_beschikbaar AS isBeschikbaar
                   FROM barcie_availability A
+                  INNER JOIN J3_users U ON A.user_id = U.id
                   INNER JOIN barcie_days D on A.day_id = D.id
-                  WHERE D.date = :date';
-        $params = [
-            new Param(Column::Date, $date, PDO::PARAM_STR),
-        ];
-
-        return $this->database->Execute($query, $params);
+                  WHERE D.date = ?';
+        $params = [DateFunctions::GetYmdNotation($date)];
+        $rows = $this->database->Execute($query, $params);
+        return $this->MapToBeschikbaarheden($rows);
     }
 
-    public function GetBeschikbaarheid($userId, $dayId)
+    public function GetBeschikbaarheid(Entities\Persoon $user, Entities\Bardag $bardag): Entities\Barbeschikbaarheid
     {
-        $query = 'SELECT *
-                  FROM barcie_availability
-                  WHERE user_id = :userId and day_id = :dayId';
-        $params = [
-            new Param(Column::UserId, $userId, PDO::PARAM_INT),
-            new Param(Column::DayId, $dayId, PDO::PARAM_INT),
-        ];
-
-        $result = $this->database->Execute($query, $params);
-        if (count($result) == 0) {
-            return null;
-        }
-        return $result[0];
+        $query = 'SELECT
+                    A.id,
+                    U.id AS userId,
+                    U.name AS naam,
+                    U.email,
+                    D.id as dagId,
+                    D.date, 
+                    A.is_beschikbaar AS isBeschikbaar
+                  FROM barcie_availability A
+                  INNER JOIN barcie_days D ON A.day_id = D.id
+                  INNER JOIN J3_users U ON A.user_id = U.id
+                  WHERE user_id = ? and day_id = ?';
+        $params = [$user->id, $bardag->id];
+        $rows = $this->database->Execute($query, $params);
+        $beschikbaarheden = $this->MapToBeschikbaarheden($rows);
+        return count($beschikbaarheden) > 0 ?
+            $beschikbaarheden[0] :
+            new Entities\Barbeschikbaarheid($bardag, $user, null);
     }
 
-    public function UpdateBeschikbaarheid($id, $isBeschikbaar)
+    public function UpdateBeschikbaarheid(Entities\Barbeschikbaarheid $beschikbaarheid): void
     {
-        $this->CheckBeschikbaarheid($isBeschikbaar);
         $query = 'UPDATE barcie_availability
-                  SET is_beschikbaar = :isBeschikbaar
-                  WHERE id = :id';
+                  SET is_beschikbaar = ?
+                  WHERE id = ?';
         $params = [
-            new Param(':id', $id, PDO::PARAM_INT),
-            new Param(Column::IsBeschikbaar, $isBeschikbaar, PDO::PARAM_STR),
+            $beschikbaarheid->isBeschikbaar ? "Ja" : "Nee",
+            $beschikbaarheid->id
         ];
-
-        return $this->database->Execute($query, $params);
+        $this->database->Execute($query, $params);
     }
 
-    public function DeleteBeschikbaarheid($id)
+    public function DeleteBeschikbaarheid(Entities\Barbeschikbaarheid $beschikbaarheid): void
     {
-        $query = 'DELETE FROM barcie_availability WHERE id = :id';
-        $params = [new Param(':id', $id, PDO::PARAM_INT)];
-
-        return $this->database->Execute($query, $params);
+        $query = 'DELETE FROM barcie_availability WHERE id = ?';
+        $params = [$beschikbaarheid->id];
+        $this->database->Execute($query, $params);
     }
 
-    public function InsertBeschikbaarheid($userId, $dayId, $isBeschikbaar)
+    public function InsertBeschikbaarheid(Entities\Barbeschikbaarheid $beschikbaarheid): void
     {
-        $this->CheckBeschikbaarheid($isBeschikbaar);
         $query = 'INSERT INTO barcie_availability (day_id, user_id, is_beschikbaar)
-                  VALUES (:dayId, :userId, :isBeschikbaar)';
+                  VALUES (?, ?, ?)';
         $params = [
-            new Param(Column::UserId, $userId, PDO::PARAM_INT),
-            new Param(Column::DayId, $dayId, PDO::PARAM_INT),
-            new Param(Column::IsBeschikbaar, $isBeschikbaar, PDO::PARAM_STR),
+            $beschikbaarheid->bardag->id,
+            $beschikbaarheid->persoon->id,
+            $beschikbaarheid->isBeschikbaar
         ];
-
-        return $this->database->Execute($query, $params);
+        $this->database->Execute($query, $params);
     }
 
-    private function CheckBeschikbaarheid($beschikbaarheid)
+    public function GetBardienst(Entities\Bardag $dag, Entities\Persoon $user, int $shift): Entities\Bardienst
     {
-        if (!in_array($beschikbaarheid, ['Ja', 'Nee', 'Onbekend'])) {
-            throw new InvalidArgumentException('$beschikbaarheid is niet een van de opties');
-        }
+        $query = 'SELECT 
+                    M.id,
+                    D.id as dayId,
+                    D.date,
+                    M.day_id AS dayId,
+                    U.id AS userId,
+                    U.name AS naam,
+                    U.email,
+                    shift,
+                    is_bhv AS isBhv
+                  FROM barcie_schedule_map M
+                  INNER JOIN barcie_days D ON M.day_id = D.id
+                  INNER JOIN J3_users U ON M.user_id = U.id
+                  WHERE day_id = ? and
+                        user_id = ? and
+                        shift = ?';
+        $params = [$dag->id, $user->id, $shift];
+        $rows = $this->database->Execute($query, $params);
+
+        return count($rows) > 0 ?
+            new Entities\Bardienst(
+                new Entities\Bardag($rows[0]->dayId, DateFunctions::CreateDateTime($rows[0]->date)),
+                new Entities\Persoon($rows[0]->userId, $rows[0]->naam, $rows[0]->email),
+                $rows[0]->shift,
+                $rows[0]->isBhv,
+                $rows[0]->id
+            ) :
+            new Entities\Bardienst($dag, $user, $shift, false);
     }
 
-    public function SetBHV($id, $isBHV)
-    {
-        $isBHV = $isBHV ? 1 : 0;
-        $query = 'UPDATE barcie_availability
-                  SET is_bhv = :isBHV
-                  WHERE id = :id';
-        $params = [
-            new Param(':isBHV', $isBHV, PDO::PARAM_INT),
-            new Param(':id', $id, PDO::PARAM_INT)
-        ];
-
-        return $this->database->Execute($query, $params);
-    }
-
-    public function GetAanwezigheid($dayId, $userId, $shift)
-    {
-        $query = 'SELECT * FROM barcie_schedule_map
-                  WHERE day_id = :dayId and
-                        user_id = :userId and
-                        shift = :shift';
-        $params = [
-            new Param(Column::DayId, $dayId, PDO::PARAM_INT),
-            new Param(Column::UserId, $userId, PDO::PARAM_INT),
-            new Param(':shift', $shift, PDO::PARAM_INT),
-        ];
-
-        $aanwezigheden = $this->database->Execute($query, $params);
-        if (count($aanwezigheden) == 0) {
-            return null;
-        }
-        return $aanwezigheden[0];
-    }
-
-    public function GetBarcieAanwezigheden()
+    public function GetBardiensten(): array
     {
         $query = 'SELECT
-                    M.user_id as userId,
-                    M.name as naam,
-                    M.is_bhv as isBhv,
+                    M.userId,
+                    M.naam,
+                    M.email,
+                    M.is_bhv AS isBhv,
                     D.date,
                     M.shift
                   FROM barcie_days D
@@ -180,153 +196,187 @@ class BarcieGateway
                     SELECT
                         M.day_id,
                         M.shift,
-                        M.user_id,
-                        U.name,
+                        U.id AS userId,                        
+                        U.name AS naam,
+                        U.email,
                         M.is_bhv
                     FROM barcie_schedule_map M
                     INNER JOIN J3_users U on U.id = M.user_id
                   ) M on M.day_id = D.id
                   WHERE D.date >= CURRENT_DATE()
-                  ORDER BY date, shift, name';
-        return $this->database->Execute($query);
+                  ORDER BY date, shift, naam';
+        $rows = $this->database->Execute($query);
+        $result = [];
+        foreach ($rows as $row) {
+            $persoon = $row->userId ? new Entities\Persoon($row->userId, $row->naam, $row->email) : null;
+            $result[] = new Bardienst(
+                new Entities\Bardag($row->id, DateFunctions::CreateDateTime($row->date)),
+                $persoon,
+                $row->shift,
+                $row->isBhv
+            );
+        }
+        return $result;
     }
 
-    public function GetBarcieRoosterForNextWeek()
+    public function GetBarleden(): array
     {
         $query = 'SELECT
-                    D.date,
-                    U.id as userId,
-                    U.name as naam,
+                    U.id AS userId,
+                    U.name AS naam,
                     U.email,
-                    shift,
-                    is_bhv as isBhv
-                  FROM barcie_schedule_map M
-                  INNER JOIN J3_users U ON M.user_id = U.id
-                  INNER JOIN barcie_days D ON M.day_id = D.id
-                  WHERE D.date BETWEEN CURRENT_DATE() and DATE_ADD(CURRENT_DATE(), INTERVAL 7 DAY)';
-        return $this->database->Execute($query);
+                    count(B.id) AS aantalDiensten
+                  FROM J3_users U
+                  INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
+                  INNER JOIN J3_usergroups G ON G.id = M.group_id
+                  LEFT JOIN barcie_schedule_map B ON B.user_id = U.id
+                  WHERE title = "Barcie"
+                  GROUP BY U.id
+                  ORDER BY count(B.id) ASC';
+        $rows =  $this->database->Execute($query);
+        $result = [];
+        foreach ($rows as $row) {
+            $barlid = new Entities\Barlid(
+                new Entities\Persoon($row->userId, $row->naam, $row->email),
+                $row->aantalDiensten
+            );
+            $result[] = $barlid;
+        }
+        return $result;
     }
 
-    public function GetBarciedienstenForDate($date)
+    public function InsertBardienst(Entities\Bardienst $dienst): void
+    {
+        $query = 'INSERT INTO barcie_schedule_map (day_id, user_id, shift)
+                  VALUES (?, ?, ?)';
+        $params = [$dienst->bardag->id, $dienst->persoon->id, $dienst->shift];
+
+        $this->database->Execute($query, $params);
+    }
+
+    public function DeleteBardienst(Entities\Bardienst $bardienst): void
+    {
+        $query = 'DELETE FROM barcie_schedule_map
+                  WHERE id = ?';
+        $params = [$bardienst->id];
+
+        $this->database->Execute($query, $params);
+    }
+
+    public function DeleteBardag(Entities\Bardag $bardag): void
+    {
+        $query = 'DELETE FROM barcie_days
+                  WHERE id = ?';
+        $params = [$bardag->id];
+
+        $this->database->Execute($query, $params);
+    }
+
+    public function ToggleBhv(Entities\Bardienst $bardienst): void
+    {
+        $query = 'UPDATE barcie_schedule_map
+                  SET is_bhv = IF(is_bhv = 1, 0, 1)
+                  WHERE id = ?';
+        $params = [$bardienst->id];
+
+        $this->database->Execute($query, $params);
+    }
+
+    public function GetBardienstenForUser(Entities\Persoon $user): array
+    {
+        $query = 'SELECT 
+                    U.id AS userId, 
+                    U.name AS naam, 
+                    U.email,
+                    D.id as dayId,
+                    D.date, 
+                    M.shift, 
+                    M.is_bhv AS isBhv
+                  FROM J3_users U
+                  INNER JOIN barcie_schedule_map M ON M.user_id = U.id
+                  INNER JOIN barcie_days D ON M.day_id = D.id
+                  WHERE U.id = ? AND D.date >= CURDATE()';
+        $params = [$user->id];
+        $rows = $this->database->Execute($query, $params);
+        return $this->MapToBardiensten($rows);
+    }
+
+    private function MapToBardiensten(array $rows): array
     {
         $diensten = [];
-        $query = "SELECT
-                    D.date,
-                    U.id as userId,
-                    U.name as naam,
-                    U.email,
-                    shift,
-                    is_bhv as isBhv
-                  FROM barcie_schedule_map M
-                  INNER JOIN J3_users U ON M.user_id = U.id
-                  INNER JOIN barcie_days D ON M.day_id = D.id
-                  WHERE D.date = ?";
-        $params = [$date->format("Y-m-d")];
-        $result = $this->database->Execute2($query, $params);
-        foreach ($result as $dienst) {
-            $diensten[] = new Barciedienst(
-                $dienst->date,
-                new Persoon(
-                    $dienst->userId,
-                    $dienst->naam,
-                    $dienst->email
+        foreach ($rows as $row) {
+            $diensten[] = new Entities\Bardienst(
+                new Entities\Bardag($row->dayId, DateFunctions::CreateDateTime($row->date)),
+                new Entities\Persoon(
+                    $row->userId,
+                    $row->naam,
+                    $row->email
                 ),
-                $dienst->shift,
-                $dienst->isBhv
+                $row->shift,
+                $row->isBhv
             );
         }
 
         return $diensten;
     }
 
-    public function GetBarcieleden()
+    private function MapToBeschikbaarheden(array $rows): array
     {
-        $query = 'SELECT
-                    U.id,
-                    U.name AS naam,
-                    count(B.id) AS aantalDiensten
-                  FROM J3_users U
-                  INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
-                  INNER JOIN J3_usergroups G ON G.id = M.group_id
-                  LEFT JOIN barcie_schedule_map B ON B.user_id = U.id
-                  WHERE title = \'Barcie\'
-                  GROUP BY U.id
-                  ORDER BY count(B.id) ASC';
-        return $this->database->Execute($query);
+        $result = [];
+        foreach ($rows as $row) {
+            $result[] = new Entities\Barbeschikbaarheid(
+                new Entities\Bardag($row->dagId, DateFunctions::CreateDateTime($row->date)),
+                new Entities\Persoon(
+                    $row->userId,
+                    $row->naam,
+                    $row->email
+                ),
+                $row->isBeschikbaar == "Ja",
+                $row->id
+            );
+        }
+        return $result;
     }
 
-    public function GetBarcielidByName($name)
+    private function MapToBardagen(array $rows): array
     {
-        $query = 'SELECT
-                    U.id,
-                    U.name AS naam
-                  FROM J3_users U
-                  INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
-                  INNER JOIN J3_usergroups G ON G.id = M.group_id                  
-                  WHERE title = \'Barcie\' and
-                        U.name = :name';
-        $params = [
-            new Param(':name', $name, PDO::PARAM_INT)
-        ];
-        return $this->database->Execute($query, $params);
-    }
+        $result = [];
+        $currentDag = null;
+        $currentShift = null;
+        foreach ($rows as $row) {
+            if ($currentDag !== $row->date) {
+                $currentDag = $row->date;
+                $result[] = new Entities\Bardag($row->id, DateFunctions::CreateDateTime($row->date));
+                $currentShift = null;
+            }
+            $i = count($result) - 1;
 
-    public function InsertAanwezigheid($dayId, $userId, $shift)
-    {
-        $query = 'INSERT INTO barcie_schedule_map (day_id, user_id, shift)
-                  VALUES (:dayId, :userId, :shift)';
-        $params = [
-            new Param(Column::UserId, $userId, PDO::PARAM_INT),
-            new Param(Column::DayId, $dayId, PDO::PARAM_INT),
-            new Param(Column::Shift, $shift, PDO::PARAM_INT),
-        ];
+            if ($row->shift == null) {
+                $currentShift = null;
+                continue;
+            }
 
-        return $this->database->Execute($query, $params);
-    }
+            if ($currentShift != $row->shift) {
+                $currentShift = $row->shift;
+                $result[$i]->shifts[] = new Entities\Barshift(
+                    $row->shift,
+                    $row->id
+                );
+            }
+            $j = count($result[$i]->shifts) - 1;
 
-    public function DeleteAanwezigheid($id)
-    {
-        $query = 'DELETE FROM barcie_schedule_map
-                  WHERE id = :id';
-        $params = [
-            new Param(Column::Id, $id, PDO::PARAM_INT),
-        ];
+            $barlid = new Entities\Barlid(
+                new Entities\Persoon(
+                    $row->userId,
+                    $row->naam,
+                    $row->email
+                )
+            );
+            $barlid->shift = $row->shift;
+            $barlid->isBhv = $row->isBhv == 1;
+            $result[$i]->shifts[$j]->barleden[] = $barlid;
+        }
 
-        $this->database->Execute($query, $params);
-    }
-
-    public function DeleteBarcieDay($id)
-    {
-        $query = 'DELETE FROM barcie_days
-                  WHERE id = :id';
-        $params = [
-            new Param(':id', $id, PDO::PARAM_INT),
-        ];
-
-        $this->database->Execute($query, $params);
-    }
-
-    public function ToggleBhv($id)
-    {
-        $query = 'UPDATE barcie_schedule_map
-                  SET is_bhv =  IF(is_bhv = 1, 0, 1)
-                  WHERE id = :id';
-        $params = [
-            new Param(':id', $id, PDO::PARAM_INT),
-        ];
-
-        $this->database->Execute($query, $params);
-    }
-
-    public function GetBarciedienstenByUserId($userId)
-    {
-        $query = 'SELECT U.name, D.date, M.shift, M.is_bhv AS isBhv
-                  FROM J3_users U
-                  INNER JOIN barcie_schedule_map M ON M.user_id = U.id
-                  INNER JOIN barcie_days D ON M.day_id = D.id
-                  WHERE U.id = ? AND D.date >= NOW()';
-        $params = [$userId];
-
-        return $this->database->Execute2($query, $params);
+        return $result;
     }
 }

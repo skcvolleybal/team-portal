@@ -1,94 +1,113 @@
 <?php
 
-include_once 'Param.php';
-include_once 'Utilities.php';
-include_once 'Persoon.php';
+namespace TeamPortal\Gateways;
+
+use TeamPortal\Configuration;
+use TeamPortal\Common\Database;
+use TeamPortal\Entities;
 
 class JoomlaGateway
 {
-    public function __construct($database)
-    {
+    public function __construct(
+        Configuration $configuration,
+        Database $database
+    ) {
+        $this->configuration = $configuration;
         $this->database = $database;
     }
 
-    public function GetUserId($forceImpersonation = true)
+    public function GetUser(?int $userId = null): ?Entities\Persoon
+    {
+        $user = empty($userId) ? $this->GetLoggedInUser() : $this->GetUserById($userId);
+        if (!$user) {
+            return null;
+        }
+
+        $user->team = $this->GetTeam($user);
+        $user->coachteam = $this->GetCoachTeam($user);
+
+        return $user;
+    }
+
+    private function GetUserById(int $userId): Entities\Persoon
+    {
+        $query = 'SELECT id, name AS naam, email
+                  FROM J3_users
+                  WHERE id = ?';
+        $params = [$userId];
+        $users = $this->database->Execute($query, $params);
+        if (count($users) != 1) {
+            throw new \UnexpectedValueException("Gebruiker met id '$userId' bestaat niet");
+        }
+
+        return new Entities\Persoon($users[0]->id, $users[0]->naam, $users[0]->email);
+    }
+
+    public function GetLoggedInUser(): ?Entities\Persoon
     {
         $this->InitJoomla();
 
-        $session = JFactory::getSession();
-        $user = JFactory::getUser();
-        if ($user->guest) {
+        $joomlaUser = \JFactory::getUser();
+        if ($joomlaUser->guest) {
             return null;
         }
 
-        if ($forceImpersonation && $this->IsWebcie($user->id) && isset($_GET['impersonationId'])) {
+        $user = new Entities\Persoon(
+            $joomlaUser->id,
+            $joomlaUser->name,
+            $joomlaUser->email
+        );
+
+        if ($this->IsWebcie($user) && isset($_GET['impersonationId'])) {
             $impersonationId = $_GET['impersonationId'];
-            if (isset($impersonationId) && $this->DoesUserIdExist($impersonationId)) {
-                return $impersonationId;
-            }
+            return $this->GetUserById($impersonationId);
         }
 
-        return $user->id;
+        return $user;
     }
 
-    public function GetUser($userId)
+    public function GetScheidsrechter(?int $userId): ?Entities\Scheidsrechter
     {
-        $query = 'SELECT * 
-                  FROM J3_users
-                  WHERE id = :id';
-        $params = [new Param(Column::Id, $userId, PDO::PARAM_INT)];
-        $users = $this->database->Execute($query, $params);
-        if (count($users) == 1) {
-            return new Persoon($users[0]->id, $users[0]->name, $users[0]->email);
-        }
-        return null;
-    }
-
-    public function GetScheidsrechterByName($scheidsrechter)
-    {
-        if (empty($scheidsrechter)) {
-            return null;
-        }
-
-        $query = 'SELECT U.id, name
+        $query = 'SELECT U.id, name, email
                   FROM J3_users U
                   INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
                   INNER JOIN J3_usergroups G ON M.group_id = G.id
-                  WHERE U.name = :scheidsrechter and
-                        G.id in (SELECT id FROM J3_usergroups WHERE title = "Scheidsrechters")';
-        $params = [
-            new Param(':scheidsrechter', $scheidsrechter, PDO::PARAM_STR),
-        ];
-        $scheidsrechters = $this->database->Execute($query, $params);
-        if (count($scheidsrechters) == 0) {
-            throw new UnexpectedValueException('Unknown scheidsrechter: $scheidsrechter');
+                  WHERE U.id = ? and
+                        G.id in (
+                            SELECT id FROM J3_usergroups WHERE title = "Scheidsrechters"
+                        )';
+        $params = [$userId];
+        $rows = $this->database->Execute($query, $params);
+        if (count($rows) != 1) {
+            return null;
         };
-        return $scheidsrechters[0];
+        return new Entities\Scheidsrechter(
+            new Entities\Persoon($rows[0]->id, $rows[0]->name, $rows[0]->email)
+        );
     }
 
-    public function GetTeamByNaam($naam)
+    public function GetTeamByNaam(?string $naam): ?Entities\Team
     {
-        $query = 'SELECT * FROM J3_usergroups
-                  WHERE title = :naam';
-        $params = [new Param(':naam', $naam, PDO::PARAM_STR)];
-        $teams = $this->database->Execute($query, $params);
-        if (count($teams) == 0) {
+        if (empty($naam)) {
             return null;
         }
-        return $teams[0];
-    }
-
-    public function DoesUserIdExist($userId)
-    {
-        $query = 'SELECT id FROM J3_users WHERE id = :userId';
-        $params = [new Param(Column::UserId, $userId, PDO::PARAM_INT)];
+        $team = new Entities\Team($naam);
+        $query = 'SELECT * FROM J3_usergroups
+                  WHERE title = ?';
+        $params = [$team->GetSkcNaam()];
         $result = $this->database->Execute($query, $params);
-        return count($result) > 0;
+        if (count($result) != 1) {
+            return null;
+        }
+        return new Entities\Team($result[0]->title, $result[0]->id);
     }
 
-    public function GetUsersWithName($name)
+    public function GetUsersWithName(string $name): array
     {
-        $query = "SELECT * 
+        $query = "SELECT 
+                    id,
+                    name as naam,
+                    email
                   FROM J3_users 
                   WHERE name like '%$name%'
                   ORDER BY 
@@ -96,148 +115,155 @@ class JoomlaGateway
                     WHEN name LIKE '$name%' THEN 0 ELSE 1 end,
                   name  
                   LIMIT 0, 5";
-        return $this->database->Execute2($query);
+        $rows = $this->database->Execute($query);
+        return $this->MapToPersonen($rows);
     }
 
-    private function IsUserInUsergroup($userId, $usergroup)
+    private function IsUserInUsergroup(?Entities\Persoon $user, string $usergroup): bool
     {
+        if ($user === null) {
+            return false;
+        }
         $query = 'SELECT *
                   FROM J3_user_usergroup_map M
                   INNER JOIN J3_usergroups G ON M.group_id = G.id
-                  WHERE M.user_id = :userId and G.title = :usergroup';
-        $params = [
-            new Param(Column::UserId, $userId, PDO::PARAM_INT),
-            new Param(':usergroup', $usergroup, PDO::PARAM_STR),
-        ];
+                  WHERE M.user_id = ? and G.title = ?';
+        $params = [$user->id, $usergroup];
         $result = $this->database->Execute($query, $params);
         return count($result) > 0;
     }
 
-    public function IsScheidsrechter($userId)
+    public function IsScheidsrechter(?Entities\Persoon $user): bool
     {
-        return $this->IsUserInUsergroup($userId, 'Scheidsrechters');
+        return $this->IsUserInUsergroup($user, 'Scheidsrechters');
     }
 
-    public function IsWebcie($userId)
+    public function IsWebcie(?Entities\Persoon $user): bool
     {
-        return $this->IsUserInUsergroup($userId, 'Super Users');
+        return $this->IsUserInUsergroup($user, 'Super Users');
     }
 
-    public function IsTeamcoordinator($userId)
+    public function IsTeamcoordinator(?Entities\Persoon $user): bool
     {
-        return $this->IsUserInUsergroup($userId, 'Teamcoordinator');
+        return $this->IsUserInUsergroup($user, 'Teamcoordinator');
     }
 
-    public function IsBarcie($userId)
+    public function IsBarcie(?Entities\Persoon $user): bool
     {
-        return $this->IsUserInUsergroup($userId, 'Barcie');
+        return $this->IsUserInUsergroup($user, 'Barcie');
     }
 
-    public function IsCoach($userId)
+    public function GetTeam(Entities\Persoon $user): ?Entities\Team
     {
-        $query = 'SELECT *
-                  FROM J3_user_usergroup_map M
-                  INNER JOIN J3_usergroups G ON M.group_id = G.id
-                  WHERE M.user_id = :userId and G.title LIKE :usergroup';
-        $params = [
-            new Param(Column::UserId, $userId, PDO::PARAM_INT),
-            new Param(':usergroup', 'Coach %', PDO::PARAM_STR),
-        ];
-        $result = $this->database->Execute($query, $params);
-        return count($result) > 0;
-    }
-
-    public function GetTeam($userId)
-    {
-        $query = 'SELECT title as naam
+        $query = 'SELECT 
+                    G.id,
+                    title AS naam
                   FROM J3_users U
                   LEFT JOIN J3_user_usergroup_map M on U.id = M.user_id
                   LEFT JOIN J3_usergroups G on G.id = M.group_id
-                  WHERE M.user_id = :userId and G.parent_id in (select id from J3_usergroups where title = \'Teams\')';
-        $params = [new Param(Column::UserId, $userId, PDO::PARAM_INT)];
+                  WHERE M.user_id = ? and G.parent_id in (SELECT id from J3_usergroups where title = \'Teams\')';
+        $params = [$user->id];
 
         $team = $this->database->Execute($query, $params);
-        if (count($team) == 0) {
+        if (count($team) != 1) {
             return null;
         }
 
-        return ToNevoboName($team[0]->naam);
+        return new Entities\Team($team[0]->naam, $team[0]->id);
     }
 
-    public function GetTeamgenoten($team)
+    public function GetTeamgenoten(?Entities\Team $team): array
     {
-        $team = ToSkcName($team);
+        if ($team === null) {
+            return [];
+        }
         $query = 'SELECT 
                     U.id, 
-                    name as naam,
+                    name AS naam,
                     email
                   FROM J3_users U
                   INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
                   INNER JOIN J3_usergroups G ON M.group_id = G.id
-                  WHERE G.title = :team
+                  WHERE G.title = ?
                   ORDER BY name';
-        $params = [new Param(':team', $team, PDO::PARAM_STR)];
-        return $this->database->Execute($query, $params);
+        $params = [$team->GetSkcNaam($team)];
+        $rows =  $this->database->Execute($query, $params);
+        return $this->MapToPersonen($rows);
     }
 
-    public function GetCoachTeam($userId)
+    public function GetCoachTeam(Entities\Persoon $user): ?Entities\Team
     {
-        $query = 'SELECT G.title as naam
+        $query = 'SELECT 
+                    G2.id,
+                    G2.title AS naam
                   FROM J3_usergroups G
                   INNER JOIN J3_user_usergroup_map M on G.id = M.group_id
-                  WHERE M.user_id = :userId and G.title like \'Coach %\'';
-        $params = [new Param(Column::UserId, $userId, PDO::PARAM_INT)];
+                  INNER JOIN J3_usergroups G2 on G2.title = SUBSTRING(G.title, 7)
+                  WHERE M.user_id = ? and G.title like \'Coach %\'';
+        $params = [$user->id];
 
         $team = $this->database->Execute($query, $params);
-        if (count($team) == 0) {
+        if (count($team) != 1) {
             return null;
         }
 
-        $coachTeam = substr($team[0]->naam, 6);
-        return ToNevoboName($coachTeam);
+        return new Entities\Team($team[0]->naam, $team[0]->id);
     }
 
-    public function GetCoaches($teamnaam)
+    public function GetCoaches(Entities\Team $team): array
     {
-        return $this->GetUsersInGroup('Coach ' . ToSkcName($teamnaam));
+        return $this->GetUsersInGroup('Coach ' . $team->GetSkcNaam());
     }
 
-    public function GetTrainers($teamnaam)
+    public function GetTrainers(Entities\Team $team): array
     {
-        return $this->GetUsersInGroup('Trainer ' . ToSkcName($teamnaam));
+        return $this->GetUsersInGroup('Trainer ' . $team->GetSkcNaam());
     }
 
-    public function GetUsersInGroup($groupname)
+    public function GetUsersInGroup(string $groupname): array
     {
         $query = 'SELECT
                     U.id,
-                    U.name as naam
+                    U.name AS naam,
+                    U.email
                   FROM J3_users U
                   INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
                   INNER JOIN J3_usergroups G ON M.group_id = G.id
-                  WHERE G.title = :groupname';
-        $params = [new Param(':groupname', $groupname, PDO::PARAM_STR)];
-        return $this->database->Execute($query, $params);
+                  WHERE G.title = ?';
+        $params = [$groupname];
+        $rows = $this->database->Execute($query, $params);
+        $result = [];
+        foreach ($rows as $row) {
+            $result[]  = new Entities\Persoon($row->id, $row->naam, $row->email);
+        }
+        return $result;
     }
 
-    public function InitJoomla()
+    public function InitJoomla(): void
     {
-        $mainframe = JFactory::getApplication('site');
+        if (defined('_JEXEC')) {
+            return;
+        }
+
+        define('JPATH_BASE', $this->configuration->JpathBase);
+        define('_JEXEC', 1);
+
+        require_once JPATH_BASE . '/includes/defines.php';
+        require_once JPATH_BASE . '/includes/framework.php';
+
+        $mainframe = \JFactory::getApplication('site');
         $mainframe->initialise();
     }
 
-    public function Login($username, $password)
+    public function Login(string $username, string $password): bool
     {
         $this->InitJoomla();
 
-        $credentials = (object) [
-            'username' => $username,
-            'password' => $password,
-        ];
+        $credentials = new Entities\Credentials($username, $password);
 
-        $joomlaApp = JFactory::getApplication('site');
+        $joomlaApp = \JFactory::getApplication('site');
 
-        $db = JFactory::getDbo();
+        $db = \JFactory::getDbo();
         $query = $db->getQuery(true)
             ->select('id, password')
             ->from('#__users')
@@ -246,7 +272,7 @@ class JoomlaGateway
         $db->setQuery($query);
         $result = $db->loadObject();
         if ($result) {
-            $match = JUserHelper::verifyPassword($credentials->password, $result->password, $result->id);
+            $match = \JUserHelper::verifyPassword($credentials->password, $result->password, $result->id);
             if ($match === true) {
                 $joomlaApp->login((array) $credentials);
                 return true;
@@ -256,5 +282,14 @@ class JoomlaGateway
         } else {
             return false;
         }
+    }
+
+    private function MapToPersonen(array $rows): array
+    {
+        $result = [];
+        foreach ($rows as $row) {
+            $result[] = new Entities\Persoon($row->id, $row->naam, $row->email);
+        }
+        return $result;
     }
 }

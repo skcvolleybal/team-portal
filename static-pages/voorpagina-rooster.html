@@ -39,12 +39,25 @@
       </div>
     </div>
     <script>
-      axios(
-        'https://www.skcvolleybal.nl/team-portal/php/interface.php?action=GenerateVoorpaginaRooster'
-      ).then(function(response) {
+      axios("/team-portal/api/website/voorpagina-rooster").then(function(
+        response
+      ) {
         new Vue({
-          el: '#voorpagina-rooster',
+          el: "#voorpagina-rooster",
           data() {
+            dagen = response.data;
+            
+            for (var i = 0; i < dagen.length; i++) {
+              wedstrijden = [];
+              for (var j = 0; j < dagen[i].speeltijden.length; j++) {
+                for (var k = 0; k < dagen[i].speeltijden[j].wedstrijden.length; k++) {
+                  wedstrijden.push(dagen[i].speeltijden[j].wedstrijden[k]);
+                }
+              }
+              dagen[i].wedstrijden = wedstrijden;
+            }
+
+            console.log(dagen);
             return {
               dagen: response.data
             };

@@ -1,54 +1,47 @@
 <?php
-include_once 'IInteractorWithData.php';
-include_once 'TelFluitGateway.php';
-include_once 'JoomlaGateway.php';
 
-class UpdateScheidsrechter implements IInteractorWithData
+namespace TeamPortal\UseCases;
+
+use TeamPortal\Gateways;
+use TeamPortal\Entities;
+
+class UpdateScheidsrechter implements Interactor
 {
-    public function __construct($database)
-    {
-        $this->telFluitGateway = new TelFluitGateway($database);
-        $this->joomlaGateway = new JoomlaGateway($database);
+    public function __construct(
+        Gateways\TelFluitGateway $telFluitGateway,
+        Gateways\JoomlaGateway $joomlaGateway,
+        Gateways\NevoboGateway $nevoboGateway
+    ) {
+        $this->telFluitGateway = $telFluitGateway;
+        $this->joomlaGateway = $joomlaGateway;
+        $this->nevoboGateway = $nevoboGateway;
     }
 
-    public function Execute($data)
+    public function Execute(object $data = null)
     {
-        $userId = $this->joomlaGateway->GetUserId();
-        if ($userId === null) {
-            UnauthorizedResult();
-        }
-
-        if (!$this->joomlaGateway->IsTeamcoordinator($userId)) {
-            throw new UnexpectedValueException("Je bent (helaas) geen teamcoordinator");
-        }
-
-        $matchId = $data->matchId ?? null;
-        $scheidsrechter = $data->scheidsrechter ?? null;
-
-        if ($matchId == null) {
+        if ($data->matchId === null) {
             throw new InvalidArgumentException("matchId is null");
         }
 
-        $scheidsrechter = $this->joomlaGateway->GetScheidsrechterByName($scheidsrechter);
+        $wedstrijd = $this->telFluitGateway->GetWedstrijd($data->matchId);
+        $wedstrijd->scheidsrechter = $this->joomlaGateway->GetScheidsrechter($data->scheidsrechterId);
 
-        $wedstrijd = $this->telFluitGateway->GetWedstrijd($matchId);
-        if ($wedstrijd == null) {
-            if ($scheidsrechter) {
-                $this->telFluitGateway->Insert($matchId, $scheidsrechter->id, null);
-            }
+        $uscWedstrijden = $this->nevoboGateway->GetProgrammaForSporthal();
+        $uscWedstrijd = Entities\Wedstrijd::GetWedstrijdWithMatchId($uscWedstrijden, $data->matchId);
+        $wedstrijd->AppendInformation($uscWedstrijd);
+
+        if ($wedstrijd->id === null) {
+            $this->telFluitGateway->Insert($wedstrijd);
         } else {
-            if ($scheidsrechter == null) {
-                if ($wedstrijd->telteamId == null) {
-                    $this->telFluitGateway->Delete($matchId);
+            if ($wedstrijd->scheidsrechter === null) {
+                if ($wedstrijd->telteam === null) {
+                    $this->telFluitGateway->Delete($wedstrijd);
                 } else {
-                    $this->telFluitGateway->Update($matchId, null, $wedstrijd->telteamId);
+                    $this->telFluitGateway->Update($wedstrijd);
                 }
             } else {
-                $this->telFluitGateway->Update($matchId, $scheidsrechter->id, $wedstrijd->telteamId);
+                $this->telFluitGateway->Update($wedstrijd);
             }
         }
-
-        exit();
     }
-
 }

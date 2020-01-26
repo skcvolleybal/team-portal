@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
-import { RequestService } from '../core/services/request.service';
+import { JoomlaService } from '../core/services/request.service';
 
 @Component({
   selector: 'teamportal-login-modal',
@@ -13,7 +13,7 @@ export class LoginModalComponent {
   loginForm: any;
   errorMessage: string;
 
-  constructor(private fb: FormBuilder, private requestService: RequestService) {
+  constructor(private fb: FormBuilder, private joomalService: JoomlaService) {
     this.loginForm = this.fb.group({
       username: ['', Validators.required],
       password: ['', Validators.required]
@@ -24,10 +24,10 @@ export class LoginModalComponent {
     this.errorMessage = null;
     const username = this.loginForm.get('username').value;
     const password = this.loginForm.get('password').value;
-    this.requestService.Login(username, password).subscribe(
+    this.joomalService.Login(username, password).subscribe(
       () => window.location.reload(),
       error => {
-        this.errorMessage = error.error;
+        this.errorMessage = error.error.message;
       }
     );
   }

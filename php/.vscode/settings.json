@@ -10,5 +10,8 @@
             "server": "localhost",
             "username": "root"
         }
-    ]
+    ],
+    "files.exclude": {
+        "vendor": true
+    }
 }

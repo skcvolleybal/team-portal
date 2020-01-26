@@ -1,36 +1,71 @@
 <?php
 
-include_once 'NevoboGateway.php';
+namespace TeamPortal\Gateways;
+
+use TeamPortal\Common\Database;
+use TeamPortal\Entities;
 
 class AanwezigheidGateway
 {
-    public function __construct($database)
+    public function __construct(Database $database)
     {
         $this->database = $database;
-        $this->nevoboGateway = new NevoboGateway();
     }
 
-    public function GetAanwezigheid($userId, $matchId, $rol)
+    public function GetAanwezigheid(Entities\Persoon $user, string $matchId, string $rol): Entities\Aanwezigheid
     {
-        $query = 'SELECT *
-                  FROM TeamPortal_aanwezigheden
-                  WHERE user_id = ? AND match_id = ? AND rol = ?';
-
-        $params = [$userId, $matchId, $rol];
-        $result = $this->database->Execute2($query, $params);
-        if (count($result) > 0) {
-            return $result[0];
+        $query = 'SELECT 
+                    A.id,
+                    A.match_id AS matchId,
+                    A.rol,
+                    A.is_aanwezig AS isAanwezig,
+                    U.id AS userId,
+                    U.name AS naam,
+                    U.email,
+                    T.teamId,
+                    T.teamnaam
+                  FROM TeamPortal_aanwezigheden A
+                  INNER JOIN J3_users U ON A.user_id = U.id
+                  LEFT JOIN (
+                    SELECT 
+                        M.user_id as userId, 
+                        G.id as teamId, 
+                        G.title as teamnaam
+                    FROM J3_user_usergroup_map M
+                    INNER JOIN J3_usergroups G ON G.id = M.group_id
+                    WHERE G.id = ?
+                  ) T ON U.id = T.userId
+                  WHERE A.user_id = ? AND match_id = ? AND rol = ?';
+        $params = [
+            $user->team ? $user->team->id : null,
+            $user->id,
+            $matchId,
+            $rol
+        ];
+        $rows = $this->database->Execute($query, $params);
+        if (count($rows) == 0) {
+            return new Entities\Aanwezigheid($matchId, $user, null, $rol);
         }
-        return null;
+        return $this->MapToAanwezigheden($rows)[0];
     }
 
-    public function GetAanwezighedenForMatchIds($matchIds)
+    public function GetAanwezighedenForMatchIds(array $matchIds): ?array
     {
+        if (count($matchIds) == 0) {
+            return [];
+        }
+
         $inClause  = join(',', array_fill(0, count($matchIds), '?'));
         $query = "SELECT
-                    A.*,
+                    A.id,
+                    A.match_id AS matchId,
+                    A.rol,
+                    A.is_aanwezig AS isAanwezig,
+                    U.id AS userId,
                     U.name AS naam,
-                    G.title AS team
+                    U.email,
+                    G.id AS teamId,
+                    G.title AS teamnaam
                   FROM TeamPortal_aanwezigheden A
                   INNER JOIN J3_users U ON A.user_id = U.id
                   INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
@@ -43,31 +78,61 @@ class AanwezigheidGateway
                     )
                   ORDER BY naam";
         $params = $matchIds;
-        return $this->database->Execute2($query, $params);
+        $rows = $this->database->Execute($query, $params);
+        return $this->MapToAanwezigheden($rows);
     }
 
-    public function Update($id, $isAanwezig)
+    public function Update(Entities\Aanwezigheid $aanwezigheid): void
     {
         $query = 'UPDATE TeamPortal_aanwezigheden
                   SET is_aanwezig = ?
                   WHERE id = ?';
-        $params = [$isAanwezig, $id];
-        $this->database->Execute2($query, $params);
+        $params = [$aanwezigheid->isAanwezig, $aanwezigheid->id];
+        $this->database->Execute($query, $params);
     }
 
-    public function Insert($userId, $matchId, $isAanwezig, $rol)
+    public function Insert(Entities\Aanwezigheid $aanwezigheid): void
     {
         $query = 'INSERT INTO TeamPortal_aanwezigheden (user_id, match_id, is_aanwezig, rol)
                   VALUES (?, ?, ?, ?)';
-        $params = [$userId, $matchId, $isAanwezig, $rol];
-        $this->database->Execute2($query, $params);
+        $params = [
+            $aanwezigheid->persoon->id,
+            $aanwezigheid->matchId,
+            $aanwezigheid->isAanwezig,
+            $aanwezigheid->rol
+        ];
+        $this->database->Execute($query, $params);
     }
 
-    public function Delete($id)
+    public function Delete(Entities\Aanwezigheid $aanwezigheid): void
     {
-        $query = 'DELETE FROM TeamPortal_aanwezigheden
-                  WHERE id = ?';
-        $params = [$id];
-        $this->database->Execute2($query, $params);
+        $query = 'DELETE FROM TeamPortal_aanwezigheden WHERE id = ?';
+        $params = [$aanwezigheid->id];
+        $this->database->Execute($query, $params);
+    }
+
+    private function MapToAanwezigheden(array $rows)
+    {
+        $result = [];
+        foreach ($rows as $row) {
+            $persoon = new Entities\Persoon(
+                $row->userId,
+                $row->naam,
+                $row->email
+            );
+            if ($row->teamId) {
+                $persoon->team = new Entities\Team($row->teamnaam, $row->teamId);
+            }
+
+            $result[] = new Entities\Aanwezigheid(
+                $row->matchId,
+                $persoon,
+                $row->isAanwezig === "Ja",
+                $row->rol,
+                $row->id
+            );
+        }
+
+        return $result;
     }
 }

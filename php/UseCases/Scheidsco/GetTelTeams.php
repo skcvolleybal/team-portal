@@ -1,80 +1,76 @@
 <?php
-include_once 'IInteractorWithData.php';
-include_once 'JoomlaGateway.php';
-include_once 'TelFluitGateway.php';
-include_once 'NevoboGateway.php';
-include_once 'ScheidscoFunctions.php';
 
-class GetTelTeams implements IInteractorWithData
+namespace TeamPortal\UseCases;
+
+use TeamPortal\Common\DateFunctions;
+use TeamPortal\Gateways;
+use TeamPortal\Entities;
+
+class GetTelTeams implements Interactor
 {
-    public function __construct($database)
-    {
-        $this->joomlaGateway = new JoomlaGateway($database);
-        $this->telFluitGateway = new TelFluitGateway($database);
-        $this->nevoboGateway = new NevoboGateway();
+    public function __construct(
+        Gateways\JoomlaGateway $joomlaGateway,
+        Gateways\TelFluitGateway $telFluitGateway,
+        Gateways\NevoboGateway $nevoboGateway
+    ) {
+        $this->joomlaGateway = $joomlaGateway;
+        $this->telFluitGateway =  $telFluitGateway;
+        $this->nevoboGateway = $nevoboGateway;
     }
 
-    public function Execute($data)
+    public function Execute(object $data = null)
     {
-        $userId = $this->joomlaGateway->GetUserId();
-        if ($userId === null) {
-            UnauthorizedResult();
-        }
-
-        if (!$this->joomlaGateway->IsTeamcoordinator($userId)) {
-            throw new UnexpectedValueException("Je bent (helaas) geen teamcoordinator");
-        }
-        $result = [];
-
-        $matchId = $data->matchId ?? null;
-        if ($matchId == null) {
+        if ($data->matchId === null) {
             throw new InvalidArgumentException("MatchId niet gezet");
         }
         $telWedstrijd = null;
-        $uscWedstrijden = $this->nevoboGateway->GetProgrammaForSporthal("LDNUN");
+        $uscWedstrijden = $this->nevoboGateway->GetProgrammaForSporthal();
         foreach ($uscWedstrijden as $wedstrijd) {
-            if ($wedstrijd->id == $matchId) {
+            if ($wedstrijd->matchId == $data->matchId) {
                 $telWedstrijd = $wedstrijd;
                 break;
             }
         }
-        if ($telWedstrijd == null) {
-            throw new UnexpectedValueException("Wedstrijd met $matchId niet bekend");
+        if ($telWedstrijd === null) {
+            throw new \UnexpectedValueException("Wedstrijd met $data->matchId niet bekend");
         }
 
-        $telTeams = $this->telFluitGateway->GetTelTeams();
-        $wedstrijdenWithSameDate = GetWedstrijdenWithDate($uscWedstrijden, $telWedstrijd->timestamp);
+        $teams = $this->telFluitGateway->GetTelTeams();
+        $wedstrijden = $this->GetWedstrijdenWithDate($uscWedstrijden, $telWedstrijd->timestamp);
 
-        $result = (object) [
-            "spelendeTeams" => [],
-            "overigeTeams" => []
-        ];
-        foreach ($telTeams as $team) {
-            $wedstrijd = GetWedstrijdOfTeam($wedstrijdenWithSameDate, $team->naam);
+        $result = new Teamsamenvatting();
+        foreach ($teams as $team) {
+            $wedstrijd = $team->GetWedstrijdOfTeam($wedstrijden);
             if ($wedstrijd) {
-                $result->spelendeTeams[] = $this->MapToUsecaseModel($team, $wedstrijd, $telWedstrijd);
+                $isMogelijk = $wedstrijd->IsMogelijk($telWedstrijd);
+                $eigenTijd = DateFunctions::GetTime($wedstrijd->timestamp);
+                $result->spelendeTeams[] = $this->MapToUsecaseModel($team, $isMogelijk, $eigenTijd);
             } else {
-                $result->overigeTeams[] = $this->MapToUsecaseModel($team);
+                $result->overigeTeams[] = $this->MapToUsecaseModel($team, true, null);
             }
         }
-        exit(json_encode($result));
+        return $result;
     }
 
-    private function MapToUsecaseModel($team, $wedstrijd = null, $telWedstrijd = null)
+    private function GetWedstrijdenWithDate($wedstrijden, $date): array
     {
-        $eigenTijd = null;
-        $isMogelijk = true;
-        if ($wedstrijd && $telWedstrijd && $wedstrijd->timestamp && $telWedstrijd->timestamp) {
-            $interval = $wedstrijd->timestamp->diff($telWedstrijd->timestamp);
-            $verschil = $interval->h;
-            $isMogelijk = $verschil == 0 ? false : ($verschil == 2 ? true : null);
-            $eigenTijd = $wedstrijd->timestamp->format("G:i");
+        $result = [];
+        foreach ($wedstrijden as $wedstrijd) {
+            $timestamp = $wedstrijd->timestamp;
+            if ($timestamp && $timestamp->format('Y-m-d') == $date->format('Y-m-d')) {
+                $result[] = $wedstrijd;
+            }
         }
+        return $result;
+    }
+
+    private function MapToUsecaseModel(Entities\Team $team, bool $isMogelijk, ?string $eigenTijd)
+    {
         return (object) [
             "naam" => $team->naam,
-            "geteld" => $team->geteld,
+            "geteld" => $team->aantalKeerGeteld,
             "eigenTijd" => $eigenTijd,
-            "isMogelijk" => $isMogelijk === null ? "Onbekend" : $isMogelijk ? "Ja" : "Nee",
+            "isMogelijk" => $isMogelijk,
         ];
     }
 }

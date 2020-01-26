@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { AanwezigheidService } from '../../core/services/aanwezigheid.service';
-import { RequestService } from '../../core/services/request.service';
+import { Component, OnInit } from "@angular/core";
+import { AanwezigheidService } from "../../core/services/aanwezigheid.service";
+import { JoomlaService } from "../../core/services/request.service";
 
 @Component({
-  selector: 'teamportal-wedstrijd-overzicht',
-  templateUrl: './wedstrijd-overzicht.component.html',
-  styleUrls: ['./wedstrijd-overzicht.component.scss']
+  selector: "teamportal-wedstrijd-overzicht",
+  templateUrl: "./wedstrijd-overzicht.component.html",
+  styleUrls: ["./wedstrijd-overzicht.component.scss"]
 })
 export class WedstrijdOverzichtComponent implements OnInit {
   wedstrijden: any[];
@@ -15,25 +15,25 @@ export class WedstrijdOverzichtComponent implements OnInit {
 
   constructor(
     private aanwezigheidService: AanwezigheidService,
-    private requestService: RequestService
+    private joomalService: JoomlaService
   ) {}
 
   ngOnInit() {
     this.loading = true;
-    this.requestService.GetWedstrijdOverzicht().subscribe(
+    this.joomalService.GetWedstrijdOverzicht().subscribe(
       wedstrijden => {
         this.wedstrijden = wedstrijden;
         this.loading = false;
       },
       error => {
         if (error.status === 500) {
-          this.errorMessage = error.error;
+          this.errorMessage = error.error.message;
           this.loading = false;
         }
       }
     );
 
-    this.requestService.GetCurrentUser().subscribe(data => {
+    this.joomalService.GetCurrentUser().subscribe(data => {
       this.user = data;
     });
   }
@@ -41,24 +41,24 @@ export class WedstrijdOverzichtComponent implements OnInit {
   GetCoaches(aanwezigheden: any[]) {
     const coaches = aanwezigheden
       .map(aanwezigheid => aanwezigheid.naam)
-      .join(', ');
+      .join(", ");
 
-    const firstWord = aanwezigheden.length === 1 ? 'Coach' : 'Coaches';
+    const firstWord = aanwezigheden.length === 1 ? "Coach" : "Coaches";
     return `${firstWord}: ${coaches}`;
   }
 
-  UpdateAanwezigheid(currentWedstrijd: any, isAanwezig: string, speler: any) {
-    const matchId = currentWedstrijd.id;
-    const rol = currentWedstrijd.isEigenWedstrijd ? 'speler' : 'coach';
+  UpdateAanwezigheid(currentWedstrijd: any, isAanwezig: boolean, speler: any) {
+    const matchId = currentWedstrijd.matchId;
+    const rol = currentWedstrijd.isEigenWedstrijd ? "speler" : "coach";
     this.aanwezigheidService.UpdateAanwezigheid(
-      matchId,
+      currentWedstrijd.matchId,
       isAanwezig,
       speler.id,
       rol
     );
 
     this.wedstrijden.forEach(wedstrijd => {
-      if (wedstrijd.id === matchId) {
+      if (wedstrijd.matchId === matchId) {
         wedstrijd.afwezigen = wedstrijd.afwezigen.filter(
           afwezige => afwezige.id !== speler.id
         );
@@ -70,7 +70,7 @@ export class WedstrijdOverzichtComponent implements OnInit {
         );
 
         const isInvaller = speler.id !== this.user.id;
-        if (isInvaller && isAanwezig === 'Onbekend') {
+        if (isInvaller && isAanwezig === null) {
           return;
         }
 
@@ -84,15 +84,15 @@ export class WedstrijdOverzichtComponent implements OnInit {
           speler1.naam > speler2.naam ? 1 : -1;
 
         switch (isAanwezig) {
-          case 'Ja':
+          case true:
             wedstrijd.aanwezigen.push(newSpeler);
             wedstrijd.aanwezigen.sort(SortTeam);
             break;
-          case 'Nee':
+          case false:
             wedstrijd.afwezigen.push(newSpeler);
             wedstrijd.afwezigen.sort(SortTeam);
             break;
-          case 'Onbekend':
+          case null:
             wedstrijd.onbekend.push(newSpeler);
             wedstrijd.onbekend.sort(SortTeam);
             break;

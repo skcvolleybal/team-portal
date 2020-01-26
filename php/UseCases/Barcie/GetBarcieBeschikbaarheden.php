@@ -1,72 +1,56 @@
 <?php
-include_once 'IInteractorWithData.php';
-include_once 'BarcieGateway.php';
-include_once 'JoomlaGateway.php';
 
-class GetBarcieBeschikbaarheden implements IInteractorWithData
+namespace TeamPortal\UseCases;
+
+use TeamPortal\Common\DateFunctions;
+use TeamPortal\Entities\Persoon;
+use TeamPortal\Gateways;
+
+
+class GetBarcieBeschikbaarheden implements Interactor
 {
-
-    public function __construct($database)
-    {
-        $this->barcieGateway = new BarcieGateway($database);
-        $this->joomlaGateway = new JoomlaGateway($database);
+    public function __construct(
+        Gateways\BarcieGateway $barcieGateway,
+        Gateways\JoomlaGateway $joomlaGateway
+    ) {
+        $this->barcieGateway = $barcieGateway;
+        $this->joomlaGateway = $joomlaGateway;
     }
 
-    public function Execute($data)
+    public function Execute(object $data = null)
     {
-        $userId = $this->joomlaGateway->GetUserId();
-        if ($userId === null) {
-            UnauthorizedResult();
-        }
-
-        if (!$this->joomlaGateway->IsTeamcoordinator($userId)) {
-            throw new UnexpectedValueException("Je bent geen (helaas) geen teamcoordinator");
-        }
-        $date = $data->date ?? null;
+        $date = DateFunctions::CreateDateTime($data->date);
         if (!$date) {
-            throw new InvalidArgumentException("Date is leeg");
+            throw new InvalidArgumentException("Incorrecte Datum: $data->date");
         }
 
-        $barcieleden = $this->barcieGateway->GetBarcieleden();
+        $barleden = $this->barcieGateway->GetBarleden();
         $beschikbaarheden = $this->barcieGateway->GetBeschikbaarhedenForDate($date);
-        $result = (object) [
-            "Ja" => [],
-            "Nee" => [],
-            "Onbekend" => [],
-        ];
 
+        $result = new Beschikbaarheidssamenvatting();
         foreach ($beschikbaarheden as $beschikbaarheid) {
-            $barcielid = $this->GetBarcielidById($barcieleden, $beschikbaarheid->user_id);
-            if ($barcielid === null) {
-                continue;
-            }
-            
-            $newBeschikbaarheid = (object) [
-                "id" => $barcielid->id,
-                "naam" => $barcielid->naam,
-                "aantalDiensten" => $barcielid->aantalDiensten,
-            ];
-            if ($beschikbaarheid->is_beschikbaar === "Ja") {
-                $result->Ja[] = $newBeschikbaarheid;
+            $barlid = $this->GetBarlid($barleden, $beschikbaarheid->persoon);
+            if ($beschikbaarheid->isBeschikbaar) {
+                $result->Ja[] = $barlid;
             } else {
-                $result->Nee[] = $newBeschikbaarheid;
+                $result->Nee[] = $barlid;
             }
 
-            $barcieleden = array_filter($barcieleden, function ($currentBarcielid) use ($barcielid) {
-                return $barcielid->id !== $currentBarcielid->id;
+            $barleden = array_filter($barleden, function ($currentBarlid) use ($barlid) {
+                return $barlid->id !== $currentBarlid->id;
             });
         }
 
-        $result->Onbekend = array_values($barcieleden);
+        $result->Onbekend = array_values($barleden);
 
-        exit(json_encode($result));
+        return $result;
     }
 
-    private function GetBarcielidById($barcieleden, $userId)
+    private function GetBarlid(array $barleden, Persoon $persoon): ?Persoon
     {
-        foreach ($barcieleden as $barcielid) {
-            if ($barcielid->id == $userId) {
-                return $barcielid;
+        foreach ($barleden as $barlid) {
+            if ($barlid->id === $persoon->id) {
+                return $barlid;
             }
         }
         return null;

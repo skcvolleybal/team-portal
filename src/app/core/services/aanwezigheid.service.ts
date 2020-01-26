@@ -8,89 +8,42 @@ import { environment } from '../../../environments/environment';
 export class AanwezigheidService {
   constructor(private httpClient: HttpClient) {}
 
-  UpdateCoachAanwezigheid(matchId: number, isAanwezig: string) {
-    this.httpClient
-      .post(
-        environment.baseUrl,
-        {
-          matchId,
-          isAanwezig
-        },
-        {
-          params: { action: 'UpdateCoachAanwezigheid' }
-        }
-      )
-      .subscribe();
-  }
-
-  GetCoachAanwezigheid() {
-    return this.httpClient.get<any>(environment.baseUrl, {
-      params: {
-        action: 'GetCoachAanwezigheid'
-      }
-    });
-  }
-
   UpdateAanwezigheid(
     matchId: number,
-    isAanwezig: string,
+    isAanwezig: boolean,
     spelerId: string,
     rol: string
   ) {
     this.httpClient
-      .post<any>(
-        environment.baseUrl,
-        {
-          matchId,
-          spelerId,
-          isAanwezig,
-          rol
-        },
-        {
-          params: {
-            action: 'UpdateAanwezigheid'
-          }
-        }
-      )
+      .post<any>(environment.baseUrl + 'wedstrijd-overzicht/aanwezigheid', {
+        matchId,
+        spelerId,
+        isAanwezig,
+        rol
+      })
       .subscribe();
   }
 
-  GetWedstrijdAanwezigheid() {
-    return this.httpClient.get<any[]>(environment.baseUrl, {
-      params: {
-        action: 'GetWedstrijdAanwezigheid'
-      }
-    });
-  }
-
-  DeleteBarcieAanwezigheid(date: string, shift: string, barcielidId: string) {
-    return this.httpClient.post<any>(
-      environment.baseUrl,
-      {
-        date,
-        barcielidId,
-        shift
-      },
+  DeleteBarcieAanwezigheid(date: string, shift: string, barlidId: string) {
+    return this.httpClient.delete<any>(
+      environment.baseUrl + 'barco/dienst',
       {
         params: {
-          action: 'DeleteBarcieAanwezigheid'
+          date,
+          barlidId,
+          shift
         }
       }
     );
   }
 
-  AddBarcieAanwezigheid(date: string, shift: number, barcielidId: string) {
+  AddBarcieAanwezigheid(date: string, shift: number, barlidId: string) {
     return this.httpClient.post<any>(
-      environment.baseUrl,
+      environment.baseUrl + 'barco/dienst',
       {
         date,
         shift,
-        barcielidId
-      },
-      {
-        params: {
-          action: 'AddBarcieAanwezigheid'
-        }
+        barlidId
       }
     );
   }

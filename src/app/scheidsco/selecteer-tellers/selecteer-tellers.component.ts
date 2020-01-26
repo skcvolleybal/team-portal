@@ -28,7 +28,7 @@ export class SelecteerTellersComponent implements OnInit {
     this.wedstrijd = SelecteerTellersComponent.wedstrijd;
     this.teams = this.wedstrijd.teams;
     this.tijd = SelecteerTellersComponent.tijd;
-    this.getTelTeams(this.wedstrijd.id);
+    this.getTelTeams(this.wedstrijd.matchId);
   }
 
   getTelTeams(matchId) {
@@ -42,7 +42,7 @@ export class SelecteerTellersComponent implements OnInit {
       },
       error => {
         if (error.status === 500) {
-          this.errorMessage = error.error;
+          this.errorMessage = error.error.message;
           this.tellersOptiesLoading = false;
         }
       }
@@ -51,7 +51,7 @@ export class SelecteerTellersComponent implements OnInit {
 
   UpdateTellers(tellers) {
     this.scheidscoService
-      .UpdateTellers(this.wedstrijd.id, tellers)
+      .UpdateTellers(this.wedstrijd.matchId, tellers)
       .subscribe(() => this.modal.close(tellers));
   }
 }

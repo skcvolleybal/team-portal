@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  baseUrl: 'http://localhost/team-portal/php/interface.php'
+  baseUrl: 'http://localhost/team-portal/api/'
 };
 
 /*

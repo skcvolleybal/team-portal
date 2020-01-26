@@ -1,15 +1,17 @@
 <?php
-include_once 'IInteractor.php';
-include_once 'EmailGateway.php';
 
-class SendQueuedEmails implements IInteractor
+namespace TeamPortal\UseCases;
+
+use TeamPortal\Gateways\EmailGateway;
+
+class SendQueuedEmails implements Interactor
 {
-    public function __construct($database)
+    public function __construct(EmailGateway $emailGateway)
     {
-        $this->emailGateway = new EmailGateway($database);
+        $this->emailGateway = $emailGateway;
     }
 
-    public function Execute()
+    public function Execute(object $data = null)
     {
         $this->emailGateway->SendQueuedEmails();
     }

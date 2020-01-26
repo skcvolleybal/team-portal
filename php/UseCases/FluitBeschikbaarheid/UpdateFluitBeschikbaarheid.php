@@ -1,52 +1,47 @@
 <?php
-include_once 'IInteractorWithData.php';
-include_once 'JoomlaGateway.php';
-include_once 'FluitBeschikbaarheidGateway.php';
 
-class UpdateFluitBeschikbaarheid implements IInteractorWithData
+namespace TeamPortal\UseCases;
+
+use TeamPortal\Gateways;
+
+class UpdateFluitBeschikbaarheid implements Interactor
 {
-    public function __construct($database)
-    {
-        $this->fluitBeschikbaarheidGateway = new FluitBeschikbaarheidGateway($database);
-        $this->joomlaGateway = new JoomlaGateway($database);
+    public function __construct(
+        Gateways\FluitBeschikbaarheidGateway $fluitBeschikbaarheidGateway,
+        Gateways\JoomlaGateway $joomlaGateway
+    ) {
+        $this->fluitBeschikbaarheidGateway = $fluitBeschikbaarheidGateway;
+        $this->joomlaGateway = $joomlaGateway;
     }
 
-    public function Execute($data)
+    public function Execute(object $data = null)
     {
-        $userId = $this->joomlaGateway->GetUserId();
-        if ($userId === null) {
-            UnauthorizedResult();
-        }
-
-        if (!$this->joomlaGateway->IsScheidsrechter($userId)) {
-            throw new UnexpectedValueException("Je bent (helaas) geen scheidsrechter");
-        }
-
         $datum = $data->datum;
         $tijd = $data->tijd;
-        $beschikbaarheid = $data->beschikbaarheid;
+        $isBeschikbaar = $data->isBeschikbaar;
 
-        if (!DateTime::createFromFormat('Y-m-d', $datum)) {
-            throw new InvalidArgumentException("Unknown date: $datum");
-        }
-        if (!DateTime::createFromFormat('H:i:s', $tijd)) {
-            throw new InvalidArgumentException("Unknown time: $tijd");
-        }
-        if (!in_array($beschikbaarheid, ["Ja", "Nee", "Onbekend"])) {
-            throw new InvalidArgumentException("Unknown beschikbaarheid: $beschikbaarheid");
+        $date = \DateTime::createFromFormat('Y-m-d H:i', $datum . " " . $tijd);
+        if ($date === false) {
+            throw new InvalidArgumentException("Tijd niet goed: $datum $tijd");
         }
 
-        $dbBeschikbaarheid = $this->fluitBeschikbaarheidGateway->GetFluitBeschikbaarheid($userId, $datum, $tijd);
-        if ($dbBeschikbaarheid == null) {
-            $this->fluitBeschikbaarheidGateway->Insert($userId, $datum, $tijd, $beschikbaarheid);
+        if (!in_array($isBeschikbaar, [true, false, null])) {
+            throw new InvalidArgumentException("Unknown beschikbaarheid: $isBeschikbaar");
+        }
+
+        $user = $this->joomlaGateway->GetUser();
+        $beschikbaarheid = $this->fluitBeschikbaarheidGateway->GetFluitBeschikbaarheid($user, $date);
+        $beschikbaarheid->isBeschikbaar = $isBeschikbaar;
+        if ($beschikbaarheid->id === null) {
+            if ($beschikbaarheid->isBeschikbaar !== null) {
+                $this->fluitBeschikbaarheidGateway->Insert($beschikbaarheid);
+            }
         } else {
-            if ($beschikbaarheid == "Onbekend") {
-                $this->fluitBeschikbaarheidGateway->Delete($dbBeschikbaarheid->id);
+            if ($beschikbaarheid->isBeschikbaar === null) {
+                $this->fluitBeschikbaarheidGateway->Delete($beschikbaarheid);
             } else {
-                $this->fluitBeschikbaarheidGateway->Update($dbBeschikbaarheid->id, $beschikbaarheid);
+                $this->fluitBeschikbaarheidGateway->Update($beschikbaarheid);
             }
         }
-
-        exit();
     }
 }

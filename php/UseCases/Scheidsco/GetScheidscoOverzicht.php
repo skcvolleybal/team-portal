@@ -1,123 +1,44 @@
 <?php
 
-include_once 'IInteractor.php';
-include_once 'JoomlaGateway.php';
-include_once 'NevoboGateway.php';
-include_once 'TelFluitGateway.php';
-include_once 'ZaalwachtGateway.php';
+namespace TeamPortal\UseCases;
 
-class GetScheidscoOverzicht implements IInteractor
+use TeamPortal\Gateways;
+use TeamPortal\Entities;
+
+class GetScheidscoOverzicht implements Interactor
 {
-    public function __construct($database)
-    {
-        $this->joomlaGateway = new JoomlaGateway($database);
-        $this->telFluitGateway = new TelFluitGateway($database);
-        $this->nevoboGateway = new NevoboGateway();
-        $this->zaalwachtGateway = new ZaalwachtGateway($database);
+    public function __construct(
+        Gateways\JoomlaGateway $joomlaGateway,
+        Gateways\TelFluitGateway $telFluitGateway,
+        Gateways\NevoboGateway $NevoboGateway,
+        Gateways\ZaalwachtGateway $zaalwachtGateway
+    ) {
+        $this->joomlaGateway = $joomlaGateway;
+        $this->telFluitGateway = $telFluitGateway;
+        $this->nevoboGateway = $NevoboGateway;
+        $this->zaalwachtGateway = $zaalwachtGateway;
     }
 
-    public function Execute()
+    public function Execute(object $data = null): array
     {
-        $userId = $this->joomlaGateway->GetUserId();
-        if ($userId === null) {
-            UnauthorizedResult();
-        }
+        $result = [];
+        $wedstrijddagen = $this->nevoboGateway->GetWedstrijddagenForSporthal('LDNUN', 365);
 
-        if (!$this->joomlaGateway->IsTeamcoordinator($userId)) {
-            throw new UnexpectedValueException("Je bent (helaas) geen teamcoordinator");
-        }
-        $overzicht = [];
-        $uscProgramma = $this->nevoboGateway->GetProgrammaForSporthal('LDNUN');
-        $uscProgramma = RemoveMatchesWithoutData($uscProgramma);
-
-        $indeling = $this->telFluitGateway->GetIndeling();
-        $zaalwachtIndeling = $this->zaalwachtGateway->GetZaalwachtIndeling();
-
-        foreach ($uscProgramma as $wedstrijd) {
-            $matchId = $wedstrijd->id;
-            $datum = GetDutchDate($wedstrijd->timestamp);
-            $date = $wedstrijd->timestamp->format('Y-m-d');
-            $tijd = $wedstrijd->timestamp->format('G:i');
-            $time = $wedstrijd->timestamp->format('G:i:s');
-            $team1 = $wedstrijd->team1;
-            $team2 = $wedstrijd->team2;
-
-            $i = $this->GetIndexOfDatum($overzicht, $datum);
-            if ($i === null) {
-                $overzicht[] = (object) [
-                    "datum" => $datum,
-                    "date" => $date,
-                    "speeltijden" => [],
-                    "zaalwacht" => GetShortTeam($this->GetZaalwachtForDatum($zaalwachtIndeling, $date)),
-                ];
-                $i = count($overzicht) - 1;
-            }
-            $j = $this->GetIndexOfSpeeltijd($overzicht[$i]->speeltijden, $tijd);
-            if ($j === null) {
-                $overzicht[$i]->speeltijden[] = (object) [
-                    'tijd' => $tijd,
-                    'time' => $time,
-                    'wedstrijden' => [],
-                ];
-                $j = count($overzicht[$i]->speeltijden) - 1;
+        foreach ($wedstrijddagen as $wedstrijddag) {
+            $wedstrijddag->zaalwacht = $this->zaalwachtGateway->GetZaalwacht($wedstrijddag->date);
+            foreach ($wedstrijddag->speeltijden as $speeltijd) {
+                foreach ($speeltijd->wedstrijden as &$wedstrijd) {
+                    $indeling = $this->telFluitGateway->GetWedstrijd($wedstrijd->matchId);
+                    if ($indeling !== null) {
+                        $wedstrijd->scheidsrechter = $indeling->scheidsrechter;
+                        $wedstrijd->telteam = $indeling->telteam;
+                    }
+                }
             }
 
-            $newWedstrijd = (object) [
-                "id" => $matchId,
-                "teams" => $team1 . " - " . $team2,
-                "scheidsrechter" => null,
-                "tellers" => null,
-            ];
-
-            $wedstrijdIndeling = $this->GetWedstrijdIndeling($matchId, $indeling);
-            if ($wedstrijdIndeling) {
-                $newWedstrijd->tellers = $wedstrijdIndeling->tellers;
-                $newWedstrijd->scheidsrechter = $wedstrijdIndeling->scheidsrechter;
-            }
-
-            $overzicht[$i]->speeltijden[$j]->wedstrijden[] = $newWedstrijd;
+            $result[] = new WedstrijddagModel($wedstrijddag);
         }
 
-        exit(json_encode($overzicht));
-    }
-
-    private function GetIndexOfDatum($rooster, $datum)
-    {
-        for ($i = count($rooster) - 1; $i >= 0; $i--) {
-            if ($rooster[$i]->datum == $datum) {
-                return $i;
-            }
-        }
-        return null;
-    }
-
-    private function GetIndexOfSpeeltijd($speeltijden, $tijd)
-    {
-        for ($i = count($speeltijden) - 1; $i >= 0; $i--) {
-            if ($speeltijden[$i]->tijd == $tijd) {
-                return $i;
-            }
-        }
-        return null;
-    }
-
-    private function GetZaalwachtForDatum($zaalwachtIndeling, $date)
-    {
-        foreach ($zaalwachtIndeling as $zaalwacht) {
-            if ($zaalwacht->date == $date) {
-                return $zaalwacht->team;
-            }
-        }
-        return null;
-    }
-
-    private function GetWedstrijdIndeling($matchId, $indeling)
-    {
-        foreach ($indeling as $indelingItem) {
-            if ($indelingItem->matchId == $matchId) {
-                return $indelingItem;
-            }
-        }
-        return null;
+        return $result;
     }
 }

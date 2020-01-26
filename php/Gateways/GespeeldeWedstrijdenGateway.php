@@ -1,45 +1,80 @@
 <?php
 
-include_once 'NevoboGateway.php';
+namespace TeamPortal\Gateways;
+
+use TeamPortal\Common\Database;
+use TeamPortal\Entities\DwfPunt;
+use TeamPortal\Entities\DwfWedstrijd;
+use TeamPortal\Entities\Team;
+use TeamPortal\Entities\ThuisUit;
 
 class GespeeldeWedstrijdenGateway
 {
-    public function __construct($database)
+    public function __construct(Database $database)
     {
         $this->database = $database;
     }
 
-    public function GetGespeeldeWedstrijden()
+    public function GetGespeeldeWedstrijden(): array
     {
-        $query = 'SELECT * FROM DWF_wedstrijden';
-        return $this->database->Execute2($query);
+        $query = 'SELECT 
+                    *
+                  FROM DWF_wedstrijden';
+        $rows = $this->database->Execute($query);
+        $result = [];
+        foreach ($rows as $row) {
+            $result[] = new DwfWedstrijd(
+                $row->id,
+                new Team($row->skcTeam),
+                new Team($row->otherTeam),
+                $row->setsSkcTeam,
+                $row->setsOtherTeam
+            );
+        }
+        return $result;
     }
 
-    public function AddWedstrijd($wedstrijd)
+    public function AddWedstrijd(DwfWedstrijd $wedstrijd): void
     {
         $query = 'INSERT INTO DWF_wedstrijden (id, skcTeam, otherTeam, setsSkcTeam, setsOtherTeam)
                   VALUES (?, ?, ?, ?, ?)';
         $params = [
-            $wedstrijd->id,
-            $wedstrijd->skcTeam,
-            $wedstrijd->otherTeam,
-            $wedstrijd->setsSkcTeam,
-            $wedstrijd->setsOtherTeam
+            $wedstrijd->matchId,
+            $wedstrijd->team1->naam,
+            $wedstrijd->team2->naam,
+            $wedstrijd->setsTeam1,
+            $wedstrijd->setsTeam2
         ];
-        $this->database->Execute2($query, $params);
+        $this->database->Execute($query, $params);
     }
 
-    public function AddPunt($wedstrijdId, $skcTeam, $set, $isSkcService, $isSkcPunt, $puntenSkcTeam, $puntenOtherTeam, $opstelling)
-    {
+    public function AddPunt(
+        string $wedstrijdId,
+        string $location,
+        Team $team,
+        int $set,
+        DwfPunt $punt,
+        array $opstelling
+    ): void {
+        if ($location == ThuisUit::THUIS) {
+            $puntenSkc = $punt->puntenThuisTeam;
+            $puntenOtherTeam  = $punt->puntenUitTeam;
+        } else {
+            $puntenSkc = $punt->puntenUitTeam;
+            $puntenOtherTeam  = $punt->puntenThuisTeam;
+        }
+        $isSkcService = $punt->serverendTeam == $location;
+        $isSkcPunt = $punt->scorendTeam == $location;
+
         $query = 'INSERT INTO DWF_punten (matchId, skcTeam, `set`, isSkcService, isSkcPunt, puntenSkcTeam, puntenOtherTeam, ra, rv, mv, lv, la, ma)
                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
         $params = [
             $wedstrijdId,
-            $skcTeam,
+            $team->naam,
             $set,
             $isSkcService ? 'Y' : 'N',
             $isSkcPunt ? 'Y' : 'N',
-            $puntenSkcTeam,
+            $puntenSkc,
             $puntenOtherTeam,
             $opstelling[0],
             $opstelling[1],
@@ -48,6 +83,6 @@ class GespeeldeWedstrijdenGateway
             $opstelling[4],
             $opstelling[5]
         ];
-        $this->database->Execute2($query, $params);
+        $this->database->Execute($query, $params);
     }
 }

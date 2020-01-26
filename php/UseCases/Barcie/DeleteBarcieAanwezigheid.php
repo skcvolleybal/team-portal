@@ -1,48 +1,42 @@
 <?php
-include_once 'IInteractorWithData.php';
-include_once 'BarcieGateway.php';
-include_once 'JoomlaGateway.php';
 
-class DeleteBarcieAanwezigheid implements IInteractorWithData
+namespace TeamPortal\UseCases;
+
+use TeamPortal\Common\DateFunctions;
+use TeamPortal\Gateways;
+
+class DeleteBarcieAanwezigheid implements Interactor
 {
-
-    public function __construct($database)
-    {
-        $this->barcieGateway = new BarcieGateway($database);
-        $this->joomlaGateway = new JoomlaGateway($database);
+    public function __construct(
+        Gateways\BarcieGateway $barcieGateway,
+        Gateways\JoomlaGateway $joomlaGateway
+    ) {
+        $this->barcieGateway = $barcieGateway;
+        $this->joomlaGateway = $joomlaGateway;
     }
 
-    public function Execute($data)
+    public function Execute(object $data = null): void
     {
-        $userId = $this->joomlaGateway->GetUserId();
-        if (!$this->joomlaGateway->IsTeamcoordinator($userId)) {
-            throw new UnexpectedValueException("Je bent geen teamcoordinator");
+        if ($data->barlidId === null) {
+            throw new InvalidArgumentException("barlidId is leeg");
         }
-
-        $barcielidId = $data->barcielidId ?? null;
-        $date = $data->date ?? null;
-        $shift = $data->shift ?? null;
-
-        if ($barcielidId === null) {
-            throw new InvalidArgumentException("barcielidId is leeg");
-        }
-        if ($date === null) {
+        if ($data->date === null) {
             throw new InvalidArgumentException("Date is leeg");
         }
-        if ($shift === null) {
+        if ($data->shift === null) {
             throw new InvalidArgumentException("Shift is leeg");
         }
 
-        $dayId = $this->barcieGateway->GetDateId($date);
-        if ($dayId === null) {
-            throw new UnexpectedValueException("Er bestaat geen barciedag $date");
+        $date = DateFunctions::CreateDateTime($data->date);
+        $barlid = $this->joomlaGateway->GetUser($data->barlidId);
+        $bardag = $this->barcieGateway->GetBardag($date);
+        if ($bardag->id === null) {
+            return;
         }
 
-        $aanwezigheid = $this->barcieGateway->GetAanwezigheid($dayId, $barcielidId, $shift);
-        if ($aanwezigheid) {
-            $this->barcieGateway->DeleteAanwezigheid($aanwezigheid->id);
-        } else {
-            throw new UnexpectedValueException("Aanwezigheid bestaat niet");
+        $dienst = $this->barcieGateway->GetBardienst($bardag, $barlid, $data->shift);
+        if ($dienst !== null) {
+            $this->barcieGateway->DeleteBardienst($dienst);
         }
     }
 }

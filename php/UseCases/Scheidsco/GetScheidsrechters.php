@@ -1,99 +1,89 @@
 <?php
 
-include_once 'IInteractorWithData.php';
-include_once 'JoomlaGateway.php';
-include_once 'FluitBeschikbaarheidGateway.php';
-include_once 'TelFluitGateway.php';
-include_once 'NevoboGateway.php';
-include_once 'ScheidscoFunctions.php';
+namespace TeamPortal\UseCases;
 
-class GetScheidsrechters implements IInteractorWithData
+use TeamPortal\Common\DateFunctions;
+use TeamPortal\Gateways;
+use TeamPortal\Entities;
+
+class GetScheidsrechters implements Interactor
 {
-    public function __construct($database)
-    {
-        $this->joomlaGateway = new JoomlaGateway($database);
-        $this->telFluitGateway = new TelFluitGateway($database);
-        $this->nevoboGateway = new NevoboGateway($database);
-        $this->fluitBeschikbaarheidGateway = new FluitBeschikbaarheidGateway($database);
+    public function __construct(
+        Gateways\JoomlaGateway $joomlaGateway,
+        Gateways\TelFluitGateway $telFluitGateway,
+        Gateways\NevoboGateway $nevoboGateway,
+        Gateways\FluitBeschikbaarheidGateway $fluitBeschikbaarheidGateway
+    ) {
+        $this->joomlaGateway = $joomlaGateway;
+        $this->telFluitGateway = $telFluitGateway;
+        $this->nevoboGateway = $nevoboGateway;
+        $this->fluitBeschikbaarheidGateway = $fluitBeschikbaarheidGateway;
     }
 
-    public function Execute($data)
+    public function Execute(object $data = null): array
     {
-        $userId = $this->joomlaGateway->GetUserId();
-        if ($userId === null) {
-            UnauthorizedResult();
-        }
-
-        if (!$this->joomlaGateway->IsTeamcoordinator($userId)) {
-            throw new UnexpectedValueException("Je bent (helaas) geen teamcoordinator");
-        }
-
-        $matchId = $data->matchId ?? null;
-        if ($matchId == null) {
+        if ($data->matchId === null) {
             throw new InvalidArgumentException("MatchId niet gezet");
         }
 
         $fluitWedstrijd = null;
-        $uscWedstrijden = $this->nevoboGateway->GetProgrammaForSporthal('LDNUN');
+        $uscWedstrijden = $this->nevoboGateway->GetProgrammaForSporthal();
         foreach ($uscWedstrijden as $wedstrijd) {
-            if ($wedstrijd->id == $matchId) {
+            if ($wedstrijd->matchId == $data->matchId) {
                 $fluitWedstrijd = $wedstrijd;
+                break;
             }
         }
-        if ($fluitWedstrijd == null) {
-            throw new UnexpectedValueException("Wedstrijd met id $matchId niet gevonden");
-        }
-        if ($fluitWedstrijd->timestamp == null) {
-            throw new UnexpectedValueException("Wedstrijd met id $matchId heeft geen speeldatum");
+        if ($fluitWedstrijd === null) {
+            throw new \UnexpectedValueException("Wedstrijd met id $data->matchId niet gevonden");
         }
 
-        $date = $fluitWedstrijd->timestamp->format('Y-m-d');
-        $time = $fluitWedstrijd->timestamp->format('G:i:s');
+        $date = $fluitWedstrijd->timestamp;
+        $wedstrijden = [];
+        foreach ($uscWedstrijden as $wedstrijd) {
+            if (DateFunctions::AreDatesEqual($wedstrijd->timestamp, $date)) {
+                $wedstrijden[] = $wedstrijd;
+            }
+        }
 
-        $wedstrijdenWithSameDate = GetWedstrijdenWithDate($uscWedstrijden, $fluitWedstrijd->timestamp);
-        $fluitBeschikbaarheden = $this->fluitBeschikbaarheidGateway->GetAllBeschikbaarheid($date, $time);
+        $fluitBeschikbaarheden = $this->fluitBeschikbaarheidGateway->GetAllBeschikbaarheden($date);
         $scheidsrechters = $this->telFluitGateway->GetScheidsrechters();
 
-        $result = (object) [
-            "spelendeScheidsrechters" => (object) [
-                "Ja" => [],
-                "Onbekend" => [],
-                "Nee" => [],
-            ], "overigeScheidsrechters" => (object) [
-                "Ja" => [],
-                "Onbekend" => [],
-                "Nee" => [],
-            ]
+        $result = [
+            new Beschikbaarheidssamenvatting("spelendeScheidsrechters"),
+            new Beschikbaarheidssamenvatting("overigeScheidsrechters")
         ];
-        foreach ($scheidsrechters as $scheidsrechter) {
-            $wedstrijd = GetWedstrijdOfTeam($wedstrijdenWithSameDate, $scheidsrechter->team);
-            $isBeschikbaar = $this->GetFluitbeschikbaarheid($scheidsrechter, $fluitBeschikbaarheden);
-            $type = $wedstrijd ? "spelendeScheidsrechters" : "overigeScheidsrechters";
 
-            $result->$type->$isBeschikbaar[] = $this->MapToUsecaseModel($scheidsrechter, $isBeschikbaar, $wedstrijd, $fluitWedstrijd);
+        foreach ($scheidsrechters as $scheidsrechter) {
+            $wedstrijd = $scheidsrechter->team != null ? $scheidsrechter->team->GetWedstrijdOfTeam($wedstrijden) : null;
+            $isBeschikbaar = $this->GetFluitbeschikbaarheid($scheidsrechter, $fluitBeschikbaarheden);
+            $model = $this->MapToUsecaseModel($scheidsrechter, $isBeschikbaar, $wedstrijd);
+
+            $result[$wedstrijd !== null ? 0 : 1]->AddScheidsrechter($model);
         }
-        exit(json_encode($result));
+        return $result;
     }
 
-    private function GetFluitbeschikbaarheid($scheidsrechter, $fluitBeschikbaarheden)
+    private function GetFluitbeschikbaarheid(Entities\Persoon $scheidsrechter, array $fluitBeschikbaarheden)
     {
         foreach ($fluitBeschikbaarheden as $fluitBeschikbaarheid) {
-            if ($fluitBeschikbaarheid->user_id == $scheidsrechter->id) {
-                return $fluitBeschikbaarheid->is_beschikbaar;
+            if ($fluitBeschikbaarheid->persoon->id == $scheidsrechter->id) {
+                return $fluitBeschikbaarheid->isBeschikbaar;
             }
         }
-        return "Onbekend";
+        return null;
     }
 
-    private function MapToUsecaseModel($scheidsrechter, $isBeschikbaar, $wedstrijd)
+    private function MapToUsecaseModel(Entities\Persoon $scheidsrechter, ?bool $isBeschikbaar, ?Entities\Wedstrijd $wedstrijd)
     {
         return (object) [
+            "id" => $scheidsrechter->id,
             "naam" => $scheidsrechter->naam,
             "niveau" => $scheidsrechter->niveau,
-            "gefloten" => $scheidsrechter->gefloten,
-            "team" => GetShortTeam($scheidsrechter->team) ?? "Geen Team",
-            "eigenTijd" => $wedstrijd && $wedstrijd->timestamp ? $wedstrijd->timestamp->format("G:i") : null,
-            "isMogelijk" => $isBeschikbaar,
+            "gefloten" => $scheidsrechter->aantalGeflotenWedstrijden,
+            "team" => $scheidsrechter->team != null ? $scheidsrechter->team->GetShortNotation() : "Geen Team",
+            "eigenTijd" => $wedstrijd ? DateFunctions::GetTime($wedstrijd->timestamp) : null,
+            "isBeschikbaar" => $isBeschikbaar,
         ];
     }
 }

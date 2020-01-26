@@ -47,15 +47,20 @@ export class BarcieIndelingComponent implements OnInit {
         this.GetBarcieRooster();
       },
       response => {
-        this.errorMessage = response.error;
+        this.errorMessage = response.error.message;
       }
     );
   }
 
   DeleteBarcieDate(date) {
-    this.barcoService.DeleteBarcieDag(date).subscribe(() => {
-      this.GetBarcieRooster();
-    });
+    this.barcoService.DeleteBarcieDag(date).subscribe(
+      () => {
+        this.GetBarcieRooster();
+      },
+      response => {
+        this.errorMessage = response.error.message;
+      }
+    );
   }
 
   ToggleBhv(selectedBarcieDag, selectedBarcielid, shift) {
@@ -67,7 +72,7 @@ export class BarcieIndelingComponent implements OnInit {
 
     this.barciedagen.forEach(barciedag => {
       if (barciedag.date === selectedBarcieDag.date) {
-        barciedag.shifts[shift - 1].barcieleden.forEach(barcielid => {
+        barciedag.shifts[shift - 1].barleden.forEach(barcielid => {
           if (selectedBarcielid.id === barcielid.id) {
             barcielid.isBhv = !barcielid.isBhv;
             return;
@@ -77,29 +82,27 @@ export class BarcieIndelingComponent implements OnInit {
     });
   }
 
-  DeleteAanwezigheid(selectedBarcieDag, selectedBarcielid, shift) {
+  DeleteAanwezigheid(selectedBarcieDag, selectedBarcielid, shiftNumber) {
     this.aanwezigheidService
       .DeleteBarcieAanwezigheid(
         selectedBarcieDag.date,
-        shift,
+        shiftNumber,
         selectedBarcielid.id
       )
       .subscribe(() => {
         this.barciedagen.forEach(barciedag => {
           if (barciedag.date === selectedBarcieDag.date) {
-            for (
-              let i = 0;
-              i < barciedag.shifts[shift - 1].barcieleden.length;
-              i++
-            ) {
-              if (
-                selectedBarcielid.id ===
-                barciedag.shifts[shift - 1].barcieleden[i].id
-              ) {
-                barciedag.shifts[shift - 1].barcieleden.splice(i, 1);
-                break;
-              }
-            }
+            barciedag.shifts.forEach(shift => {
+              shift.barleden.forEach((barlid, i) => {
+                if (
+                  selectedBarcielid.id === barlid.id &&
+                  shift.shift === shiftNumber
+                ) {
+                  shift.barleden.splice(i, 1);
+                  return;
+                }
+              });
+            });
           }
         });
       });
@@ -114,7 +117,7 @@ export class BarcieIndelingComponent implements OnInit {
       },
       response => {
         this.isLoading = true;
-        this.errorMessage = response.error;
+        this.errorMessage = response.error.message;
       }
     );
   }
@@ -122,8 +125,10 @@ export class BarcieIndelingComponent implements OnInit {
   AddShift(date) {
     this.barciedagen.forEach(barciedag => {
       if (barciedag.date === date) {
+        const lastShift = barciedag.shifts[barciedag.shifts.length - 1].shift;
         barciedag.shifts.push({
-          barcieleden: []
+          barleden: [],
+          shift: lastShift + 1
         });
         return;
       }

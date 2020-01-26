@@ -24,17 +24,17 @@
           <div class="alert-succes" *ngIf="wedstrijd.coaches.length == 0">
             Nog geen coach(es)
           </div>
-          <div class="coaches">
-            {{ wedstrijd.coaches.length == 1 ? 'Coach' : 'Coaches' }}:
+          <div class="coaches" *ngIf="wedstrijd.coaches.length > 0">
+            {{ wedstrijd.coaches.length == 1 ? "Coach" : "Coaches" }}:
             <span
               *ngFor="let coach of wedstrijd.coaches; last as isLast"
-              [ngClass]="{ 'striped-through': coach.is_aanwezig === 'Nee' }"
-              >{{ coach.naam }}<span *ngIf="!isLast">, {{last}}</span></span
+              [ngClass]="{ 'striped-through': coach.isAanwezig === false }"
+              >{{ coach.naam }}<span *ngIf="!isLast">, {{ last }}</span></span
             >
           </div>
 
           <teamportal-spelers-lijst
-            (deleteSpeler)="UpdateAanwezigheid(wedstrijd, 'Onbekend', $event)"
+            (deleteSpeler)="UpdateAanwezigheid(wedstrijd, null, $event)"
             *ngIf="wedstrijd.aanwezigen.length > 0"
             [spelers]="wedstrijd.aanwezigen"
             title="Aanwezigen"
@@ -60,7 +60,7 @@
     <tr *ngIf="wedstrijd.isEigenWedstrijd">
       <td colspan="2" style="padding: 0px;">
         <teamportal-inval-teams
-          (addAanwezigheid)="UpdateAanwezigheid(wedstrijd, 'Ja', $event)"
+          (addAanwezigheid)="UpdateAanwezigheid(wedstrijd, true, $event)"
           [teams]="wedstrijd.invalTeams"
         ></teamportal-inval-teams>
       </td>

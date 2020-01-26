@@ -30,10 +30,10 @@ export class SelecteerBarcielidComponent implements OnInit {
     this.date = SelecteerBarcielidComponent.date;
     this.datum = SelecteerBarcielidComponent.datum;
     this.shift = SelecteerBarcielidComponent.shift;
-    this.GetBarcieLeden();
+    this.GetBarLeden();
   }
 
-  GetBarcieLeden() {
+  GetBarLeden() {
     this.isLoading = true;
     this.barcoService.GetBarcieBeschikbaarheden(this.date).subscribe(
       response => {
@@ -43,7 +43,7 @@ export class SelecteerBarcielidComponent implements OnInit {
       },
       response => {
         this.isLoading = false;
-        this.errorMessage = response.error;
+        this.errorMessage = response.error.message;
       }
     );
   }
@@ -56,7 +56,7 @@ export class SelecteerBarcielidComponent implements OnInit {
           this.modal.close(barcielid);
         },
         response => {
-          this.errorMessage = response.error;
+          this.errorMessage = response.error.message;
         }
       );
   }

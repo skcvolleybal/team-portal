@@ -3,7 +3,9 @@
 <body>
 Beste {{naam}},<br>
 <br>
-Aanstaande {{datum}} heb jij de {{shift}}e barciedienst.{{bhv}}<br>
+Aanstaande {{datum}} heb jij de {{shift}}e bardienst.{{bhv}}<br>
+Tip: Agenda's Importeren:<br>
+<a target="_blank" href="https://www.google.com/calendar/render?cid=http%3A%2F%2Fwww.skcvolleybal.nl%2Fteam-portal%2Fapi%2Fcalendar%3Fuserid%3D{{userId}}">Google Calendar: Bardiensten</a><br>
 <br>
 Met vriendelijke groet,<br>
 <br>

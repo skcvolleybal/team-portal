@@ -19,7 +19,7 @@
       <div class="card-body">
         <div class="input-group mb-3" *ngFor="let team of spelendeTeams">
           <button type="button" (click)="UpdateZaalwacht(team.naam)" class="btn btn-success btn-block">
-            {{team.naam + " (" + team.zaalwacht + ")"}}
+            {{team.naam + " (" + team.aantal + ")"}}
           </button>
         </div>
       </div>
@@ -32,7 +32,7 @@
       <div class="card-body">
         <div class="input-group mb-3" *ngFor="let team of overigeTeams">
           <button type="button" (click)="UpdateZaalwacht(team.naam)" class="btn btn-success btn-block">
-            {{team.naam + " (" + team.zaalwacht + ")"}}
+            {{team.naam + " (" + team.aantal + ")"}}
           </button>
         </div>
       </div>

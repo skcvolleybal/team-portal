@@ -17,28 +17,20 @@
   <teamportal-spinner *ngIf="scheidsrechterOptiesLoading"></teamportal-spinner>
 
   <div *ngIf="scheidsrechterOptiesLoading == false">
-    <div
-      class="card mb-3"
-      *ngFor="let scheidsrechterstype of scheidsrechtertypes"
-    >
+    <div class="card mb-3" *ngFor="let type of scheidsrechters; index as i">
       <div class="card-header">
-        {{ GetRegularCasing(scheidsrechterstype) }}
+        {{ GetRegularCasing(type.type) }}
       </div>
       <ul class="list-group list-group-flush" *ngFor="let keuze of keuzes">
         <li class="list-group-item">{{ keuze }}</li>
         <li class="list-group-item">
           <div
             class="input-group mb-3"
-            *ngFor="
-              let scheidsrechter of getScheidsrechtersByKeuze(
-                scheidsrechterstype,
-                keuze
-              )
-            "
+            *ngFor="let scheidsrechter of getScheidsrechtersByKeuze(i, keuze)"
           >
             <button
               type="button"
-              (click)="UpdateScheidsrechter(scheidsrechter.naam)"
+              (click)="UpdateScheidsrechter(scheidsrechter)"
               class="btn btn-block"
               [ngClass]="GetClass(scheidsrechter)"
             >

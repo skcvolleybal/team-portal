@@ -7,8 +7,7 @@ Aanstaande {{datum}} moet je een wedstrijd fluiten om {{tijd}}.<br>
 Je zult de wedstrijd {{teams}} gaan fluiten.<br>
 <br>
 Agenda's Importeren:<br>
-<a target="_blank" href="https://www.google.com/calendar/render?cid=http%3A%2F%2Fwww.skcvolleybal.nl%2Fteam-portal%2Fphp%2Finterface.php%3Faction%3DGetCalendar%26userid%3D{{userId}}%26fluiten%3Dtrue">Google Calendar: Fluiten & Zaalwacht</a><br>
-<a target="_blank" href="https://www.google.com/calendar/render?cid=http%3A%2F%2Fwww.skcvolleybal.nl%2Fteam-portal%2Fphp%2Finterface.php%3Faction%3DGetCalendar%26userid%3D{{userId}}%26fluiten%3Dtrue%26tellen%3Dtrue">Google Calendar: Fluiten, Tellen, Zaalwacht</a><br>
+<a target="_blank" href="https://www.google.com/calendar/render?cid=http%3A%2F%2Fwww.skcvolleybal.nl%2Fteam-portal%2Fapi%calendar%3Fuserid%3D{{userId}}">Google Calendar: Fluiten & Zaalwacht</a><br>
 <br>
 Als je dit importeert worden alle wedstrijden automatisch in je google calendar gezet en ben je in 1 keer van al jouw diensten op de hoogte.<br>
 (het kan even duren voordat je agenda wordt gesynchroniseerd...)<br>

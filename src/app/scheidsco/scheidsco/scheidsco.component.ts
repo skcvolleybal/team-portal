@@ -44,7 +44,7 @@ export class ScheidscoComponent implements OnInit {
       },
       error => {
         if (error.status === 500) {
-          this.errorMessage = error.error;
+          this.errorMessage = error.error.message;
           this.overzichtLoading = false;
         }
       }
@@ -70,7 +70,8 @@ export class ScheidscoComponent implements OnInit {
   SetZaalwacht(date, team) {
     this.speeldagen.forEach(speeldag => {
       if (speeldag.date === date) {
-        speeldag.zaalwacht =
+        speeldag.zaalwacht = team;
+        speeldag.zaalwachtShortNotation =
           team == null
             ? null
             : (speeldag.zaalwacht = `${team[0]}${team.substring(6)}`);
@@ -89,7 +90,11 @@ export class ScheidscoComponent implements OnInit {
     this.modalService
       .open(component)
       .result.then(uitvoerder => {
-        this.SetUitvoerderOnTaak(geselecteerdeWedstrijd.id, taak, uitvoerder);
+        this.SetUitvoerderOnTaak(
+          geselecteerdeWedstrijd.matchId,
+          taak,
+          uitvoerder
+        );
       })
       .catch(() => {});
   }
@@ -98,7 +103,7 @@ export class ScheidscoComponent implements OnInit {
     this.speeldagen.forEach(speeldag => {
       speeldag.speeltijden.forEach(speeltijd => {
         speeltijd.wedstrijden.forEach(wedstrijd => {
-          if (wedstrijd.id === matchId) {
+          if (wedstrijd.matchId === matchId) {
             wedstrijd[taak] = uitvoerder;
             return;
           }

@@ -1,47 +1,38 @@
 <?php
-include_once 'IInteractorWithData.php';
-include_once 'ZaalwachtGateway.php';
-include_once 'JoomlaGateway.php';
 
-class UpdateZaalwacht implements IInteractorWithData
+namespace TeamPortal\UseCases;
+
+use TeamPortal\Common\DateFunctions;
+use TeamPortal\Entities\Zaalwacht;
+use TeamPortal\Gateways;
+
+class UpdateZaalwacht implements Interactor
 {
-    public function __construct($database)
-    {
-        $this->zaalwachtGateway = new ZaalwachtGateway($database);
-        $this->joomlaGateway = new JoomlaGateway($database);
+    public function __construct(
+        Gateways\ZaalwachtGateway $zaalwachtGateway,
+        Gateways\JoomlaGateway $joomlaGateway
+    ) {
+        $this->zaalwachtGateway = $zaalwachtGateway;
+        $this->joomlaGateway = $joomlaGateway;
     }
 
-    public function Execute($data)
+    public function Execute(object $data = null)
     {
-        $userId = $this->joomlaGateway->GetUserId();
-        if ($userId === null) {
-            UnauthorizedResult();
+        $date = DateFunctions::CreateDateTime($data->date);
+        if (!$date) {
+            throw new \UnexpectedValueException("Incorrecte datum: $data->date");
         }
 
-        if (!$this->joomlaGateway->IsTeamcoordinator($userId)) {
-            throw new UnexpectedValueException("Je bent (helaas) geen teamcoordinator");
-        }
-
-        $datum = $data->date ?? null;
-        $teamnaam = $data->team ?? null;
-
-        if (IsDateValid($datum) == false) {
-            throw new UnexpectedValueException("Foute datum: $datum");
-        }
-
-        $zaalwacht = $this->zaalwachtGateway->GetZaalwacht($datum);
-        $team = $this->joomlaGateway->GetTeamByNaam($teamnaam);
-
-        if ($zaalwacht) {
-            if ($team == null) {
+        $zaalwacht = $this->zaalwachtGateway->GetZaalwacht($date) ?? new Zaalwacht(null, $date, null);
+        $zaalwacht->team = $this->joomlaGateway->GetTeamByNaam($data->team);
+        if ($zaalwacht->id === null) {
+            $this->zaalwachtGateway->Insert($zaalwacht);
+        } else {
+            if ($zaalwacht->team === null) {
                 $this->zaalwachtGateway->Delete($zaalwacht);
             } else {
-                $this->zaalwachtGateway->Update($zaalwacht, $team);
+                $this->zaalwachtGateway->Update($zaalwacht);
             }
-        } else if ($team) {
-            $this->zaalwachtGateway->Insert($datum, $team);
         }
-
-        exit();
     }
 }

@@ -1,204 +1,139 @@
 <?php
 
-include_once 'IInteractor.php';
-include_once 'JoomlaGateway.php';
-include_once 'NevoboGateway.php';
-include_once 'TelFluitGateway.php';
-include_once 'ZaalwachtGateway.php';
-include_once 'BarcieGateway.php';
+namespace TeamPortal\UseCases;
 
-class GetMijnOverzichtInteractor implements IInteractor
+use TeamPortal\Common\DateFunctions;
+use TeamPortal\Entities;
+use TeamPortal\Gateways;
+
+class MijnOverzicht implements Interactor
 {
-    public function __construct($database)
-    {
-        $this->joomlaGateway = new JoomlaGateway($database);
-        $this->nevoboGateway = new NevoboGateway();
-        $this->telFluitGateway = new TelFluitGateway($database);
-        $this->zaalwachtGateway = new ZaalwachtGateway($database);
-        $this->barcieGateway = new BarcieGateway($database);
+    public function __construct(
+        Gateways\JoomlaGateway $joomlaGateway,
+        Gateways\NevoboGateway $nevoboGateway,
+        Gateways\TelFluitGateway $telFluitGateway,
+        Gateways\ZaalwachtGateway $zaalwachtGateway,
+        Gateways\BarcieGateway $barcieGateway
+    ) {
+        $this->joomlaGateway = $joomlaGateway;
+        $this->nevoboGateway = $nevoboGateway;
+        $this->telFluitGateway = $telFluitGateway;
+        $this->zaalwachtGateway = $zaalwachtGateway;
+        $this->barcieGateway = $barcieGateway;
     }
 
-    public function Execute()
+    public function Execute(object $data = null)
     {
-        $userId = $this->joomlaGateway->GetUserId();
-
-        if ($userId === null) {
-            UnauthorizedResult();
-        }
-
-        $team = $this->joomlaGateway->GetTeam($userId);
-        $coachTeam = $this->joomlaGateway->GetCoachTeam($userId);
-
         $overzicht = [];
 
-        $allUscMatches = $this->nevoboGateway->GetProgrammaForVereniging("CKL9R53");
+        $user = $this->joomlaGateway->GetUser();
 
-        $allUscMatches = RemoveMatchesWithoutData($allUscMatches);
-
-        $zaalwachten = $this->zaalwachtGateway->GetZaalwachtForUserId($userId);
+        $zaalwachten = $this->zaalwachtGateway->GetZaalwachtenOfUser($user);
         foreach ($zaalwachten as $zaalwacht) {
-            $overzichtItem = $this->MapFromZaalwacht($zaalwacht, $allUscMatches);
-            $this->AddToOverzicht($overzicht, $overzichtItem);
+            $this->AddZaalwachtToOverzicht($overzicht, $zaalwacht);
         }
 
-        $telbeurten = $this->telFluitGateway->GetTelbeurten($userId);
-        foreach ($telbeurten as $telbeurt) {
-            $overzichtItem = $this->MapFromMatch($telbeurt, $allUscMatches, $team, $coachTeam, $userId);
-            if ($overzichtItem) {
-                $this->AddToOverzicht($overzicht, $overzichtItem);
+        $uscWedstrijden = $this->nevoboGateway->GetProgrammaForSporthal();
+        $wedstrijden = $this->telFluitGateway->GetFluitEnTelbeurten($user);
+        foreach ($wedstrijden as $wedstrijd) {
+            $uscMatch = Entities\Wedstrijd::GetWedstrijdWithMatchId($uscWedstrijden, $wedstrijd->matchId);
+            $wedstrijd->AppendInformation($uscMatch);
+            $this->AddWedstrijdToOverzicht($overzicht, $wedstrijd);
+        }
+
+        $bardiensten = $this->barcieGateway->GetBardienstenForUser($user);
+        foreach ($bardiensten as $bardienst) {
+            $this->AddBardienstToOverzicht($overzicht, $bardienst);
+        }
+
+        $team = $this->joomlaGateway->GetTeam($user);
+        $speelWedstrijden = $this->nevoboGateway->GetWedstrijdenForTeam($team);
+        foreach ($speelWedstrijden as $wedstrijd) {
+            $fluitEnTelWedstrijd = $this->telFluitGateway->GetWedstrijd($wedstrijd->matchId);
+            $wedstrijd->AppendInformation($fluitEnTelWedstrijd);
+
+            $this->AddWedstrijdToOverzicht($overzicht, $wedstrijd);
+        }
+
+        if ($user->coachteam) {
+            $wedstrijden = $this->nevoboGateway->GetWedstrijdenForTeam($user->coachteam);
+            foreach ($wedstrijden as $wedstrijd) {
+                $this->AddWedstrijdToOverzicht($overzicht, $wedstrijd);
             }
         }
 
-        $fluitbeurten = $this->telFluitGateway->GetFluitbeurten($userId);
-        foreach ($fluitbeurten as $fluitbeurt) {
-            $overzichtItem = $this->MapFromMatch($fluitbeurt, $allUscMatches, $team, $coachTeam, $userId);
-            if ($overzichtItem) {
-                $this->AddToOverzicht($overzicht, $overzichtItem);
-            }
+        usort($overzicht, Entities\Wedstrijddag::class . "::Compare");
+        foreach ($overzicht as $dag) {
+            usort($dag->speeltijden, Entities\Speeltijd::class . "::Compare");
         }
 
-        $bardiensten = $this->barcieGateway->GetBarciedienstenByUserId($userId);
-        foreach ($bardiensten as $dienst) {
-            $overzichtItem = $this->MapFromBarciedienst($dienst->date, $dienst->shift, $dienst->isBhv);
-            if ($overzichtItem) {
-                $this->AddToOverzicht($overzicht, $overzichtItem);
-            }
-        }
+        return $this->MapToUseCaseModel($overzicht, $user);
+    }
 
-        $speelWedstrijden = $this->nevoboGateway->GetProgrammaForTeam($team);
-        foreach ($speelWedstrijden as $speelWedstrijd) {
-            $overzichtItem = $this->MapFromMatch($speelWedstrijd, $allUscMatches, $team, $coachTeam, $userId);
-            if ($overzichtItem) {
-                $this->AddToOverzicht($overzicht, $overzichtItem);
-            }
-        }
-
-        if ($coachTeam) {
-            $coachWedstrijden = $this->nevoboGateway->GetProgrammaForTeam($coachTeam);
-            foreach ($coachWedstrijden as $coachWedstrijd) {
-                $overzichtItem = $this->MapFromMatch($coachWedstrijd, $allUscMatches, $team, $coachTeam, $userId);
-                if ($overzichtItem) {
-                    $this->AddToOverzicht($overzicht, $overzichtItem);
+    private function MapToUseCaseModel(array $wedstrijddagen, Entities\Persoon $persoon): array
+    {
+        $result = [];
+        foreach ($wedstrijddagen as $wedstrijddag) {
+            $newWedstrijddag = new WedstrijddagModel($wedstrijddag);
+            foreach ($newWedstrijddag->speeltijden as $speeltijd) {
+                foreach ($speeltijd->wedstrijden as $wedstrijd) {
+                    $wedstrijd->SetPersonalInformation($persoon);
                 }
             }
+            $result[] = $newWedstrijddag;
         }
 
-        echo json_encode($overzicht);
-        exit;
+        return $result;
     }
 
-    private function MapFromMatch($match, $allUscMatches, $team, $coachTeam, $userId)
+    private function AddZaalwachtToOverzicht(array &$dagen, Entities\Zaalwacht $zaalwacht): void
     {
-        $uscMatch = $this->GetUscMatch($match->id, $allUscMatches);
-        if ($uscMatch == null) {
-            return null;
-        }
-        return (object) [
-            "id" => $uscMatch->id,
-            "type" => "wedstrijd",
-            "date" => $uscMatch->timestamp->format('Y-m-d'),
-            "tijd" => $uscMatch->timestamp->format('G:i'),
-            "team1" => $uscMatch->team1,
-            "isTeam1" => $uscMatch->team1 == $team,
-            "isCoachTeam1" => $uscMatch->team1 == $coachTeam,
-            "team2" => $uscMatch->team2,
-            "isTeam2" => $uscMatch->team2 == $team,
-            "isCoachTeam2" => $uscMatch->team2 == $coachTeam,
-            "scheidsrechter" => $match->scheidsrechter ?? null,
-            "isScheidsrechter" => ($match->scheidsrechterId ?? null) == $userId,
-            "tellers" => GetShortTeam(($match->tellers ?? null)),
-            "isTellers" => ($match->tellers ?? null) == $team,
-            "locatie" => $uscMatch->locatie,
-        ];
-    }
-
-    private function MapFromBarciedienst($date, $shift, $isBhv)
-    {
-        return (object) [
-            "type" => "bardienst",
-            "date" => $date,
-            "shift" => $shift,
-            "isBhv" => $isBhv
-        ];
-    }
-
-    private function MapFromZaalwacht($match)
-    {
-        return (object) [
-            "type" => "zaalwacht",
-            "date" => (new DateTime($match->date))->format('Y-m-d'),
-            "team" => $match->team,
-        ];
-    }
-
-    private function AddToOverzicht(&$overzicht, $newItem)
-    {
-        $newItemDate = $newItem->date;
-        $counter = 0;
-        foreach ($overzicht as &$item) {
-            if ($newItemDate == $item->date) {
-                $this->AddToTijdslot($item->tijdsloten, $newItem);
+        foreach ($dagen as $dag) {
+            if (DateFunctions::AreDatesEqual($dag->date, $zaalwacht->date)) {
+                $dag->zaalwacht = $zaalwacht;
                 return;
             }
+        }
+        $dag = new Entities\Wedstrijddag($zaalwacht->date);
+        $dag->zaalwacht = $zaalwacht;
+        $dagen[] = $dag;
+    }
 
-            if ($newItemDate < $item->date) {
-                $newDay = $this->GetNewDateItem($newItemDate, $newItem);
-                array_splice($overzicht, $counter, 0, [$newDay]);
+    private function AddWedstrijdToOverzicht(array &$dagen, Entities\Wedstrijd $wedstrijd): void
+    {
+        foreach ($dagen as $dag) {
+            if (DateFunctions::AreDatesEqual($dag->date, $wedstrijd->timestamp)) {
+                foreach ($dag->speeltijden as $speeltijd) {
+                    if ($speeltijd->time == $wedstrijd->timestamp) {
+                        $speeltijd->wedstrijden[] = $wedstrijd;
+                        return;
+                    }
+                }
+                $speeltijd = new Entities\Speeltijd($wedstrijd->timestamp);
+                $speeltijd->wedstrijden[] = $wedstrijd;
+                $dag->speeltijden[] = $speeltijd;
                 return;
             }
-            $counter++;
         }
-        $overzicht[] = $this->GetNewDateItem($newItemDate, $newItem);
+
+        $dag = new Entities\Wedstrijddag($wedstrijd->timestamp);
+        $speeltijd = new Entities\Speeltijd($wedstrijd->timestamp);
+        $speeltijd->wedstrijden[] = $wedstrijd;
+        $dag->speeltijden[] = $speeltijd;
+        $dagen[] = $dag;
     }
 
-    private function GetNewDateItem($date, $newItem)
+    private function AddBardienstToOverzicht(array &$dagen, Entities\Bardienst $dienst)
     {
-        $datetime = new DateTime($date);
-        return (object) [
-            "datum" => GetDutchDate($datetime),
-            "date" => $datetime->format('Y-m-d'),
-            "tijdsloten" => [$newItem],
-        ];
-    }
-
-    private function AddToTijdslot(&$tijdsloten, $newItem)
-    {
-        if ($newItem->type == "zaalwacht") {
-            array_splice($tijdsloten, 0, 0, $newItem);
-            return;
-        }
-
-        $duplicates = array_filter($tijdsloten, function ($wedstrijd) use ($newItem) {
-            return $wedstrijd->type == "wedstrijd" && $wedstrijd->id == $newItem->id;
-        });
-
-        if (count($duplicates) > 0) {
-            return;
-        }
-
-        $counter = 0;
-        foreach ($tijdsloten as $tijdslot) {
-            if (
-                !in_array($tijdslot->type, ['zaalwacht', 'bardienst']) &&
-                $newItem->tijd <= $tijdslot->tijd &&
-                $newItem->id != $tijdslot->id
-            ) {
-                array_splice($tijdsloten, $counter, 0, [$newItem]);
+        foreach ($dagen as $dag) {
+            if (DateFunctions::AreDatesEqual($dag->date, $dienst->bardag->date)) {
+                $dag->bardiensten[] = $dienst;
                 return;
             }
-            $counter++;
-        }
-        $tijdsloten[] = $newItem;
-    }
-
-    private function GetUscMatch($matchId, $allUscMatches)
-    {
-        foreach ($allUscMatches as $match) {
-            if ($match->id == $matchId) {
-                return $match;
-            }
         }
 
-        return null;
+        $dag = new Entities\Wedstrijddag($dienst->bardag->date);
+        $dag->bardiensten[] = $dienst;
+        $dagen[] = $dag;
     }
 }

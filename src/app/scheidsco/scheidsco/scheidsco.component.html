@@ -23,7 +23,7 @@
                   }"
                   type="button"
                 >
-                  {{ speeldag.zaalwacht === null ? '...' : speeldag.zaalwacht }}
+                  {{ speeldag.zaalwacht === null ? '...' : speeldag.zaalwachtShortNotation }}
                 </button>
               </div>
               <div class="input-group-append" *ngIf="speeldag.zaalwacht">
@@ -81,7 +81,7 @@
                 <div class="input-group-append" *ngIf="wedstrijd[taak]">
                   <button
                     class="btn input-group-text"
-                    (click)="DeleteTaak(wedstrijd.id, taak)"
+                    (click)="DeleteTaak(wedstrijd.matchId, taak)"
                     type="button"
                   >
                     <fa-icon [icon]="icons.verwijderen"></fa-icon>

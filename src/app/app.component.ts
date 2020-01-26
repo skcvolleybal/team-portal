@@ -4,7 +4,7 @@ import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
 import { NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
 import { Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
-import { RequestService } from './core/services/request.service';
+import { JoomlaService } from './core/services/request.service';
 import { StateService } from './core/services/state.service';
 import { LoginModalComponent } from './login-modal/login-modal.component';
 import { appRoutes } from './route.config';
@@ -26,7 +26,7 @@ export class AppComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private modalService: NgbModal,
     private stateService: StateService,
-    private requestService: RequestService,
+    private joomalService: JoomlaService,
     config: NgbModalConfig
   ) {
     config.backdrop = 'static';
@@ -56,7 +56,7 @@ export class AppComponent implements OnInit {
       );
     });
 
-    this.requestService.GetGroupsOfUser().subscribe(response => {
+    this.joomalService.GetGroupsOfUser().subscribe(response => {
       this.ShowMenuItems(response);
       this.isWebcie = response.findIndex(group => group === 'webcie') !== -1;
       this.stateService.isWebcie = this.isWebcie;
@@ -87,7 +87,7 @@ export class AppComponent implements OnInit {
     text.pipe(
       debounceTime(300),
       distinctUntilChanged(),
-      switchMap(term => this.requestService.GetUsers(term))
+      switchMap(term => this.joomalService.GetUsers(term))
       // tslint:disable-next-line:semicolon
     );
 

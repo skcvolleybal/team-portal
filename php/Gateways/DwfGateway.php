@@ -1,5 +1,23 @@
 <?php
 
+namespace TeamPortal\Gateways;
+
+use TeamPortal\Common\Curl;
+use TeamPortal\Common\Header;
+use TeamPortal\Common\Request;
+use TeamPortal\Configuration;
+use TeamPortal\Entities\Credentials;
+use TeamPortal\Entities\DwfKaart;
+use TeamPortal\Entities\DwfPunt;
+use TeamPortal\Entities\DwfSet;
+use TeamPortal\Entities\DwfSpelophoud;
+use TeamPortal\Entities\DwfTimeout;
+use TeamPortal\Entities\DwfWedstrijd;
+use TeamPortal\Entities\DwfWissel;
+use TeamPortal\Entities\Punttype;
+use TeamPortal\Entities\Team;
+use TeamPortal\Entities\ThuisUit;
+
 class DwfGateway
 {
     private $dwfUrl = 'https://dwf.volleybal.nl/application/handlers/dwf/pull/';
@@ -7,279 +25,231 @@ class DwfGateway
     private $cookieFilename = 'cookie.txt';
     private $WID;
 
-    public function __construct($username, $password)
-    {
-        $this->username = $username;
-        $this->password = $password;
+    public function __construct(
+        Curl $curl,
+        Configuration $configuration
+    ) {
+        $this->curl = $curl;
+        $this->credentials = new Credentials($configuration->DwfUsername, $configuration->DwfPassword);
 
         if (file_exists($this->cookieFilename)) {
             $this->WID = file_get_contents($this->cookieFilename);
         }
-        if (!$this->IsCookieValid()) {
-            file_put_contents($this->cookieFilename, null);
-            $this->Connect();
-        }
+
+        $this->Connect();
     }
 
-    private function Connect()
+    private function Connect(): void
     {
-        $oauthPage = $this->SendHeadersRequest($this->dwfOAuthUrl);
-        $this->WID = $this->GetCookieValueFromHeader($oauthPage['Set-Cookie']);
+        $request = new Request($this->dwfOAuthUrl, true);
+        $response = $this->curl->SendRequest($request);
+        $headers = $this->curl->GetHeaders($response);
+        $location = $this->curl->SanitizeQueryString($headers[Header::LOCATION]);
+        $this->WID = $this->GetWid($headers[Header::SET_COOKIE]);
 
-        $location = SanitizeQueryString($oauthPage['Location']);
-        $loginPage = $this->SendHeadersRequest($location);
+        $request = new Request($location, true);
+        $response = $this->curl->SendRequest($request);
+        $headers = $this->curl->GetHeaders($response);
+        $sessionId = $this->GetSessionId($headers[Header::SET_COOKIE]);
 
-        $sessionId = $this->GetCookieValueFromHeader($loginPage['Set-Cookie']);
-        $data = (object) [
-            '_username' => $this->username,
-            '_password' => $this->password,
-        ];
-        $headers = ["Cookie: $sessionId"];
-        $url = 'https://login.nevobo.nl/login_check';
-        $loginCheck = $this->SendHeadersRequest($url, $headers, $data);
+        $request = new Request('https://login.nevobo.nl/login_check', true);
+        $request->headers = ["Cookie: $sessionId"];
+        $request->body = ["_username" => $this->credentials->username, "_password" => $this->credentials->password];
+        $response = $this->curl->SendRequest($request);
 
-        $location = "https://login.nevobo.nl" . $loginCheck['Location'];
-        $sessionId = $this->GetCookieValueFromHeader($loginCheck['Set-Cookie']);
-        $codePage = $this->SendHeadersRequest($location, ["Cookie: $sessionId"]);
+        $headers = $this->curl->GetHeaders($response);
+        $location = "https://login.nevobo.nl" . $headers['Location'];
+        $request = new Request($location, true);
+        $sessionId = $this->GetSessionId($headers['Set-Cookie']);
+        $request->headers = ["Cookie: $sessionId"];
+        $response = $this->curl->SendRequest($request);
 
-        $location = $codePage['Location'];
-        $this->SendHeadersRequest($location, ["Cookie: $this->WID"]);
+        $headers = $this->curl->GetHeaders($response);
+        $request = new Request($headers[Header::LOCATION], true);
+        $request->headers = ["Cookie: $this->WID"];
+        $this->curl->SendRequest($request);
 
         $fp = fopen($this->cookieFilename, 'w');
         fwrite($fp, $this->WID);
         fclose($fp);
     }
 
-    private function GetCookieValueFromHeader($header)
+    private function GetSessionId(string $header): string
     {
-        $semiColonPosition = strpos($header, ';') ?? strlen($header);
-        return trim(substr($header, 0, $semiColonPosition));
+        preg_match('/(PHPSESSID=\S*);/', $header, $matches);
+        return $matches[1];
     }
 
-    private function IsCookieValid()
+    private function GetWid(string $header): string
     {
-        if (!$this->WID) {
-            return false;
-        }
-
-        $response = SendPost($this->dwfUrl, 'type=teamSelector', ["Cookie: $this->WID"]);
-        $data = json_decode($response);
-        return $data != null && $data->error->code === 0;
+        preg_match('/(WID=\S*);/', $header, $matches);
+        return $matches[1];
     }
 
-    private function SendHeadersRequest($url, $headers = null, $postFields = null)
+    public function GetGespeeldeWedstrijden(int $aantal = 999): array
     {
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_HEADER, 1);
-
-        if ($postFields && !empty($postFields)) {
-            curl_setopt($ch, CURLOPT_POST, 1);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $postFields);
-        }
-
-        if ($headers != null) {
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        }
-
-        $response = curl_exec($ch);
-        $headers = $this->GetHeaders($response);
-
-        if (curl_errno($ch)) {
-            echo 'Error:' . curl_error($ch);
-        }
-        curl_close($ch);
-
-        return $headers;
-    }
-
-    public function GetHeaders($response)
-    {
-        $headers = array();
-
-        $header_text = substr($response, 0, strpos($response, "\r\n\r\n"));
-
-        foreach (explode("\r\n", $header_text) as $i => $line) {
-            if ($i === 0) {
-                $headers['http_code'] = $line;
-            } else {
-                list($key, $value) = explode(': ', $line);
-
-                if (!isset($headers[$key])) {
-                    $headers[$key] = $value;
-                } else {
-                    if ($key == 'Set-Cookie' && strpos($value, 'PHPSESSID') !== false) {
-                        $headers[$key] = $value;
-                    }
-                }
-            }
-        }
-
-        return $headers;
-    }
-
-    public function GetGespeeldeWedstrijden($aantal = 999)
-    {
-        $body = (object)  [
+        $request = new Request($this->dwfUrl);
+        $request->headers = [
+            "Cookie: $this->WID",
+        ];
+        $request->body = [
             'type' => 'matchResults',
             'team' => '',
             'limit' => $aantal,
         ];
-        $headers = (object) [
-            "Cookie: $this->WID",
-        ];
-        $response = SendPost($this->dwfUrl, $body, $headers);
+
+        $response = $this->curl->SendRequest($request);
         $data = json_decode($response);
 
         if (!isset($data->results[0]->type)) {
-            throw new UnexpectedValueException("Kan gespeelde wedstrijden niet ophalen: $response");
+            throw new \UnexpectedValueException("Kan gespeelde wedstrijden niet ophalen: $response");
         }
 
         $wedstrijden = [];
         foreach ($data->results[0]->data as $item) {
-            if ($item->type == 'title') {
-                $date = $item->data->sDate;
-            } else if ($item->type == 'item') {
+            if ($item->type == 'item') {
                 if ($item->data->sStartTime == '-') {
                     continue;
                 }
-                $wedstrijden[] = (object) [
-                    'id' => preg_replace('/\s+/', ' ', $item->data->sMatchId),
-                    'date' => $date,
-                    'team1' => $item->data->sHomeName,
-                    'team2' => $item->data->sOutName,
-                    'setsTeam1' => $item->data->sStartTime[0],
-                    'setsTeam2' => $item->data->sStartTime[2],
-                ];
+                $wedstrijd = new DwfWedstrijd(
+                    preg_replace('/\s+/', ' ', $item->data->sMatchId),
+                    new Team($item->data->sHomeName),
+                    new Team($item->data->sOutName),
+                    $item->data->sStartTime[0],
+                    $item->data->sStartTime[2]
+                );
+                $wedstrijden[] = $wedstrijd;
             }
         }
 
         return $wedstrijden;
     }
 
-    public function GetMatchFormId($matchId)
+    public function GetMatchFormId(string $matchId): string
     {
-        $url = 'https://dwf.volleybal.nl/uitslagformulier/' . str_replace(' ', '%20%20%20', $matchId);
-        $headers = (object) [
-            "Cookie: $this->WID",
-        ];
-        $response = SendPost($url, null, $headers);
+        $length = strlen($matchId);
+        $replacement = str_repeat("%20", 12 - ($length - 1)); // 12 is de standaard lengte van een dwf matchId
+        $url = 'https://dwf.volleybal.nl/uitslagformulier/' . str_replace(' ', $replacement, $matchId);
+        $request = new Request($url);
+        $request->headers = ["Cookie: $this->WID"];
+        $response = $this->curl->SendRequest($request);
 
         if (preg_match_all('/<input type="hidden" id="iMatchFormId" value="(\d*)" name="iMatchFormId"/', $response, $output_array)) {
             return $output_array[1][0];
         }
     }
 
-    private function GetWedstrijdVerloopData($matchId)
+    private function GetWedstrijdVerloopData(DwfWedstrijd $wedstrijd): DwfWedstrijd
     {
-        $body = (object) [
+        $request = new Request($this->dwfUrl);
+        $request->headers = ["Cookie: $this->WID"];
+        $request->body = [
             'type' => 'setProgression',
             'iNumberItems' => 8, // blijkbaar 8 = alle punten
-            'sMatchId' => $matchId,
+            'sMatchId' => $wedstrijd->matchId,
             'sPageType' => 'resultForm',
-            'iMatchFormId' => $this->GetMatchFormId($matchId),
+            'iMatchFormId' => $this->GetMatchFormId($wedstrijd->matchId),
         ];
-        $headers = (object) [
-            "Cookie: $this->WID",
-        ];
-        $response = SendPost($this->dwfUrl, $body, $headers);
+        $response = $this->curl->SendRequest($request);
         $data = json_decode($response);
         if ($data->error->code != 0) {
-            throw new UnexpectedValueException('Kan wedstrijd verloop niet ophalen: ' . print_r($data, 1));
+            throw new \UnexpectedValueException('Kan wedstrijd verloop niet ophalen: ' . print_r($data, 1));
         }
 
-        $match = (object) [
-            "sets" => []
-        ];
-        $currentSet = -1;
-
+        $currentSet = null;
         $numberOfItems = count($data->results[0]->data);
         for ($i = $numberOfItems - 2; $i >= 0; $i--) {
             $point = $data->results[0]->data[$i]->data;
             switch ($point->sLogType) {
-                case "restartSet":
-                    $match->sets[] = (object) [
-                        "wissels" => (object) [
-                            "thuis" => (object) [],
-                            "uit" => (object) []
-                        ],
-                        "beginopstellingen" => (object) [
-                            "thuis" => (object) [],
-                            "uit" => (object) []
-                        ],
-                        "punten" => []
-                    ];
-                    $currentSet++;
+                case Punttype::RESTART_SET:
+                    $wedstrijd->sets[] = new DwfSet();
+                    $currentSet = $currentSet === null ? 0 : $currentSet + 1;
                     break;
-                case "point":
-                    $match->sets[$currentSet]->punten[] = (object) [
-                        "type" => "punt",
-                        "scorendTeam" => $point->sTeam == "home" ? "thuis" : "uit",
-                        "puntenThuisTeam" => $point->iSetResultHomeTeam,
-                        "puntenUitTeam" => $point->iSetResultOutTeam,
-                        "serverendTeam" => $point->sPreviousServiceFor == "home" ? "thuis" : "uit",
-                        "serveerder" => $point->iPreviousServiceForShirtNr
-                    ];
-
+                case Punttype::POINT:
+                    $wedstrijd->sets[$currentSet]->punten[] = new DwfPunt(
+                        $point->iSetResultHomeTeam,
+                        $point->iSetResultOutTeam,
+                        $point->sTeam == "home" ? ThuisUit::THUIS : ThuisUit::UIT,
+                        $point->sPreviousServiceFor == "home" ? ThuisUit::THUIS : ThuisUit::UIT,
+                        $point->iPreviousServiceForShirtNr
+                    );
                     break;
-                case "timeOut":
+                case Punttype::TIME_OUT:
+                    $wedstrijd->sets[$currentSet]->punten[] = new DwfTimeout(
+                        $point->iSetResultHomeTeam,
+                        $point->iSetResultOutTeam,
+                        $point->sTeam == "home" ? ThuisUit::THUIS : ThuisUit::UIT
+                    );
                     break;
-                case "substitution":
+                case Punttype::SUBSTITUTION:
                     if (preg_match('/^(Uitzonderlijke spelerswissel|Spelerswissel): (\d*) voor (\d*) in het veld$/', $point->sMessage, $output_array)) {
                         $spelerIn = intval($output_array[2]);
                         $spelerUit = intval($output_array[3]);
-                        $team = $point->sTeam == "home" ? "thuis" : "uit";
-                        $match->sets[$currentSet]->punten[] = (object) [
-                            "type" => "wissel",
-                            "spelerUit" => $spelerUit,
-                            "spelerIn" => $spelerIn,
-                            "team" => $team
-                        ];
+                        $team = $point->sTeam == "home" ? ThuisUit::THUIS : ThuisUit::UIT;
+
+                        $wedstrijd->sets[$currentSet]->punten[] = new DwfWissel(
+                            $spelerIn,
+                            $spelerUit,
+                            $team
+                        );
 
                         $isNewWissel = true;
-                        foreach ($match->sets[$currentSet]->wissels->{$team} as $uit => $in) {
+                        foreach ($wedstrijd->sets[$currentSet]->{$team . "wissels"} as $uit => $in) {
                             if ($spelerIn == $uit && $spelerUit == $in) {
                                 $isNewWissel = false;
                                 break;
                             }
                         }
                         if ($isNewWissel) {
-                            $match->sets[$currentSet]->wissels->{$team}->{$spelerUit} = $spelerIn;
+                            $wedstrijd->sets[$currentSet]->{$team . "wissels"}[$spelerUit] = $spelerIn;
                         }
                     }
                     break;
+                case Punttype::TICKET:
+                    $wedstrijd->sets[$currentSet]->punten[] = new DwfKaart(
+                        $point->iSetResultHomeTeam,
+                        $point->iSetResultOutTeam,
+                        $point->sTeam == "home" ? ThuisUit::THUIS : ThuisUit::UIT,
+                        $point->sMessage
+                    );
+                    break;
+                case Punttype::GAME_DELAY:
+                    $wedstrijd->sets[$currentSet]->punten[] =  new DwfSpelophoud(
+                        $point->iSetResultHomeTeam,
+                        $point->iSetResultOutTeam,
+                        $point->sMessage
+                    );
+                    break;
                 default:
-                    $var = 1;
                     break;
             }
         }
 
-        return $match;
+        return $wedstrijd;
     }
 
-    private function DetermineBeginopstelling(&$wedstrijdverloop)
+    private function DetermineBeginopstelling(DwfWedstrijd &$wedstrijd): void
     {
-        foreach ($wedstrijdverloop->sets as $currenSet => $set) {
-            foreach (["thuis", "uit"] as $team) {
+        foreach ($wedstrijd->sets as $currenSet => $set) {
+            foreach ([ThuisUit::THUIS, ThuisUit::UIT] as $team) {
                 $opstelling = [null, null, null, null, null, null];
                 $serveerder = null;
-                $gespeeldePunten = 0;
+                $aantalGespeeldePunten = 0;
                 $numberOfServeerders = 0;
                 foreach ($set->punten as $punt) {
-                    if ($punt->type == "punt" && $punt->serverendTeam == $team && $serveerder != $punt->serveerder) {
+                    if ($punt instanceof DwfPunt && $punt->serverendTeam == $team && $serveerder != $punt->serveerder) {
                         $serveerder = $punt->serveerder;
                         $opstelling[$numberOfServeerders++] = $serveerder;
                     }
-                    $gespeeldePunten++;
+                    $aantalGespeeldePunten++;
                     if ($numberOfServeerders == 6) {
                         break;
                     }
                 }
 
-                for ($i = $gespeeldePunten - 1; $i >= 0; $i--) {
+                for ($i = $aantalGespeeldePunten - 1; $i >= 0; $i--) {
                     $punt = $set->punten[$i];
-                    if ($punt->type == "wissel" && $punt->team == $team) {
+                    if ($punt instanceof DwfWissel && $punt->team == $team) {
                         for ($j = 0; $j < 6; $j++) {
                             if ($opstelling[$j] == $punt->spelerIn) {
                                 $opstelling[$j] = $punt->spelerUit;
@@ -288,14 +258,14 @@ class DwfGateway
                         }
                     }
                 }
-                $wedstrijdverloop->sets[$currenSet]->beginopstellingen->{$team} = $opstelling;
+                $wedstrijd->sets[$currenSet]->{$team . "opstelling"} = $opstelling;
             }
         }
     }
 
-    public function GetWedstrijdVerloop($matchId)
+    public function GetWedstrijdVerloop(DwfWedstrijd $wedstrijd): ?DwfWedstrijd
     {
-        $wedstrijdverloop = $this->GetWedstrijdVerloopData($matchId);
+        $wedstrijdverloop = $this->GetWedstrijdVerloopData($wedstrijd);
         if (count($wedstrijdverloop->sets) == 0) {
             return null;
         }

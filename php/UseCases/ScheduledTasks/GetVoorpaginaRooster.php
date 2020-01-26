@@ -1,94 +1,38 @@
 <?php
-include_once 'IInteractor.php';
-include_once 'TelFluitGateway.php';
-include_once 'NevoboGateway.php';
-include_once 'ZaalwachtGateway.php';
 
-class GetVoorpaginaRooster implements IInteractor
+namespace TeamPortal\UseCases;
+
+use TeamPortal\Gateways;
+
+class GetVoorpaginaRooster implements Interactor
 {
-    public function __construct($database)
-    {
-        $this->telFluitGateway = new TelFluitGateway($database);
-        $this->nevoboGateway = new NevoboGateway();
-        $this->zaalwachtGateway = new ZaalwachtGateway($database);
+    public function __construct(
+        Gateways\TelFluitGateway $telFluitGateway,
+        Gateways\NevoboGateway $nevoboGateway,
+        Gateways\ZaalwachtGateway $zaalwachtGateway
+    ) {
+        $this->telFluitGateway = $telFluitGateway;
+        $this->nevoboGateway = $nevoboGateway;
+        $this->zaalwachtGateway = $zaalwachtGateway;
     }
 
-    public function Execute()
+    public function Execute(object $data = null)
     {
-        $this->telFluitBeurten = $this->telFluitGateway->GetAllFluitEnTelbeurten();
-        $this->zaalwachten = $this->zaalwachtGateway->GetZaalwachtIndeling();
+        $telEnFluitWedstrijden = $this->telFluitGateway->GetAllFluitEnTelbeurten();
 
         $result = [];
-        $wedstrijden = $this->nevoboGateway->GetProgrammaForSporthal('LDNUN');
-        foreach ($wedstrijden as $counter => $wedstrijd) {
-            $i = $this->GetDateWithWedstrijden($result, $wedstrijd);
-            if ($i !== null) {
-                $result[$i]->wedstrijden[] = $this->MapWedstrijd($wedstrijd);
-            } else {
-                $date = $wedstrijd->timestamp->format('Y-m-d');
-                $result[] = (object) [
-                    "date" => $date,
-                    "datum" => GetDutchDate($wedstrijd->timestamp),
-                    "zaalwacht" => $this->GetZaalwacht($date),
-                    "wedstrijden" => [$this->MapWedstrijd($wedstrijd)],
-                ];
+        $wedstrijddagen = $this->nevoboGateway->GetWedstrijddagenForSporthal();
+        foreach ($wedstrijddagen as $wedstrijddag) {
+            $wedstrijddag->zaalwacht = $this->zaalwachtGateway->GetZaalwacht($wedstrijddag->date);
+            foreach ($wedstrijddag->speeltijden as $speeltijd) {
+                foreach ($speeltijd->wedstrijden as $wedstrijd) {
+                    $telEnFluitWedstrijd = Entities\Wedstrijd::GetWedstrijdWithMatchId($telEnFluitWedstrijden, $wedstrijd->matchId);
+                    $wedstrijd->AppendInformation($telEnFluitWedstrijd);
+                }
             }
-
-            if ($counter >= 20) {
-                break;
-            }
+            $result[] = new WedstrijddagModel($wedstrijddag);
         }
 
         return $result;
-    }
-
-    private function MapWedstrijd($wedstrijd)
-    {
-        return (object) [
-            "tijd" => $wedstrijd->timestamp->format('H:i'),
-            "teams" => $wedstrijd->team1 . " - " . $wedstrijd->team2,
-            "scheidsrechter" => $this->GetScheidsrechterForWedstrijd($wedstrijd->id),
-            "tellers" => $this->GetTellersForWedstrijd($wedstrijd->id),
-        ];
-    }
-
-    private function GetTellersForWedstrijd($matchId)
-    {
-        foreach ($this->telFluitBeurten as $telFluitBeurt) {
-            if ($telFluitBeurt->matchId == $matchId) {
-                return $telFluitBeurt->tellers;
-            }
-        }
-        return null;
-    }
-
-    private function GetScheidsrechterForWedstrijd($matchId)
-    {
-        foreach ($this->telFluitBeurten as $telFluitBeurt) {
-            if ($telFluitBeurt->matchId == $matchId) {
-                return $telFluitBeurt->scheidsrechter;
-            }
-        }
-        return null;
-    }
-
-    private function GetZaalwacht($date)
-    {
-        foreach ($this->zaalwachten as $zaalwacht) {
-            if ($zaalwacht->date == $date) {
-                return $zaalwacht->team;
-            }
-        }
-        return null;
-    }
-
-    private function GetDateWithWedstrijden($result, $wedstrijd)
-    {
-        foreach ($result as $i => $dateWithWedstrijden) {
-            if ($wedstrijd->timestamp && $dateWithWedstrijden->date == $wedstrijd->timestamp->format('Y-m-d')) {
-                return $i;
-            }
-        }
-        return null;
     }
 }
