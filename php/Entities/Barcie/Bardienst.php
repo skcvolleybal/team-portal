@@ -2,6 +2,9 @@
 
 namespace TeamPortal\Entities;
 
+use TeamPortal\Common\DateFunctions;
+use TeamPortal\Common\Utilities;
+
 class Bardienst
 {
     public ?int $id;
@@ -21,7 +24,7 @@ class Bardienst
 
     public function GetStartTime()
     {
-        $weekday = StringToInt(date('w', $this->bardag->date));
+        $weekday = Utilities::StringToInt(date('w', $this->bardag->date));
         $date = DateFunctions::GetYmdNotation($this->bardag->date);
         switch ($weekday) {
             case 0:

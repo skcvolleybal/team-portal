@@ -2,6 +2,8 @@
 
 namespace TeamPortal\Entities;
 
+use TeamPortal\Common\DateFunctions;
+
 class Barbeschikbaarheid extends Beschikbaarheid
 {
     public Bardag $bardag;
