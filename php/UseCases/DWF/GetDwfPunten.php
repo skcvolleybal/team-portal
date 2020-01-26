@@ -19,7 +19,7 @@ class GetDwfPunten implements Interactor
     {
         $matchId = $data->matchId ?? null;
         $matchIdregex = "/3000(B){0,1}[H|D]\d[A-Z] [(\d{2})|[A-Z]{2}/";
-        if (!preg_match_all($matchIdregex, $matchId)) {
+        if ($matchId && !preg_match_all($matchIdregex, $matchId)) {
             throw new \UnexpectedValueException("matchId klopt niet: '$matchId'. Bv: 3000 H4G DG");
         }
 
