@@ -10,4 +10,6 @@ END
 scp -i /c/Users/jonat/.ssh/antagonist-ssh -r dist/* deb105013n2@skcvolleybal.nl:~/public_html/team-portal
 scp -i /c/Users/jonat/.ssh/antagonist-ssh -r php deb105013n2@skcvolleybal.nl:~/public_html/team-portal
 scp -i /c/Users/jonat/.ssh/antagonist-ssh -r static-pages deb105013n2@skcvolleybal.nl:~/public_html/team-portal
-curl https://www.skcvolleybal.nl/team-portal/api/tasks/daily-tasks
+ssh -T deb105013n2@skcvolleybal.nl -i /c/Users/jonat/.ssh/antagonist-ssh <<- 'END'
+cp /home/deb105013n2/public_html/team-portal/Configuration.php /home/deb105013n2/public_html/team-portal/php/Configuration.php
+END

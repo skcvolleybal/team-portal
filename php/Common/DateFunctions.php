@@ -10,7 +10,7 @@ class DateFunctions
     static function GetDutchDate(\DateTime $date): string
     {
         if ($date) {
-            return strftime('%e %B %Y', $date->getTimestamp());
+            return trim(strftime('%e %B %Y', $date->getTimestamp()));
         }
     }
 
