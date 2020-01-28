@@ -120,6 +120,8 @@ class EmailGateway
         $PHPMailer->addAddress($email->receiver->email, $email->receiver->naam);
         $PHPMailer->Subject = $email->titel;
         $PHPMailer->msgHTML($email->body);
+        $PHPMailer->addCustomHeader("List-Unsubscribe", '<unsubscribe@skcvolleybal.nl>');
+
 
         $this->PrintEmail($email);
 
