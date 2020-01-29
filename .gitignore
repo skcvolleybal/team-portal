@@ -76,3 +76,4 @@ vendor
 .gradle
 *.keystore
 *.apk
+deployment.tar
