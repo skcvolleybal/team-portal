@@ -2,6 +2,7 @@
 
 namespace TeamPortal\UseCases;
 
+use TeamPortal\Entities\Wedstrijd;
 use TeamPortal\Gateways;
 
 class GetVoorpaginaRooster implements Interactor
@@ -26,7 +27,7 @@ class GetVoorpaginaRooster implements Interactor
             $wedstrijddag->zaalwacht = $this->zaalwachtGateway->GetZaalwacht($wedstrijddag->date);
             foreach ($wedstrijddag->speeltijden as $speeltijd) {
                 foreach ($speeltijd->wedstrijden as $wedstrijd) {
-                    $telEnFluitWedstrijd = Entities\Wedstrijd::GetWedstrijdWithMatchId($telEnFluitWedstrijden, $wedstrijd->matchId);
+                    $telEnFluitWedstrijd = Wedstrijd::GetWedstrijdWithMatchId($telEnFluitWedstrijden, $wedstrijd->matchId);
                     $wedstrijd->AppendInformation($telEnFluitWedstrijd);
                 }
             }
