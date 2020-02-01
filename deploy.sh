@@ -1,6 +1,11 @@
 # build angular application
 npm run build
 
+# build php code
+cd php
+composer dumpautoload
+cd ..
+
 # remove any caches
 rm  -R ./php/cache
 rm  -R ./php/errors
