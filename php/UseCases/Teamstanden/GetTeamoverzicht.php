@@ -38,11 +38,6 @@ class GetTeamoverzicht implements Interactor
             $team->uitslagen = array_slice($uitslagen, 0, 3);
             $team->programma = array_slice($programma, 0, 3);
 
-            $dirname = dirname(__FILE__) . "/../../../Teamstanden";
-            if (!file_exists($dirname)) {
-                mkdir($dirname);
-            }
-
             $result = new TeamoverzichtModel($team);
             break;
         }

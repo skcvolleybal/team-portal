@@ -55,7 +55,7 @@ class GetTeamstanden implements Interactor
             "__DATABORDERCOLOR__" => implode(", ", $bordercolors),
         ];
 
-        $body = Utilities::FillTemplate($template, $placeholders, ["__", "__"]);
+        $body = Utilities::FillTemplate($template, $placeholders);
         echo $body;
     }
 }
