@@ -21,17 +21,18 @@ class GespeeldeWedstrijdenGateway
                     *
                   FROM DWF_wedstrijden';
         $rows = $this->database->Execute($query);
-        $result = [];
-        foreach ($rows as $row) {
-            $result[] = new DwfWedstrijd(
-                $row->id,
-                new Team($row->skcTeam),
-                new Team($row->otherTeam),
-                $row->setsSkcTeam,
-                $row->setsOtherTeam
-            );
-        }
-        return $result;
+        return $this->MapToDomainModel($rows);
+    }
+
+    public function GetGespeeldeWedstrijdenByTeam(Team $team): array
+    {
+        $query = 'SELECT 
+                    *
+                  FROM DWF_wedstrijden
+                  WHERE skcTeam = ?';
+        $params = [$team->naam];
+        $rows = $this->database->Execute($query, $params);
+        return $this->MapToDomainModel($rows);
     }
 
     public function AddWedstrijd(DwfWedstrijd $wedstrijd): void
@@ -84,5 +85,20 @@ class GespeeldeWedstrijdenGateway
             $opstelling[5]
         ];
         $this->database->Execute($query, $params);
+    }
+
+    private function MapToDomainModel(array $rows)
+    {
+        $result = [];
+        foreach ($rows as $row) {
+            $result[] = new DwfWedstrijd(
+                $row->id,
+                new Team($row->skcTeam),
+                new Team($row->otherTeam),
+                $row->setsSkcTeam,
+                $row->setsOtherTeam
+            );
+        }
+        return $result;
     }
 }

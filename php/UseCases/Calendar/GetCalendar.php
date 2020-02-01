@@ -4,6 +4,10 @@ namespace TeamPortal\UseCases;
 
 use TeamPortal\Gateways;
 use Kigkonsult\Icalcreator\Vcalendar;
+use TeamPortal\Common\DateFunctions;
+use TeamPortal\Common\Utilities;
+use TeamPortal\Entities\Persoon;
+use TeamPortal\Entities\Wedstrijd;
 
 class GetCalendar implements Interactor
 {
@@ -65,7 +69,7 @@ class GetCalendar implements Interactor
             foreach ($wedstrijddag->speeltijden as $speeltijd) {
                 foreach ($speeltijd->wedstrijden as $wedstrijd) {
                     if ($isTeller) {
-                        $telWedstrijd = Entities\Wedstrijd::GetWedstrijdWithMatchId($telbeurten, $wedstrijd->matchId);
+                        $telWedstrijd = Wedstrijd::GetWedstrijdWithMatchId($telbeurten, $wedstrijd->matchId);
                         if ($telWedstrijd) {
                             $telWedstrijd->AppendInformation($wedstrijd);
                             $start = $telWedstrijd->timestamp;
@@ -76,7 +80,7 @@ class GetCalendar implements Interactor
                     }
 
                     if ($isScheidsrechter) {
-                        $fluitWedstrijd = Entities\Wedstrijd::GetWedstrijdWithMatchId($fluitbeurten, $wedstrijd->matchId);
+                        $fluitWedstrijd = Wedstrijd::GetWedstrijdWithMatchId($fluitbeurten, $wedstrijd->matchId);
                         if ($fluitWedstrijd) {
                             $fluitWedstrijd->AppendInformation($wedstrijd);
                             $start = $fluitWedstrijd->timestamp;
@@ -102,9 +106,9 @@ class GetCalendar implements Interactor
         return $result;
     }
 
-    private function GetTitle(Entities\Persoon $persoon, bool $isScheidsrechter): string
+    private function GetTitle(Persoon $persoon, bool $isScheidsrechter): string
     {
-        $seizoen = GetCurrentSeizoen();
+        $seizoen = Utilities::GetCurrentSeizoen();
         $title = null;
         if ($persoon->team === null) {
             if ($isScheidsrechter) {
@@ -122,7 +126,7 @@ class GetCalendar implements Interactor
         return $title;
     }
 
-    private function CreateCalendar(Entities\Persoon $persoon, string $title): Vcalendar
+    private function CreateCalendar(Persoon $persoon, string $title): Vcalendar
     {
         $postfix = $persoon->team ? $persoon->team->GetSkcNaam() : "jou";
         return Vcalendar::factory([Vcalendar::UNIQUE_ID => "https://www.skcvolleybal.nl/team-portal/"])

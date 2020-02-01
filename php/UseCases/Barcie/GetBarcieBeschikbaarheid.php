@@ -3,7 +3,8 @@
 namespace TeamPortal\UseCases;
 
 use TeamPortal\Common\DateFunctions;
-use TeamPortal\Entities;
+use TeamPortal\Entities\Barbeschikbaarheid;
+use TeamPortal\Entities\Team;
 use TeamPortal\Gateways;
 
 class GetBarcieBeschikbaarheid implements Interactor
@@ -47,14 +48,14 @@ class GetBarcieBeschikbaarheid implements Interactor
                 "date" => DateFunctions::GetYmdNotation($bardag->date),
                 "beschikbaarheid" => $isBeschikbaar,
                 "eigenWedstrijden" => $this->MapToUsecase($wedstrijden, $user->team, $user->coachteam),
-                "isMogelijk" => Entities\Barbeschikbaarheid::IsMogelijk($wedstrijden),
+                "isMogelijk" => Barbeschikbaarheid::IsMogelijk($wedstrijden),
             ];
         }
 
         return $response;
     }
 
-    private function MapToUsecase(array $wedstrijden, ?Entities\Team $team, ?Entities\Team $coachteam)
+    private function MapToUsecase(array $wedstrijden, ?Team $team, ?Team $coachteam)
     {
         $result = [];
         foreach ($wedstrijden as $wedstrijd) {

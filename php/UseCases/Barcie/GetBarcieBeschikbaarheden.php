@@ -30,6 +30,10 @@ class GetBarcieBeschikbaarheden implements Interactor
         $result = new Beschikbaarheidssamenvatting();
         foreach ($beschikbaarheden as $beschikbaarheid) {
             $barlid = $this->GetBarlid($barleden, $beschikbaarheid->persoon);
+            if ($barlid === null) {
+                continue;
+            }
+
             if ($beschikbaarheid->isBeschikbaar) {
                 $result->Ja[] = $barlid;
             } else {

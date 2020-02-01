@@ -4,7 +4,8 @@ namespace TeamPortal\UseCases;
 
 use TeamPortal\Common\DateFunctions;
 use TeamPortal\Gateways;
-use TeamPortal\Entities;
+use TeamPortal\Entities\Persoon;
+use TeamPortal\Entities\Wedstrijd;
 
 class GetScheidsrechters implements Interactor
 {
@@ -64,7 +65,7 @@ class GetScheidsrechters implements Interactor
         return $result;
     }
 
-    private function GetFluitbeschikbaarheid(Entities\Persoon $scheidsrechter, array $fluitBeschikbaarheden)
+    private function GetFluitbeschikbaarheid(Persoon $scheidsrechter, array $fluitBeschikbaarheden)
     {
         foreach ($fluitBeschikbaarheden as $fluitBeschikbaarheid) {
             if ($fluitBeschikbaarheid->persoon->id == $scheidsrechter->id) {
@@ -74,7 +75,7 @@ class GetScheidsrechters implements Interactor
         return null;
     }
 
-    private function MapToUsecaseModel(Entities\Persoon $scheidsrechter, ?bool $isBeschikbaar, ?Entities\Wedstrijd $wedstrijd)
+    private function MapToUsecaseModel(Persoon $scheidsrechter, ?bool $isBeschikbaar, ?Wedstrijd $wedstrijd)
     {
         return (object) [
             "id" => $scheidsrechter->id,

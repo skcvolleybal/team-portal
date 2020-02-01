@@ -3,8 +3,11 @@
 namespace TeamPortal\UseCases;
 
 use TeamPortal\Common\DateFunctions;
+use TeamPortal\Entities\Persoon;
 use TeamPortal\Gateways;
-use TeamPortal\Entities;
+use TeamPortal\Entities\Speler;
+use TeamPortal\Entities\Team;
+use TeamPortal\Entities\Wedstrijd;
 
 class GetWedstrijdOverzicht implements Interactor
 {
@@ -32,7 +35,7 @@ class GetWedstrijdOverzicht implements Interactor
             $teamprogramma,
             $coachProgramma
         );
-        usort($wedstrijden, Entities\Wedstrijd::class . "::Compare");
+        usort($wedstrijden, Wedstrijd::class . "::Compare");
 
         $teamMatchIds = array_map(function ($wedstrijd) {
             return $wedstrijd->matchId;
@@ -82,7 +85,7 @@ class GetWedstrijdOverzicht implements Interactor
         return $overzicht;
     }
 
-    private function GetInvalteams(array $invalteams, Entities\Wedstrijd $eigenWedstrijd)
+    private function GetInvalteams(array $invalteams, Wedstrijd $eigenWedstrijd)
     {
         $result = [];
         $datumWedstrijd = DateFunctions::GetYmdNotation($eigenWedstrijd->timestamp);
@@ -91,7 +94,7 @@ class GetWedstrijdOverzicht implements Interactor
             foreach ($invalTeam->programma as $wedstrijd) {
                 $datumInvalwedstrijd = DateFunctions::GetYmdNotation($wedstrijd->timestamp);
                 if ($datumWedstrijd === $datumInvalwedstrijd) {
-                    $invalTeamWedstrijd = Entities\Wedstrijd::CreateFromNevoboWedstrijd(
+                    $invalTeamWedstrijd = Wedstrijd::CreateFromNevoboWedstrijd(
                         $wedstrijd->matchId,
                         $wedstrijd->team1,
                         $wedstrijd->team2,
@@ -110,7 +113,7 @@ class GetWedstrijdOverzicht implements Interactor
         return $result;
     }
 
-    private function GetInvalteamsForTeam(?Entities\Team $eigenTeam): array
+    private function GetInvalteamsForTeam(?Team $eigenTeam): array
     {
         $invalTeams = [];
 
@@ -118,8 +121,8 @@ class GetWedstrijdOverzicht implements Interactor
             return $invalTeams;
         }
         $teams = $eigenTeam->IsMale() ?
-            Entities\Team::GetAlleHerenTeams() :
-            Entities\Team::GetAlleDamesTeams();
+            Team::GetAlleHerenTeams() :
+            Team::GetAlleDamesTeams();
 
 
         foreach ($teams as $team) {
@@ -137,7 +140,7 @@ class GetWedstrijdOverzicht implements Interactor
         return $invalTeams;
     }
 
-    private function GetAanwezighedenForWedstrijd(string $matchId, array $aanwezigheden, Entities\Team $team): Aanwezigheidssamenvatting
+    private function GetAanwezighedenForWedstrijd(string $matchId, array $aanwezigheden, Team $team): Aanwezigheidssamenvatting
     {
         $result = new Aanwezigheidssamenvatting();
         foreach ($aanwezigheden as $aanwezigheid) {
@@ -145,7 +148,7 @@ class GetWedstrijdOverzicht implements Interactor
                 if ($aanwezigheid->IsCoach()) {
                     $result->coaches[] = $aanwezigheid;
                 } else {
-                    $newAanwezigheid = new Entities\Speler(
+                    $newAanwezigheid = new Speler(
                         $aanwezigheid->persoon->id,
                         $aanwezigheid->persoon->naam,
                         !$team->Equals($aanwezigheid->persoon->team)
@@ -161,7 +164,7 @@ class GetWedstrijdOverzicht implements Interactor
         return $result;
     }
 
-    private function GetOnbekenden(object $aanwezigheden, Entities\Team $team)
+    private function GetOnbekenden(object $aanwezigheden, Team $team)
     {
         $teamgenoten = $team->teamgenoten;
         $bekendeAanwezigheden = array_merge($aanwezigheden->aanwezigen, $aanwezigheden->afwezigen);
@@ -180,7 +183,7 @@ class GetWedstrijdOverzicht implements Interactor
         return $teamgenoten;
     }
 
-    private function IsAanwezig(array $aanwezigheden, string $matchId, Entities\Persoon $user)
+    private function IsAanwezig(array $aanwezigheden, string $matchId, Persoon $user)
     {
         foreach ($aanwezigheden as $aanwezigheid) {
             if ($aanwezigheid->persoon->id === $user->id && $aanwezigheid->matchId === $matchId) {

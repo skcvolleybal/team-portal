@@ -3,7 +3,9 @@
 namespace TeamPortal\Gateways;
 
 use TeamPortal\Common\Database;
-use TeamPortal\Entities;
+use TeamPortal\Entities\Aanwezigheid;
+use TeamPortal\Entities\Persoon;
+use TeamPortal\Entities\Team;
 
 class AanwezigheidGateway
 {
@@ -12,7 +14,7 @@ class AanwezigheidGateway
         $this->database = $database;
     }
 
-    public function GetAanwezigheid(Entities\Persoon $user, string $matchId, string $rol): Entities\Aanwezigheid
+    public function GetAanwezigheid(Persoon $user, string $matchId, string $rol): Aanwezigheid
     {
         $query = 'SELECT 
                     A.id,
@@ -44,7 +46,7 @@ class AanwezigheidGateway
         ];
         $rows = $this->database->Execute($query, $params);
         if (count($rows) == 0) {
-            return new Entities\Aanwezigheid($matchId, $user, null, $rol);
+            return new Aanwezigheid($matchId, $user, null, $rol);
         }
         return $this->MapToAanwezigheden($rows)[0];
     }
@@ -82,7 +84,7 @@ class AanwezigheidGateway
         return $this->MapToAanwezigheden($rows);
     }
 
-    public function Update(Entities\Aanwezigheid $aanwezigheid): void
+    public function Update(Aanwezigheid $aanwezigheid): void
     {
         $query = 'UPDATE TeamPortal_aanwezigheden
                   SET is_aanwezig = ?
@@ -91,7 +93,7 @@ class AanwezigheidGateway
         $this->database->Execute($query, $params);
     }
 
-    public function Insert(Entities\Aanwezigheid $aanwezigheid): void
+    public function Insert(Aanwezigheid $aanwezigheid): void
     {
         $query = 'INSERT INTO TeamPortal_aanwezigheden (user_id, match_id, is_aanwezig, rol)
                   VALUES (?, ?, ?, ?)';
@@ -104,7 +106,7 @@ class AanwezigheidGateway
         $this->database->Execute($query, $params);
     }
 
-    public function Delete(Entities\Aanwezigheid $aanwezigheid): void
+    public function Delete(Aanwezigheid $aanwezigheid): void
     {
         $query = 'DELETE FROM TeamPortal_aanwezigheden WHERE id = ?';
         $params = [$aanwezigheid->id];
@@ -115,16 +117,16 @@ class AanwezigheidGateway
     {
         $result = [];
         foreach ($rows as $row) {
-            $persoon = new Entities\Persoon(
+            $persoon = new Persoon(
                 $row->userId,
                 $row->naam,
                 $row->email
             );
             if ($row->teamId) {
-                $persoon->team = new Entities\Team($row->teamnaam, $row->teamId);
+                $persoon->team = new Team($row->teamnaam, $row->teamId);
             }
 
-            $result[] = new Entities\Aanwezigheid(
+            $result[] = new Aanwezigheid(
                 $row->matchId,
                 $persoon,
                 $row->isAanwezig === "Ja",

@@ -3,7 +3,7 @@
 namespace TeamPortal\UseCases;
 
 use TeamPortal\Gateways;
-use TeamPortal\Entities;
+use TeamPortal\Entities\Wedstrijd;
 
 class UpdateScheidsrechter implements Interactor
 {
@@ -27,7 +27,7 @@ class UpdateScheidsrechter implements Interactor
         $wedstrijd->scheidsrechter = $this->joomlaGateway->GetScheidsrechter($data->scheidsrechterId);
 
         $uscWedstrijden = $this->nevoboGateway->GetProgrammaForSporthal();
-        $uscWedstrijd = Entities\Wedstrijd::GetWedstrijdWithMatchId($uscWedstrijden, $data->matchId);
+        $uscWedstrijd = Wedstrijd::GetWedstrijdWithMatchId($uscWedstrijden, $data->matchId);
         $wedstrijd->AppendInformation($uscWedstrijd);
 
         if ($wedstrijd->id === null) {

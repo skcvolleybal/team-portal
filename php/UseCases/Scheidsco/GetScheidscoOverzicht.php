@@ -3,7 +3,6 @@
 namespace TeamPortal\UseCases;
 
 use TeamPortal\Gateways;
-use TeamPortal\Entities;
 
 class GetScheidscoOverzicht implements Interactor
 {

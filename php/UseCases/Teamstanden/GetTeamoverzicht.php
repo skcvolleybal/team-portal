@@ -2,6 +2,7 @@
 
 namespace TeamPortal\UseCases;
 
+use TeamPortal\Entities\Team;
 use TeamPortal\Gateways;
 
 class GetTeamoverzicht implements Interactor
@@ -20,7 +21,7 @@ class GetTeamoverzicht implements Interactor
             throw new InvalidArgumentException("Teamnaam is leeg");
         }
 
-        $currentTeam = new Entities\Team($data->teamnaam);
+        $currentTeam = new Team($data->teamnaam);
 
         $teams = Team::$alleSkcTeams;
         foreach ($teams as $team) {

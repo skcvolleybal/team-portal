@@ -3,7 +3,8 @@
 namespace TeamPortal\UseCases;
 
 use TeamPortal\Common\DateFunctions;
-use TeamPortal\Entities;
+use TeamPortal\Entities\Bardag;
+use TeamPortal\Entities\Barshift;
 
 class BardagModel
 {
@@ -11,7 +12,7 @@ class BardagModel
     public string $datum;
     public array $shifts = [];
 
-    public function __construct(Entities\Bardag $dag)
+    public function __construct(Bardag $dag)
     {
         $this->date = DateFunctions::GetYmdNotation($dag->date);
         $this->datum = DateFunctions::GetDutchDate($dag->date);
@@ -24,7 +25,7 @@ class BardagModel
         }
 
         if (count($this->shifts) == 0) {
-            $this->shifts[] = new BarshiftModel(new Entities\Barshift(1));
+            $this->shifts[] = new BarshiftModel(new Barshift(1));
         }
     }
 }

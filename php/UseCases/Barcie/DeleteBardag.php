@@ -28,7 +28,7 @@ class DeleteBardag implements Interactor
         }
 
         if (count($bardag->shifts) > 0) {
-            throw new \UnexpectedValueException("Datum heeft nog aanwezigheden");
+            throw new \UnexpectedValueException("Datum heeft nog diensten");
         }
 
         $this->barcieGateway->DeleteBardag($bardag);

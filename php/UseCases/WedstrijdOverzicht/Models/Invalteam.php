@@ -2,14 +2,15 @@
 
 namespace TeamPortal\UseCases;
 
-use TeamPortal\Entities;
+use TeamPortal\Entities\Team;
+use TeamPortal\Entities\Wedstrijd;
 
-class Invalteam extends Entities\Team
+class Invalteam extends Team
 {
-    public ?Entities\Wedstrijd $eigenWedstrijd;
+    public ?Wedstrijd $eigenWedstrijd;
     public bool $isMogelijk;
 
-    public function __construct(Entities\Team $team, ?Entities\Wedstrijd $eigenWedstrijd)
+    public function __construct(Team $team, ?Wedstrijd $eigenWedstrijd)
     {
         $this->eigenWedstrijd = $eigenWedstrijd;
         parent::__construct($team->naam, $team->id, $team->teamgenoten);

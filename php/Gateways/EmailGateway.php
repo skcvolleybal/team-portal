@@ -4,7 +4,8 @@ namespace TeamPortal\Gateways;
 
 use PHPMailer\PHPMailer\PHPMailer;
 use TeamPortal\Common\Database;
-use TeamPortal\Entities;
+use TeamPortal\Entities\Email;
+use TeamPortal\Entities\Persoon;
 
 class EmailGateway
 {
@@ -74,11 +75,11 @@ class EmailGateway
         }
 
         foreach ($rows as $row) {
-            $newEmail = new Entities\Email(
+            $newEmail = new Email(
                 $row->titel,
                 $row->body,
-                new Entities\Persoon(-1, $row->receiver, $row->receiverEmail),
-                new Entities\Persoon(-1, $row->sender, $row->senderEmail),
+                new Persoon(-1, $row->receiver, $row->receiverEmail),
+                new Persoon(-1, $row->sender, $row->senderEmail),
                 $row->id
             );
 
@@ -88,7 +89,7 @@ class EmailGateway
         }
     }
 
-    private function DoesEmailExist(Entities\Email $email): bool
+    private function DoesEmailExist(Email $email): bool
     {
         $signature = $email->signature;
         $query = "SELECT id FROM teamportal_email WHERE signature = '$signature'";
@@ -97,14 +98,14 @@ class EmailGateway
         return count($emails) > 0;
     }
 
-    private function MarkEmailAsSent(Entities\Email $email): void
+    private function MarkEmailAsSent(Email $email): void
     {
         $query = "UPDATE teamportal_email set send_date = NOW() where id = ?";
         $params = [$email->id];
         $this->database->Execute($query, $params);
     }
 
-    private function SendMail(Entities\Email $email): bool
+    private function SendMail(Email $email): bool
     {
         if (
             !filter_var($email->sender->email, FILTER_VALIDATE_EMAIL) ||
@@ -133,7 +134,7 @@ class EmailGateway
         return true;
     }
 
-    private function PrintEmail(Entities\Email $email): void
+    private function PrintEmail(Email $email): void
     {
         echo "From: " . $email->sender->naam . " (" . $email->sender->email .  ")<br>";
         echo "To: " . $email->receiver->naam . " (" . $email->receiver->email . ")<br>";

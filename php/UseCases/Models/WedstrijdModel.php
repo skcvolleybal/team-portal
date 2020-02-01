@@ -3,7 +3,8 @@
 namespace TeamPortal\UseCases;
 
 use TeamPortal\Common\DateFunctions;
-use TeamPortal\Entities;
+use TeamPortal\Entities\Persoon;
+use TeamPortal\Entities\Wedstrijd;
 
 class WedstrijdModel extends Overzichtsitem
 {
@@ -22,7 +23,7 @@ class WedstrijdModel extends Overzichtsitem
     public ?string $locatie;
     public array $coaches = [];
 
-    public function __construct(Entities\Wedstrijd $wedstrijd)
+    public function __construct(Wedstrijd $wedstrijd)
     {
         $this->matchId = $wedstrijd->matchId;
         $this->tijd = DateFunctions::GetTime($wedstrijd->timestamp);
@@ -39,7 +40,7 @@ class WedstrijdModel extends Overzichtsitem
         parent::__construct("wedstrijd", $wedstrijd->timestamp);
     }
 
-    public function SetPersonalInformation(Entities\Persoon $user)
+    public function SetPersonalInformation(Persoon $user)
     {
         if ($user->team) {
             $this->isTeam1 = $this->team1 ===  $user->team->naam;

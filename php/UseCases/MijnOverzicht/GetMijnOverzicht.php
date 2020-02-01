@@ -3,7 +3,12 @@
 namespace TeamPortal\UseCases;
 
 use TeamPortal\Common\DateFunctions;
-use TeamPortal\Entities;
+use TeamPortal\Entities\Bardienst;
+use TeamPortal\Entities\Persoon;
+use TeamPortal\Entities\Speeltijd;
+use TeamPortal\Entities\Wedstrijd;
+use TeamPortal\Entities\Wedstrijddag;
+use TeamPortal\Entities\Zaalwacht;
 use TeamPortal\Gateways;
 
 class MijnOverzicht implements Interactor
@@ -36,7 +41,7 @@ class MijnOverzicht implements Interactor
         $uscWedstrijden = $this->nevoboGateway->GetProgrammaForSporthal();
         $wedstrijden = $this->telFluitGateway->GetFluitEnTelbeurten($user);
         foreach ($wedstrijden as $wedstrijd) {
-            $uscMatch = Entities\Wedstrijd::GetWedstrijdWithMatchId($uscWedstrijden, $wedstrijd->matchId);
+            $uscMatch = Wedstrijd::GetWedstrijdWithMatchId($uscWedstrijden, $wedstrijd->matchId);
             $wedstrijd->AppendInformation($uscMatch);
             $this->AddWedstrijdToOverzicht($overzicht, $wedstrijd);
         }
@@ -62,15 +67,15 @@ class MijnOverzicht implements Interactor
             }
         }
 
-        usort($overzicht, Entities\Wedstrijddag::class . "::Compare");
+        usort($overzicht, Wedstrijddag::class . "::Compare");
         foreach ($overzicht as $dag) {
-            usort($dag->speeltijden, Entities\Speeltijd::class . "::Compare");
+            usort($dag->speeltijden, Speeltijd::class . "::Compare");
         }
 
         return $this->MapToUseCaseModel($overzicht, $user);
     }
 
-    private function MapToUseCaseModel(array $wedstrijddagen, Entities\Persoon $persoon): array
+    private function MapToUseCaseModel(array $wedstrijddagen, Persoon $persoon): array
     {
         $result = [];
         foreach ($wedstrijddagen as $wedstrijddag) {
@@ -86,7 +91,7 @@ class MijnOverzicht implements Interactor
         return $result;
     }
 
-    private function AddZaalwachtToOverzicht(array &$dagen, Entities\Zaalwacht $zaalwacht): void
+    private function AddZaalwachtToOverzicht(array &$dagen, Zaalwacht $zaalwacht): void
     {
         foreach ($dagen as $dag) {
             if (DateFunctions::AreDatesEqual($dag->date, $zaalwacht->date)) {
@@ -94,12 +99,12 @@ class MijnOverzicht implements Interactor
                 return;
             }
         }
-        $dag = new Entities\Wedstrijddag($zaalwacht->date);
+        $dag = new Wedstrijddag($zaalwacht->date);
         $dag->zaalwacht = $zaalwacht;
         $dagen[] = $dag;
     }
 
-    private function AddWedstrijdToOverzicht(array &$dagen, Entities\Wedstrijd $wedstrijd): void
+    private function AddWedstrijdToOverzicht(array &$dagen, Wedstrijd $wedstrijd): void
     {
         foreach ($dagen as $dag) {
             if (DateFunctions::AreDatesEqual($dag->date, $wedstrijd->timestamp)) {
@@ -109,21 +114,21 @@ class MijnOverzicht implements Interactor
                         return;
                     }
                 }
-                $speeltijd = new Entities\Speeltijd($wedstrijd->timestamp);
+                $speeltijd = new Speeltijd($wedstrijd->timestamp);
                 $speeltijd->wedstrijden[] = $wedstrijd;
                 $dag->speeltijden[] = $speeltijd;
                 return;
             }
         }
 
-        $dag = new Entities\Wedstrijddag($wedstrijd->timestamp);
-        $speeltijd = new Entities\Speeltijd($wedstrijd->timestamp);
+        $dag = new Wedstrijddag($wedstrijd->timestamp);
+        $speeltijd = new Speeltijd($wedstrijd->timestamp);
         $speeltijd->wedstrijden[] = $wedstrijd;
         $dag->speeltijden[] = $speeltijd;
         $dagen[] = $dag;
     }
 
-    private function AddBardienstToOverzicht(array &$dagen, Entities\Bardienst $dienst)
+    private function AddBardienstToOverzicht(array &$dagen, Bardienst $dienst)
     {
         foreach ($dagen as $dag) {
             if (DateFunctions::AreDatesEqual($dag->date, $dienst->bardag->date)) {
@@ -132,7 +137,7 @@ class MijnOverzicht implements Interactor
             }
         }
 
-        $dag = new Entities\Wedstrijddag($dienst->bardag->date);
+        $dag = new Wedstrijddag($dienst->bardag->date);
         $dag->bardiensten[] = $dienst;
         $dagen[] = $dag;
     }

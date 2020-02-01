@@ -2,6 +2,7 @@
 
 namespace TeamPortal\UseCases;
 
+use TeamPortal\Entities\Wedstrijd;
 use TeamPortal\Gateways;
 
 class SynchronizeWedstrijden implements Interactor
@@ -23,7 +24,7 @@ class SynchronizeWedstrijden implements Interactor
         $dbWedstrijden = $this->telFluitGateway->GetAllFluitEnTelbeurten();
 
         foreach ($dbWedstrijden as $wedstrijd) {
-            $nevoboWedstrijd = Entities\Wedstrijd::GetWedstrijdWithMatchId($nevoboWedstrijden, $wedstrijd->matchId);
+            $nevoboWedstrijd = Wedstrijd::GetWedstrijdWithMatchId($nevoboWedstrijden, $wedstrijd->matchId);
             if ($nevoboWedstrijd === null) {
                 continue;
             }

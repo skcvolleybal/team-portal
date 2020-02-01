@@ -4,7 +4,12 @@ namespace TeamPortal\Gateways;
 
 use SimplePie;
 use TeamPortal\Common\DateFunctions;
-use TeamPortal\Entities;
+use TeamPortal\Common\Utilities;
+use TeamPortal\Entities\Speeltijd;
+use TeamPortal\Entities\Stand;
+use TeamPortal\Entities\Team;
+use TeamPortal\Entities\Wedstrijd;
+use TeamPortal\Entities\Wedstrijddag;
 
 class NevoboGateway
 {
@@ -56,7 +61,7 @@ class NevoboGateway
         foreach ($rankings as $ranking) {
             $team = $ranking['child'][$this->xmlns];
 
-            $nummer = StringToInt($team['nummer'][0]['data']);
+            $nummer = Utilities::StringToInt($team['nummer'][0]['data']);
             $teamnaam = $team['team'][0]['data'];
             $wedstrijden = $team['wedstrijden'][0]['data'];
             $punten = $team['punten'][0]['data'];
@@ -67,7 +72,7 @@ class NevoboGateway
 
             $results[] = new Stand(
                 $nummer,
-                new Entities\Team($teamnaam),
+                new Team($teamnaam),
                 $wedstrijden,
                 $punten,
                 $setsVoor,
@@ -96,7 +101,7 @@ class NevoboGateway
     {
         $endDate = new \DateTime("+$dagen days");
         $wedstrijden = $this->GetProgrammaForSporthal($sporthal);
-        usort($wedstrijden, Entities\Wedstrijd::class . "::Compare");
+        usort($wedstrijden, Wedstrijd::class . "::Compare");
         $wedstrijddagen = [];
         $currentDag = null;
         $currentSpeeltijd = null;
@@ -107,13 +112,13 @@ class NevoboGateway
             if ($currentDag !== DateFunctions::GetYmdNotation($wedstrijd->timestamp)) {
                 $currentDag = DateFunctions::GetYmdNotation($wedstrijd->timestamp);
                 $currentSpeeltijd = null;
-                $wedstrijddagen[] = new Entities\Wedstrijddag(DateFunctions::CreateDateTime($currentDag));
+                $wedstrijddagen[] = new Wedstrijddag(DateFunctions::CreateDateTime($currentDag));
             }
             $i = count($wedstrijddagen) - 1;
 
             if ($currentSpeeltijd !== DateFunctions::GetTime($wedstrijd->timestamp)) {
                 $currentSpeeltijd = DateFunctions::GetTime($wedstrijd->timestamp);
-                $wedstrijddagen[$i]->speeltijden[] = new Entities\Speeltijd(DateFunctions::CreateDateTime($currentDag, $currentSpeeltijd));
+                $wedstrijddagen[$i]->speeltijden[] = new Speeltijd(DateFunctions::CreateDateTime($currentDag, $currentSpeeltijd));
             }
 
             $wedstrijddagen[$i]->AddWedstrijd($wedstrijd);
@@ -127,7 +132,7 @@ class NevoboGateway
         return $this->GetProgramma($url);
     }
 
-    public function GetWedstrijdenForTeam(?Entities\Team $team): array
+    public function GetWedstrijdenForTeam(?Team $team): array
     {
         if (!$team) {
             return [];
@@ -138,7 +143,7 @@ class NevoboGateway
         return $this->GetProgramma($url);
     }
 
-    public function GetUitslagenForTeam(?Entities\Team $team): array
+    public function GetUitslagenForTeam(?Team $team): array
     {
         if (!$team) {
             return [];
@@ -171,7 +176,7 @@ class NevoboGateway
         return $httpCode == 200;
     }
 
-    private function GetGender(Entities\Team $team): string
+    private function GetGender(Team $team): string
     {
         if (substr($team->naam, 4, 2) == 'HS') {
             return 'heren';
@@ -184,7 +189,7 @@ class NevoboGateway
         throw new InvalidArgumentException("Onbekend geslacht in team '$team'");
     }
 
-    private function GetSequence(Entities\Team $team): int
+    private function GetSequence(Team $team): int
     {
         $sequence = substr($team->naam, 7);
         if (empty($sequence)) {
@@ -228,10 +233,10 @@ class NevoboGateway
                 $matchId = preg_replace('/\s+/', ' ', $descriptionMatches[1]);
                 $locatie = preg_replace('/\s+/', ' ', stripslashes($descriptionMatches[3]));
 
-                $programma[] = Entities\Wedstrijd::CreateFromNevoboWedstrijd(
+                $programma[] = Wedstrijd::CreateFromNevoboWedstrijd(
                     $matchId,
-                    new Entities\Team($team1),
-                    new Entities\Team($team2),
+                    new Team($team1),
+                    new Team($team2),
                     substr($matchId, 4, 3),
                     $date,
                     $locatie
@@ -271,8 +276,8 @@ class NevoboGateway
 
                 $wedstrijd = new Wedstrijd("geen");
                 $wedstrijd->timestamp = DateFunctions::CreateDateTime(substr($match->date, 0, 10), substr($match->date, 11, 8));
-                $wedstrijd->team1 = new Entities\Team($team1);
-                $wedstrijd->team2 = new Entities\Team($team2);
+                $wedstrijd->team1 = new Team($team1);
+                $wedstrijd->team2 = new Team($team2);
                 $wedstrijd->uitslag = $uitslag;
                 $wedstrijd->setstanden = $setstanden;
                 $uitslagen[] = $wedstrijd;

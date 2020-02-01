@@ -2,11 +2,11 @@
 
 namespace TeamPortal\UseCases;
 
-use TeamPortal\Entities;
+use TeamPortal\Entities\Persoon;
 
 class PersoonModel
 {
-    public function __construct(Entities\Persoon $persoon)
+    public function __construct(Persoon $persoon)
     {
         $this->id = $persoon->id;
         $this->naam = $persoon->naam;

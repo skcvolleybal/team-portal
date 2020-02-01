@@ -34,7 +34,7 @@ class Wedstrijddag
                 return;
             }
         }
-        $this->speeltijden[] = new Entities\Speeltijd($wedstrijd->timestamp);
+        $this->speeltijden[] = new Speeltijd($wedstrijd->timestamp);
         $this->speeltijden[0]->wedstrijden[] = $wedstrijd;
     }
 

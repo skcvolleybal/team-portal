@@ -2,9 +2,13 @@
 
 namespace TeamPortal\UseCases;
 
+use TeamPortal\Entities\Niveau;
+use TeamPortal\Entities\Persoon;
+use TeamPortal\Entities\Team;
+
 class TeamoverzichtModel
 {
-    public function __construct(Entities\Team $team)
+    public function __construct(Team $team)
     {
         $this->id = $team->id;
         $this->naam = $team->naam;
@@ -27,12 +31,12 @@ class TeamoverzichtModel
             $this->programma[] = new WedstrijdModel($wedstrijd);
         }
 
-        $trainers = array_map(function (Entities\Persoon $trainer) {
+        $trainers = array_map(function (Persoon $trainer) {
             return $trainer->naam;
         }, $team->trainers);
         $this->trainers = implode(", ", $trainers);
 
-        $coaches = array_map(function (Entities\Persoon $coach) {
+        $coaches = array_map(function (Persoon $coach) {
             return $coach->naam;
         }, $team->coaches);
         $this->coaches = implode(", ", $coaches);

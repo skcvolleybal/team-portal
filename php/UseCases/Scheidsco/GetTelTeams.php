@@ -4,7 +4,7 @@ namespace TeamPortal\UseCases;
 
 use TeamPortal\Common\DateFunctions;
 use TeamPortal\Gateways;
-use TeamPortal\Entities;
+use TeamPortal\Entities\Team;
 
 class GetTelTeams implements Interactor
 {
@@ -64,7 +64,7 @@ class GetTelTeams implements Interactor
         return $result;
     }
 
-    private function MapToUsecaseModel(Entities\Team $team, bool $isMogelijk, ?string $eigenTijd)
+    private function MapToUsecaseModel(Team $team, bool $isMogelijk, ?string $eigenTijd)
     {
         return (object) [
             "naam" => $team->naam,

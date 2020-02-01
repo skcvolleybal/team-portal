@@ -10,10 +10,13 @@ use Slim\Factory\AppFactory;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface;
-use TeamPortal\RouteObjects;
 use TeamPortal\UseCases;
 use TeamPortal\Configuration;
 use TeamPortal\Entities\AuthorizationRole;
+use TeamPortal\RouteObjects\DeleteRoute;
+use TeamPortal\RouteObjects\GetRoute;
+use TeamPortal\RouteObjects\PostRoute;
+use TeamPortal\RouteObjects\RouteGroup;
 
 require 'vendor/autoload.php';
 
@@ -51,80 +54,84 @@ $app->addBodyParsingMiddleware();
 $app->addRoutingMiddleware();
 
 $entryPoint =
-    new RouteObjects\RouteGroup('/team-portal/api', [
-        new RouteObjects\GetRoute('/mijn-overzicht', UseCases\MijnOverzicht::class, AuthorizationRole::USER),
+    new RouteGroup('/team-portal/api', [
+        new GetRoute('/mijn-overzicht', UseCases\MijnOverzicht::class, AuthorizationRole::USER),
 
-        new RouteObjects\RouteGroup('/wedstrijd-overzicht', [
-            new RouteObjects\GetRoute('', UseCases\GetWedstrijdOverzicht::class),
-            new RouteObjects\PostRoute('/aanwezigheid', UseCases\UpdateAanwezigheid::class),
+        new RouteGroup('/wedstrijd-overzicht', [
+            new GetRoute('', UseCases\GetWedstrijdOverzicht::class),
+            new PostRoute('/aanwezigheid', UseCases\UpdateAanwezigheid::class),
         ], AuthorizationRole::USER),
 
-        new RouteObjects\RouteGroup('/fluiten', [
-            new RouteObjects\GetRoute('', UseCases\GetFluitBeschikbaarheid::class),
-            new RouteObjects\PostRoute('', UseCases\UpdateFluitBeschikbaarheid::class)
+        new RouteGroup('/fluiten', [
+            new GetRoute('', UseCases\GetFluitBeschikbaarheid::class),
+            new PostRoute('', UseCases\UpdateFluitBeschikbaarheid::class)
         ], AuthorizationRole::SCHEIDSRECHTER),
 
-        new RouteObjects\RouteGroup('/barcie', [
-            new RouteObjects\GetRoute('', UseCases\GetBarcieBeschikbaarheid::class),
-            new RouteObjects\PostRoute('', UseCases\UpdateBarcieBeschikbaarheid::class)
+        new RouteGroup('/barcie', [
+            new GetRoute('', UseCases\GetBarcieBeschikbaarheid::class),
+            new PostRoute('', UseCases\UpdateBarcieBeschikbaarheid::class)
         ], AuthorizationRole::BARCIE),
 
-        new RouteObjects\RouteGroup('/barco', [
-            new RouteObjects\PostRoute('/toggle-bhv', UseCases\ToggleBhv::class),
-            new RouteObjects\GetRoute('/rooster', UseCases\GetBarcieRooster::class),
-            new RouteObjects\GetRoute('/beschikbaarheden', UseCases\GetBarcieBeschikbaarheden::class),
-            new RouteObjects\RouteGroup('/dienst', [
-                new RouteObjects\PostRoute('', UseCases\AddBarcieAanwezigheid::class),
-                new RouteObjects\DeleteRoute('', UseCases\DeleteBarcieAanwezigheid::class)
+        new RouteGroup('/barco', [
+            new PostRoute('/toggle-bhv', UseCases\ToggleBhv::class),
+            new GetRoute('/rooster', UseCases\GetBarcieRooster::class),
+            new GetRoute('/beschikbaarheden', UseCases\GetBarcieBeschikbaarheden::class),
+            new RouteGroup('/dienst', [
+                new PostRoute('', UseCases\AddBarcieAanwezigheid::class),
+                new DeleteRoute('', UseCases\DeleteBarcieAanwezigheid::class)
             ]),
-            new RouteObjects\RouteGroup('/dag', [
-                new RouteObjects\PostRoute('', UseCases\AddBardag::class),
-                new RouteObjects\DeleteRoute('', UseCases\DeleteBardag::class)
+            new RouteGroup('/dag', [
+                new PostRoute('', UseCases\AddBardag::class),
+                new DeleteRoute('', UseCases\DeleteBardag::class)
             ])
         ], AuthorizationRole::TEAMCOORDINATOR),
 
-        new RouteObjects\RouteGroup('/scheidsco', [
-            new RouteObjects\GetRoute('/overzicht', UseCases\GetScheidscoOverzicht::class),
-            new RouteObjects\RouteGroup('/zaalwacht', [
-                new RouteObjects\PostRoute('', UseCases\UpdateZaalwacht::class),
-                new RouteObjects\GetRoute('teams', UseCases\GetZaalwachtTeams::class)
+        new RouteGroup('/scheidsco', [
+            new GetRoute('/overzicht', UseCases\GetScheidscoOverzicht::class),
+            new RouteGroup('/zaalwacht', [
+                new PostRoute('', UseCases\UpdateZaalwacht::class),
+                new GetRoute('teams', UseCases\GetZaalwachtTeams::class)
             ]),
-            new RouteObjects\RouteGroup('/scheidsrechters', [
-                new RouteObjects\GetRoute('', UseCases\GetScheidsrechters::class),
-                new RouteObjects\PostRoute('', UseCases\UpdateScheidsrechter::class)
+            new RouteGroup('/scheidsrechters', [
+                new GetRoute('', UseCases\GetScheidsrechters::class),
+                new PostRoute('', UseCases\UpdateScheidsrechter::class)
             ]),
-            new RouteObjects\RouteGroup('/tellers', [
-                new RouteObjects\GetRoute('', UseCases\GetTelTeams::class),
-                new RouteObjects\PostRoute('', UseCases\UpdateTellers::class)
+            new RouteGroup('/tellers', [
+                new GetRoute('', UseCases\GetTelTeams::class),
+                new PostRoute('', UseCases\UpdateTellers::class)
             ])
         ], AuthorizationRole::TEAMCOORDINATOR),
 
-        new RouteObjects\RouteGroup('/dwf', [
-            new RouteObjects\GetRoute('/gespeelde-punten', UseCases\GetGespeeldePunten::class),
-            new RouteObjects\GetRoute('/dwf-punten', UseCases\GetDwfPunten::class, AuthorizationRole::UNREGISTERED),
-            new RouteObjects\GetRoute('/importeer-wedstrijden', UseCases\WedstrijdenImporteren::class, AuthorizationRole::UNREGISTERED),
+        new RouteGroup('/dwf', [
+            new GetRoute('/gespeelde-punten', UseCases\GetGespeeldePunten::class),
+            new GetRoute('/dwf-punten', UseCases\GetDwfPunten::class, AuthorizationRole::UNREGISTERED),
+            new GetRoute('/importeer-wedstrijden', UseCases\WedstrijdenImporteren::class, AuthorizationRole::UNREGISTERED),
         ], AuthorizationRole::USER),
 
-        new RouteObjects\GetRoute('/calendar', UseCases\GetCalendar::class, AuthorizationRole::UNREGISTERED),
+        new RouteGroup('/statistieken', [
+            new GetRoute('/wedstrijden', UseCases\GetEigenDwfWedstrijden::class)
+        ], AuthorizationRole::USER),
 
-        new RouteObjects\RouteGroup('/tasks', [
-            new RouteObjects\GetRoute('/sync-matches', UseCases\SynchronizeWedstrijden::class),
-            new RouteObjects\GetRoute('/queue-weekly-emails', UseCases\QueueWeeklyEmails::class),
-            new RouteObjects\GetRoute('/send-emails', UseCases\SendQueuedEmails::class),
-            new RouteObjects\GetRoute('/daily-tasks', UseCases\DailyTasks::class)
+        new GetRoute('/calendar', UseCases\GetCalendar::class, AuthorizationRole::UNREGISTERED),
+
+        new RouteGroup('/tasks', [
+            new GetRoute('/sync-matches', UseCases\SynchronizeWedstrijden::class),
+            new GetRoute('/queue-weekly-emails', UseCases\QueueWeeklyEmails::class),
+            new GetRoute('/send-emails', UseCases\SendQueuedEmails::class),
+            new GetRoute('/daily-tasks', UseCases\DailyTasks::class)
         ], AuthorizationRole::UNREGISTERED),
 
-        new RouteObjects\RouteGroup('/website', [
-            new RouteObjects\GetRoute('/voorpagina-rooster', UseCases\GetVoorpaginaRooster::class),
-            new RouteObjects\GetRoute('/teamoverzicht', UseCases\GetTeamoverzicht::class),
-            new RouteObjects\GetRoute('/teamstanden', UseCases\GetTeamstanden::class),
+        new RouteGroup('/website', [
+            new GetRoute('/voorpagina-rooster', UseCases\GetVoorpaginaRooster::class),
+            new GetRoute('/teamoverzicht', UseCases\GetTeamoverzicht::class),
+            new GetRoute('/teamstanden', UseCases\GetTeamstanden::class),
         ], AuthorizationRole::UNREGISTERED),
 
-        new RouteObjects\RouteGroup('/joomla', [
-            new RouteObjects\GetRoute('/groepen', UseCases\GetGroups::class),
-            new RouteObjects\GetRoute('/user', UseCases\GetCurrentUser::class),
-            new RouteObjects\GetRoute('/users', UseCases\GetUsers::class, AuthorizationRole::WEBCIE),
-            new RouteObjects\PostRoute('/inloggen', UseCases\Inloggen::class, AuthorizationRole::UNREGISTERED)
+        new RouteGroup('/joomla', [
+            new GetRoute('/groepen', UseCases\GetGroups::class),
+            new GetRoute('/user', UseCases\GetCurrentUser::class),
+            new GetRoute('/users', UseCases\GetUsers::class, AuthorizationRole::WEBCIE),
+            new PostRoute('/inloggen', UseCases\Inloggen::class, AuthorizationRole::UNREGISTERED)
         ], AuthorizationRole::USER)
     ]);
 $entryPoint->RegisterRoutes($app);

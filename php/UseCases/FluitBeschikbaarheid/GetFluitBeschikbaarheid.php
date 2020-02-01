@@ -3,7 +3,9 @@
 namespace TeamPortal\UseCases;
 
 use TeamPortal\Gateways;
-use TeamPortal\Entities;
+use TeamPortal\Entities\Beschikbaarheid;
+use TeamPortal\Entities\Fluitbeschikbaarheid;
+use TeamPortal\Entities\Wedstrijd;
 
 class GetFluitBeschikbaarheid implements Interactor
 {
@@ -19,7 +21,7 @@ class GetFluitBeschikbaarheid implements Interactor
 
     public function Execute(object $data = null): array
     {
-        $user = $this->joomlaGateway->GetUser();        
+        $user = $this->joomlaGateway->GetUser();
         $beschikbaarheden = $this->fluitBeschikbaarheidGateway->GetFluitBeschikbaarheden($user);
 
         $wedstrijden = $this->nevoboGateway->GetWedstrijdenForTeam($user->team);
@@ -28,8 +30,8 @@ class GetFluitBeschikbaarheid implements Interactor
         $rooster = [];
         $wedstrijddagen = $this->nevoboGateway->GetWedstrijddagenForSporthal('LDNUN', 365);
         foreach ($wedstrijddagen as $wedstrijddag) {
-            $speelWedstrijd = Entities\Wedstrijd::GetWedstrijdWithDate($wedstrijden, $wedstrijddag->date);
-            $coachWedstrijd = Entities\Wedstrijd::GetWedstrijdWithDate($coachWedstrijden, $wedstrijddag->date);
+            $speelWedstrijd = Wedstrijd::GetWedstrijdWithDate($wedstrijden, $wedstrijddag->date);
+            $coachWedstrijd = Wedstrijd::GetWedstrijdWithDate($coachWedstrijden, $wedstrijddag->date);
             $eigenWedstrijden = array_filter([$speelWedstrijd, $coachWedstrijd], function ($value) {
                 return $value !== null;
             });
@@ -37,8 +39,8 @@ class GetFluitBeschikbaarheid implements Interactor
             $wedstrijddag->eigenWedstrijden = $eigenWedstrijden;
 
             foreach ($wedstrijddag->speeltijden as $speeltijd) {
-                $speeltijd->isBeschikbaar = Entities\Beschikbaarheid::IsBeschikbaar($beschikbaarheden, $speeltijd->time);
-                $speeltijd->isMogelijk = Entities\Fluitbeschikbaarheid::isFluitenMogelijk($eigenWedstrijden, $speeltijd->time);
+                $speeltijd->isBeschikbaar = Beschikbaarheid::IsBeschikbaar($beschikbaarheden, $speeltijd->time);
+                $speeltijd->isMogelijk = Fluitbeschikbaarheid::isFluitenMogelijk($eigenWedstrijden, $speeltijd->time);
             }
 
             $dag = new WedstrijddagModel($wedstrijddag);

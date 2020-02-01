@@ -4,7 +4,8 @@ namespace TeamPortal\Gateways;
 
 use TeamPortal\Common\Database;
 use TeamPortal\Common\DateFunctions;
-use TeamPortal\Entities;
+use TeamPortal\Entities\Beschikbaarheid;
+use TeamPortal\Entities\Persoon;
 
 class FluitBeschikbaarheidGateway
 {
@@ -13,7 +14,7 @@ class FluitBeschikbaarheidGateway
         $this->database = $database;
     }
 
-    public function GetFluitBeschikbaarheden(Entities\Persoon $user): array
+    public function GetFluitBeschikbaarheden(Persoon $user): array
     {
         $query = 'SELECT 
                     B.id,
@@ -31,9 +32,9 @@ class FluitBeschikbaarheidGateway
         $rows = $this->database->Execute($query, $params);
         $result = [];
         foreach ($rows as $row) {
-            $result[] = new Entities\Beschikbaarheid(
+            $result[] = new Beschikbaarheid(
                 $row->id,
-                new Entities\Persoon($row->userId, $row->naam, $row->email),
+                new Persoon($row->userId, $row->naam, $row->email),
                 DateFunctions::CreateDateTime($row->date, $row->time),
                 $row->isBeschikbaar === "Ja"
             );
@@ -41,7 +42,7 @@ class FluitBeschikbaarheidGateway
         return $result;
     }
 
-    public function GetFluitBeschikbaarheid(Entities\Persoon $user, \DateTime $date): Entities\Beschikbaarheid
+    public function GetFluitBeschikbaarheid(Persoon $user, \DateTime $date): Beschikbaarheid
     {
         $query = 'SELECT 
                     B.id,
@@ -62,11 +63,11 @@ class FluitBeschikbaarheidGateway
 
         $rows = $this->database->Execute($query, $params);
         if (count($rows) != 1) {
-            return new Entities\Beschikbaarheid(null, $user, $date, null);
+            return new Beschikbaarheid(null, $user, $date, null);
         }
-        return new Entities\Beschikbaarheid(
+        return new Beschikbaarheid(
             $rows[0]->id,
-            new Entities\Persoon($rows[0]->id, $rows[0]->naam, $rows[0]->email),
+            new Persoon($rows[0]->id, $rows[0]->naam, $rows[0]->email),
             DateFunctions::CreateDateTime($rows[0]->date),
             $rows[0]->isBeschikbaar === "Ja"
         );
@@ -93,8 +94,8 @@ class FluitBeschikbaarheidGateway
         $rows = $this->database->Execute($query, $params);
         $result = [];
         foreach ($rows as $row) {
-            $persoon = new Entities\Persoon($row->userId, $row->naam, $row->email);
-            $result[] = new Entities\Beschikbaarheid(
+            $persoon = new Persoon($row->userId, $row->naam, $row->email);
+            $result[] = new Beschikbaarheid(
                 $row->id,
                 $persoon,
                 \DateTime::createFromFormat('Y-m-d H:i:s', $row->date . ' ' . $row->time),
@@ -104,7 +105,7 @@ class FluitBeschikbaarheidGateway
         return $result;
     }
 
-    public function Insert(Entities\Beschikbaarheid $beschikbaarheid): void
+    public function Insert(Beschikbaarheid $beschikbaarheid): void
     {
         $query = 'INSERT INTO TeamPortal_fluitbeschikbaarheid (user_id, date, time, is_beschikbaar) 
                   VALUES (?, ?, ?, ?)';
@@ -118,7 +119,7 @@ class FluitBeschikbaarheidGateway
         $this->database->Execute($query, $params);
     }
 
-    public function Update(Entities\Beschikbaarheid $beschikbaarheid): void
+    public function Update(Beschikbaarheid $beschikbaarheid): void
     {
         $query = 'UPDATE TeamPortal_fluitbeschikbaarheid
                   SET is_beschikbaar = ?
@@ -132,7 +133,7 @@ class FluitBeschikbaarheidGateway
         $this->database->Execute($query, $params);
     }
 
-    public function Delete(Entities\Beschikbaarheid $beschikbaarheid): void
+    public function Delete(Beschikbaarheid $beschikbaarheid): void
     {
         $query = 'DELETE FROM TeamPortal_fluitbeschikbaarheid
                   WHERE id = ?';
