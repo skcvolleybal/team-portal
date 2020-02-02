@@ -21,7 +21,7 @@ class GetEigenDwfWedstrijden implements Interactor
     {
         $user = $this->joomlaGateway->GetUser();
         if ($user->team == null) {
-            return;
+            return null;
         }
 
         $wedstrijden = $this->gespeeldeWedstrijdenGateway->GetGespeeldeWedstrijdenByTeam($user->team);

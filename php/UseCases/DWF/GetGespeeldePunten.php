@@ -2,16 +2,17 @@
 
 namespace TeamPortal\UseCases;
 
-use TeamPortal\Gateways;
+use TeamPortal\Gateways\GespeeldeWedstrijdenGateway;
+use TeamPortal\Gateways\JoomlaGateway;
 
 class GetGespeeldePunten implements Interactor
 {
 
     public function __construct(
-        Gateways\StatistiekenGateway $statistiekenGateway,
-        Gateways\JoomlaGateway $joomlaGateway)
-    {
-        $this->statistiekenGateway = $statistiekenGateway;
+        GespeeldeWedstrijdenGateway $gespeeldeWedstrijdenGateway,
+        JoomlaGateway $joomlaGateway
+    ) {
+        $this->gespeeldeWedstrijdenGateway = $gespeeldeWedstrijdenGateway;
         $this->joomlaGateway = $joomlaGateway;
     }
 
@@ -22,7 +23,7 @@ class GetGespeeldePunten implements Interactor
         if (!$team) {
             throw new \UnexpectedValueException("Je zit niet in een team");
         }
-        $spelers = $this->statistiekenGateway->GetGespeeldePunten($team);
+        $spelers = $this->gespeeldeWedstrijdenGateway->GetGespeeldePunten($team);
         $result = [];
         foreach ($spelers as $speler) {
             if ($speler->naam) {

@@ -9,6 +9,8 @@ class Persoon
     public ?string $email;
     public ?Team $team;
     public ?Team $coachteam = null;
+    public ?string $positie = null;
+    public ?int $rugnummer = null;
 
     function __construct(int $id, string $naam, string $email)
     {
@@ -32,5 +34,10 @@ class Persoon
             return $item[0];
         }, $namen);
         return implode("", $eersteLetters);
+    }
+
+    function IsSpelverdeler()
+    {
+        return $this->positie === "Spelverdeler";
     }
 }

@@ -4,6 +4,7 @@ namespace TeamPortal\Gateways;
 
 use TeamPortal\Configuration;
 use TeamPortal\Common\Database;
+use TeamPortal\Common\Utilities;
 use TeamPortal\Entities\Credentials;
 use TeamPortal\Entities\Persoon;
 use TeamPortal\Entities\Scheidsrechter;
@@ -183,10 +184,13 @@ class JoomlaGateway
         $query = 'SELECT 
                     U.id, 
                     name AS naam,
-                    email
+                    email,
+                    cb_positie as positie,
+                    cb_rugnummer as rugnummer
                   FROM J3_users U
                   INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
                   INNER JOIN J3_usergroups G ON M.group_id = G.id
+                  LEFT JOIN J3_comprofiler C ON U.id = C.id
                   WHERE G.title = ?
                   ORDER BY name';
         $params = [$team->GetSkcNaam($team)];
@@ -291,8 +295,53 @@ class JoomlaGateway
     {
         $result = [];
         foreach ($rows as $row) {
-            $result[] = new Persoon($row->id, $row->naam, $row->email);
+            $result[] = $this->MapToPersoon($row);
         }
         return $result;
+    }
+
+    private function MapToPersoon(object $row): Persoon
+    {
+
+        $persoon = new Persoon($row->id, $row->naam, $row->email);
+        $persoon->positie = $row->positie;
+        $persoon->rugnummer = $row->rugnummer;
+        $result[] = $persoon;
+
+        return $persoon;
+    }
+
+    public function GetSpelerByRugnummer(int $rugnummer, Team $team): ?Persoon
+    {
+        $query = "SELECT 
+                    U.id, 
+                    name AS naam,
+                    email,
+                    cb_positie as positie,
+                    cb_rugnummer as rugnummer
+                  FROM J3_users U
+                  INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
+                  INNER JOIN J3_usergroups G ON M.group_id = G.id
+                  LEFT JOIN J3_comprofiler C ON U.id = C.id
+                  WHERE cb_rugnummer = ? AND G.title LIKE ?
+                  ORDER BY ABS(CAST(SUBSTR(g.title, 6) AS INT) - ?)"; // Order by om het dichtst bijzijnde team te verkrijgen
+        $params = [
+            $rugnummer,
+            substr($team->GetSkcNaam(), 0, 5) . " %",
+            Utilities::StringToInt(substr($team->GetSkcNaam(), 6))
+        ];
+        $rows = $this->database->Execute($query, $params);
+        return $rows != null ? $this->MapToPersoon($rows[0]) : null;
+    }
+
+    public function GetRugnummerOfPersoon(Persoon $user)
+    {
+        $query = "SELECT 
+                    cb_rugnummer as rugnummer
+                  FROM J3_comprofiler C
+                  WHERE user_id = ?";
+        $params = [$user->id];
+        $rows = $this->database->Execute($query, $params);
+        return count($rows) == 0 ? null : $rows[0]->rugnummer;
     }
 }

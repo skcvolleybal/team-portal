@@ -3,15 +3,16 @@
 namespace TeamPortal\UseCases;
 
 use TeamPortal\Entities\Team;
-use TeamPortal\Gateways;
+use TeamPortal\Gateways\GespeeldeWedstrijdenGateway;
+use TeamPortal\Gateways\JoomlaGateway;
 
 class GetDwfPunten implements Interactor
 {
     public function __construct(
-        Gateways\StatistiekenGateway $statistiekenGateway,
-        Gateways\JoomlaGateway $joomlaGateway
+        GespeeldeWedstrijdenGateway $gespeeldeWedstrijdenGateway,
+        JoomlaGateway $joomlaGateway
     ) {
-        $this->statistiekenGateway = $statistiekenGateway;
+        $this->gespeeldeWedstrijdenGateway = $gespeeldeWedstrijdenGateway;
         $this->joomlaGateway = $joomlaGateway;
     }
 
@@ -33,11 +34,11 @@ class GetDwfPunten implements Interactor
         }
 
         if ($team === null && $matchId === null) {
-            $punten = $this->statistiekenGateway->GetAlleSkcPunten();
+            $punten = $this->gespeeldeWedstrijdenGateway->GetAlleSkcPunten();
         } else if ($team !== null && $matchId !== null) {
-            $punten = $this->statistiekenGateway->GetAllePuntenByMatchId($matchId, $team);
+            $punten = $this->gespeeldeWedstrijdenGateway->GetAllePuntenByMatchId($matchId, $team);
         } else if ($team !== null) {
-            $punten = $this->statistiekenGateway->GetAllePuntenByTeam($team);
+            $punten = $this->gespeeldeWedstrijdenGateway->GetAllePuntenByTeam($team);
         } else {
             throw new \UnexpectedValueException("Error: team: '$matchId', '$team'");
         }
