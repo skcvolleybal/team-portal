@@ -324,7 +324,7 @@ class JoomlaGateway
                   INNER JOIN J3_usergroups G ON M.group_id = G.id
                   LEFT JOIN J3_comprofiler C ON U.id = C.id
                   WHERE cb_rugnummer = ? AND G.title LIKE ?
-                  ORDER BY ABS(CAST(SUBSTR(g.title, 6) AS INT) - ?)"; // Order by om het dichtst bijzijnde team te verkrijgen
+                  ORDER BY ABS(CAST(SUBSTR(G.title, 6) AS INT) - ?)"; // Order by om het dichtst bijzijnde team te verkrijgen
         $params = [
             $rugnummer,
             substr($team->GetSkcNaam(), 0, 5) . " %",
