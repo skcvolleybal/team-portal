@@ -72,7 +72,7 @@ export class StatistiekenComponent implements OnInit {
       statistieken => {
         this.statistieken = statistieken;
         const spelsysteem =
-          statistieken.spelsystemen.length === 1
+          statistieken.spelsystemen.length > 0
             ? statistieken.spelsystemen[0].type
             : null;
         this.statistiekForm.get('spelsysteem').setValue(spelsysteem);
