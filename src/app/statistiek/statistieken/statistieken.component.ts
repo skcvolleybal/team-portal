@@ -71,9 +71,11 @@ export class StatistiekenComponent implements OnInit {
     this.statistiekService.GetStatistieken(matchId).subscribe(
       statistieken => {
         this.statistieken = statistieken;
-        this.statistiekForm
-          .get('spelsysteem')
-          .setValue(statistieken.spelsystemen[0].type);
+        const spelsysteem =
+          statistieken.spelsystemen.length === 1
+            ? statistieken.spelsystemen[0].type
+            : null;
+        this.statistiekForm.get('spelsysteem').setValue(spelsysteem);
         this.isLoading = false;
 
         this.DisplayStatistieken();
@@ -130,11 +132,19 @@ export class StatistiekenComponent implements OnInit {
   }
 
   DisplayRotatieStats() {
+    if (this.rotatieGraph) {
+      this.rotatieGraph.destroy();
+    }
+
     const rotatiekeuze = this.statistiekForm.get('rotatiekeuze').value;
     const type = this.statistiekForm.get('spelsysteem').value;
     const i = this.statistieken.spelsystemen.findIndex(
       spelsysteem => spelsysteem.type === type
     );
+
+    if (i === -1) {
+      return;
+    }
 
     const totaalAantalPunten = this.statistieken.spelsystemen[i]
       .totaalAantalPunten;
@@ -156,10 +166,6 @@ export class StatistiekenComponent implements OnInit {
           .puntenPerRotatieServiceontvangst;
         label = `Serviceontvangst (${totaalAantalPunten} punten)`;
         break;
-    }
-
-    if (this.rotatieGraph) {
-      this.rotatieGraph.destroy();
     }
 
     this.rotatieGraph = GetGrafiekPuntenPerRotatie(puntenPerRotatie, label);
