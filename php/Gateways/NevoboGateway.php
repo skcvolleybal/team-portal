@@ -101,7 +101,7 @@ class NevoboGateway
     {
         $endDate = new \DateTime("+$dagen days");
         $wedstrijden = $this->GetProgrammaForSporthal($sporthal);
-        usort($wedstrijden, Wedstrijd::class . "::Compare");
+        usort($wedstrijden, [Wedstrijd::class, "Compare"]);
         $wedstrijddagen = [];
         $currentDag = null;
         $currentSpeeltijd = null;

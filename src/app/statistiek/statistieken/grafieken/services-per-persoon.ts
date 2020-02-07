@@ -47,10 +47,12 @@ export function SetServicesGraph(services: IPunten[]) {
             type: 'linear',
             ticks: {
               stepSize:
-                Math.max.apply(
-                  Math,
-                  services.map(service => service.totaalPunten)
-                ) / 5
+                Math.round(
+                  Math.max.apply(
+                    Math,
+                    services.map(service => service.totaalPunten)
+                  ) / 10
+                ) * 2
             },
             display: true,
             position: 'right',

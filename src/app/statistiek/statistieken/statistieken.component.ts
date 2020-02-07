@@ -23,6 +23,8 @@ export class StatistiekenComponent implements OnInit {
   gespeeldePuntenGraph: Chart;
 
   wedstrijden: any[];
+  errorMessage: string;
+  isLoading = true;
 
   constructor(
     private fb: FormBuilder,
@@ -33,48 +35,57 @@ export class StatistiekenComponent implements OnInit {
     this.statistiekForm = this.fb.group({
       geselecteerdeWedstrijd: '',
       spelsysteem: null,
-      rotatiekeuze: null,
-      service: null,
+      rotatiekeuze: 'puntenPerRotatie',
+      service: 'totaal',
       plusminusType: 'totaal'
     });
+
+    this.statistiekForm
+      .get('spelsysteem')
+      .valueChanges.subscribe(() => this.DisplayRotatieStats());
+
+    this.statistiekForm
+      .get('rotatiekeuze')
+      .valueChanges.subscribe(() => this.DisplayRotatieStats());
+
+    this.statistiekForm
+      .get('plusminusType')
+      .valueChanges.subscribe(() => this.DisplayPlusminusStats());
+
+    this.statistiekForm
+      .get('geselecteerdeWedstrijd')
+      .valueChanges.subscribe(() => {
+        this.LoadStatistieken();
+      });
 
     this.statistiekService
       .GetEigenWedstrijden()
       .subscribe(wedstrijden => (this.wedstrijden = wedstrijden));
 
-    this.statistiekService.GetStatistieken().subscribe(statistieken => {
-      this.statistiekForm
-        .get('spelsysteem')
-        .setValue(statistieken.spelsystemen[0].type);
-      this.statistiekForm.get('rotatiekeuze').setValue('puntenPerRotatie');
-
-      this.statistiekForm
-        .get('spelsysteem')
-        .valueChanges.subscribe(() => this.DisplayRotatieStats());
-
-      this.statistiekForm
-        .get('rotatiekeuze')
-        .valueChanges.subscribe(() => this.DisplayRotatieStats());
-
-      this.statistiekForm
-        .get('plusminusType')
-        .valueChanges.subscribe(() => this.DisplayPlusminusStats());
-
-      this.statistiekForm
-        .get('geselecteerdeWedstrijd')
-        .valueChanges.subscribe(matchId => {
-          this.statistiekService.GetStatistieken(matchId).subscribe(stats => {
-            this.DisplayStatistieken(stats);
-          });
-        });
-
-      this.DisplayStatistieken(statistieken);
-    });
+    this.LoadStatistieken();
   }
 
-  DisplayStatistieken(statistieken: any) {
-    this.statistieken = statistieken;
+  LoadStatistieken() {
+    this.isLoading = true;
+    const matchId = this.statistiekForm.get('geselecteerdeWedstrijd').value;
+    this.statistiekService.GetStatistieken(matchId).subscribe(
+      statistieken => {
+        this.statistieken = statistieken;
+        this.statistiekForm
+          .get('spelsysteem')
+          .setValue(statistieken.spelsystemen[0].type);
+        this.isLoading = false;
 
+        this.DisplayStatistieken();
+      },
+      error => {
+        this.errorMessage = error.error.message;
+        this.isLoading = false;
+      }
+    );
+  }
+
+  DisplayStatistieken() {
     this.DisplayGespeeldePunten();
     this.DisplayRotatieStats();
     this.DisplayServicesStats();

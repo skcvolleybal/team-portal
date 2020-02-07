@@ -18,6 +18,7 @@ class Wedstrijdpunt
     public ?int $linksvoor;
     public ?int $linksachter;
     public ?int $midachter;
+    public array $posities = ["rechtsachter", "rechtsvoor", "midvoor", "linksvoor", "linksachter", "midachter"];
 
     public function __construct(
         ?int $id,
@@ -49,5 +50,46 @@ class Wedstrijdpunt
         $this->linksvoor = $linksvoor;
         $this->linksachter = $linksachter;
         $this->midachter = $midachter;
+    }
+
+    public function GetSpelsysteem(array $spelverdelerIds)
+    {
+        $aantalSpelverdelers = 0;
+        foreach ($this->posities as $positie) {
+            if (in_array($this->{$positie}, $spelverdelerIds)) {
+                $aantalSpelverdelers++;
+            }
+        }
+
+        switch ($aantalSpelverdelers) {
+            case 1:
+                return Spelsysteem::VIJF_EEN;
+            case 2:
+                return Spelsysteem::VIER_TWEE;
+            default:
+                return null;
+        }
+    }
+
+    public function GetRotatie(array $spelverdelerIds)
+    {
+        foreach ($this->posities as $i => $positie) {
+            if (in_array($this->{$positie}, $spelverdelerIds)) {
+                return $i;
+            }
+        }
+
+        return null;
+    }
+
+    public function GetRugnummers()
+    {
+        $result = [];
+        foreach ($this->posities as $positie) {
+            if ($this->{$positie}) {
+                $result[] = $this->{$positie};
+            }
+        }
+        return $result;
     }
 }

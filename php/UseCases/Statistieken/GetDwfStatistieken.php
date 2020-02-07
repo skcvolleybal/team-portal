@@ -2,7 +2,6 @@
 
 namespace TeamPortal\UseCases;
 
-use TeamPortal\Entities\Spelsysteem;
 use TeamPortal\Entities\Wedstrijdpunt;
 use TeamPortal\Gateways\GespeeldeWedstrijdenGateway;
 use TeamPortal\Gateways\JoomlaGateway;
@@ -17,87 +16,44 @@ class GetDwfStatistieken implements Interactor
     ) {
         $this->joomlaGateway = $joomlaGateway;
         $this->gespeeldeWedstrijdenGateway = $gespeeldeWedstrijdenGateway;
-        $this->posities = ["rechtsachter", "rechtsvoor", "midvoor", "linksvoor", "linksachter", "midachter"];
     }
 
     function Execute(object $data = null)
     {
-        $user = $this->joomlaGateway->GetUser();
         $matchId = $data->matchId;
+
+        $user = $this->joomlaGateway->GetUser();
         if ($user->team == null) {
             return null;
         }
 
         $this->team = $user->team;
-        $user->rugnummer = $this->joomlaGateway->GetRugnummerOfPersoon($user);
-        $this->user = $user;
 
         $spelers = $this->joomlaGateway->GetTeamgenoten($user->team);
         $result = new DwfStatistiekenModel($spelers);
-        $spelverdelers = [];
-        foreach ($spelers as $speler) {
-            if ($speler->IsSpelverdeler()) {
-                $spelverdelers[] = $speler->rugnummer;
-            }
+        $spelverdelers = $this->GetSpelverdelers($spelers);
+        if (count($spelverdelers) === 0) {
+            throw new UnexpectedValueException("Het aantal spelverdelers in jouw team is 0. Dit kan je in het profiel (van de spelverdeler) aanpassen.");
         }
 
         $wedstrijden = $this->gespeeldeWedstrijdenGateway->GetGespeeldeWedstrijdenByTeam($user->team);
         foreach ($wedstrijden as $wedstrijd) {
-            if ($matchId && $wedstrijd->matchId !== $matchId) {
+            if (!empty($matchId) && $wedstrijd->matchId !== $matchId) {
                 continue;
             }
 
             $punten = $this->gespeeldeWedstrijdenGateway->GetAllePuntenByMatchId($wedstrijd->matchId, $user->team);
             foreach ($punten as $punt) {
-                $punt->spelsysteem = $this->GetSpelsysteem($punt, $spelverdelers);
-                $punt->rotatie = $this->GetRotatie($punt, $spelverdelers);
-
-                if ($punt->spelsysteem !== null && $punt->rotatie !== null) {
-                    $bin = $punt->spelsysteem === Spelsysteem::VIJF_EEN ? $result->spelsystemen[0] : $result->spelsystemen[1];
-                    $bin->totaalAantalPunten++;
-                    $this->AddPuntToRotatie($punt, $bin->puntenPerRotatie, $spelverdelers);
-                    if ($punt->isSkcService) {
-                        $this->AddPuntToRotatie($punt, $bin->puntenPerRotatieEigenService, $spelverdelers);
-                    } else {
-                        $this->AddPuntToRotatie($punt, $bin->puntenPerRotatieServiceontvangst, $spelverdelers);
-                    }
-
-                    $rugnummers = $this->GetRugnummers($punt);
-                    $this->AddPuntToSpelers($punt, $result->plusminus, $rugnummers);
-                    $this->AddPuntToCombinaties($punt, $result->combinaties, $rugnummers);
-
-                    $voorspelers = $this->GetVoorspelers($punt);
-                    $this->AddPuntToSpelers($punt, $result->plusminusAlleenVoor, $voorspelers);
-
-                    if ($punt->isSkcService && $punt->rechtsachter !== null) {
-                        $this->AddPuntToSpelers($punt, $result->services, [$punt->rechtsachter]);
-                    }
-                }
+                $rugnummers = $punt->GetRugnummers($punt);
+                $this->AddMissingSpelers($spelers, $rugnummers);
+                $result->AddPunt($punt, $spelverdelers, $rugnummers);
             }
         }
 
-        $spelers = $this->gespeeldeWedstrijdenGateway->GetGespeeldePunten($user->team, $matchId);
-        foreach ($spelers as $speler) {
-            if ($speler->naam) {
-                $result->gespeeldePunten[] = (object) [
-                    'naam' => $speler->naam,
-                    'voornaam' => $speler->GetEersteNaam(),
-                    'afkorting' => $speler->GetAfkorting(),
-                    "aantalGespeeldePunten" => $speler->aantalGespeeldePunten,
-                ];
-            }
-        }
+        $result->gespeeldePunten = $this->gespeeldeWedstrijdenGateway->GetGespeeldePunten($user->team, $matchId);
 
-        $this->CalculateRotatieStatistieken($result);
-
-        $this->CalculateSpelersstatistieken($result->services);
-        usort($result->services, [PuntenModel::class, "Compare"]);
-
-        $this->CalculateSpelersstatistieken($result->plusminus);
-        usort($result->plusminus, [PuntenModel::class, "Compare"]);
-
-        $this->CalculateSpelersstatistieken($result->plusminusAlleenVoor);
-        usort($result->plusminusAlleenVoor, [PuntenModel::class, "Compare"]);
+        $result->CalculateRotatieStatistieken();
+        $result->CalculateSpelersstatistieken();
 
         foreach ($result->combinaties as $combinatie) {
             if (preg_match('/(\d{1,2})-(\d{0,2})/', $combinatie->type, $matches) > 0) {
@@ -109,76 +65,15 @@ class GetDwfStatistieken implements Interactor
                 }
             }
         }
-        $this->CalculateSpelersstatistieken($result->combinaties);
-        usort($result->combinaties, [PuntenModel::class, "Compare"]);
-
-        $this->CalculateSpelersstatistieken($result->eigenCombinaties);
-        usort($result->eigenCombinaties, [PuntenModel::class, "Compare"]);
 
         return $result;
     }
 
-    private function GetSpelersnaamByRugnummer(int $rugnummer, array $spelers)
-    {
-        $key = array_search($rugnummer, array_column($spelers, 'rugnummer'));
-        if ($key === false) {
-            $speler = $this->joomlaGateway->GetSpelerByRugnummer($rugnummer, $this->team);
-        } else {
-            $speler = $spelers[$key];
-        }
-
-        return $speler != null ? $speler->naam : null;
-    }
-
-    private function AddPuntToCombinaties(Wedstrijdpunt $punt, array &$combinaties, array $rugnummers)
-    {
-        $aantalRugnummers = count($rugnummers);
-        for ($i = 0; $i < $aantalRugnummers - 1; $i++) {
-            for ($j = $i + 1; $j < $aantalRugnummers; $j++) {
-                $combinatie = $rugnummers[$i] < $rugnummers[$j] ? $rugnummers[$i] . "-" . $rugnummers[$j] : $rugnummers[$j] . "-" . $rugnummers[$i];
-                $key = array_search($combinatie, array_column($combinaties, 'type'));
-                if ($key === false) {
-                    $newPuntenModel = new PuntenModel("combinaties");
-                    $newPuntenModel->type = $combinatie;
-                    $newPuntenModel->AddPunt($punt);
-                    $combinaties[] = $newPuntenModel;
-                } else {
-                    $combinaties[$key]->AddPunt($punt);
-                }
-            }
-        }
-    }
-
-    private function CalculateRotatieStatistieken(DwfStatistiekenModel $result)
-    {
-        foreach ($result->spelsystemen as $spelsysteem) {
-            $this->CalculateSpelersstatistieken($spelsysteem->puntenPerRotatie);
-            $this->CalculateSpelersstatistieken($spelsysteem->puntenPerRotatieEigenService);
-            $this->CalculateSpelersstatistieken($spelsysteem->puntenPerRotatieServiceontvangst);
-        }
-    }
-
-    private function CalculateSpelersstatistieken(array $spelers)
-    {
-        foreach ($spelers as $speler) {
-            $speler->CalculatePercentages();
-            $speler->CalculatePlusminus();
-        }
-        PuntenModel::Normalize($spelers);
-    }
-
-    public function AddPuntToRotatie(Wedstrijdpunt $punt, array $rotaties, array $spelverdelers)
-    {
-        $i = $this->GetRotatie($punt, $spelverdelers);
-        $rotaties[$i]->AddPunt($punt);
-    }
-
-    public function AddPuntToSpelers(Wedstrijdpunt $punt, array &$spelers, array $rugnummers)
+    private function AddMissingSpelers(array &$spelers, array $rugnummers)
     {
         foreach ($rugnummers as $rugnummer) {
             $i = array_search($rugnummer, array_column($spelers, 'rugnummer'));
             if ($i !== false) {
-                $spelers[$i]->AddPunt($punt);
                 continue;
             }
             $newSpeler = $this->joomlaGateway->GetSpelerByRugnummer($rugnummer, $this->team);
@@ -195,12 +90,29 @@ class GetDwfStatistieken implements Interactor
         }
     }
 
-    private function GetVoorspelers(Wedstrijdpunt $punt)
+
+
+    private function GetSpelverdelers(array $spelers): array
     {
-        $voorspelers = [$punt->rechtsvoor, $punt->midvoor, $punt->linksvoor];
-        return array_filter($voorspelers, function ($speler) {
-            return $speler != null;
-        });
+        $spelverdelers = [];
+        foreach ($spelers as $speler) {
+            if ($speler->IsSpelverdeler()) {
+                $spelverdelers[] = $speler->rugnummer;
+            }
+        }
+        return $spelverdelers;
+    }
+
+    private function GetSpelersnaamByRugnummer(int $rugnummer, array $spelers)
+    {
+        $key = array_search($rugnummer, array_column($spelers, 'rugnummer'));
+        if ($key === false) {
+            $speler = $this->joomlaGateway->GetSpelerByRugnummer($rugnummer, $this->team);
+        } else {
+            $speler = $spelers[$key];
+        }
+
+        return $speler != null ? $speler->naam : null;
     }
 
     public function GetSpelerByRugnummer(array $spelers, int $rugnummer)
@@ -210,47 +122,6 @@ class GetDwfStatistieken implements Interactor
                 return $speler;
             }
         }
-        throw new UnexpectedValueException("Speler zit in ");
-    }
-
-    public function GetRugnummers(Wedstrijdpunt $punt)
-    {
-        $result = [];
-        foreach ($this->posities as $positie) {
-            if ($punt->{$positie}) {
-                $result[] = $punt->{$positie};
-            }
-        }
-        return $result;
-    }
-
-    private function GetSpelsysteem(Wedstrijdpunt $punt, array $spelverdelerIds)
-    {
-        $aantalSpelverdelers = 0;
-        foreach ($this->posities as $positie) {
-            if (in_array($punt->{$positie}, $spelverdelerIds)) {
-                $aantalSpelverdelers++;
-            }
-        }
-
-        switch ($aantalSpelverdelers) {
-            case 1:
-                return Spelsysteem::VIJF_EEN;
-            case 2:
-                return Spelsysteem::VIER_TWEE;
-            default:
-                return null;
-        }
-    }
-
-    private function GetRotatie(Wedstrijdpunt $punt, array $spelverdelerIds)
-    {
-        foreach ($this->posities as $i => $positie) {
-            if (in_array($punt->{$positie}, $spelverdelerIds)) {
-                return $i;
-            }
-        }
-
-        return null;
+        throw new UnexpectedValueException("Speler zit er niet bij");
     }
 }

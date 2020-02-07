@@ -14,7 +14,7 @@ class PuntenModel
     public int $percentage;
     public float $plusminus;
     public float $plusminusGenormaliseerd;
-    public int $rugnummer;
+    public ?int $rugnummer;
     public string $naam;
 
     public function __construct(string $type)
@@ -40,7 +40,7 @@ class PuntenModel
     public function CalculatePlusminus()
     {
         $this->plusminus = $this->totaalPunten > 0 ? (($this->gewonnenPunten - $this->verlorenPunten) / $this->totaalPunten) * 50 : 0;
-        $this->plusminus = Utilities::Round($this->plusminus, 1);
+        $this->plusminus = Utilities::Round($this->plusminus);
     }
 
     public static function Normalize(array $spelers)
@@ -59,6 +59,7 @@ class PuntenModel
         foreach ($spelers as $speler) {
             if ($speler->plusminus > 0) {
                 $speler->plusminusGenormaliseerd = $speler->plusminus - $average;
+                $speler->plusminusGenormaliseerd = Utilities::Round($speler->plusminusGenormaliseerd);
             }
         }
     }

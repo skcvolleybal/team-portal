@@ -33,8 +33,11 @@ export const appRoutes: IToggleRoute[] = [
   {
     path: 'statistieken',
     component: StatistiekenComponent,
-    data: { title: 'Statistieken' },
-    isHidden: false
+    data: {
+      title: 'Statistieken',
+      groups: ['statistieken']
+    },
+    isHidden: true
   },
   {
     path: 'fluit-beschikbaarheid',

@@ -35,16 +35,25 @@ class JoomlaGateway
 
     private function GetUserById(int $userId): Persoon
     {
-        $query = 'SELECT id, name AS naam, email
-                  FROM J3_users
-                  WHERE id = ?';
+        $query = 'SELECT 
+                    U.id, 
+                    U.name AS naam, 
+                    U.email,
+                    C.cb_rugnummer as rugnummer,
+                    C.cb_positie as positie
+                  FROM J3_users U
+                  LEFT JOIN J3_comprofiler C ON U.id = C.user_id
+                  WHERE U.id = ?';
         $params = [$userId];
         $users = $this->database->Execute($query, $params);
         if (count($users) != 1) {
             throw new \UnexpectedValueException("Gebruiker met id '$userId' bestaat niet");
         }
 
-        return new Persoon($users[0]->id, $users[0]->naam, $users[0]->email);
+        $persoon = new Persoon($users[0]->id, $users[0]->naam, $users[0]->email);
+        $persoon->rugnummer = $users[0]->rugnummer;
+        $persoon->positie = $users[0]->positie;
+        return $persoon;
     }
 
     public function GetLoggedInUser(): ?Persoon
@@ -56,11 +65,7 @@ class JoomlaGateway
             return null;
         }
 
-        $user = new Persoon(
-            $joomlaUser->id,
-            $joomlaUser->name,
-            $joomlaUser->email
-        );
+        $user = $this->GetUserById($joomlaUser->id);
 
         if ($this->IsWebcie($user) && isset($_GET['impersonationId'])) {
             $impersonationId = $_GET['impersonationId'];
@@ -109,10 +114,13 @@ class JoomlaGateway
     public function GetUsersWithName(string $name): array
     {
         $query = "SELECT 
-                    id,
-                    name as naam,
-                    email
-                  FROM J3_users 
+                    U.id,
+                    U.name as naam,
+                    U.email,
+                    C.cb_rugnummer as rugnummer,
+                    C.cb_positie as positie
+                  FROM J3_users U
+                  LEFT JOIN J3_comprofiler C ON U.id = C.user_id
                   WHERE name like '%$name%'
                   ORDER BY 
                   CASE 

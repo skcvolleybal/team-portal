@@ -1,4 +1,8 @@
-<form [formGroup]="statistiekForm" class="card-text">
+<div class="alert alert-danger" role="alert" *ngIf="errorMessage">
+  {{ errorMessage }}
+</div>
+
+<form [formGroup]="statistiekForm" class="card-text" [hidden]="isLoading">
   <div class="card mb-3 card-width">
     <div class="card-body">
       <select formControlName="geselecteerdeWedstrijd" class="wedstrijd-select">
@@ -31,7 +35,7 @@
           ngbRadioGroup
           name="radioBasic"
           formControlName="spelsysteem"
-          *ngIf="statistieken"
+          *ngIf="statistieken && statistieken.spelsystemen.length > 1"
         >
           <label
             ngbButtonLabel
@@ -108,3 +112,4 @@
     </div>
   </div>
 </form>
+<teamportal-spinner *ngIf="isLoading"></teamportal-spinner>

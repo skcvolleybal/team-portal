@@ -29,10 +29,10 @@ class GespeeldeWedstrijdenGateway
 
     public function GetGespeeldeWedstrijdenByTeam(Team $team): array
     {
-        $query = 'SELECT 
-                    *
-                  FROM DWF_wedstrijden
-                  WHERE skcTeam = ?';
+        $query = 'SELECT W.*
+                  FROM DWF_wedstrijden W
+                  WHERE skcTeam = ? AND 
+                        id IN (SELECT matchId FROM DWF_punten)';
         $params = [$team->naam];
         $rows = $this->database->Execute($query, $params);
         return $this->MapToDomainModel($rows);

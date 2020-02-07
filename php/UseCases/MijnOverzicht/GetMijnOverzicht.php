@@ -67,9 +67,9 @@ class MijnOverzicht implements Interactor
             }
         }
 
-        usort($overzicht, Wedstrijddag::class . "::Compare");
+        usort($overzicht, [Wedstrijddag::class, "Compare"]);
         foreach ($overzicht as $dag) {
-            usort($dag->speeltijden, Speeltijd::class . "::Compare");
+            usort($dag->speeltijden, [Speeltijd::class, "Compare"]);
         }
 
         return $this->MapToUseCaseModel($overzicht, $user);

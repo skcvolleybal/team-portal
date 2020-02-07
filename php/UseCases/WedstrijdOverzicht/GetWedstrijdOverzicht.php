@@ -35,7 +35,7 @@ class GetWedstrijdOverzicht implements Interactor
             $teamprogramma,
             $coachProgramma
         );
-        usort($wedstrijden, Wedstrijd::class . "::Compare");
+        usort($wedstrijden, [Wedstrijd::class, "Compare"]);
 
         $teamMatchIds = array_map(function ($wedstrijd) {
             return $wedstrijd->matchId;

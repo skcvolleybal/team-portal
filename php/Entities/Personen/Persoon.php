@@ -15,8 +15,11 @@ class Persoon
     function __construct(int $id, string $naam, string $email)
     {
         $this->id = $id;
-        $this->naam = $naam;
         $this->email = $email;
+
+        $this->naam = $naam;
+        $this->voornaam = $this->GetEersteNaam();
+        $this->afkorting = $this->GetAfkorting();
     }
 
     function Equals(?Persoon $user)
