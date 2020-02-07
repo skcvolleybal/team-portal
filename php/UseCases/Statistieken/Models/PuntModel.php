@@ -2,6 +2,7 @@
 
 namespace TeamPortal\UseCases;
 
+use TeamPortal\Common\Utilities;
 use TeamPortal\Entities\Wedstrijdpunt;
 
 class PuntenModel
@@ -10,7 +11,7 @@ class PuntenModel
     public int $gewonnenPunten = 0;
     public int $verlorenPunten = 0;
     public int $totaalPunten = 0;
-    public float $percentage;
+    public int $percentage;
     public float $plusminus;
     public float $plusminusGenormaliseerd;
     public int $rugnummer;
@@ -18,7 +19,7 @@ class PuntenModel
 
     public function __construct(string $type)
     {
-        $this->$type = $type;
+        $this->type = $type;
     }
 
     public function AddPunt(Wedstrijdpunt $punt)
@@ -39,6 +40,7 @@ class PuntenModel
     public function CalculatePlusminus()
     {
         $this->plusminus = $this->totaalPunten > 0 ? (($this->gewonnenPunten - $this->verlorenPunten) / $this->totaalPunten) * 50 : 0;
+        $this->plusminus = Utilities::Round($this->plusminus, 1);
     }
 
     public static function Normalize(array $spelers)

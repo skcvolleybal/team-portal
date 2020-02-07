@@ -4,7 +4,9 @@ namespace TeamPortal\Gateways;
 
 use TeamPortal\Common\Database;
 use TeamPortal\Entities\DwfPunt;
+use TeamPortal\Entities\DwfSpeler;
 use TeamPortal\Entities\DwfWedstrijd;
+use TeamPortal\Entities\Persoon;
 use TeamPortal\Entities\Team;
 use TeamPortal\Entities\ThuisUit;
 use TeamPortal\Entities\Wedstrijdpunt;
@@ -88,7 +90,7 @@ class GespeeldeWedstrijdenGateway
         $this->database->Execute($query, $params);
     }
 
-    public function GetGespeeldePunten(Team $team): array
+    public function GetGespeeldePunten(Team $team, string $matchId = ""): array
     {
         $query = 'SELECT 
                     U.id, 
@@ -102,24 +104,34 @@ class GespeeldeWedstrijdenGateway
                   INNER JOIN J3_comprofiler C ON U.id = C.user_id
                   LEFT JOIN (    
                     SELECT rugnummer, count(*) aantalGespeeldePunten FROM (
-                      SELECT ra AS rugnummer FROM DWF_punten P inner join DWF_wedstrijden W on P.matchId = W.id where W.skcTeam = :nevobonaam || W.otherTeam = :nevobonaam
+                      SELECT ra AS rugnummer FROM DWF_punten P inner join DWF_wedstrijden W on P.matchId = W.id where W.skcTeam = :nevobonaam AND (W.id = :matchId OR :matchId = "")
                       UNION ALL
-                      SELECT rv AS rugnummer FROM DWF_punten P inner join DWF_wedstrijden W on P.matchId = W.id where W.skcTeam = :nevobonaam || W.otherTeam = :nevobonaam
+                      SELECT rv AS rugnummer FROM DWF_punten P inner join DWF_wedstrijden W on P.matchId = W.id where W.skcTeam = :nevobonaam AND (W.id = :matchId OR :matchId = "")
                       UNION ALL
-                      SELECT mv AS rugnummer FROM DWF_punten P inner join DWF_wedstrijden W on P.matchId = W.id where W.skcTeam = :nevobonaam || W.otherTeam = :nevobonaam
+                      SELECT mv AS rugnummer FROM DWF_punten P inner join DWF_wedstrijden W on P.matchId = W.id where W.skcTeam = :nevobonaam AND (W.id = :matchId OR :matchId = "")
                       UNION ALL
-                      SELECT lv AS rugnummer FROM DWF_punten P inner join DWF_wedstrijden W on P.matchId = W.id where W.skcTeam = :nevobonaam || W.otherTeam = :nevobonaam
+                      SELECT lv AS rugnummer FROM DWF_punten P inner join DWF_wedstrijden W on P.matchId = W.id where W.skcTeam = :nevobonaam AND (W.id = :matchId OR :matchId = "")
                       UNION ALL
-                      SELECT la AS rugnummer FROM DWF_punten P inner join DWF_wedstrijden W on P.matchId = W.id where W.skcTeam = :nevobonaam || W.otherTeam = :nevobonaam
+                      SELECT la AS rugnummer FROM DWF_punten P inner join DWF_wedstrijden W on P.matchId = W.id where W.skcTeam = :nevobonaam AND (W.id = :matchId OR :matchId = "")
                       UNION ALL
-                      SELECT ma AS rugnummer FROM DWF_punten P inner join DWF_wedstrijden W on P.matchId = W.id where W.skcTeam = :nevobonaam || W.otherTeam = :nevobonaam
+                      SELECT ma AS rugnummer FROM DWF_punten P inner join DWF_wedstrijden W on P.matchId = W.id where W.skcTeam = :nevobonaam AND (W.id = :matchId OR :matchId = "")
                     ) T1
                     GROUP BY rugnummer ORDER BY aantalGespeeldePunten DESC
                   ) P ON C.cb_rugnummer = P.rugnummer
-                  where G.title = :skcnaam';
+                  where G.title = :skcnaam
+                  ORDER BY
+                    CASE 
+                        WHEN cb_positie = "Spelverdeler" THEN 1
+                        WHEN cb_positie = "Midden" THEN 2
+                        WHEN cb_positie = "Buiten" THEN 3
+                        WHEN cb_positie = "Diagonaal" THEN 4
+                        WHEN cb_positie = "Libero" THEN 5
+                        ELSE 6
+                    END';
         $params = [
             "nevobonaam" => $team->naam,
-            "skcnaam" => $team->GetSkcNaam()
+            "skcnaam" => $team->GetSkcNaam(),
+            "matchId" => $matchId
         ];
         $rows = $this->database->Execute($query, $params);
         $result = [];

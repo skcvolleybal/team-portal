@@ -2,6 +2,7 @@
 
 namespace TeamPortal\Common;
 
+use mysqli_sql_exception;
 use TeamPortal\Configuration;
 
 class Database

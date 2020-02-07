@@ -8,7 +8,8 @@ class DwfStatistiekenModel
 {
     public array $spelsystemen = [];
     public int $aantalPunten;
-    public array $service = [];
+    public array $gespeeldePunten = [];
+    public array $services = [];
     public array $plusminus = [];
     public array $plusminusAlleenVoor = [];
     public array $combinaties = [];
@@ -36,11 +37,13 @@ class DwfStatistiekenModel
             $plusminus = new PuntenModel("speler");
             $plusminus->rugnummer = $speler->rugnummer;
             $plusminus->naam = $speler->naam;
+            $plusminus->afkorting = $speler->GetAfkorting();
+            $plusminus->voornaam = $speler->GetEersteNaam();
             $this->plusminus[]  = clone $plusminus;
 
             $this->plusminusAlleenVoor[]  = clone $plusminus;
 
-            $this->service[]  = clone $plusminus;
+            $this->services[]  = clone $plusminus;
         }
     }
 }

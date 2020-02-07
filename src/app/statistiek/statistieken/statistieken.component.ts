@@ -1,6 +1,12 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { Chart } from 'chart.js';
 import { StatistiekService } from '../../core/services/statistieken.service';
+import { AantalGespeeldePunten } from './grafieken/aantal-gespeelde-punten';
+import { SetPlusminusGraph } from './grafieken/plusminus-per-persoon';
+import { GetGrafiekPuntenPerRotatie } from './grafieken/punten-per-rotatie';
+import { SetServicesGraph } from './grafieken/services-per-persoon';
+import { IPunten } from './models/IPunten';
 
 @Component({
   selector: 'teamportal-statistieken',
@@ -8,68 +14,143 @@ import { StatistiekService } from '../../core/services/statistieken.service';
   styleUrls: ['./statistieken.component.scss']
 })
 export class StatistiekenComponent implements OnInit {
-  @ViewChild('gespeeldePunten', { static: true }) private gespeeldePuntenCanvas;
+  statistiekForm: FormGroup;
+  statistieken: any;
 
-  kleuren = ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'];
-  aantalSpelers: number;
-  myChart: any;
+  rotatieGraph: Chart;
+  servicesGraph: Chart;
+  plusminusGraph: Chart;
+  gespeeldePuntenGraph: Chart;
 
-  constructor(private statistiekService: StatistiekService) {}
+  wedstrijden: any[];
+
+  constructor(
+    private fb: FormBuilder,
+    private statistiekService: StatistiekService
+  ) {}
 
   ngOnInit() {
-    this.drawGespeeldePunten();
+    this.statistiekForm = this.fb.group({
+      geselecteerdeWedstrijd: '',
+      spelsysteem: null,
+      rotatiekeuze: null,
+      service: null,
+      plusminusType: 'totaal'
+    });
+
+    this.statistiekService
+      .GetEigenWedstrijden()
+      .subscribe(wedstrijden => (this.wedstrijden = wedstrijden));
+
+    this.statistiekService.GetStatistieken().subscribe(statistieken => {
+      this.statistiekForm
+        .get('spelsysteem')
+        .setValue(statistieken.spelsystemen[0].type);
+      this.statistiekForm.get('rotatiekeuze').setValue('puntenPerRotatie');
+
+      this.statistiekForm
+        .get('spelsysteem')
+        .valueChanges.subscribe(() => this.DisplayRotatieStats());
+
+      this.statistiekForm
+        .get('rotatiekeuze')
+        .valueChanges.subscribe(() => this.DisplayRotatieStats());
+
+      this.statistiekForm
+        .get('plusminusType')
+        .valueChanges.subscribe(() => this.DisplayPlusminusStats());
+
+      this.statistiekForm
+        .get('geselecteerdeWedstrijd')
+        .valueChanges.subscribe(matchId => {
+          this.statistiekService.GetStatistieken(matchId).subscribe(stats => {
+            this.DisplayStatistieken(stats);
+          });
+        });
+
+      this.DisplayStatistieken(statistieken);
+    });
   }
 
-  drawGespeeldePunten() {
-    this.statistiekService.GetGespeeldePunten().subscribe(spelers => {
-      this.aantalSpelers = spelers.length;
+  DisplayStatistieken(statistieken: any) {
+    this.statistieken = statistieken;
 
-      const backgroundColors = [
-        'rgba(255, 99, 132, 0.2)',
-        'rgba(54, 162, 235, 0.2)',
-        'rgba(255, 206, 86, 0.2)',
-        'rgba(75, 192, 192, 0.2)',
-        'rgba(153, 102, 255, 0.2)',
-        'rgba(255, 159, 64, 0.2)'
-      ];
-      const borderColors = [
-        'rgba(255,99,132,1)',
-        'rgba(54, 162, 235, 1)',
-        'rgba(255, 206, 86, 1)',
-        'rgba(75, 192, 192, 1)',
-        'rgba(153, 102, 255, 1)',
-        'rgba(255, 159, 64, 1)'
-      ];
-      this.myChart = new Chart(this.gespeeldePuntenCanvas.nativeElement, {
-        type: 'bar',
-        data: {
-          datasets: [
-            {
-              label: 'Aantal gespeelde punten',
-              data: spelers.map(speler => speler.gespeeldePunten),
-              backgroundColor: backgroundColors,
-              borderColor: borderColors,
-              borderWidth: 1
-            }
-          ]
-        },
-        options: {
-          scales: {
-            xAxes: [
-              {
-                labels: spelers.map(speler => speler.naam)
-              }
-            ],
-            yAxes: [
-              {
-                ticks: {
-                  beginAtZero: true
-                }
-              }
-            ]
-          }
-        }
-      });
-    });
+    this.DisplayGespeeldePunten();
+    this.DisplayRotatieStats();
+    this.DisplayServicesStats();
+    this.DisplayPlusminusStats();
+  }
+
+  DisplayGespeeldePunten() {
+    if (this.gespeeldePuntenGraph) {
+      this.gespeeldePuntenGraph.destroy();
+    }
+    this.gespeeldePuntenGraph = AantalGespeeldePunten(
+      this.statistieken.gespeeldePunten
+    );
+  }
+
+  DisplayPlusminusStats() {
+    const type = this.statistiekForm.get('plusminusType').value;
+    let label: string;
+    let plusminus: IPunten[];
+    switch (type) {
+      case 'totaal':
+        plusminus = this.statistieken.plusminus;
+        label = `Totaal`;
+        break;
+      case 'voor':
+        plusminus = this.statistieken.plusminusAlleenVoor;
+        label = `Voor`;
+        break;
+    }
+
+    if (this.plusminusGraph) {
+      this.plusminusGraph.destroy();
+    }
+    this.plusminusGraph = SetPlusminusGraph(plusminus, label);
+  }
+
+  DisplayServicesStats() {
+    if (this.servicesGraph) {
+      this.servicesGraph.destroy();
+    }
+    this.servicesGraph = SetServicesGraph(this.statistieken.services);
+  }
+
+  DisplayRotatieStats() {
+    const rotatiekeuze = this.statistiekForm.get('rotatiekeuze').value;
+    const type = this.statistiekForm.get('spelsysteem').value;
+    const i = this.statistieken.spelsystemen.findIndex(
+      spelsysteem => spelsysteem.type === type
+    );
+
+    const totaalAantalPunten = this.statistieken.spelsystemen[i]
+      .totaalAantalPunten;
+
+    let label: string;
+    let puntenPerRotatie: IPunten[];
+    switch (rotatiekeuze) {
+      case 'puntenPerRotatie':
+        puntenPerRotatie = this.statistieken.spelsystemen[i].puntenPerRotatie;
+        label = `Totaal (${totaalAantalPunten} punten)`;
+        break;
+      case 'puntenPerRotatieEigenService':
+        puntenPerRotatie = this.statistieken.spelsystemen[i]
+          .puntenPerRotatieEigenService;
+        label = `Eigen service (${totaalAantalPunten} punten)`;
+        break;
+      case 'puntenPerRotatieServiceontvangst':
+        puntenPerRotatie = this.statistieken.spelsystemen[i]
+          .puntenPerRotatieServiceontvangst;
+        label = `Serviceontvangst (${totaalAantalPunten} punten)`;
+        break;
+    }
+
+    if (this.rotatieGraph) {
+      this.rotatieGraph.destroy();
+    }
+
+    this.rotatieGraph = GetGrafiekPuntenPerRotatie(puntenPerRotatie, label);
   }
 }

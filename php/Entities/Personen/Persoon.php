@@ -36,6 +36,11 @@ class Persoon
         return implode("", $eersteLetters);
     }
 
+    function GetEersteNaam()
+    {
+        return substr($this->naam, 0, strpos($this->naam, ' '));
+    }
+
     function IsSpelverdeler()
     {
         return $this->positie === "Spelverdeler";

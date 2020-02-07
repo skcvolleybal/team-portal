@@ -8,6 +8,7 @@ class Spelsysteem
     public const VIER_TWEE = "4-2";
     
     public string $type;
+    public int $totaalAantalPunten = 0;
 
     public function __construct(string $type)
     {

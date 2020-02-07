@@ -10,5 +10,8 @@
             "server": "127.0.0.1",
             "username": "root"
         }
-    ]
+    ],
+    "javascript.preferences.quoteStyle": "single",
+    "prettier.singleQuote": true,
+    "prettier.jsxSingleQuote": true
 }

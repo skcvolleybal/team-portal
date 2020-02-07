@@ -23,6 +23,7 @@ class GetDwfStatistieken implements Interactor
     function Execute(object $data = null)
     {
         $user = $this->joomlaGateway->GetUser();
+        $matchId = $data->matchId;
         if ($user->team == null) {
             return null;
         }
@@ -42,13 +43,18 @@ class GetDwfStatistieken implements Interactor
 
         $wedstrijden = $this->gespeeldeWedstrijdenGateway->GetGespeeldeWedstrijdenByTeam($user->team);
         foreach ($wedstrijden as $wedstrijd) {
+            if ($matchId && $wedstrijd->matchId !== $matchId) {
+                continue;
+            }
+
             $punten = $this->gespeeldeWedstrijdenGateway->GetAllePuntenByMatchId($wedstrijd->matchId, $user->team);
             foreach ($punten as $punt) {
                 $punt->spelsysteem = $this->GetSpelsysteem($punt, $spelverdelers);
                 $punt->rotatie = $this->GetRotatie($punt, $spelverdelers);
 
                 if ($punt->spelsysteem !== null && $punt->rotatie !== null) {
-                    $bin = $punt->spelsysteem == Spelsysteem::VIJF_EEN ? $result->spelsystemen[0] : $result->spelsystemen[1];
+                    $bin = $punt->spelsysteem === Spelsysteem::VIJF_EEN ? $result->spelsystemen[0] : $result->spelsystemen[1];
+                    $bin->totaalAantalPunten++;
                     $this->AddPuntToRotatie($punt, $bin->puntenPerRotatie, $spelverdelers);
                     if ($punt->isSkcService) {
                         $this->AddPuntToRotatie($punt, $bin->puntenPerRotatieEigenService, $spelverdelers);
@@ -64,18 +70,28 @@ class GetDwfStatistieken implements Interactor
                     $this->AddPuntToSpelers($punt, $result->plusminusAlleenVoor, $voorspelers);
 
                     if ($punt->isSkcService && $punt->rechtsachter !== null) {
-                        $this->AddPuntToSpelers($punt, $result->service, [$punt->rechtsachter]);
+                        $this->AddPuntToSpelers($punt, $result->services, [$punt->rechtsachter]);
                     }
-                } else {
-                    $asd = 1;
                 }
+            }
+        }
+
+        $spelers = $this->gespeeldeWedstrijdenGateway->GetGespeeldePunten($user->team, $matchId);
+        foreach ($spelers as $speler) {
+            if ($speler->naam) {
+                $result->gespeeldePunten[] = (object) [
+                    'naam' => $speler->naam,
+                    'voornaam' => $speler->GetEersteNaam(),
+                    'afkorting' => $speler->GetAfkorting(),
+                    "aantalGespeeldePunten" => $speler->aantalGespeeldePunten,
+                ];
             }
         }
 
         $this->CalculateRotatieStatistieken($result);
 
-        $this->CalculateSpelersstatistieken($result->service);
-        usort($result->service, [PuntenModel::class, "Compare"]);
+        $this->CalculateSpelersstatistieken($result->services);
+        usort($result->services, [PuntenModel::class, "Compare"]);
 
         $this->CalculateSpelersstatistieken($result->plusminus);
         usort($result->plusminus, [PuntenModel::class, "Compare"]);
@@ -137,13 +153,8 @@ class GetDwfStatistieken implements Interactor
     {
         foreach ($result->spelsystemen as $spelsysteem) {
             $this->CalculateSpelersstatistieken($spelsysteem->puntenPerRotatie);
-            usort($spelsysteem->puntenPerRotatie, [PuntenModel::class, "Compare"]);
-
             $this->CalculateSpelersstatistieken($spelsysteem->puntenPerRotatieEigenService);
-            usort($spelsysteem->puntenPerRotatieEigenService, [PuntenModel::class, "Compare"]);
-
             $this->CalculateSpelersstatistieken($spelsysteem->puntenPerRotatieServiceontvangst);
-            usort($spelsysteem->puntenPerRotatieServiceontvangst, [PuntenModel::class, "Compare"]);
         }
     }
 
@@ -177,6 +188,8 @@ class GetDwfStatistieken implements Interactor
 
             $puntModel = new PuntenModel("invaller");
             $puntModel->naam = $newSpeler->naam;
+            $puntModel->afkorting = $newSpeler->GetAfkorting();
+            $puntModel->voornaam = $newSpeler->GetEersteNaam();
             $puntModel->rugnummer = $newSpeler->rugnummer;
             $spelers[] = $puntModel;
         }

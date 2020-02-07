@@ -4,6 +4,12 @@ namespace TeamPortal\Common;
 
 class Utilities
 {
+    public static function Round(float $number, int $digits)
+    {
+        $fraction = pow(10, $digits);
+        return round($number * $fraction) / $fraction;
+    }
+    
     public static function IsNullOrEmpty($obj)
     {
         return !$obj || empty($obj);

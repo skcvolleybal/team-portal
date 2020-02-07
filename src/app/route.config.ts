@@ -31,6 +31,12 @@ export const appRoutes: IToggleRoute[] = [
     isHidden: false
   },
   {
+    path: 'statistieken',
+    component: StatistiekenComponent,
+    data: { title: 'Statistieken' },
+    isHidden: false
+  },
+  {
     path: 'fluit-beschikbaarheid',
     component: FluitBeschikbaarheidComponent,
     data: {
@@ -58,12 +64,6 @@ export const appRoutes: IToggleRoute[] = [
     path: 'Barco',
     component: BarcieIndelingComponent,
     data: { title: 'Barco', groups: ['teamcoordinator', 'webcie'] },
-    isHidden: true
-  },
-  {
-    path: 'statistieken',
-    component: StatistiekenComponent,
-    data: { title: 'Statistieken' },
     isHidden: true
   }
 ];

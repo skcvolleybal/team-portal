@@ -23,16 +23,7 @@ class GetGespeeldePunten implements Interactor
         if (!$team) {
             throw new \UnexpectedValueException("Je zit niet in een team");
         }
-        $spelers = $this->gespeeldeWedstrijdenGateway->GetGespeeldePunten($team);
-        $result = [];
-        foreach ($spelers as $speler) {
-            if ($speler->naam) {
-                $result[] = (object) [
-                    'naam' => $speler->GetAfkorting(),
-                    "aantalGespeeldePunten" => $speler->aantalGespeeldePunten,
-                ];
-            }
-        }
+        
 
         return $result;
     }
