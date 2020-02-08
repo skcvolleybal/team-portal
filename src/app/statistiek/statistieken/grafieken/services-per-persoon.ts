@@ -26,10 +26,6 @@ export function SetServicesGraph(services: IPunten[]) {
       ]
     },
     options: {
-      title: {
-        display: true,
-        text: 'Winstpercentage per rotatie'
-      },
       scales: {
         yAxes: [
           {

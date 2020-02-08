@@ -34,10 +34,6 @@ export function GetGrafiekPuntenPerRotatie(punten: IPunten[], label: string) {
       ]
     },
     options: {
-      title: {
-        display: true,
-        text: 'Winstpercentage per rotatie'
-      },
       scales: {
         yAxes: [
           {

@@ -149,22 +149,19 @@ export class StatistiekenComponent implements OnInit {
     const totaalAantalPunten = this.statistieken.spelsystemen[i]
       .totaalAantalPunten;
 
-    let label: string;
+    let label = `Winstpercentage (${totaalAantalPunten} punten)`;
     let puntenPerRotatie: IPunten[];
     switch (rotatiekeuze) {
       case 'puntenPerRotatie':
         puntenPerRotatie = this.statistieken.spelsystemen[i].puntenPerRotatie;
-        label = `Totaal (${totaalAantalPunten} punten)`;
         break;
       case 'puntenPerRotatieEigenService':
         puntenPerRotatie = this.statistieken.spelsystemen[i]
           .puntenPerRotatieEigenService;
-        label = `Eigen service (${totaalAantalPunten} punten)`;
         break;
       case 'puntenPerRotatieServiceontvangst':
         puntenPerRotatie = this.statistieken.spelsystemen[i]
           .puntenPerRotatieServiceontvangst;
-        label = `Serviceontvangst (${totaalAantalPunten} punten)`;
         break;
     }
 

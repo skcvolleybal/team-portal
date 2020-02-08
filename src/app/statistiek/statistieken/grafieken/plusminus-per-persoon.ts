@@ -21,10 +21,6 @@ export function SetPlusminusGraph(plusminus: IPunten[], label: string) {
     }
   ];
   const options = {
-    title: {
-      display: true,
-      text: 'Gespeelde punten'
-    },
     scales: {
       yAxes: [
         {
