@@ -206,6 +206,9 @@ class DwfGateway
                     }
                     break;
                 case Punttype::TICKET:
+                    if ($currentSet === null) {
+                        break;
+                    }
                     $wedstrijd->sets[$currentSet]->punten[] = new DwfKaart(
                         $point->iSetResultHomeTeam,
                         $point->iSetResultOutTeam,
