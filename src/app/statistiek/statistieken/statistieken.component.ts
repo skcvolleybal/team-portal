@@ -167,4 +167,9 @@ export class StatistiekenComponent implements OnInit {
 
     this.rotatieGraph = GetGrafiekPuntenPerRotatie(puntenPerRotatie, label);
   }
+
+  GetReeksText(reeks: any) {
+    const naam = reeks.naam ? reeks.naam : `Rugnummer ${reeks.rugnummer}`;
+    return `${naam} (${reeks.skcTeam} - ${reeks.otherTeam}) `;
+  }
 }

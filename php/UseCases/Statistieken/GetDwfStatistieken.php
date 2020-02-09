@@ -2,7 +2,6 @@
 
 namespace TeamPortal\UseCases;
 
-use TeamPortal\Entities\Wedstrijdpunt;
 use TeamPortal\Gateways\GespeeldeWedstrijdenGateway;
 use TeamPortal\Gateways\JoomlaGateway;
 use TeamPortal\UseCases\Interactor;
@@ -51,6 +50,7 @@ class GetDwfStatistieken implements Interactor
         }
 
         $result->gespeeldePunten = $this->gespeeldeWedstrijdenGateway->GetGespeeldePunten($user->team, $matchId);
+        $result->servicereeksen = $this->gespeeldeWedstrijdenGateway->GetLangsteServicereeksen();
 
         $result->CalculateRotatieStatistieken();
         $result->CalculateSpelersstatistieken();

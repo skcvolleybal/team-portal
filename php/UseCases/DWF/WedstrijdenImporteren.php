@@ -58,6 +58,8 @@ class WedstrijdenImporteren implements Interactor
                 );
 
                 $this->gespeeldeWedstrijdenGateway->AddWedstrijd($newWedstrijd);
+                $this->opgeslagenWedstrijden[] = $newWedstrijd;
+                
                 echo $skcTeam->naam . " - " . $otherTeam->naam . "<br>";
                 ob_flush();
                 flush();

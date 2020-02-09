@@ -186,7 +186,8 @@ class GespeeldeWedstrijdenGateway
                     otherTeam,
                     `set`,
                     ra AS rugnummer,
-                    naam	
+                    naam,
+                    services
                   FROM (
                     SELECT `set`, P.matchId, ra, skcTeam, COUNT(*) AS services 
                     FROM dwf_punten P

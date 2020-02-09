@@ -16,6 +16,7 @@ class DwfStatistiekenModel
     public array $plusminusAlleenVoor = [];
     public array $combinaties = [];
     public array $eigenCombinaties = [];
+    public array $servicereeksen = [];
 
     public function __construct(array $spelers)
     {
