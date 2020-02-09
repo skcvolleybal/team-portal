@@ -190,13 +190,13 @@ class GespeeldeWedstrijdenGateway
                     services
                   FROM (
                     SELECT `set`, P.matchId, ra, skcTeam, COUNT(*) AS services 
-                    FROM dwf_punten P
+                    FROM DWF_punten P
                     WHERE isSkcService = 'Y' AND ra IS NOT null
                     GROUP BY P.matchId, `set`, ra, puntenOtherTeam
                     ORDER BY services desc
                     LIMIT 1, 10
                   ) S
-                  INNER JOIN dwf_wedstrijden W ON S.matchId = W.id AND S.skcTeam = W.skcTeam
+                  INNER JOIN DWF_wedstrijden W ON S.matchId = W.id AND S.skcTeam = W.skcTeam
                   LEFT JOIN (
                     SELECT U.id, NAME AS naam, CONCAT('SKC ', substr(G.title, 1, 1), 'S ', SUBSTR(G.title, 7, 1)) AS teamnaam, cb_rugnummer AS rugnummer
                     FROM J3_users U 
