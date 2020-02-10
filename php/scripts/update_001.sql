@@ -1,7 +1,7 @@
 ALTER TABLE
   TeamPortal_aanwezigheden
 ADD
-  FOREIGN KEY (user_id) REFERENCES j3_users(id);
+  FOREIGN KEY (user_id) REFERENCES J3_users(id);
 ALTER TABLE
   `TeamPortal_aanwezigheden` CHANGE `aanwezigheid` `is_aanwezig` ENUM('Y', 'N') CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;
 ALTER TABLE

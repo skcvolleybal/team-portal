@@ -201,9 +201,9 @@ class GespeeldeWedstrijdenGateway
                     SELECT U.id, NAME AS naam, CONCAT('SKC ', substr(G.title, 1, 1), 'S ', SUBSTR(G.title, 7, 1)) AS teamnaam, cb_rugnummer AS rugnummer
                     FROM J3_users U 
                     INNER JOIN J3_comprofiler C ON U.id = C.user_id
-                    INNER JOIN j3_user_usergroup_map M ON U.id = M.user_id
-                    INNER JOIN j3_usergroups G ON M.group_id = G.id
-                    WHERE G.parent_id = (SELECT id FROM j3_usergroups WHERE title = 'Teams') AND cb_rugnummer IS NOT null
+                    INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
+                    INNER JOIN J3_usergroups G ON M.group_id = G.id
+                    WHERE G.parent_id = (SELECT id FROM J3_usergroups WHERE title = 'Teams') AND cb_rugnummer IS NOT null
                   ) T1 ON S.ra = T1.rugnummer AND S.skcTeam = T1.teamnaam
                   ORDER BY services DESC";
         return $this->database->Execute($query);

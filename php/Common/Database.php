@@ -3,7 +3,9 @@
 namespace TeamPortal\Common;
 
 use mysqli_sql_exception;
+use PDO;
 use TeamPortal\Configuration;
+use UnexpectedValueException;
 
 class Database
 {
@@ -23,15 +25,20 @@ class Database
         if ($this->dbc) {
             return $this->dbc;
         }
-
-        $this->dbc = new \PDO("mysql:host=$this->host;dbname=$this->database;charset=UTF8", $this->username, $this->password);
+        
+        $this->dbc = new PDO(
+            "mysql:host=$this->host;dbname=$this->database",
+            $this->username,
+            $this->password,
+            array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8")
+        );
         return $this->dbc;
     }
 
     public function Execute(string $query, array $params = [])
     {
         if (empty($query)) {
-            throw new \UnexpectedValueException('Query is empty');
+            throw new UnexpectedValueException('Query is empty');
         }
 
         $stmt = $this->getDbConnection()->prepare($query);
@@ -49,6 +56,6 @@ class Database
             throw new mysqli_sql_exception($message);
         }
 
-        return $stmt->fetchAll(\PDO::FETCH_OBJ);
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
 }

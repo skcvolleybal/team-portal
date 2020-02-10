@@ -19,8 +19,9 @@ class GetGroups implements Interactor
         if ($user === null) {
             return $result;
         }
-
-        if ($user->team->naam === "SKC HS 2" || $this->joomlaGateway->IsTeamcoordinator($user)) {
+        
+        $dwfTeams = ["SKC HS 1", "SKC HS 2", "SKC DS 1", "SKC DS 2"];
+        if (($user->team && in_array($user->team->naam, $dwfTeams)) || $this->joomlaGateway->IsTeamcoordinator($user)) {
             $result[] = "statistieken";
         }
 
