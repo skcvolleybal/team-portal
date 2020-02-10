@@ -18,7 +18,7 @@ tar --append -f deployment.tar php static-pages
 ssh -T deb105013n2@skcvolleybal.nl -i /c/Users/jonat/.ssh/antagonist-ssh <<- 'END'
 cd /home/deb105013n2/public_html/team-portal
 shopt -s extglob
-rm -R !("Configuration.php", ".htaccess")
+rm -R !("Configuration.php"|".htaccess")
 shopt -u extglob
 END
 
