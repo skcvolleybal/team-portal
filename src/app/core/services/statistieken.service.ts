@@ -9,11 +9,6 @@ import { environment } from '../../../environments/environment';
 export class StatistiekService {
   constructor(private httpClient: HttpClient) {}
 
-  GetGespeeldePunten() {
-    const url = environment.baseUrl + 'dwf/gespeelde-punten';
-    return this.httpClient.get<any[]>(url);
-  }
-
   GetStatistieken(matchId: string = ''): Observable<any> {
     const url = environment.baseUrl + 'statistieken/wedstrijden';
 

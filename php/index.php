@@ -103,7 +103,6 @@ $entryPoint =
         ], AuthorizationRole::TEAMCOORDINATOR),
 
         new RouteGroup('/dwf', [
-            new GetRoute('/gespeelde-punten', UseCases\GetGespeeldePunten::class),
             new GetRoute('/dwf-punten', UseCases\GetDwfPunten::class, AuthorizationRole::UNREGISTERED),
             new GetRoute('/eigen-wedstrijden', UseCases\GetEigenDwfWedstrijden::class),
             new GetRoute('/importeer-wedstrijden', UseCases\WedstrijdenImporteren::class, AuthorizationRole::UNREGISTERED),

@@ -51,7 +51,7 @@ class JoomlaGateway
         }
 
         $persoon = new Persoon($users[0]->id, $users[0]->naam, $users[0]->email);
-        $persoon->rugnummer = $users[0]->rugnummer;
+        $persoon->rugnummer = Utilities::StringToInt($users[0]->rugnummer);
         $persoon->positie = $users[0]->positie;
         return $persoon;
     }
@@ -313,7 +313,7 @@ class JoomlaGateway
 
         $persoon = new Persoon($row->id, $row->naam, $row->email);
         $persoon->positie = $row->positie;
-        $persoon->rugnummer = $row->rugnummer;
+        $persoon->rugnummer = Utilities::StringToInt($row->rugnummer);
         $result[] = $persoon;
 
         return $persoon;
@@ -350,6 +350,6 @@ class JoomlaGateway
                   WHERE user_id = ?";
         $params = [$user->id];
         $rows = $this->database->Execute($query, $params);
-        return count($rows) == 0 ? null : $rows[0]->rugnummer;
+        return count($rows) == 0 ? null : Utilities::StringToInt($rows[0]->rugnummer);
     }
 }
