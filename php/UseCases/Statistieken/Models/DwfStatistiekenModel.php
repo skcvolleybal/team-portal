@@ -107,7 +107,9 @@ class DwfStatistiekenModel
     private function AddPuntToRotatie(Wedstrijdpunt $punt, array $rotaties, array $spelverdelers)
     {
         $i = $punt->GetRotatie($spelverdelers);
-        $rotaties[$i]->AddPunt($punt);
+        if ($i !== null && $i < count($rotaties)) {
+            $rotaties[$i]->AddPunt($punt);
+        }
     }
 
     private function AddPuntToSpelers(Wedstrijdpunt $punt, array &$spelers, array $rugnummers)
