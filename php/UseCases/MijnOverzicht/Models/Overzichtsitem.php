@@ -2,6 +2,7 @@
 
 namespace TeamPortal\UseCases;
 
+use DateTime;
 use TeamPortal\Common\DateFunctions;
 
 class Overzichtsitem
@@ -10,7 +11,7 @@ class Overzichtsitem
     public string $date;
     public string $datum;
 
-    public function __construct(string $type, \DateTime $date)
+    public function __construct(string $type, DateTime $date)
     {
         $this->type = $type;
         $this->date = DateFunctions::GetYmdNotation($date);

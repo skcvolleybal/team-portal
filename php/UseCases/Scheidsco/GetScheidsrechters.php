@@ -6,6 +6,7 @@ use TeamPortal\Common\DateFunctions;
 use TeamPortal\Gateways;
 use TeamPortal\Entities\Persoon;
 use TeamPortal\Entities\Wedstrijd;
+use UnexpectedValueException;
 
 class GetScheidsrechters implements Interactor
 {
@@ -36,7 +37,7 @@ class GetScheidsrechters implements Interactor
             }
         }
         if ($fluitWedstrijd === null) {
-            throw new \UnexpectedValueException("Wedstrijd met id $data->matchId niet gevonden");
+            throw new UnexpectedValueException("Wedstrijd met id $data->matchId niet gevonden");
         }
 
         $date = $fluitWedstrijd->timestamp;

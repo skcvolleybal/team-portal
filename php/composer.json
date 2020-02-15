@@ -25,7 +25,8 @@
       "Common",
       "TeamPortalErrorHandler.php",
       "RouteObjects",
-      "Configuration.php"
+      "Configuration.php",
+      "Tests"
     ]
   },
   "require-dev": {

@@ -17,6 +17,7 @@ use TeamPortal\Entities\DwfWissel;
 use TeamPortal\Entities\Punttype;
 use TeamPortal\Entities\Team;
 use TeamPortal\Entities\ThuisUit;
+use UnexpectedValueException;
 
 class DwfGateway
 {
@@ -102,7 +103,7 @@ class DwfGateway
         $data = json_decode($response);
 
         if (!isset($data->results[0]->type)) {
-            throw new \UnexpectedValueException("Kan gespeelde wedstrijden niet ophalen: $response");
+            throw new UnexpectedValueException("Kan gespeelde wedstrijden niet ophalen: $response");
         }
 
         $wedstrijden = [];
@@ -153,7 +154,7 @@ class DwfGateway
         $response = $this->curl->SendRequest($request);
         $data = json_decode($response);
         if ($data->error->code != 0) {
-            throw new \UnexpectedValueException('Kan wedstrijd verloop niet ophalen: ' . print_r($data, 1));
+            throw new UnexpectedValueException('Kan wedstrijd verloop niet ophalen: ' . print_r($data, 1));
         }
 
         $currentSet = null;

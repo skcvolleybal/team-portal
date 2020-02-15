@@ -9,8 +9,10 @@ use TeamPortal\Entities\Credentials;
 use TeamPortal\Entities\Persoon;
 use TeamPortal\Entities\Scheidsrechter;
 use TeamPortal\Entities\Team;
+use TeamPortal\UseCases\IJoomlaGateway;
+use UnexpectedValueException;
 
-class JoomlaGateway
+class JoomlaGateway implements IJoomlaGateway
 {
     public function __construct(
         Configuration $configuration,
@@ -47,7 +49,7 @@ class JoomlaGateway
         $params = [$userId];
         $users = $this->database->Execute($query, $params);
         if (count($users) != 1) {
-            throw new \UnexpectedValueException("Gebruiker met id '$userId' bestaat niet");
+            throw new UnexpectedValueException("Gebruiker met id '$userId' bestaat niet");
         }
 
         $persoon = new Persoon($users[0]->id, $users[0]->naam, $users[0]->email);

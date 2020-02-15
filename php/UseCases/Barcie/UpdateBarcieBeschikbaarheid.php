@@ -4,6 +4,7 @@ namespace TeamPortal\UseCases;
 
 use TeamPortal\Common\DateFunctions;
 use TeamPortal\Gateways;
+use UnexpectedValueException;
 
 class UpdateBarcieBeschikbaarheid implements Interactor
 {
@@ -24,7 +25,7 @@ class UpdateBarcieBeschikbaarheid implements Interactor
 
         $bardag = $this->barcieGateway->GetBardag($date);
         if ($bardag->id === null) {
-            throw new \UnexpectedValueException("Dag '$date' bestaat niet");
+            throw new UnexpectedValueException("Dag '$date' bestaat niet");
         }
 
         $beschikbaarheid = $this->barcieGateway->GetBeschikbaarheid($user, $bardag);

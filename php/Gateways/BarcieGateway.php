@@ -2,6 +2,7 @@
 
 namespace TeamPortal\Gateways;
 
+use DateTime;
 use TeamPortal\Common\Database;
 use TeamPortal\Common\DateFunctions;
 use TeamPortal\Entities\Barbeschikbaarheid;
@@ -10,8 +11,9 @@ use TeamPortal\Entities\Bardienst;
 use TeamPortal\Entities\Barlid;
 use TeamPortal\Entities\Barshift;
 use TeamPortal\Entities\Persoon;
+use TeamPortal\UseCases\IBarcieGateway;
 
-class BarcieGateway
+class BarcieGateway implements IBarcieGateway
 {
     public function __construct(Database $database)
     {
@@ -37,7 +39,7 @@ class BarcieGateway
         return $this->MapToBardagen($rows);
     }
 
-    public function GetBardag(\DateTime $date): Bardag
+    public function GetBardag(DateTime $date): Bardag
     {
         $query = 'SELECT 
                     D.id,
@@ -56,7 +58,7 @@ class BarcieGateway
         return count($rows) > 0 ? $this->MapToBardagen($rows)[0] : new Bardag(null, $date);
     }
 
-    public function AddBardag(\DateTime $date)
+    public function AddBardag(DateTime $date)
     {
         $query = 'INSERT INTO barcie_days (date) VALUES (?)';
         $params = [DateFunctions::GetYmdNotation($date)];
@@ -83,7 +85,7 @@ class BarcieGateway
         return count($beschikbaarheden) > 0 ? $beschikbaarheden : [];
     }
 
-    public function GetBeschikbaarhedenForDate(\DateTime $date): array
+    public function GetBeschikbaarhedenForDate(DateTime $date): array
     {
         $query = 'SELECT
                     A.id,
@@ -306,7 +308,7 @@ class BarcieGateway
         return $this->MapToBardiensten($rows);
     }
 
-    private function MapToBardiensten(array $rows): array
+    public function MapToBardiensten(array $rows): array
     {
         $diensten = [];
         foreach ($rows as $row) {
@@ -325,7 +327,7 @@ class BarcieGateway
         return $diensten;
     }
 
-    private function MapToBeschikbaarheden(array $rows): array
+    public function MapToBeschikbaarheden(array $rows): array
     {
         $result = [];
         foreach ($rows as $row) {
@@ -343,7 +345,7 @@ class BarcieGateway
         return $result;
     }
 
-    private function MapToBardagen(array $rows): array
+    public function MapToBardagen(array $rows): array
     {
         $result = [];
         $currentDag = null;

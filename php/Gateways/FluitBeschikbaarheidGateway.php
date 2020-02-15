@@ -2,6 +2,7 @@
 
 namespace TeamPortal\Gateways;
 
+use DateTime;
 use TeamPortal\Common\Database;
 use TeamPortal\Common\DateFunctions;
 use TeamPortal\Entities\Beschikbaarheid;
@@ -42,7 +43,7 @@ class FluitBeschikbaarheidGateway
         return $result;
     }
 
-    public function GetFluitBeschikbaarheid(Persoon $user, \DateTime $date): Beschikbaarheid
+    public function GetFluitBeschikbaarheid(Persoon $user, DateTime $date): Beschikbaarheid
     {
         $query = 'SELECT 
                     B.id,
@@ -73,7 +74,7 @@ class FluitBeschikbaarheidGateway
         );
     }
 
-    public function GetAllBeschikbaarheden(\DateTime $date): array
+    public function GetAllBeschikbaarheden(DateTime $date): array
     {
         $query = 'SELECT         
                     F.id,
@@ -98,7 +99,7 @@ class FluitBeschikbaarheidGateway
             $result[] = new Beschikbaarheid(
                 $row->id,
                 $persoon,
-                \DateTime::createFromFormat('Y-m-d H:i:s', $row->date . ' ' . $row->time),
+                DateTime::createFromFormat('Y-m-d H:i:s', $row->date . ' ' . $row->time),
                 $row->isBeschikbaar === "Ja"
             );
         }

@@ -2,6 +2,7 @@
 
 namespace TeamPortal\Gateways;
 
+use DateTime;
 use SimplePie;
 use TeamPortal\Common\DateFunctions;
 use TeamPortal\Common\Utilities;
@@ -10,6 +11,7 @@ use TeamPortal\Entities\Stand;
 use TeamPortal\Entities\Team;
 use TeamPortal\Entities\Wedstrijd;
 use TeamPortal\Entities\Wedstrijddag;
+use UnexpectedValueException;
 
 class NevoboGateway
 {
@@ -99,7 +101,7 @@ class NevoboGateway
 
     public function GetWedstrijddagenForSporthal(string $sporthal = 'LDNUN', int $dagen = 7): array
     {
-        $endDate = new \DateTime("+$dagen days");
+        $endDate = new DateTime("+$dagen days");
         $wedstrijden = $this->GetProgrammaForSporthal($sporthal);
         usort($wedstrijden, [Wedstrijd::class, "Compare"]);
         $wedstrijddagen = [];
@@ -289,7 +291,7 @@ class NevoboGateway
         return $uitslagen;
     }
 
-    private function ConvertNevoboDate(string $date): \DateTime
+    private function ConvertNevoboDate(string $date): DateTime
     {
         /* Voorbeeld: donderdag 20 september, 21:00 */
         if (empty($date)) {
@@ -297,7 +299,7 @@ class NevoboGateway
         }
 
         if (!preg_match('/(.*) (.*) (.*), (.*):(.*)/', $date, $dateMatches)) {
-            throw new \UnexpectedValueException('Unparseble date: $date');
+            throw new UnexpectedValueException('Unparseble date: $date');
         }
         $day = $dateMatches[2];
         $month = $dateMatches[3];
@@ -305,7 +307,7 @@ class NevoboGateway
         $minutes = $dateMatches[5];
 
         if (!array_key_exists(strtolower($month), $this->monthTranslations)) {
-            throw new \UnexpectedValueException('Unknown month: $month');
+            throw new UnexpectedValueException('Unknown month: $month');
         }
 
         $month = $this->monthTranslations[$month];
@@ -329,7 +331,7 @@ class NevoboGateway
             }
         }
 
-        return \DateTime::createFromFormat('d F Y H:i', "$day $month $year $hours:$minutes");
+        return DateTime::createFromFormat('d F Y H:i', "$day $month $year $hours:$minutes");
     }
 
     private function CreateSimplePieFeed(string $url): SimplePie

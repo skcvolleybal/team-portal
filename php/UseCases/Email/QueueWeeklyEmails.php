@@ -2,6 +2,7 @@
 
 namespace TeamPortal\UseCases;
 
+use DateTime;
 use TeamPortal\Common\DateFunctions;
 use TeamPortal\Common\Utilities;
 use TeamPortal\Gateways;
@@ -190,7 +191,7 @@ class QueueWeeklyEmails implements Interactor
         );
     }
 
-    private function CreateBarcieMail(Bardienst $bardienst, \DateTime $dag): Email
+    private function CreateBarcieMail(Bardienst $bardienst, DateTime $dag): Email
     {
         $datum = DateFunctions::GetDutchDateLong($dag->date);
         $naam = $bardienst->persoon->naam;

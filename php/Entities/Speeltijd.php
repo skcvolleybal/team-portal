@@ -2,9 +2,11 @@
 
 namespace TeamPortal\Entities;
 
+use DateTime;
+
 class Speeltijd
 {
-    private \DateTime $time;
+    private DateTime $time;
     public array $wedstrijden = [];
 
     public function __get(string $property)
@@ -14,7 +16,7 @@ class Speeltijd
         }
     }
 
-    public function __construct(\DateTime $time)
+    public function __construct(DateTime $time)
     {
         $this->time = $time;
     }

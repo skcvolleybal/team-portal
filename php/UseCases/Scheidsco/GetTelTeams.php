@@ -5,6 +5,7 @@ namespace TeamPortal\UseCases;
 use TeamPortal\Common\DateFunctions;
 use TeamPortal\Gateways;
 use TeamPortal\Entities\Team;
+use UnexpectedValueException;
 
 class GetTelTeams implements Interactor
 {
@@ -32,7 +33,7 @@ class GetTelTeams implements Interactor
             }
         }
         if ($telWedstrijd === null) {
-            throw new \UnexpectedValueException("Wedstrijd met $data->matchId niet bekend");
+            throw new UnexpectedValueException("Wedstrijd met $data->matchId niet bekend");
         }
 
         $teams = $this->telFluitGateway->GetTelTeams();

@@ -2,6 +2,7 @@
 
 namespace TeamPortal\UseCases;
 
+use DateTime;
 use TeamPortal\Gateways;
 
 class UpdateFluitBeschikbaarheid implements Interactor
@@ -20,7 +21,7 @@ class UpdateFluitBeschikbaarheid implements Interactor
         $tijd = $data->tijd;
         $isBeschikbaar = $data->isBeschikbaar;
 
-        $date = \DateTime::createFromFormat('Y-m-d H:i', $datum . " " . $tijd);
+        $date = DateTime::createFromFormat('Y-m-d H:i', $datum . " " . $tijd);
         if ($date === false) {
             throw new InvalidArgumentException("Tijd niet goed: $datum $tijd");
         }

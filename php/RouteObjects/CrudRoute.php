@@ -5,6 +5,8 @@ namespace TeamPortal\RouteObjects;
 use TeamPortal\Gateways\JoomlaGateway;
 use GuzzleHttp\Psr7\Response;
 use Slim\Routing\RouteCollectorProxy;
+use UnauthorizedException;
+use UnexpectedValueException;
 
 abstract class CrudRoute
 {
@@ -63,9 +65,9 @@ abstract class CrudRoute
 
         if (!$isAuthorized) {
             if ($user !== null) {
-                throw new \UnexpectedValueException("Je bent hier niet voor geautoriseerd");
+                throw new UnexpectedValueException("Je bent hier niet voor geautoriseerd");
             } else {
-                throw new \UnauthorizedException();
+                throw new UnauthorizedException();
             }
         }
     }

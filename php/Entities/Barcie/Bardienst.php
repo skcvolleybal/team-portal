@@ -4,6 +4,7 @@ namespace TeamPortal\Entities;
 
 use TeamPortal\Common\DateFunctions;
 use TeamPortal\Common\Utilities;
+use UnexpectedValueException;
 
 class Bardienst
 {
@@ -38,7 +39,7 @@ class Bardienst
             case 6:
                 return DateFunctions::CreateDateTime($date, "18:00");
             default:
-                throw new \UnexpectedValueException();
+                throw new UnexpectedValueException();
         }
     }
 }

@@ -7,6 +7,7 @@ use TeamPortal\Entities\DwfPunt;
 use TeamPortal\Entities\DwfWedstrijd;
 use TeamPortal\Entities\DwfWissel;
 use TeamPortal\Entities\ThuisUit;
+use UnexpectedValueException;
 
 class WedstrijdenImporteren implements Interactor
 {
@@ -131,7 +132,7 @@ class WedstrijdenImporteren implements Interactor
             return $opstelling;
         }
 
-        throw new \UnexpectedValueException("Speler niet gevonden");
+        throw new UnexpectedValueException("Speler niet gevonden");
     }
 
     private function Doordraaien(array $opstelling): array

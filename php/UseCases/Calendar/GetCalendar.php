@@ -2,6 +2,7 @@
 
 namespace TeamPortal\UseCases;
 
+use DateTime;
 use TeamPortal\Gateways;
 use Kigkonsult\Icalcreator\Vcalendar;
 use TeamPortal\Common\DateFunctions;
@@ -95,7 +96,7 @@ class GetCalendar implements Interactor
         echo $calendar->createCalendar();
     }
 
-    private function GetBardienstenForDate(array $allBardiensten, \DateTime $date): array
+    private function GetBardienstenForDate(array $allBardiensten, DateTime $date): array
     {
         $result = [];
         foreach ($allBardiensten as $bardienst) {
@@ -137,7 +138,7 @@ class GetCalendar implements Interactor
             ->setXprop(Vcalendar::X_WR_TIMEZONE, "Europe/Amsterdam");
     }
 
-    private function AddEvent(Vcalendar $calendar, \DateTime $start, \DateTime $end, string $location, string $summary, string $description = null)
+    private function AddEvent(Vcalendar $calendar, DateTime $start, DateTime $end, string $location, string $summary, string $description = null)
     {
         if ($start && $end) {
             $event = $calendar->newVevent()

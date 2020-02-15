@@ -2,6 +2,7 @@
 
 namespace TeamPortal\Entities;
 
+use DateTime;
 use TeamPortal\Common\DateFunctions;
 
 class Wedstrijd
@@ -11,7 +12,7 @@ class Wedstrijd
     public Team $team1;
     public Team $team2;
     public string $poule;
-    public ?\DateTime $timestamp;
+    public ?DateTime $timestamp;
     public bool $isVeranderd;
     public ?string $locatie = null;
     public ?Team $telteam = null;
@@ -41,7 +42,7 @@ class Wedstrijd
         Team $team1,
         Team $team2,
         string $poule,
-        ?\DateTime $timestamp,
+        ?DateTime $timestamp,
         string $locatie
     ): Wedstrijd {
         $newWedstrijd = new Wedstrijd($matchId);
@@ -101,7 +102,7 @@ class Wedstrijd
         return $this->team1->naam . " - " . $this->team2->naam;
     }
 
-    static public function GetWedstrijdWithDate(array $programma, \DateTime $date): ?Wedstrijd
+    static public function GetWedstrijdWithDate(array $programma, DateTime $date): ?Wedstrijd
     {
         foreach ($programma as $wedstrijd) {
             if ($wedstrijd->timestamp && DateFunctions::GetYmdNotation($wedstrijd->timestamp) === DateFunctions::GetYmdNotation($date)) {

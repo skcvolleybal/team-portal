@@ -2,6 +2,7 @@
 
 namespace TeamPortal\Gateways;
 
+use DateTime;
 use TeamPortal\Common\Database;
 use TeamPortal\Common\DateFunctions;
 use TeamPortal\Entities\Persoon;
@@ -82,7 +83,7 @@ class ZaalwachtGateway
         return $response;
     }
 
-    public function GetZaalwacht(\DateTime $date): ?Zaalwacht
+    public function GetZaalwacht(DateTime $date): ?Zaalwacht
     {
         $query = 'SELECT
                     Z.id,

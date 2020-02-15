@@ -2,6 +2,7 @@
 
 namespace TeamPortal\UseCases;
 
+use DateTime;
 use TeamPortal\Common\DateFunctions;
 use TeamPortal\Entities\Barbeschikbaarheid;
 use TeamPortal\Entities\Team;
@@ -74,7 +75,7 @@ class GetBarcieBeschikbaarheid implements Interactor
         return $result;
     }
 
-    private function GetBeschikbaarheid(array $beschikbaarheden, \DateTime $date)
+    private function GetBeschikbaarheid(array $beschikbaarheden, DateTime $date)
     {
         foreach ($beschikbaarheden as $beschikbaarheid) {
             if ($beschikbaarheid->date == $date) {

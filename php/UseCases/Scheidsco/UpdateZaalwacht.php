@@ -5,6 +5,7 @@ namespace TeamPortal\UseCases;
 use TeamPortal\Common\DateFunctions;
 use TeamPortal\Entities\Zaalwacht;
 use TeamPortal\Gateways;
+use UnexpectedValueException;
 
 class UpdateZaalwacht implements Interactor
 {
@@ -20,7 +21,7 @@ class UpdateZaalwacht implements Interactor
     {
         $date = DateFunctions::CreateDateTime($data->date);
         if (!$date) {
-            throw new \UnexpectedValueException("Incorrecte datum: $data->date");
+            throw new UnexpectedValueException("Incorrecte datum: $data->date");
         }
 
         $zaalwacht = $this->zaalwachtGateway->GetZaalwacht($date) ?? new Zaalwacht(null, $date, null);

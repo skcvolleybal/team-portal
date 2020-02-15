@@ -2,8 +2,10 @@
 
 namespace TeamPortal\UseCases;
 
+use DateTime;
 use TeamPortal\Common\DateFunctions;
 use TeamPortal\Gateways;
+use UnexpectedValueException;
 
 class AddBardag implements Interactor
 {
@@ -22,8 +24,8 @@ class AddBardag implements Interactor
             throw new InvalidArgumentException("Incorrecte dag: $data->data");
         }
 
-        if (DateFunctions::GetYmdNotation($date) < DateFunctions::GetYmdNotation(new \DateTime())) {
-            throw new \UnexpectedValueException("Dag ligt in het verleden");
+        if (DateFunctions::GetYmdNotation($date) < DateFunctions::GetYmdNotation(new DateTime())) {
+            throw new UnexpectedValueException("Dag ligt in het verleden");
         }
 
         $bardag = $this->barcieGateway->GetBardag($date);
