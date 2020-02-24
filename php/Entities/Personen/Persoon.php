@@ -34,7 +34,7 @@ class Persoon
     {
         $namen = explode(" ", $this->naam);
         $eersteLetters = array_map(function ($item) {
-            return $item[0];
+            return strlen($item) > 0 ? $item[0] : "";
         }, $namen);
         return implode("", $eersteLetters);
     }

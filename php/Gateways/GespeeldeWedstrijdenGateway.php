@@ -3,8 +3,8 @@
 namespace TeamPortal\Gateways;
 
 use TeamPortal\Common\Database;
+use TeamPortal\Entities\DwfOpstelling;
 use TeamPortal\Entities\DwfPunt;
-use TeamPortal\Entities\DwfSpeler;
 use TeamPortal\Entities\DwfWedstrijd;
 use TeamPortal\Entities\Persoon;
 use TeamPortal\Entities\Team;
@@ -54,21 +54,13 @@ class GespeeldeWedstrijdenGateway
 
     public function AddPunt(
         string $wedstrijdId,
-        string $location,
         Team $team,
         int $set,
         DwfPunt $punt,
-        array $opstelling
+        DwfOpstelling $opstelling
     ): void {
-        if ($location == ThuisUit::THUIS) {
-            $puntenSkc = $punt->puntenThuisTeam;
-            $puntenOtherTeam  = $punt->puntenUitTeam;
-        } else {
-            $puntenSkc = $punt->puntenUitTeam;
-            $puntenOtherTeam  = $punt->puntenThuisTeam;
-        }
-        $isSkcService = $punt->serverendTeam == $location;
-        $isSkcPunt = $punt->scorendTeam == $location;
+        $isSkcService = $punt->serverendTeam === ThuisUit::THUIS;
+        $isSkcPunt = $punt->scorendTeam === ThuisUit::UIT;
 
         $query = 'INSERT INTO DWF_punten (matchId, skcTeam, `set`, isSkcService, isSkcPunt, puntenSkcTeam, puntenOtherTeam, ra, rv, mv, lv, la, ma)
                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
@@ -78,14 +70,14 @@ class GespeeldeWedstrijdenGateway
             $set,
             $isSkcService ? 'Y' : 'N',
             $isSkcPunt ? 'Y' : 'N',
-            $puntenSkc,
-            $puntenOtherTeam,
-            $opstelling[0],
-            $opstelling[1],
-            $opstelling[2],
-            $opstelling[3],
-            $opstelling[4],
-            $opstelling[5]
+            $punt->puntenThuisTeam,
+            $punt->puntenUitTeam,
+            $opstelling->GetUserIdRechtsachter(),
+            $opstelling->GetUserIdRechtsvoor(),
+            $opstelling->GetUserIdMidvoor(),
+            $opstelling->GetUserIdLinksvoor(),
+            $opstelling->GetUserIdLinksachter(),
+            $opstelling->GetUserIdMidAchter()
         ];
         $this->database->Execute($query, $params);
     }
@@ -136,10 +128,9 @@ class GespeeldeWedstrijdenGateway
         $rows = $this->database->Execute($query, $params);
         $result = [];
         foreach ($rows as $row) {
-            $result[] = new DwfSpeler(
-                new Persoon($row->id, $row->naam, $row->email),
-                $row->aantalGespeeldePunten ?? 0
-            );
+            $persoon = new Persoon($row->id, $row->naam, $row->email);
+            $persoon->aantalGespeeldePunten = $row->aantalGespeeldePunten ?? 0;
+            $result[] = $persoon;
         }
         return $result;
     }

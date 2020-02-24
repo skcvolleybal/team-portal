@@ -9,12 +9,10 @@ use TeamPortal\Entities\Team;
 interface IJoomlaGateway
 {
     function GetUser(?int $userId = null): ?Persoon;
-    function GetUserById(int $userId): Persoon;
     function GetLoggedInUser(): ?Persoon;
     function GetScheidsrechter(?int $userId): ?Scheidsrechter;
     function GetTeamByNaam(?string $naam): ?Team;
     function GetUsersWithName(string $name): array;
-    function IsUserInUsergroup(?Persoon $user, string $usergroup): bool;
     function IsScheidsrechter(?Persoon $user): bool;
     function IsWebcie(?Persoon $user): bool;
     function IsTeamcoordinator(?Persoon $user): bool;
@@ -27,8 +25,7 @@ interface IJoomlaGateway
     function GetUsersInGroup(string $groupname): array;
     function InitJoomla(): void;
     function Login(string $username, string $password): bool;
-    function MapToPersonen(array $personen): array;
-    function MapToPersoon(object $persoon): Persoon;
     function GetSpelerByRugnummer(int $rugnummer, Team $team): ?Persoon;
     function GetRugnummerOfPersoon(Persoon $user);
+    function GetAllSpelers();
 }

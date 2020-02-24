@@ -4,10 +4,15 @@ namespace TeamPortal\Entities;
 
 class DwfWissel extends DwfActie
 {
-    public function __construct(int $spelerIn, int $spelerUit, string $team)
+    public function __construct(int $veldspeler, int $bankspeler, string $team)
     {
-        $this->spelerIn = $spelerIn;
-        $this->spelerUit = $spelerUit;
+        $this->veldspeler = $veldspeler;
+        $this->bankspeler = $bankspeler;
         $this->team = $team;
+    }
+
+    public function WisselTeams()
+    {
+        $this->team = ThuisUit::WisselTeam($this->team);
     }
 }

@@ -10,4 +10,11 @@ class DwfTimeout extends DwfActie
         $this->puntenUitTeam = $puntenUitTeam;
         $this->team = $team;
     }
+
+    public function WisselTeams()
+    {
+        $this->WisselPunten();
+
+        $this->team = ThuisUit::WisselTeam($this->team);
+    }
 }

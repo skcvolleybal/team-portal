@@ -2,14 +2,19 @@
 
 namespace TeamPortal\Gateways;
 
+use DOMDocument;
+use DOMElement;
+use DOMNodeList;
+use DOMXPath;
 use TeamPortal\Common\Curl;
-use TeamPortal\Common\Header;
 use TeamPortal\Common\Request;
 use TeamPortal\Configuration;
 use TeamPortal\Entities\Credentials;
 use TeamPortal\Entities\DwfKaart;
+use TeamPortal\Entities\DwfOpstelling;
 use TeamPortal\Entities\DwfPunt;
 use TeamPortal\Entities\DwfSet;
+use TeamPortal\Entities\DwfSpeler;
 use TeamPortal\Entities\DwfSpelophoud;
 use TeamPortal\Entities\DwfTimeout;
 use TeamPortal\Entities\DwfWedstrijd;
@@ -28,9 +33,11 @@ class DwfGateway
 
     public function __construct(
         Curl $curl,
-        Configuration $configuration
+        Configuration $configuration,
+        JoomlaGateway $joomlaGateway
     ) {
         $this->curl = $curl;
+        $this->joomlaGateway = $joomlaGateway;
         $this->credentials = new Credentials($configuration->DwfUsername, $configuration->DwfPassword);
 
         if (file_exists($this->cookieFilename)) {
@@ -42,32 +49,35 @@ class DwfGateway
 
     private function Connect(): void
     {
-        $request = new Request($this->dwfOAuthUrl, true);
+        $request = new Request($this->dwfOAuthUrl);
         $response = $this->curl->SendRequest($request);
-        $headers = $this->curl->GetHeaders($response);
-        $location = $this->curl->SanitizeQueryString($headers[Header::LOCATION]);
-        $this->WID = $this->GetWid($headers[Header::SET_COOKIE]);
+        $locationHeader = $response->GetLocationHeader();
+        $setCookieHeader = $response->GetSetCookieHeader();
+        $this->WID = $this->GetWid($setCookieHeader);
 
-        $request = new Request($location, true);
+        $request = new Request($locationHeader);
         $response = $this->curl->SendRequest($request);
-        $headers = $this->curl->GetHeaders($response);
-        $sessionId = $this->GetSessionId($headers[Header::SET_COOKIE]);
+        $setCookieHeader = $response->GetSetCookieHeader();
+        $sessionId = $this->GetSessionId($setCookieHeader);
 
-        $request = new Request('https://login.nevobo.nl/login_check', true);
-        $request->headers = ["Cookie: $sessionId"];
-        $request->body = ["_username" => $this->credentials->username, "_password" => $this->credentials->password];
-        $response = $this->curl->SendRequest($request);
-
-        $headers = $this->curl->GetHeaders($response);
-        $location = "https://login.nevobo.nl" . $headers['Location'];
-        $request = new Request($location, true);
-        $sessionId = $this->GetSessionId($headers['Set-Cookie']);
-        $request->headers = ["Cookie: $sessionId"];
+        $request = new Request('https://login.nevobo.nl/login_check');
+        $request->SetHeaders(["Cookie: $sessionId"]);
+        $body = [
+            "_username" => $this->credentials->username,
+            "_password" => $this->credentials->password
+        ];
+        $request->SetBody($body);
         $response = $this->curl->SendRequest($request);
 
-        $headers = $this->curl->GetHeaders($response);
-        $request = new Request($headers[Header::LOCATION], true);
-        $request->headers = ["Cookie: $this->WID"];
+        $locationHeader = $response->GetLocationHeader();
+        $request = new Request("https://login.nevobo.nl" . $locationHeader);
+        $sessionId = $this->GetSessionId($response->GetSetCookieHeader());
+        $request->SetHeaders(["Cookie: $sessionId"]);
+        $response = $this->curl->SendRequest($request);
+
+        $locationHeader = $response->GetLocationHeader();
+        $request = new Request($locationHeader);
+        $request->SetHeaders(["Cookie: $this->WID"]);
         $this->curl->SendRequest($request);
 
         $fp = fopen($this->cookieFilename, 'w');
@@ -75,16 +85,22 @@ class DwfGateway
         fclose($fp);
     }
 
-    private function GetSessionId(string $header): string
+    public function GetSessionId(string $header): ?string
     {
-        preg_match('/(PHPSESSID=\S*);/', $header, $matches);
-        return $matches[1];
+        if (preg_match('/(PHPSESSID=\S*);/', $header, $matches)) {
+            return $matches[1];
+        } else {
+            return null;
+        }
     }
 
-    private function GetWid(string $header): string
+    public function GetWid(string $header): ?string
     {
-        preg_match('/(WID=\S*);/', $header, $matches);
-        return $matches[1];
+        if (preg_match('/(WID=\S*);/', $header, $matches)) {
+            return $matches[1];
+        } else {
+            return null;
+        }
     }
 
     public function GetGespeeldeWedstrijden(int $aantal = 999): array
@@ -100,7 +116,7 @@ class DwfGateway
         ];
 
         $response = $this->curl->SendRequest($request);
-        $data = json_decode($response);
+        $data = json_decode($response->GetBody());
 
         if (!isset($data->results[0]->type)) {
             throw new UnexpectedValueException("Kan gespeelde wedstrijden niet ophalen: $response");
@@ -126,21 +142,66 @@ class DwfGateway
         return $wedstrijden;
     }
 
-    public function GetMatchFormId(string $matchId): string
+    private function IsPlayerRole(DOMElement $player, string $role)
     {
-        $length = strlen($matchId);
-        $replacement = str_repeat("%20", 12 - ($length - 1)); // 12 is de standaard lengte van een dwf matchId
-        $url = 'https://dwf.volleybal.nl/uitslagformulier/' . str_replace(' ', $replacement, $matchId);
+        return strpos($player->childNodes[1]->childNodes[0]->attributes[0]->value, $role) !== false;
+    }
+
+    private function IsPlayerPresent(DOMElement $player)
+    {
+        return strpos($player->childNodes[9]->childNodes[0]->attributes[1]->value, "checked") !== false;
+    }
+
+    private function GetDwfPlayers(DOMNodeList $players): array
+    {
+        $result = [];
+        foreach ($players as $player) {
+            if (count($player->attributes) > 0 && in_array($player->attributes[0]->value, ["header", "bottom", "remarkInput"])) {
+                continue;
+            }
+
+            $rugnummer = trim($player->childNodes[1]->nodeValue);
+            $naam = trim($player->childNodes[3]->nodeValue);
+            $relatiecode = trim($player->childNodes[5]->nodeValue);
+            $newPlayer = new DwfSpeler($rugnummer, $naam, $relatiecode);
+            $newPlayer->isCaptain = $this->IsPlayerRole($player, "captain");
+            $newPlayer->isLibero = $this->IsPlayerRole($player, "libero");
+            $newPlayer->isUitgekomen = $this->IsPlayerPresent($player);
+            $result[] = $newPlayer;
+        }
+
+        return $result;
+    }
+
+    private function SetFormulierVariabelen(DwfWedstrijd $wedstrijd): void
+    {
+        $length = strlen($wedstrijd->matchId);
+        $matchIdLength = 12;
+        $replacement = str_repeat("%20", $matchIdLength - ($length - 1));
+        $url = 'https://dwf.volleybal.nl/uitslagformulier/' . str_replace(' ', $replacement, $wedstrijd->matchId);
         $request = new Request($url);
         $request->headers = ["Cookie: $this->WID"];
-        $response = $this->curl->SendRequest($request);
+        $response = $this->curl->SendRequest($request)->GetBody();
+        $doc = new DOMDocument();
+        libxml_use_internal_errors(true);
+        @$doc->loadHTML($response);
+        libxml_use_internal_errors(false);
+        $selector = new DOMXPath($doc);
+
+        $homeTeam = $selector->query("//div[contains(@class, 'home players')]/table/tr");
+        $wedstrijd->team1->teamgenoten = $this->GetDwfPlayers($homeTeam);
+
+        $awayTeam = $selector->query("//div[contains(@class, 'out players')]/table/tr");
+        $wedstrijd->team2->teamgenoten = $this->GetDwfPlayers($awayTeam);
 
         if (preg_match_all('/<input type="hidden" id="iMatchFormId" value="(\d*)" name="iMatchFormId"/', $response, $output_array)) {
-            return $output_array[1][0];
+            $wedstrijd->formulierId = $output_array[1][0];
+        } else {
+            throw new UnexpectedValueException("Formulier ID kon niet worden gevonden");
         }
     }
 
-    private function GetWedstrijdVerloopData(DwfWedstrijd $wedstrijd): DwfWedstrijd
+    public function GetDwfPunten(DwfWedstrijd $wedstrijd): array
     {
         $request = new Request($this->dwfUrl);
         $request->headers = ["Cookie: $this->WID"];
@@ -149,60 +210,72 @@ class DwfGateway
             'iNumberItems' => 8, // blijkbaar 8 = alle punten
             'sMatchId' => $wedstrijd->matchId,
             'sPageType' => 'resultForm',
-            'iMatchFormId' => $this->GetMatchFormId($wedstrijd->matchId),
+            'iMatchFormId' => $wedstrijd->formulierId,
         ];
-        $response = $this->curl->SendRequest($request);
-        $data = json_decode($response);
+        $data = $this->curl->SendRequest($request)->GetBody();
+        $data = json_decode($data);
         if ($data->error->code != 0) {
             throw new UnexpectedValueException('Kan wedstrijd verloop niet ophalen: ' . print_r($data, 1));
         }
 
-        $currentSet = null;
-        $numberOfItems = count($data->results[0]->data);
+        $result = [];
+        $punten = $data->results[0]->data;
+        $numberOfItems = count($punten);
         for ($i = $numberOfItems - 2; $i >= 0; $i--) {
-            $point = $data->results[0]->data[$i]->data;
-            switch ($point->sLogType) {
+            $result[] = $punten[$i]->data;
+        }
+        return $result;
+    }
+
+    public function AppendWedstrijdVerloop(DwfWedstrijd $wedstrijd): DwfWedstrijd
+    {
+        $this->SetFormulierVariabelen($wedstrijd);
+
+        $currentSet = null;
+        $punten = $this->GetDwfPunten($wedstrijd);
+        foreach ($punten as $punt) {
+            switch ($punt->sLogType) {
                 case Punttype::RESTART_SET:
                     $wedstrijd->sets[] = new DwfSet();
                     $currentSet = $currentSet === null ? 0 : $currentSet + 1;
                     break;
                 case Punttype::POINT:
                     $wedstrijd->sets[$currentSet]->punten[] = new DwfPunt(
-                        $point->iSetResultHomeTeam,
-                        $point->iSetResultOutTeam,
-                        $point->sTeam == "home" ? ThuisUit::THUIS : ThuisUit::UIT,
-                        $point->sPreviousServiceFor == "home" ? ThuisUit::THUIS : ThuisUit::UIT,
-                        $point->iPreviousServiceForShirtNr
+                        $punt->iSetResultHomeTeam,
+                        $punt->iSetResultOutTeam,
+                        $punt->sTeam == "home" ? ThuisUit::THUIS : ThuisUit::UIT,
+                        $punt->sPreviousServiceFor == "home" ? ThuisUit::THUIS : ThuisUit::UIT,
+                        $punt->iPreviousServiceForShirtNr
                     );
                     break;
                 case Punttype::TIME_OUT:
                     $wedstrijd->sets[$currentSet]->punten[] = new DwfTimeout(
-                        $point->iSetResultHomeTeam,
-                        $point->iSetResultOutTeam,
-                        $point->sTeam == "home" ? ThuisUit::THUIS : ThuisUit::UIT
+                        $punt->iSetResultHomeTeam,
+                        $punt->iSetResultOutTeam,
+                        $punt->sTeam == "home" ? ThuisUit::THUIS : ThuisUit::UIT
                     );
                     break;
                 case Punttype::SUBSTITUTION:
-                    if (preg_match('/^(Uitzonderlijke spelerswissel|Spelerswissel): (\d*) voor (\d*) in het veld$/', $point->sMessage, $output_array)) {
-                        $spelerIn = intval($output_array[2]);
-                        $spelerUit = intval($output_array[3]);
-                        $team = $point->sTeam == "home" ? ThuisUit::THUIS : ThuisUit::UIT;
+                    if (preg_match('/^(Uitzonderlijke spelerswissel|Spelerswissel): (\d*) voor (\d*) in het veld$/', $punt->sMessage, $output_array)) {
+                        $bankspeler = intval($output_array[2]);
+                        $veldspeler = intval($output_array[3]);
+                        $team = $punt->sTeam == "home" ? ThuisUit::THUIS : ThuisUit::UIT;
 
                         $wedstrijd->sets[$currentSet]->punten[] = new DwfWissel(
-                            $spelerIn,
-                            $spelerUit,
+                            $veldspeler,
+                            $bankspeler,
                             $team
                         );
 
                         $isNewWissel = true;
                         foreach ($wedstrijd->sets[$currentSet]->{$team . "wissels"} as $uit => $in) {
-                            if ($spelerIn == $uit && $spelerUit == $in) {
+                            if ($bankspeler == $uit && $veldspeler == $in) {
                                 $isNewWissel = false;
                                 break;
                             }
                         }
                         if ($isNewWissel) {
-                            $wedstrijd->sets[$currentSet]->{$team . "wissels"}[$spelerUit] = $spelerIn;
+                            $wedstrijd->sets[$currentSet]->{$team . "wissels"}[$veldspeler] = $bankspeler;
                         }
                     }
                     break;
@@ -211,17 +284,17 @@ class DwfGateway
                         break;
                     }
                     $wedstrijd->sets[$currentSet]->punten[] = new DwfKaart(
-                        $point->iSetResultHomeTeam,
-                        $point->iSetResultOutTeam,
-                        $point->sTeam == "home" ? ThuisUit::THUIS : ThuisUit::UIT,
-                        $point->sMessage
+                        $punt->iSetResultHomeTeam,
+                        $punt->iSetResultOutTeam,
+                        $punt->sTeam == "home" ? ThuisUit::THUIS : ThuisUit::UIT,
+                        $punt->sMessage
                     );
                     break;
                 case Punttype::GAME_DELAY:
                     $wedstrijd->sets[$currentSet]->punten[] =  new DwfSpelophoud(
-                        $point->iSetResultHomeTeam,
-                        $point->iSetResultOutTeam,
-                        $point->sMessage
+                        $punt->iSetResultHomeTeam,
+                        $punt->iSetResultOutTeam,
+                        $punt->sMessage
                     );
                     break;
                 default:
@@ -229,37 +302,43 @@ class DwfGateway
             }
         }
 
+        $this->DetermineBeginopstelling($wedstrijd);
+
         return $wedstrijd;
     }
 
     private function DetermineBeginopstelling(DwfWedstrijd &$wedstrijd): void
     {
+        $allSkcSpelers = $this->joomlaGateway->GetAllSpelers();
+        $this->SetUserIdsOfSkcTeams($wedstrijd, $allSkcSpelers);
+
         foreach ($wedstrijd->sets as $currenSet => $set) {
             foreach ([ThuisUit::THUIS, ThuisUit::UIT] as $team) {
-                $opstelling = [null, null, null, null, null, null];
-                $serveerder = null;
-                $aantalGespeeldePunten = 0;
+                $opstelling = new DwfOpstelling();
+                $currentServeerder = null;
+                $aantalDwfMomenten = 0;
                 $numberOfServeerders = 0;
                 foreach ($set->punten as $punt) {
-                    if ($punt instanceof DwfPunt && $punt->serverendTeam == $team && $serveerder != $punt->serveerder) {
-                        $serveerder = $punt->serveerder;
-                        $opstelling[$numberOfServeerders++] = $serveerder;
+                    if ($punt instanceof DwfPunt) {
+                        $newServeerder = ($punt->serverendTeam === "thuis" ? $wedstrijd->team1 : $wedstrijd->team2)->GetSpelerByRugnummer($punt->serveerder);
+                        if ($punt->serverendTeam == $team && $newServeerder !== null && !$newServeerder->IsEqual($currentServeerder)) {
+                            $currentServeerder = $newServeerder;
+                            $opstelling->SetSpeler($newServeerder, $numberOfServeerders++);
+                        }
                     }
-                    $aantalGespeeldePunten++;
+                    $aantalDwfMomenten++;
                     if ($numberOfServeerders == 6) {
                         break;
                     }
                 }
 
-                for ($i = $aantalGespeeldePunten - 1; $i >= 0; $i--) {
+                for ($i = $aantalDwfMomenten - 1; $i >= 0; $i--) {
                     $punt = $set->punten[$i];
                     if ($punt instanceof DwfWissel && $punt->team == $team) {
-                        for ($j = 0; $j < 6; $j++) {
-                            if ($opstelling[$j] == $punt->spelerIn) {
-                                $opstelling[$j] = $punt->spelerUit;
-                                break;
-                            }
-                        }
+                        $wisselendeTeam = $punt->team === "thuis" ? $wedstrijd->team1 : $wedstrijd->team2;
+                        $veldspeler = $wisselendeTeam->GetSpelerByRugnummer($punt->bankspeler);
+                        $bankspeler = $wisselendeTeam->GetSpelerByRugnummer($punt->veldspeler);
+                        $opstelling->WisselSpeler($veldspeler, $bankspeler);
                     }
                 }
                 $wedstrijd->sets[$currenSet]->{$team . "opstelling"} = $opstelling;
@@ -267,15 +346,19 @@ class DwfGateway
         }
     }
 
-    public function GetWedstrijdVerloop(DwfWedstrijd $wedstrijd): ?DwfWedstrijd
+    private function SetUserIdsOfSkcTeams(DwfWedstrijd $wedstrijd, array $skcSpelers)
     {
-        $wedstrijdverloop = $this->GetWedstrijdVerloopData($wedstrijd);
-        if (count($wedstrijdverloop->sets) == 0) {
-            return null;
+        $teams = ["team1", "team2"];
+        foreach ($teams as $team) {
+            if ($wedstrijd->{$team}->IsSkcTeam()) {
+                foreach ($wedstrijd->{$team}->teamgenoten as $teamgenoot) {
+                    $i = array_search($teamgenoot->relatiecode, array_column($skcSpelers, 'relatiecode'));
+                    if ($i === false){
+                        throw new UnexpectedValueException("Speler ('$teamgenoot->naam') met relatiecode '$teamgenoot->relatiecode' niet gevonden");
+                    }
+                    $teamgenoot->id = $skcSpelers[$i]->id;
+                }
+            }
         }
-
-        $this->DetermineBeginopstelling($wedstrijdverloop);
-
-        return $wedstrijdverloop;
     }
 }

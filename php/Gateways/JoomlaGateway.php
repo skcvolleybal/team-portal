@@ -22,6 +22,8 @@ class JoomlaGateway implements IJoomlaGateway
         $this->database = $database;
     }
 
+    private static $allSkcSpelers = null;
+
     public function GetUser(?int $userId = null): ?Persoon
     {
         $user = empty($userId) ? $this->GetLoggedInUser() : $this->GetUserById($userId);
@@ -312,8 +314,8 @@ class JoomlaGateway implements IJoomlaGateway
 
     private function MapToPersoon(object $row): Persoon
     {
-
         $persoon = new Persoon($row->id, $row->naam, $row->email);
+        $persoon->relatiecode = $row->relatiecode;
         $persoon->positie = $row->positie;
         $persoon->rugnummer = Utilities::StringToInt($row->rugnummer);
         $result[] = $persoon;
@@ -353,5 +355,25 @@ class JoomlaGateway implements IJoomlaGateway
         $params = [$user->id];
         $rows = $this->database->Execute($query, $params);
         return count($rows) == 0 ? null : Utilities::StringToInt($rows[0]->rugnummer);
+    }
+
+    public function GetAllSpelers()
+    {
+        if (self::$allSkcSpelers == null) {
+            $query = "SELECT 
+                    U.id, 
+                    name AS naam,
+                    email,
+                    cb_positie as positie,
+                    cb_rugnummer as rugnummer,
+                    cb_nevobocode as relatiecode
+                  FROM J3_users U
+                  INNER JOIN J3_comprofiler C on U.id = C.user_id
+                  WHERE C.cb_nevobocode is not null";
+            $rows = $this->database->Execute($query);
+            self::$allSkcSpelers = $this->MapToPersonen($rows);
+        }
+
+        return self::$allSkcSpelers;
     }
 }

@@ -2,6 +2,8 @@
 
 namespace TeamPortal\Entities;
 
+use UnexpectedValueException;
+
 class Team
 {
     public ?int $id;
@@ -102,6 +104,19 @@ class Team
             return false;
         }
         return $this->naam === $team->naam;
+    }
+
+    public function GetSpelerByRugnummer(int $rugnummer): ?DwfSpeler
+    {
+        if ($rugnummer === null){
+            return null;
+        }
+        foreach ($this->teamgenoten as $teamgenoot) {
+            if ($teamgenoot->rugnummer === $rugnummer) {
+                return $teamgenoot;
+            }
+        }
+        throw new UnexpectedValueException();
     }
 
     function GetWedstrijdOfTeam(array $wedstrijden): ?Wedstrijd

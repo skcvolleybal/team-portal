@@ -19,4 +19,19 @@ class DwfWedstrijd
         $this->setsTeam1 = $setsTeam1;
         $this->setsTeam2 = $setsTeam2;
     }
+
+    public function WisselTeams()
+    {
+        $tmp = $this->team1;
+        $this->team1 = $this->team2;
+        $this->team2 = $tmp;
+
+        $tmp = $this->setsTeam1;
+        $this->setsTeam1 = $this->setsTeam2;
+        $this->setsTeam2 = $tmp;
+
+        foreach ($this->sets as $set) {
+            $set->WisselTeams();
+        }
+    }
 }

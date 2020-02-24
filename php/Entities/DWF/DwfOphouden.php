@@ -10,4 +10,9 @@ class DwfSpelophoud extends DwfActie
         $this->puntenUitTeam = $puntenUitTeam;
         $this->toelichting = $toelichting;
     }
+
+    public function WisselTeams()
+    {
+        $this->WisselPunten();
+    }
 }

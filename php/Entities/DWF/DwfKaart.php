@@ -11,4 +11,11 @@ class DwfKaart extends DwfActie
         $this->team = $team;
         $this->toelichting = $toelichting;
     }
+
+    public function WisselTeams()
+    {
+        $this->WisselPunten();
+
+        $this->team = ThuisUit::WisselTeam($this->team);
+    }
 }

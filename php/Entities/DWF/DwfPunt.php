@@ -17,4 +17,12 @@ class DwfPunt extends DwfActie
         $this->serverendTeam = $serverendTeam;
         $this->serveerder = $serveerder;
     }
+
+    public function WisselTeams()
+    {
+        $this->WisselPunten();
+
+        $this->scorendTeam = ThuisUit::WisselTeam($this->scorendTeam);
+        $this->serverendTeam = ThuisUit::WisselTeam($this->serverendTeam);
+    }
 }
