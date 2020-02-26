@@ -44,7 +44,8 @@ class JoomlaGateway implements IJoomlaGateway
                     U.name AS naam, 
                     U.email,
                     C.cb_rugnummer as rugnummer,
-                    C.cb_positie as positie
+                    C.cb_positie as positie,
+                    C.cb_nevobocode as relatiecode
                   FROM J3_users U
                   LEFT JOIN J3_comprofiler C ON U.id = C.user_id
                   WHERE U.id = ?';
@@ -122,7 +123,8 @@ class JoomlaGateway implements IJoomlaGateway
                     U.name as naam,
                     U.email,
                     C.cb_rugnummer as rugnummer,
-                    C.cb_positie as positie
+                    C.cb_positie as positie,
+                    C.cb_nevobocode as relatiecode
                   FROM J3_users U
                   LEFT JOIN J3_comprofiler C ON U.id = C.user_id
                   WHERE name like '%$name%'
@@ -198,7 +200,8 @@ class JoomlaGateway implements IJoomlaGateway
                     name AS naam,
                     email,
                     cb_positie as positie,
-                    cb_rugnummer as rugnummer
+                    cb_rugnummer as rugnummer,
+                    C.cb_nevobocode as relatiecode
                   FROM J3_users U
                   INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
                   INNER JOIN J3_usergroups G ON M.group_id = G.id
@@ -330,7 +333,8 @@ class JoomlaGateway implements IJoomlaGateway
                     name AS naam,
                     email,
                     cb_positie as positie,
-                    cb_rugnummer as rugnummer
+                    cb_rugnummer as rugnummer,
+                    cb_nevobocode as relatiecode
                   FROM J3_users U
                   INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
                   INNER JOIN J3_usergroups G ON M.group_id = G.id

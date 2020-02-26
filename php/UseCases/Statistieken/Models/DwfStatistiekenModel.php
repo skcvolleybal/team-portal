@@ -2,7 +2,6 @@
 
 namespace TeamPortal\UseCases;
 
-use TeamPortal\Common\Utilities;
 use TeamPortal\Entities\Spelsysteem;
 use TeamPortal\Entities\Wedstrijdpunt;
 
@@ -22,7 +21,7 @@ class DwfStatistiekenModel
     {
         foreach ($spelers as $speler) {
             $plusminus = new PuntenModel("speler");
-            $plusminus->rugnummer = $speler->rugnummer;
+            $plusminus->userId = $speler->id;
             $plusminus->naam = $speler->naam;
             $plusminus->afkorting = $speler->GetAfkorting();
             $plusminus->voornaam = $speler->GetEersteNaam();
@@ -34,7 +33,7 @@ class DwfStatistiekenModel
         }
     }
 
-    public function AddPunt(Wedstrijdpunt $punt, array $spelverdelers, array $rugnummers)
+    public function AddPunt(Wedstrijdpunt $punt, array $spelverdelers, array $spelerIds)
     {
         $punt->spelsysteem = $punt->GetSpelsysteem($spelverdelers);
         $punt->rotatie = $punt->GetRotatie($spelverdelers);
@@ -53,8 +52,8 @@ class DwfStatistiekenModel
                 $this->AddPuntToRotatie($punt, $this->spelsystemen[$i]->puntenPerRotatieServiceontvangst, $spelverdelers);
             }
 
-            $this->AddPuntToSpelers($punt, $this->plusminus, $rugnummers);
-            $this->AddPuntToCombinaties($punt, $this->combinaties, $rugnummers);
+            $this->AddPuntToSpelers($punt, $this->plusminus, $spelerIds);
+            $this->AddPuntToCombinaties($punt, $this->combinaties, $spelerIds);
 
             $voorspelers = $this->GetVoorspelers($punt);
             $this->AddPuntToSpelers($punt, $this->plusminusAlleenVoor, $voorspelers);
@@ -85,12 +84,12 @@ class DwfStatistiekenModel
         });
     }
 
-    private function AddPuntToCombinaties(Wedstrijdpunt $punt, array &$combinaties, array $rugnummers)
+    private function AddPuntToCombinaties(Wedstrijdpunt $punt, array &$combinaties, array $spelerIds)
     {
-        $aantalRugnummers = count($rugnummers);
-        for ($i = 0; $i < $aantalRugnummers - 1; $i++) {
-            for ($j = $i + 1; $j < $aantalRugnummers; $j++) {
-                $combinatie = $rugnummers[$i] < $rugnummers[$j] ? $rugnummers[$i] . "-" . $rugnummers[$j] : $rugnummers[$j] . "-" . $rugnummers[$i];
+        $aantalSpelers = count($spelerIds);
+        for ($i = 0; $i < $aantalSpelers - 1; $i++) {
+            for ($j = $i + 1; $j < $aantalSpelers; $j++) {
+                $combinatie = $spelerIds[$i] < $spelerIds[$j] ? $spelerIds[$i] . "-" . $spelerIds[$j] : $spelerIds[$j] . "-" . $spelerIds[$i];
                 $key = array_search($combinatie, array_column($combinaties, 'type'));
                 if ($key === false) {
                     $newPuntenModel = new PuntenModel("combinaties");
@@ -112,10 +111,10 @@ class DwfStatistiekenModel
         }
     }
 
-    private function AddPuntToSpelers(Wedstrijdpunt $punt, array &$spelers, array $rugnummers)
+    private function AddPuntToSpelers(Wedstrijdpunt $punt, array &$spelers, array $spelerIds)
     {
-        foreach ($rugnummers as $rugnummer) {
-            $i = array_search($rugnummer, array_column($spelers, 'rugnummer'));
+        foreach ($spelerIds as $spelerId) {
+            $i = array_search($spelerId, array_column($spelers, 'userId'));
             if ($i !== false) {
                 $spelers[$i]->AddPunt($punt);
             }

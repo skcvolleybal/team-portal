@@ -92,6 +92,10 @@ class GetWedstrijdOverzicht implements Interactor
         foreach ($invalteams as $invalTeam) {
             $invalTeamWedstrijd = null;
             foreach ($invalTeam->programma as $wedstrijd) {
+                if ($wedstrijd->timestamp === null) {
+                    continue;
+                }
+
                 $datumInvalwedstrijd = DateFunctions::GetYmdNotation($wedstrijd->timestamp);
                 if ($datumWedstrijd === $datumInvalwedstrijd) {
                     $invalTeamWedstrijd = Wedstrijd::CreateFromNevoboWedstrijd(

@@ -6,7 +6,6 @@ class Wedstrijdpunt
 {
     public ?int $id;
     public string $matchId;
-    public Team $skcTeam;
     public int $set;
     public bool $isSkcService;
     public bool $isSkcPunt;
@@ -18,48 +17,28 @@ class Wedstrijdpunt
     public ?int $linksvoor;
     public ?int $linksachter;
     public ?int $midachter;
-    public array $posities = ["rechtsachter", "rechtsvoor", "midvoor", "linksvoor", "linksachter", "midachter"];
 
     public function __construct(
-        ?int $id,
         string $matchId,
-        Team $skcTeam,
         int $set,
         bool $isSkcService,
         bool $isSkcPunt,
         int $puntenSkcTeam,
-        int  $puntenOtherTeam,
-        ?int $rechtsachter,
-        ?int $rechtsvoor,
-        ?int $midvoor,
-        ?int $linksvoor,
-        ?int $linksachter,
-        ?int $midachter
+        int  $puntenOtherTeam
     ) {
-        $this->id = $id;
         $this->matchId = $matchId;
-        $this->skcTeam = $skcTeam;
         $this->set = $set;
         $this->isSkcService = $isSkcService;
         $this->isSkcPunt = $isSkcPunt;
         $this->puntenSkcTeam = $puntenSkcTeam;
         $this->puntenOtherTeam =  $puntenOtherTeam;
-        $this->rechtsachter = $rechtsachter;
-        $this->rechtsvoor = $rechtsvoor;
-        $this->midvoor = $midvoor;
-        $this->linksvoor = $linksvoor;
-        $this->linksachter = $linksachter;
-        $this->midachter = $midachter;
     }
 
     public function GetSpelsysteem(array $spelverdelerIds)
     {
         $aantalSpelverdelers = 0;
-        foreach ($this->posities as $positie) {
-            if (in_array($this->{$positie}, $spelverdelerIds)) {
-                $aantalSpelverdelers++;
-            }
-        }
+        $opstelling = $this->GetOpstelling();
+        $aantalSpelverdelers = count(array_intersect($spelverdelerIds, $opstelling));
 
         switch ($aantalSpelverdelers) {
             case 1:
@@ -73,8 +52,9 @@ class Wedstrijdpunt
 
     public function GetRotatie(array $spelverdelerIds)
     {
-        foreach ($this->posities as $i => $positie) {
-            if (in_array($this->{$positie}, $spelverdelerIds)) {
+        $opstelling = $this->GetOpstelling();
+        foreach ($opstelling as $i => $positie) {
+            if (in_array($positie, $spelverdelerIds)) {
                 return $i;
             }
         }
@@ -82,14 +62,26 @@ class Wedstrijdpunt
         return null;
     }
 
-    public function GetRugnummers()
+    public function GetSpelerIds()
     {
-        $result = [];
-        foreach ($this->posities as $positie) {
-            if ($this->{$positie}) {
-                $result[] = $this->{$positie};
-            }
-        }
-        return $result;
+        $opstelling = $this->GetOpstelling();
+        return array_values(array_filter($opstelling, function ($positie) {
+            return $positie != null;
+        }));
+    }
+
+    public function SetOpstelling(?int $rechtsachter, ?int $rechtsvoor, ?int $midvoor, ?int $linksvoor, ?int $linksachter, ?int $midachter)
+    {
+        $this->rechtsachter = $rechtsachter;
+        $this->rechtsvoor = $rechtsvoor;
+        $this->midvoor = $midvoor;
+        $this->linksvoor = $linksvoor;
+        $this->linksachter = $linksachter;
+        $this->midachter = $midachter;
+    }
+
+    private function GetOpstelling()
+    {
+        return [$this->rechtsachter, $this->rechtsvoor, $this->midvoor, $this->linksvoor, $this->linksachter, $this->midachter];
     }
 }

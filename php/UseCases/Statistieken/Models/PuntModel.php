@@ -14,7 +14,7 @@ class PuntenModel
     public int $percentage;
     public float $plusminus;
     public float $plusminusGenormaliseerd;
-    public ?int $rugnummer;
+    public int $userId;
     public string $naam;
 
     public function __construct(string $type)

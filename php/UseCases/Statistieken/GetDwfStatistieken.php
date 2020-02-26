@@ -30,7 +30,7 @@ class GetDwfStatistieken implements Interactor
 
         $spelers = $this->joomlaGateway->GetTeamgenoten($user->team);
         $result = new DwfStatistiekenModel($spelers);
-        $spelverdelers = $this->GetSpelverdelers($spelers);
+        $spelverdelers = $this->GetSpelverdelerIds($spelers);
         if (count($spelverdelers) === 0) {
             throw new UnexpectedValueException("Het aantal spelverdelers in jouw team is 0. Dit kan je in het profiel (van de spelverdeler) aanpassen.");
         }
@@ -43,9 +43,9 @@ class GetDwfStatistieken implements Interactor
 
             $punten = $this->gespeeldeWedstrijdenGateway->GetAllePuntenByMatchId($wedstrijd->matchId, $user->team);
             foreach ($punten as $punt) {
-                $rugnummers = $punt->GetRugnummers($punt);
-                $this->AddMissingSpelers($spelers, $rugnummers);
-                $result->AddPunt($punt, $spelverdelers, $rugnummers);
+                $spelerIds = $punt->GetSpelerIds();
+                $this->AddMissingSpelers($spelers, $spelerIds);
+                $result->AddPunt($punt, $spelverdelers, $spelerIds);
             }
         }
 
@@ -56,11 +56,11 @@ class GetDwfStatistieken implements Interactor
         $result->CalculateSpelersstatistieken();
 
         foreach ($result->combinaties as $combinatie) {
-            if (preg_match('/(\d{1,2})-(\d{0,2})/', $combinatie->type, $matches) > 0) {
-                $combinatie->speler1 = $this->GetSpelersnaamByRugnummer($matches[1], $spelers);
-                $combinatie->speler2 = $this->GetSpelersnaamByRugnummer($matches[2], $spelers);
+            if (preg_match('/(\d{3,4})-(\d{3,4})/', $combinatie->type, $matches) > 0) {
+                $combinatie->speler1 = $this->GetSpelerById($spelers, $matches[1]);
+                $combinatie->speler2 = $this->GetSpelerById($spelers, $matches[2]);
 
-                if (in_array($user->rugnummer, [$matches[1], $matches[2]])) {
+                if (in_array($user->id, [$matches[1], $matches[2]])) {
                     $result->eigenCombinaties[] = clone $combinatie;
                 }
             }
@@ -69,56 +69,37 @@ class GetDwfStatistieken implements Interactor
         return $result;
     }
 
-    private function AddMissingSpelers(array &$spelers, array $rugnummers)
+    private function AddMissingSpelers(array &$spelers, array $spelerIds)
     {
-        foreach ($rugnummers as $rugnummer) {
-            $i = array_search($rugnummer, array_column($spelers, 'rugnummer'));
+        foreach ($spelerIds as $spelerId) {
+            $i = array_search($spelerId, array_column($spelers, 'id'));
             if ($i !== false) {
                 continue;
             }
-            $newSpeler = $this->joomlaGateway->GetSpelerByRugnummer($rugnummer, $this->team);
+            $newSpeler = $this->joomlaGateway->GetUser($spelerId);
             if ($newSpeler === null) {
                 continue;
             }
 
-            $puntModel = new PuntenModel("invaller");
-            $puntModel->naam = $newSpeler->naam;
-            $puntModel->afkorting = $newSpeler->GetAfkorting();
-            $puntModel->voornaam = $newSpeler->GetEersteNaam();
-            $puntModel->rugnummer = $newSpeler->rugnummer;
-            $spelers[] = $puntModel;
+            $spelers[] = $newSpeler;
         }
     }
 
-
-
-    private function GetSpelverdelers(array $spelers): array
+    private function GetSpelverdelerIds(array $spelers): array
     {
-        $spelverdelers = [];
+        $spelverdelerIds = [];
         foreach ($spelers as $speler) {
             if ($speler->IsSpelverdeler()) {
-                $spelverdelers[] = $speler->rugnummer;
+                $spelverdelerIds[] = $speler->id;
             }
         }
-        return $spelverdelers;
+        return $spelverdelerIds;
     }
 
-    private function GetSpelersnaamByRugnummer(int $rugnummer, array $spelers)
-    {
-        $key = array_search($rugnummer, array_column($spelers, 'rugnummer'));
-        if ($key === false) {
-            $speler = $this->joomlaGateway->GetSpelerByRugnummer($rugnummer, $this->team);
-        } else {
-            $speler = $spelers[$key];
-        }
-
-        return $speler != null ? $speler->naam : null;
-    }
-
-    public function GetSpelerByRugnummer(array $spelers, int $rugnummer)
+    public function GetSpelerById(array $spelers, int $userId)
     {
         foreach ($spelers as $speler) {
-            if ($speler->rugnummer === $rugnummer) {
+            if ($speler->id === $userId) {
                 return $speler;
             }
         }

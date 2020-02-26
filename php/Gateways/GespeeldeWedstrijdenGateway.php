@@ -60,7 +60,7 @@ class GespeeldeWedstrijdenGateway
         DwfOpstelling $opstelling
     ): void {
         $isSkcService = $punt->serverendTeam === ThuisUit::THUIS;
-        $isSkcPunt = $punt->scorendTeam === ThuisUit::UIT;
+        $isSkcPunt = $punt->scorendTeam === ThuisUit::THUIS;
 
         $query = 'INSERT INTO DWF_punten (matchId, skcTeam, `set`, isSkcService, isSkcPunt, puntenSkcTeam, puntenOtherTeam, ra, rv, mv, lv, la, ma)
                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
@@ -87,30 +87,32 @@ class GespeeldeWedstrijdenGateway
         $query = 'SELECT 
                     U.id, 
                     U.name AS naam, 
-                    email, 
-                    C.cb_rugnummer AS rugnummer,
+                    U.email,
+                    C.cb_rugnummer as rugnummer,
+                    C.cb_positie as positie,
+                    C.cb_nevobocode as relatiecode,
                     P.aantalGespeeldePunten
-                  FROM J3_users U
+                  FROM (
+                    SELECT userId, count(*) aantalGespeeldePunten FROM (
+                        SELECT ra AS userId FROM DWF_punten P inner join DWF_wedstrijden W on P.matchId = W.id where W.skcTeam = :nevobonaam AND (W.id = :matchId OR :matchId = "")
+                        UNION ALL
+                        SELECT rv AS userId FROM DWF_punten P inner join DWF_wedstrijden W on P.matchId = W.id where W.skcTeam = :nevobonaam AND (W.id = :matchId OR :matchId = "")
+                        UNION ALL
+                        SELECT mv AS userId FROM DWF_punten P inner join DWF_wedstrijden W on P.matchId = W.id where W.skcTeam = :nevobonaam AND (W.id = :matchId OR :matchId = "")
+                        UNION ALL
+                        SELECT lv AS userId FROM DWF_punten P inner join DWF_wedstrijden W on P.matchId = W.id where W.skcTeam = :nevobonaam AND (W.id = :matchId OR :matchId = "")
+                        UNION ALL
+                        SELECT la AS userId FROM DWF_punten P inner join DWF_wedstrijden W on P.matchId = W.id where W.skcTeam = :nevobonaam AND (W.id = :matchId OR :matchId = "")
+                        UNION ALL
+                        SELECT ma AS userId FROM DWF_punten P inner join DWF_wedstrijden W on P.matchId = W.id where W.skcTeam = :nevobonaam AND (W.id = :matchId OR :matchId = "")
+                    ) T1
+                    GROUP BY userId ORDER BY aantalGespeeldePunten DESC
+                  ) AS P
+                  INNER JOIN J3_users U ON P.userId = U.id
+                  INNER JOIN J3_comprofiler C ON U.id = C.user_id
                   INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
                   INNER JOIN J3_usergroups G on M.group_id = G.id
-                  INNER JOIN J3_comprofiler C ON U.id = C.user_id
-                  LEFT JOIN (    
-                    SELECT rugnummer, count(*) aantalGespeeldePunten FROM (
-                      SELECT ra AS rugnummer FROM DWF_punten P inner join DWF_wedstrijden W on P.matchId = W.id where W.skcTeam = :nevobonaam AND (W.id = :matchId OR :matchId = "")
-                      UNION ALL
-                      SELECT rv AS rugnummer FROM DWF_punten P inner join DWF_wedstrijden W on P.matchId = W.id where W.skcTeam = :nevobonaam AND (W.id = :matchId OR :matchId = "")
-                      UNION ALL
-                      SELECT mv AS rugnummer FROM DWF_punten P inner join DWF_wedstrijden W on P.matchId = W.id where W.skcTeam = :nevobonaam AND (W.id = :matchId OR :matchId = "")
-                      UNION ALL
-                      SELECT lv AS rugnummer FROM DWF_punten P inner join DWF_wedstrijden W on P.matchId = W.id where W.skcTeam = :nevobonaam AND (W.id = :matchId OR :matchId = "")
-                      UNION ALL
-                      SELECT la AS rugnummer FROM DWF_punten P inner join DWF_wedstrijden W on P.matchId = W.id where W.skcTeam = :nevobonaam AND (W.id = :matchId OR :matchId = "")
-                      UNION ALL
-                      SELECT ma AS rugnummer FROM DWF_punten P inner join DWF_wedstrijden W on P.matchId = W.id where W.skcTeam = :nevobonaam AND (W.id = :matchId OR :matchId = "")
-                    ) T1
-                    GROUP BY rugnummer ORDER BY aantalGespeeldePunten DESC
-                  ) P ON C.cb_rugnummer = P.rugnummer
-                  where G.title = :skcnaam
+                  WHERE G.title = :skcnaam
                   ORDER BY
                     CASE 
                         WHEN cb_positie = "Spelverdeler" THEN 1
@@ -172,15 +174,12 @@ class GespeeldeWedstrijdenGateway
     public function GetLangsteServicereeksen()
     {
         $query = "SELECT 
-                    matchId,
-                    S.skcTeam,
-                    otherTeam,
-                    `set`,
-                    ra AS rugnummer,
-                    naam,
-                    services
+                    S.services,
+                    U.name AS naam,
+                    W.skcTeam,
+                    W.otherTeam
                   FROM (
-                    SELECT `set`, P.matchId, ra, skcTeam, COUNT(*) AS services 
+                    SELECT P.matchId, ra, skcTeam, COUNT(*) AS services 
                     FROM DWF_punten P
                     WHERE isSkcService = 'Y' AND ra IS NOT null
                     GROUP BY P.matchId, `set`, ra, puntenOtherTeam
@@ -188,15 +187,7 @@ class GespeeldeWedstrijdenGateway
                     LIMIT 1, 10
                   ) S
                   INNER JOIN DWF_wedstrijden W ON S.matchId = W.id AND S.skcTeam = W.skcTeam
-                  LEFT JOIN (
-                    SELECT U.id, NAME AS naam, CONCAT('SKC ', substr(G.title, 1, 1), 'S ', SUBSTR(G.title, 7, 1)) AS teamnaam, cb_rugnummer AS rugnummer
-                    FROM J3_users U 
-                    INNER JOIN J3_comprofiler C ON U.id = C.user_id
-                    INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
-                    INNER JOIN J3_usergroups G ON M.group_id = G.id
-                    WHERE G.parent_id = (SELECT id FROM J3_usergroups WHERE title = 'Teams') AND cb_rugnummer IS NOT null
-                  ) T1 ON S.ra = T1.rugnummer AND S.skcTeam = T1.teamnaam
-                  ORDER BY services DESC";
+                  INNER JOIN J3_users U ON S.ra = U.id";
         return $this->database->Execute($query);
     }
 
@@ -204,22 +195,17 @@ class GespeeldeWedstrijdenGateway
     {
         $result = [];
         foreach ($rows as $row) {
-            $result[] = new Wedstrijdpunt(
-                $row->id,
+            $punt = new Wedstrijdpunt(
                 $row->matchId,
-                new Team($row->skcTeam),
                 $row->set,
                 $row->isSkcService === "Y",
                 $row->isSkcPunt === "Y",
                 $row->puntenSkcTeam,
-                $row->puntenOtherTeam,
-                $row->ra,
-                $row->rv,
-                $row->mv,
-                $row->lv,
-                $row->la,
-                $row->ma,
+                $row->puntenOtherTeam
             );
+            $punt->SetOpstelling($row->ra, $row->rv, $row->mv, $row->lv, $row->la, $row->ma);
+
+            $result[] = $punt;
         }
 
         return $result;

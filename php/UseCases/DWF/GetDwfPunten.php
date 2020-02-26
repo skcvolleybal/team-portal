@@ -25,10 +25,7 @@ class GetDwfPunten implements Interactor
             throw new UnexpectedValueException("matchId klopt niet: '$matchId'. Bv: 3000 H4G DG");
         }
 
-        if (!empty($data->team)) {
-            $team = new Team($data->team);
-        }
-
+        $team = !empty($data->team) ? new Team($data->team) : null;
         $teamRegex = "/SKC [HD]S \d{1,2}/";
         if ($team && !preg_match_all($teamRegex, $team->naam)) {
             throw new UnexpectedValueException("team klopt niet: '$team->naam'. Bv: SKC HS 2");

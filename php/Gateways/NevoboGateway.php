@@ -291,7 +291,7 @@ class NevoboGateway
         return $uitslagen;
     }
 
-    private function ConvertNevoboDate(string $date): DateTime
+    private function ConvertNevoboDate(string $date): ?DateTime
     {
         /* Voorbeeld: donderdag 20 september, 21:00 */
         if (empty($date)) {
