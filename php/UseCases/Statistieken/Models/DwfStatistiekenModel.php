@@ -4,6 +4,7 @@ namespace TeamPortal\UseCases;
 
 use TeamPortal\Entities\Spelsysteem;
 use TeamPortal\Entities\Wedstrijdpunt;
+use UnexpectedValueException;
 
 class DwfStatistiekenModel
 {

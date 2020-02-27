@@ -47,7 +47,7 @@ class DwfOpstelling
         for ($j = 0; $j < 6; $j++) {
             if ($this->opstelling[$j] !== null && $this->opstelling[$j]->rugnummer === $veldspeler->rugnummer) {
                 $this->opstelling[$j] = $bankspeler;
-                break;
+                return;
             }
         }
     }
@@ -61,6 +61,17 @@ class DwfOpstelling
         $this->opstelling[3] = $this->opstelling[4];
         $this->opstelling[4] = $this->opstelling[5];
         $this->opstelling[5] = $tmp;
+    }
+
+    function Terugdraaien(): void
+    {
+        $tmp = $this->opstelling[5];
+        $this->opstelling[5] = $this->opstelling[4];
+        $this->opstelling[4] = $this->opstelling[3];
+        $this->opstelling[3] = $this->opstelling[2];
+        $this->opstelling[2] = $this->opstelling[1];
+        $this->opstelling[1] = $this->opstelling[0];
+        $this->opstelling[0] = $tmp;
     }
 
     private function GetUserIdOfPosition(int $positie): ?int

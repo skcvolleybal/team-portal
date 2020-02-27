@@ -183,6 +183,7 @@ class DwfGateway
         $request->headers = ["Cookie: $this->WID"];
         $response = $this->curl->SendRequest($request)->GetBody();
         $doc = new DOMDocument();
+
         libxml_use_internal_errors(true);
         @$doc->loadHTML($response);
         libxml_use_internal_errors(false);
@@ -336,11 +337,16 @@ class DwfGateway
                     $punt = $set->punten[$i];
                     if ($punt instanceof DwfWissel && $punt->team == $team) {
                         $wisselendeTeam = $punt->team === "thuis" ? $wedstrijd->team1 : $wedstrijd->team2;
-                        $veldspeler = $wisselendeTeam->GetSpelerByRugnummer($punt->bankspeler);
-                        $bankspeler = $wisselendeTeam->GetSpelerByRugnummer($punt->veldspeler);
-                        $opstelling->WisselSpeler($veldspeler, $bankspeler);
+                        $bankspeler = $wisselendeTeam->GetSpelerByRugnummer($punt->bankspeler);
+                        $veldspeler = $wisselendeTeam->GetSpelerByRugnummer($punt->veldspeler);
+                        $opstelling->WisselSpeler($bankspeler, $veldspeler);
                     }
                 }
+
+                if ($set->punten[0]->serverendTeam !== $team) {
+                    $opstelling->Terugdraaien();
+                }
+
                 $wedstrijd->sets[$currenSet]->{$team . "opstelling"} = $opstelling;
             }
         }
@@ -353,7 +359,7 @@ class DwfGateway
             if ($wedstrijd->{$team}->IsSkcTeam()) {
                 foreach ($wedstrijd->{$team}->teamgenoten as $teamgenoot) {
                     $i = array_search($teamgenoot->relatiecode, array_column($skcSpelers, 'relatiecode'));
-                    if ($i === false){
+                    if ($i === false) {
                         throw new UnexpectedValueException("Speler ('$teamgenoot->naam') met relatiecode '$teamgenoot->relatiecode' niet gevonden");
                     }
                     $teamgenoot->id = $skcSpelers[$i]->id;

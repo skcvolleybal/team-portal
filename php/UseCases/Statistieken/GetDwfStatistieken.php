@@ -19,7 +19,7 @@ class GetDwfStatistieken implements Interactor
 
     function Execute(object $data = null)
     {
-        $matchId = $data->matchId;
+        $matchId = $data->matchId ?? "";
 
         $user = $this->joomlaGateway->GetUser();
         if ($user->team == null) {
