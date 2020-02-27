@@ -343,8 +343,13 @@ class DwfGateway
                     }
                 }
 
-                if ($set->punten[0]->serverendTeam !== $team) {
-                    $opstelling->Terugdraaien();
+                foreach ($set->punten as $punt) {
+                    if ($punt instanceof DwfPunt) {
+                        if ($punt->serverendTeam !== $team) {
+                            $opstelling->Terugdraaien();
+                        }
+                        break;
+                    }
                 }
 
                 $wedstrijd->sets[$currenSet]->{$team . "opstelling"} = $opstelling;
