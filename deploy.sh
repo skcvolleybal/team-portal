@@ -35,3 +35,5 @@ END
 
 # remove locally
 rm ./deployment.tar
+
+curl https://www.skcvolleybal.nl/team-portal/api/tasks/daily-tasks &> /dev/null

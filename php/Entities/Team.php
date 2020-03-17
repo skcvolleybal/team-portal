@@ -18,9 +18,7 @@ class Team
     {
         $this->id = $id;
 
-        $naam = str_replace("-", " ", $naam);
         if ($this->isSkcFormat($naam)) {
-
             $sequence = substr($naam, 6);
             $gender = strtolower(substr($naam, 0, 5));
             $this->naam = $gender === 'dames' ? 'SKC DS ' . $sequence : 'SKC HS ' . $sequence;

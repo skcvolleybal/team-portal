@@ -4,6 +4,7 @@ namespace TeamPortal\UseCases;
 
 use TeamPortal\Entities\Team;
 use TeamPortal\Gateways;
+use UnexpectedValueException;
 
 class GetTeamoverzicht implements Interactor
 {
@@ -21,8 +22,8 @@ class GetTeamoverzicht implements Interactor
             throw new InvalidArgumentException("Teamnaam is leeg");
         }
 
-        $currentTeam = new Team($data->teamnaam);
-
+        $teamnaam = str_replace("-", " ", $data->teamnaam);
+        $currentTeam = new Team($teamnaam);
         $teams = Team::$alleSkcTeams;
         foreach ($teams as $team) {
             if ($currentTeam->naam !== $team->naam) {
@@ -38,10 +39,9 @@ class GetTeamoverzicht implements Interactor
             $team->uitslagen = array_slice($uitslagen, 0, 3);
             $team->programma = array_slice($programma, 0, 3);
 
-            $result = new TeamoverzichtModel($team);
-            break;
+            return new TeamoverzichtModel($team);
         }
 
-        return $result;
+        throw new UnexpectedValueException("Team met naam '$teamnaam' bestaat niet");
     }
 }
