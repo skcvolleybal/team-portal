@@ -152,6 +152,34 @@ class DwfGateway
         return strpos($player->childNodes[9]->childNodes[0]->attributes[1]->value, "checked") !== false;
     }
 
+    private function GetDwfGegeven(DOMNodeList $list, string $type)
+    {
+        foreach ($list as $listitem) {
+            $text = trim($listitem->textContent);
+            switch ($type) {
+                case "Rugnummer":
+                    if (is_numeric($text)) {
+                        return intval($text);
+                    }
+                    break;
+                case "Naam":
+                    if (strpos($text, ', ') !== false) {
+                        return $text;
+                    }
+                    break;
+                case "Relatiecode":
+                    if (strlen($text) === 7) {
+                        return $text;
+                    }
+                    break;
+                default:
+                    throw new UnexpectedValueException("Onbekend type '$type'");
+            }
+        }
+
+        throw new UnexpectedValueException("'$type' is niet bekend bij deze speler");
+    }
+
     private function GetDwfPlayers(DOMNodeList $players): array
     {
         $result = [];
@@ -160,9 +188,9 @@ class DwfGateway
                 continue;
             }
 
-            $rugnummer = trim($player->childNodes[1]->nodeValue);
-            $naam = trim($player->childNodes[3]->nodeValue);
-            $relatiecode = trim($player->childNodes[5]->nodeValue);
+            $rugnummer = $this->GetDwfGegeven($player->childNodes, 'Rugnummer');
+            $naam = $this->GetDwfGegeven($player->childNodes, 'Naam');
+            $relatiecode = $this->GetDwfGegeven($player->childNodes, 'Relatiecode');
             $newPlayer = new DwfSpeler($rugnummer, $naam, $relatiecode);
             $newPlayer->isCaptain = $this->IsPlayerRole($player, "captain");
             $newPlayer->isLibero = $this->IsPlayerRole($player, "libero");
