@@ -54,6 +54,9 @@ class MijnOverzicht implements Interactor
         $team = $this->joomlaGateway->GetTeam($user);
         $speelWedstrijden = $this->nevoboGateway->GetWedstrijdenForTeam($team);
         foreach ($speelWedstrijden as $wedstrijd) {
+            if ($wedstrijd->timestamp === null) {
+                continue;
+            }
             $fluitEnTelWedstrijd = $this->telFluitGateway->GetWedstrijd($wedstrijd->matchId);
             $wedstrijd->AppendInformation($fluitEnTelWedstrijd);
 
@@ -63,6 +66,9 @@ class MijnOverzicht implements Interactor
         if ($user->coachteam) {
             $wedstrijden = $this->nevoboGateway->GetWedstrijdenForTeam($user->coachteam);
             foreach ($wedstrijden as $wedstrijd) {
+                if ($wedstrijd->timestamp === null) {
+                    continue;
+                }
                 $this->AddWedstrijdToOverzicht($overzicht, $wedstrijd);
             }
         }

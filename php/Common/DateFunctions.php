@@ -25,7 +25,7 @@ class DateFunctions
 
     static function GetYmdNotation(DateTime $timestamp): string
     {
-        return $timestamp->format(DateFunctions::$DATE_FORMAT);
+        return $timestamp->format(self::$DATE_FORMAT);
     }
 
     static function GetTime(DateTime $timestamp): string
@@ -38,14 +38,17 @@ class DateFunctions
         if (preg_match("/^\d{2}:\d{2}$/", $time)) {
             $time .= ":00";
         }
-        $format = DateFunctions::$DATE_FORMAT . " " . DateFunctions::$TIME_FORMAT;
+        $format = DateFunctions::$DATE_FORMAT . " " . self::$TIME_FORMAT;
         $timestring = $date . " " . $time;
         $date = DateTime::createFromFormat($format, $timestring);
         return $date !== false ? $date : null;
     }
 
-    static function AreDatesEqual(DateTime $date1, DateTime $date2)
+    static function AreDatesEqual(?DateTime $date1, ?DateTime $date2)
     {
+        if ($date1 === null || $date2 === null) {
+            return false;
+        }
         $dateFormat = DateFunctions::$DATE_FORMAT;
         return $date1->format($dateFormat) === $date2->format($dateFormat);
     }

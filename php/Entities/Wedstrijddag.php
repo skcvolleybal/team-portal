@@ -2,9 +2,11 @@
 
 namespace TeamPortal\Entities;
 
+use DateTime;
+
 class Wedstrijddag
 {
-    private $date;
+    private DateTime $date;
     public array $speeltijden = [];
     public array $barshifts = [];
     public array $bardiensten = [];
@@ -18,7 +20,7 @@ class Wedstrijddag
         }
     }
 
-    function __construct($date)
+    function __construct(DateTime $date)
     {
         $this->date = $date;
     }
