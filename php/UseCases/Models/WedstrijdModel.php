@@ -26,7 +26,7 @@ class WedstrijdModel extends Overzichtsitem
     public function __construct(Wedstrijd $wedstrijd)
     {
         $this->matchId = $wedstrijd->matchId;
-        $this->tijd = DateFunctions::GetTime($wedstrijd->timestamp);
+        $this->tijd = $wedstrijd->timestamp !== null ? DateFunctions::GetTime($wedstrijd->timestamp) : "NA";
         $this->team1 = $wedstrijd->team1->naam;
         $this->team2 = $wedstrijd->team2->naam;
         $this->teams = $wedstrijd->team1->naam . " - " . $wedstrijd->team2->naam;

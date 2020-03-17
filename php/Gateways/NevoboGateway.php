@@ -108,7 +108,7 @@ class NevoboGateway
         $currentDag = null;
         $currentSpeeltijd = null;
         foreach ($wedstrijden as $wedstrijd) {
-            if ($wedstrijd->timestamp > $endDate) {
+            if ($wedstrijd->timestamp === null || $wedstrijd->timestamp > $endDate) {
                 continue;
             }
             if ($currentDag !== DateFunctions::GetYmdNotation($wedstrijd->timestamp)) {

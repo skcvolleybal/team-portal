@@ -11,10 +11,15 @@ class Overzichtsitem
     public string $date;
     public string $datum;
 
-    public function __construct(string $type, DateTime $date)
+    public function __construct(string $type, ?DateTime $date)
     {
         $this->type = $type;
-        $this->date = DateFunctions::GetYmdNotation($date);
-        $this->datum = DateFunctions::GetDutchDate($date);
+        if ($date !== null) {
+            $this->date = DateFunctions::GetYmdNotation($date);
+            $this->datum = DateFunctions::GetDutchDate($date);
+        } else {
+            $this->date = "NA";
+            $this->datum = "NA";
+        }
     }
 }

@@ -10,18 +10,23 @@ use TeamPortal\Entities\Bardag;
 use TeamPortal\Gateways\BarcieGateway;
 use TeamPortal\Tests\Gateways\JoomlaGateway;
 use TeamPortal\UseCases\AddBarcieAanwezigheid;
+use TeamPortal\UseCases\IBarcieGateway;
+use TeamPortal\UseCases\IJoomlaGateway;
 
 class BarcieTest extends TestCase
 {
     function test_When_BarlidId_is_Null_throw_Exception()
     {
-        // arrange
-        $barcieGateway = $this->createMock(BarcieGateway::class);
-        $joomlaGateway = $this->createMock(JoomlaGateway::class);
+        // arrange        
+        $barcieGateway = $this->getMockBuilder(IBarcieGateway::class)->setMockClassName(IBarcieGateway::class)->getMock();
+        $joomlaGateway = $this->getMockBuilder(IJoomlaGateway::class)->getMock();
 
         $today = new DateTime();
-        $barcieGateway->method('GetBardag')
+        $barcieGateway
+            ->method('GetBardag')
             ->willReturn(new Bardag(1, $today));
+
+        $asd = $barcieGateway->GetBardag($today);
 
         $interactor = new AddBarcieAanwezigheid($barcieGateway, $joomlaGateway);
 

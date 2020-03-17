@@ -24,7 +24,7 @@ class TeamoverzichtModel
             $this->uitslagen[] = new WedstrijdModel($wedstrijd);
         }
 
-        $this->standen = $team->standen;
+        $this->stand = $team->stand;
 
         $this->programma = [];
         foreach ($team->programma as $wedstrijd) {

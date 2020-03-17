@@ -2,13 +2,15 @@
 
 namespace TeamPortal\UseCases;
 
-use TeamPortal\Gateways;
+use TeamPortal\Entities\Team;
+use TeamPortal\Gateways\JoomlaGateway;
+use TeamPortal\Gateways\NevoboGateway;
 
 class DailyTasks implements Interactor
 {
     public function __construct(
-        Gateways\NevoboGateway $nevoboGateway,
-        Gateways\JoomlaGateway $joomlaGateway
+        NevoboGateway $nevoboGateway,
+        JoomlaGateway $joomlaGateway
     ) {
         $this->nevoboGateway = $nevoboGateway;
         $this->joomlaGateway = $joomlaGateway;
@@ -33,8 +35,9 @@ class DailyTasks implements Interactor
             $team->stand = $this->nevoboGateway->GetStandForPoule($team->poule);
             $team->uitslagen = array_slice($uitslagen, 0, 3);
             $team->programma = array_slice($programma, 0, 3);
-
-
+            $team->trainers = $this->joomlaGateway->GetTrainers($team);
+            $team->coaches = $this->joomlaGateway->GetCoaches($team);
+            
             $dirname = dirname(__FILE__) . "/../../Teamstanden";
             if (!file_exists($dirname)) {
                 mkdir($dirname);
