@@ -152,45 +152,39 @@ class DwfGateway
         return strpos($player->childNodes[9]->childNodes[0]->attributes[1]->value, "checked") !== false;
     }
 
-    private function GetDwfGegeven(DOMNodeList $list, string $type)
+    private function GetIndexOfColumn(DOMElement $header, string $columnContent)
     {
-        foreach ($list as $listitem) {
-            $text = trim($listitem->textContent);
-            switch ($type) {
-                case "Rugnummer":
-                    if (is_numeric($text)) {
-                        return intval($text);
-                    }
-                    break;
-                case "Naam":
-                    if (strpos($text, ', ') !== false) {
-                        return $text;
-                    }
-                    break;
-                case "Relatiecode":
-                    if (strlen($text) === 7) {
-                        return $text;
-                    }
-                    break;
-                default:
-                    throw new UnexpectedValueException("Onbekend type '$type'");
+        foreach ($header->childNodes as $i => $column) {
+            $text = trim($column->textContent);
+            if ($columnContent === $text) {
+                return $i;
             }
         }
 
-        throw new UnexpectedValueException("'$type' is niet bekend bij deze speler");
+        throw new UnexpectedValueException("'$columnContent' is niet gevonden in header");
     }
 
     private function GetDwfPlayers(DOMNodeList $players): array
     {
+        $header = $players[0];
+        $rugnummerIndex = $this->GetIndexOfColumn($header, "Rugnr.");
+        $naamIndex = $this->GetIndexOfColumn($header, "Naam");
+        $relatiecodeIndex = $this->GetIndexOfColumn($header, "Relatiecode");
+
         $result = [];
         foreach ($players as $player) {
             if (count($player->attributes) > 0 && in_array($player->attributes[0]->value, ["header", "bottom", "remarkInput"])) {
                 continue;
             }
 
-            $rugnummer = $this->GetDwfGegeven($player->childNodes, 'Rugnummer');
-            $naam = $this->GetDwfGegeven($player->childNodes, 'Naam');
-            $relatiecode = $this->GetDwfGegeven($player->childNodes, 'Relatiecode');
+            $rugnummer = $player->childNodes[$rugnummerIndex]->textContent;
+            if (!is_numeric($rugnummer)) {
+                throw new UnexpectedValueException("Rugnummer '$rugnummer' is geen getal");
+            }
+            $rugnummer = intval($rugnummer);
+            $naam = trim($player->childNodes[$naamIndex]->textContent);
+            $relatiecode = trim($player->childNodes[$relatiecodeIndex]->textContent);
+
             $newPlayer = new DwfSpeler($rugnummer, $naam, $relatiecode);
             $newPlayer->isCaptain = $this->IsPlayerRole($player, "captain");
             $newPlayer->isLibero = $this->IsPlayerRole($player, "libero");
