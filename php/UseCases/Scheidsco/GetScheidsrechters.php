@@ -3,18 +3,20 @@
 namespace TeamPortal\UseCases;
 
 use TeamPortal\Common\DateFunctions;
-use TeamPortal\Gateways;
 use TeamPortal\Entities\Persoon;
-use TeamPortal\Entities\Wedstrijd;
+use TeamPortal\Gateways\FluitBeschikbaarheidGateway;
+use TeamPortal\Gateways\JoomlaGateway;
+use TeamPortal\Gateways\NevoboGateway;
+use TeamPortal\Gateways\TelFluitGateway;
 use UnexpectedValueException;
 
 class GetScheidsrechters implements Interactor
 {
     public function __construct(
-        Gateways\JoomlaGateway $joomlaGateway,
-        Gateways\TelFluitGateway $telFluitGateway,
-        Gateways\NevoboGateway $nevoboGateway,
-        Gateways\FluitBeschikbaarheidGateway $fluitBeschikbaarheidGateway
+        JoomlaGateway $joomlaGateway,
+        TelFluitGateway $telFluitGateway,
+        NevoboGateway $nevoboGateway,
+        FluitBeschikbaarheidGateway $fluitBeschikbaarheidGateway
     ) {
         $this->joomlaGateway = $joomlaGateway;
         $this->telFluitGateway = $telFluitGateway;
@@ -40,6 +42,10 @@ class GetScheidsrechters implements Interactor
             throw new UnexpectedValueException("Wedstrijd met id $data->matchId niet gevonden");
         }
 
+        if ($fluitWedstrijd->timestamp === null) {
+            throw new UnexpectedValueException("Wedstrijd staat op het programma, maar heeft geen tijdstip");
+        }
+
         $date = $fluitWedstrijd->timestamp;
         $wedstrijden = [];
         foreach ($uscWedstrijden as $wedstrijd) {
@@ -59,10 +65,14 @@ class GetScheidsrechters implements Interactor
         foreach ($scheidsrechters as $scheidsrechter) {
             $wedstrijd = $scheidsrechter->team != null ? $scheidsrechter->team->GetWedstrijdOfTeam($wedstrijden) : null;
             $isBeschikbaar = $this->GetFluitbeschikbaarheid($scheidsrechter, $fluitBeschikbaarheden);
-            $model = $this->MapToUsecaseModel($scheidsrechter, $isBeschikbaar, $wedstrijd);
 
-            $result[$wedstrijd !== null ? 0 : 1]->AddScheidsrechter($model);
+            $newScheidsrechter = new ScheidsrechterModel($scheidsrechter);
+            $newScheidsrechter->eigenTijd = $wedstrijd ? DateFunctions::GetTime($wedstrijd->timestamp) : null;
+            $newScheidsrechter->isBeschikbaar = $isBeschikbaar;
+
+            $result[$wedstrijd !== null ? 0 : 1]->AddScheidsrechter($newScheidsrechter);
         }
+
         return $result;
     }
 
@@ -74,18 +84,5 @@ class GetScheidsrechters implements Interactor
             }
         }
         return null;
-    }
-
-    private function MapToUsecaseModel(Persoon $scheidsrechter, ?bool $isBeschikbaar, ?Wedstrijd $wedstrijd)
-    {
-        return (object) [
-            "id" => $scheidsrechter->id,
-            "naam" => $scheidsrechter->naam,
-            "niveau" => $scheidsrechter->niveau,
-            "gefloten" => $scheidsrechter->aantalGeflotenWedstrijden,
-            "team" => $scheidsrechter->team != null ? $scheidsrechter->team->GetShortNotation() : "Geen Team",
-            "eigenTijd" => $wedstrijd ? DateFunctions::GetTime($wedstrijd->timestamp) : null,
-            "isBeschikbaar" => $isBeschikbaar,
-        ];
     }
 }

@@ -13,6 +13,8 @@ class Team
     public int $niveau;
     public static $alleSkcTeams = [];
     public ?string $facebook;
+    public int $aantalZaalwachten = 0;
+    public int $aantalTelbeurten = 0;
 
     public function __construct(string $naam, int $id = null, array $teamgenoten = [])
     {
@@ -106,7 +108,7 @@ class Team
 
     public function GetSpelerByRugnummer(int $rugnummer): ?DwfSpeler
     {
-        if ($rugnummer === null){
+        if ($rugnummer === null) {
             return null;
         }
         foreach ($this->teamgenoten as $teamgenoot) {

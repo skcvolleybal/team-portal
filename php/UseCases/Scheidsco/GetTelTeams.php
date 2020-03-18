@@ -3,16 +3,17 @@
 namespace TeamPortal\UseCases;
 
 use TeamPortal\Common\DateFunctions;
-use TeamPortal\Gateways;
-use TeamPortal\Entities\Team;
+use TeamPortal\Gateways\JoomlaGateway;
+use TeamPortal\Gateways\NevoboGateway;
+use TeamPortal\Gateways\TelFluitGateway;
 use UnexpectedValueException;
 
 class GetTelTeams implements Interactor
 {
     public function __construct(
-        Gateways\JoomlaGateway $joomlaGateway,
-        Gateways\TelFluitGateway $telFluitGateway,
-        Gateways\NevoboGateway $nevoboGateway
+        JoomlaGateway $joomlaGateway,
+        TelFluitGateway $telFluitGateway,
+        NevoboGateway $nevoboGateway
     ) {
         $this->joomlaGateway = $joomlaGateway;
         $this->telFluitGateway =  $telFluitGateway;
@@ -36,18 +37,29 @@ class GetTelTeams implements Interactor
             throw new UnexpectedValueException("Wedstrijd met $data->matchId niet bekend");
         }
 
+        if ($telWedstrijd->timestamp === null) {
+            throw new UnexpectedValueException("Wedstrijd staat op het programma, maar heeft geen tijdstip");
+        }
+
         $teams = $this->telFluitGateway->GetTelTeams();
         $wedstrijden = $this->GetWedstrijdenWithDate($uscWedstrijden, $telWedstrijd->timestamp);
 
         $result = new Teamsamenvatting();
         foreach ($teams as $team) {
             $wedstrijd = $team->GetWedstrijdOfTeam($wedstrijden);
+
+            $telteam = new TelteamModel;
+            $telteam->naam = $team->naam;
+            $telteam->geteld = $team->aantalKeerGeteld;
+
             if ($wedstrijd) {
-                $isMogelijk = $wedstrijd->IsMogelijk($telWedstrijd);
-                $eigenTijd = DateFunctions::GetTime($wedstrijd->timestamp);
-                $result->spelendeTeams[] = $this->MapToUsecaseModel($team, $isMogelijk, $eigenTijd);
+                $telteam->isMogelijk = $wedstrijd->IsMogelijk($telWedstrijd);
+                $telteam->eigenTijd = DateFunctions::GetTime($wedstrijd->timestamp);
+                $result->spelendeTeams[] = $telteam;;
             } else {
-                $result->overigeTeams[] = $this->MapToUsecaseModel($team, true, null);
+                $telteam->isMogelijk = true;
+                $telteam->eigenTijd = null;
+                $result->overigeTeams[] = $telteam;
             }
         }
         return $result;
@@ -63,15 +75,5 @@ class GetTelTeams implements Interactor
             }
         }
         return $result;
-    }
-
-    private function MapToUsecaseModel(Team $team, bool $isMogelijk, ?string $eigenTijd)
-    {
-        return (object) [
-            "naam" => $team->naam,
-            "geteld" => $team->aantalKeerGeteld,
-            "eigenTijd" => $eigenTijd,
-            "isMogelijk" => $isMogelijk,
-        ];
     }
 }

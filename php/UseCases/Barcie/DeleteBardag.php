@@ -3,14 +3,15 @@
 namespace TeamPortal\UseCases;
 
 use TeamPortal\Common\DateFunctions;
-use TeamPortal\Gateways;
+use TeamPortal\Gateways\BarcieGateway;
+use TeamPortal\Gateways\JoomlaGateway;
 use UnexpectedValueException;
 
 class DeleteBardag implements Interactor
 {
     public function __construct(
-        IJoomlaGateway $joomlaGateway,
-        IBarcieGateway $barcieGateway
+        JoomlaGateway $joomlaGateway,
+        BarcieGateway $barcieGateway
     ) {
         $this->joomlaGateway = $joomlaGateway;
         $this->barcieGateway = $barcieGateway;

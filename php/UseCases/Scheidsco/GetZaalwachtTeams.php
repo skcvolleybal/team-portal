@@ -3,14 +3,16 @@
 namespace TeamPortal\UseCases;
 
 use TeamPortal\Common\DateFunctions;
-use TeamPortal\Gateways;
+use TeamPortal\Gateways\JoomlaGateway;
+use TeamPortal\Gateways\NevoboGateway;
+use TeamPortal\Gateways\ZaalwachtGateway;
 
 class GetZaalwachtTeams implements Interactor
 {
     public function __construct(
-        Gateways\ZaalwachtGateway $zaalwachtGateway,
-        Gateways\JoomlaGateway $joomlaGateway,
-        Gateways\NevoboGateway $nevoboGateway
+        ZaalwachtGateway $zaalwachtGateway,
+        JoomlaGateway $joomlaGateway,
+        NevoboGateway $nevoboGateway
     ) {
         $this->zaalwachtGateway = $zaalwachtGateway;
         $this->joomlaGateway = $joomlaGateway;
@@ -25,15 +27,19 @@ class GetZaalwachtTeams implements Interactor
         }
 
         $uscWedstrijden = $this->nevoboGateway->GetProgrammaForSporthal();
-        $samenvattingen = $this->zaalwachtGateway->GetZaalwachtSamenvatting();
+        $zaalwachtteams = $this->zaalwachtGateway->GetZaalwachtSamenvatting();
         $spelendeTeams = $this->GetSpelendeTeamsForDate($uscWedstrijden, $date);
 
         $result = new Teamsamenvatting();
-        foreach ($samenvattingen as $samenvatting) {
-            if (in_array($samenvatting->team->GetSkcNaam(), $spelendeTeams)) {
-                $result->spelendeTeams[] = $this->MapToUsecaseModel($samenvatting);
+        foreach ($zaalwachtteams as $team) {
+            $newTeam = new TeamModel;
+            $newTeam->naam = $team->GetSkcNaam();
+            $newTeam->aantal = $team->aantalZaalwachten;
+
+            if (in_array($team->GetSkcNaam(), $spelendeTeams)) {
+                $result->spelendeTeams[] = $newTeam;
             } else {
-                $result->overigeTeams[] = $this->MapToUsecaseModel($samenvatting);
+                $result->overigeTeams[] = $newTeam;
             }
         }
         return $result;
@@ -48,13 +54,5 @@ class GetZaalwachtTeams implements Interactor
             }
         }
         return $result;
-    }
-
-    private function MapToUsecaseModel($samenvatting)
-    {
-        return (object) [
-            "naam" => $samenvatting->team->GetSkcNaam(),
-            "aantal" => $samenvatting->aantal,
-        ];
     }
 }

@@ -5,15 +5,17 @@ namespace TeamPortal\UseCases;
 use DateTime;
 use TeamPortal\Common\DateFunctions;
 use TeamPortal\Entities\Barbeschikbaarheid;
-use TeamPortal\Entities\Team;
-use TeamPortal\Gateways;
+use TeamPortal\Entities\Persoon;
+use TeamPortal\Gateways\BarcieGateway;
+use TeamPortal\Gateways\JoomlaGateway;
+use TeamPortal\Gateways\NevoboGateway;
 
 class GetBarcieBeschikbaarheid implements Interactor
 {
     public function __construct(
-        Gateways\NevoboGateway $nevoboGateway,
-        Gateways\BarcieGateway $barcieGateway,
-        Gateways\JoomlaGateway $joomlaGateway
+        NevoboGateway $nevoboGateway,
+        BarcieGateway $barcieGateway,
+        JoomlaGateway $joomlaGateway
     ) {
         $this->nevoboGateway = $nevoboGateway;
         $this->barcieGateway = $barcieGateway;
@@ -44,38 +46,32 @@ class GetBarcieBeschikbaarheid implements Interactor
 
             $isBeschikbaar = $this->GetBeschikbaarheid($beschikbaarheden, $bardag->date);
 
-            $response[] = (object) [
-                "datum" => DateFunctions::GetDutchDate($bardag->date),
-                "date" => DateFunctions::GetYmdNotation($bardag->date),
-                "beschikbaarheid" => $isBeschikbaar,
-                "eigenWedstrijden" => $this->MapToUsecase($wedstrijden, $user->team, $user->coachteam),
-                "isMogelijk" => Barbeschikbaarheid::IsMogelijk($wedstrijden),
-            ];
+            $barciebeschikbaarheid = new BarbeschikbaarheidModel;
+
+            $barciebeschikbaarheid->datum = DateFunctions::GetDutchDate($bardag->date);
+            $barciebeschikbaarheid->date = DateFunctions::GetYmdNotation($bardag->date);
+            $barciebeschikbaarheid->beschikbaarheid = $isBeschikbaar;
+            $barciebeschikbaarheid->eigenWedstrijden = $this->MapToUsecase($wedstrijden, $user);
+            $barciebeschikbaarheid->isMogelijk = Barbeschikbaarheid::IsMogelijk($wedstrijden);
+
+            $response[] = $barciebeschikbaarheid;
         }
 
         return $response;
     }
 
-    private function MapToUsecase(array $wedstrijden, ?Team $team, ?Team $coachteam)
+    private function MapToUsecase(array $wedstrijden, Persoon $user)
     {
         $result = [];
         foreach ($wedstrijden as $wedstrijd) {
-            $result[] = (object) [
-                "datum" => DateFunctions::GetDutchDate($wedstrijd->timestamp),
-                "tijd" => $wedstrijd->timestamp->format('H:i'),
-                "team1" => $wedstrijd->team1->naam,
-                "isTeam1" => $wedstrijd->team1->Equals($team),
-                "isCoachTeam1" => $wedstrijd->team1->Equals($coachteam),
-                "team2" => $wedstrijd->team2->naam,
-                "isTeam2" => $wedstrijd->team2->Equals($team),
-                "isCoachTeam2" => $wedstrijd->team2->Equals($coachteam),
-                "locatie" => $wedstrijd->GetShortLocatie(),
-            ];
+            $newWedstrijd = new WedstrijdModel($wedstrijd);
+            $newWedstrijd->SetPersonalInformation($user);
+            $result[] = $newWedstrijd;
         }
         return $result;
     }
 
-    private function GetBeschikbaarheid(array $beschikbaarheden, DateTime $date)
+    private function GetBeschikbaarheid(array $beschikbaarheden, DateTime $date): ?bool
     {
         foreach ($beschikbaarheden as $beschikbaarheid) {
             if ($beschikbaarheid->date == $date) {

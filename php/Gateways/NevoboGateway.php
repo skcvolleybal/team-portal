@@ -355,11 +355,12 @@ class NevoboGateway
 
         $result = [];
         for ($i = 0; $i < $feed->get_item_quantity(); $i++) {
-            $result[] = (object) [
-                'title' => $feed->get_item($i)->get_title(),
-                'date' => $feed->get_item($i)->get_date("Y-m-d G:i:s"),
-                'description' => $feed->get_item($i)->get_description(),
-            ];
+            $rssFeedItem = new RssFeedItem;
+            $rssFeedItem->title = $feed->get_item($i)->get_title();
+            $rssFeedItem->date = $feed->get_item($i)->get_date("Y-m-d G:i:s");
+            $rssFeedItem->description = $feed->get_item($i)->get_description();
+
+            $result[] = $rssFeedItem;
         }
 
         return $result;

@@ -58,10 +58,10 @@ class ZaalwachtGateway
         $rows = $this->database->Execute($query);
         $result = [];
         foreach ($rows as $row) {
-            $result[] = (object) [
-                'team' => new Team($row->teamnaam, $row->teamId),
-                'aantal' => $row->aantal
-            ];
+            $team = new Team($row->teamnaam, $row->teamId);
+            $team->aantalZaalwachten = $row->aantal;
+
+            $result[] = $team;
         }
         return $result;
     }
