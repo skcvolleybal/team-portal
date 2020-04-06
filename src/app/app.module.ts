@@ -1,30 +1,30 @@
-import { HTTP_INTERCEPTORS, HttpClientModule } from "@angular/common/http";
-import { NgModule } from "@angular/core";
-import { BrowserModule } from "@angular/platform-browser";
-import { RouterModule } from "@angular/router";
-import { StoreModule } from "@ngrx/store";
-import { AppComponent } from "./app.component";
-import { BarcoModule } from "./barco/barco.module";
-import { BeschikbaarheidModule } from "./beschikbaarheid/beschikbaarheid.module";
-import { CoreModule } from "./core/core.module";
-import { ImpersonationInterceptor } from "./core/interceptors/add-impersonation.interceptor";
-import { DefaultHeadersInterceptor } from "./core/interceptors/default-headers.interceptor";
-import { HTTPListener } from "./core/interceptors/is-authorized.interceptor";
-import { AanwezigheidService } from "./core/services/aanwezigheid.service";
-import { BarcoService } from "./core/services/barco.service";
-import { BeschikbaarheidService } from "./core/services/beschikbaarheid.service";
-import { JoomlaService } from "./core/services/request.service";
-import { ScheidscoService } from "./core/services/scheidsco.service";
-import { StateService } from "./core/services/state.service";
-import { StatistiekService } from "./core/services/statistieken.service";
-import { LoginModalComponent } from "./login-modal/login-modal.component";
-import { MijnOverzichtModule } from "./mijn-overzicht/mijn-overzicht.module";
-import { appRoutes } from "./route.config";
-import { ScheidscoModule } from "./scheidsco/scheidsco.module";
-import { SharedModule } from "./shared/shared.module";
-import { StatistiekModule } from "./statistiek/statistiek.module";
-import { WedstrijdOverzichtModule } from "./wedstrijd-overzicht/wedstrijd-overzicht.module";
-import { WithCredentialsInterceptor } from "./core/interceptors/add-credentials.interceptor";
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { RouterModule } from '@angular/router';
+import { StoreModule } from '@ngrx/store';
+import { AppComponent } from './app.component';
+import { BarcoModule } from './barco/barco.module';
+import { BeschikbaarheidModule } from './beschikbaarheid/beschikbaarheid.module';
+import { CoreModule } from './core/core.module';
+import { WithCredentialsInterceptor } from './core/interceptors/add-credentials.interceptor';
+import { ImpersonationInterceptor } from './core/interceptors/add-impersonation.interceptor';
+import { DefaultHeadersInterceptor } from './core/interceptors/default-headers.interceptor';
+import { HTTPListener } from './core/interceptors/is-authorized.interceptor';
+import { AanwezigheidService } from './core/services/aanwezigheid.service';
+import { BarcoService } from './core/services/barco.service';
+import { BeschikbaarheidService } from './core/services/beschikbaarheid.service';
+import { JoomlaService } from './core/services/request.service';
+import { ScheidscoService } from './core/services/scheidsco.service';
+import { StateService } from './core/services/state.service';
+import { StatistiekService } from './core/services/statistieken.service';
+import { LoginModalComponent } from './login-modal/login-modal.component';
+import { MijnOverzichtModule } from './mijn-overzicht/mijn-overzicht.module';
+import { appRoutes } from './route.config';
+import { ScheidscoModule } from './scheidsco/scheidsco.module';
+import { SharedModule } from './shared/shared.module';
+import { StatistiekModule } from './statistiek/statistiek.module';
+import { WedstrijdOverzichtModule } from './wedstrijd-overzicht/wedstrijd-overzicht.module';
 
 @NgModule({
   entryComponents: [LoginModalComponent],
@@ -32,7 +32,7 @@ import { WithCredentialsInterceptor } from "./core/interceptors/add-credentials.
   imports: [
     HttpClientModule,
     RouterModule.forRoot(appRoutes, {
-      useHash: true
+      useHash: true,
     }),
     BrowserModule,
     MijnOverzichtModule,
@@ -43,7 +43,7 @@ import { WithCredentialsInterceptor } from "./core/interceptors/add-credentials.
     ScheidscoModule,
     StatistiekModule,
     SharedModule,
-    StoreModule
+    StoreModule,
   ],
   exports: [],
   providers: [
@@ -57,24 +57,24 @@ import { WithCredentialsInterceptor } from "./core/interceptors/add-credentials.
     {
       provide: HTTP_INTERCEPTORS,
       useClass: HTTPListener,
-      multi: true
+      multi: true,
     },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: ImpersonationInterceptor,
-      multi: true
+      multi: true,
     },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: DefaultHeadersInterceptor,
-      multi: true
+      multi: true,
     },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: WithCredentialsInterceptor,
-      multi: true
-    }
+      multi: true,
+    },
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
 export class AppModule {}
