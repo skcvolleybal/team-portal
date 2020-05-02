@@ -32,7 +32,7 @@
     "core-js": "^2.6.11",
     "linq": "^3.2.2",
     "ngx-spinner": "8.0.3",
-    "protractor": "^5.4.4",
+    "protractor": "^6.0.0",
     "rxjs": "^6.5.5",
     "tslib": "^1.10.0",
     "tslint-config-prettier": "^1.15.0",
