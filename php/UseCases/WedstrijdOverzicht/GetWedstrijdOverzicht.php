@@ -63,13 +63,13 @@ class GetWedstrijdOverzicht implements Interactor
                     }
 
                     $aanwezighedenForMatch = $this->GetAanwezighedenForWedstrijd($wedstrijd->matchId, $aanwezigheden, $user->team);
-                    $aanwezighedenForMatch->onbekend = $this->GetOnbekenden($aanwezighedenForMatch, $user->team);
+                    $aanwezighedenForMatch->Onbekend = $this->GetOnbekenden($aanwezighedenForMatch, $user->team);
                 }
 
                 $newWedstrijd->isAanwezig = $this->IsAanwezig($aanwezigheden, $wedstrijd->matchId, $user);
                 $newWedstrijd->aanwezigen = $aanwezighedenForMatch->aanwezigen;
                 $newWedstrijd->afwezigen = $aanwezighedenForMatch->afwezigen;
-                $newWedstrijd->onbekend = $aanwezighedenForMatch->onbekend;
+                $newWedstrijd->Onbekend = $aanwezighedenForMatch->Onbekend;
                 foreach ($aanwezighedenForMatch->coaches as $coach) {
                     $newCoach = new CoachModel($coach->persoon);
                     $newCoach->isAanwezig = $coach->isAanwezig;

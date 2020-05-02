@@ -12,4 +12,9 @@ class Barlid extends Persoon
         $this->aantalDiensten = $aantalDiensten;
         parent::__construct($persoon->id, $persoon->naam, $persoon->email);
     }
+
+    public static function Compare(Barlid $barlid1, Barlid $barlid2)
+    {
+        return $barlid1->aantalDiensten > $barlid2->aantalDiensten;
+    }
 }

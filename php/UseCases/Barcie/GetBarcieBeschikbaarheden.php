@@ -3,15 +3,16 @@
 namespace TeamPortal\UseCases;
 
 use TeamPortal\Common\DateFunctions;
+use TeamPortal\Entities\Barlid;
 use TeamPortal\Entities\Persoon;
-use TeamPortal\Gateways;
-
+use TeamPortal\Gateways\BarcieGateway;
+use TeamPortal\Gateways\JoomlaGateway;
 
 class GetBarcieBeschikbaarheden implements Interactor
 {
     public function __construct(
-        Gateways\BarcieGateway $barcieGateway,
-        Gateways\JoomlaGateway $joomlaGateway
+        BarcieGateway $barcieGateway,
+        JoomlaGateway $joomlaGateway
     ) {
         $this->barcieGateway = $barcieGateway;
         $this->joomlaGateway = $joomlaGateway;
@@ -44,6 +45,11 @@ class GetBarcieBeschikbaarheden implements Interactor
                 return $barlid->id !== $currentBarlid->id;
             });
         }
+
+        $compareFunction = "Compare";
+        usort($result->Ja, [Barlid::class, $compareFunction]);
+        usort($result->Nee, [Barlid::class, $compareFunction]);
+        usort($result->Onbekend, [Barlid::class, $compareFunction]);
 
         $result->Onbekend = array_values($barleden);
 

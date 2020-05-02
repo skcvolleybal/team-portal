@@ -5,9 +5,9 @@ namespace TeamPortal\UseCases;
 class Beschikbaarheidssamenvatting
 {
     public ?string $type;
-    public array $ja = [];
-    public array $onbekend = [];
-    public array $nee = [];
+    public array $Ja = [];
+    public array $Onbekend = [];
+    public array $Nee = [];
 
     public function __construct(string $type = null)
     {
@@ -17,11 +17,11 @@ class Beschikbaarheidssamenvatting
     public function AddScheidsrechter($scheidsrechter)
     {
         if ($scheidsrechter->isBeschikbaar === null) {
-            $this->onbekend[] = $scheidsrechter;
+            $this->Onbekend[] = $scheidsrechter;
         } else if ($scheidsrechter->isBeschikbaar) {
-            $this->ja[] = $scheidsrechter;
+            $this->Ja[] = $scheidsrechter;
         } else {
-            $this->nee[] = $scheidsrechter;
+            $this->Nee[] = $scheidsrechter;
         }
     }
 }
