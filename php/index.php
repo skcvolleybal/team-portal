@@ -17,10 +17,14 @@ use TeamPortal\RouteObjects\DeleteRoute;
 use TeamPortal\RouteObjects\GetRoute;
 use TeamPortal\RouteObjects\PostRoute;
 use TeamPortal\RouteObjects\RouteGroup;
+use DI\ContainerBuilder;
 
 require 'vendor/autoload.php';
 
-$container = new Container();
+$containerBuilder  = new ContainerBuilder();
+$containerBuilder->addDefinitions('di-config.php');
+$container = $containerBuilder->build();
+
 AppFactory::setContainer($container);
 $app = AppFactory::create();
 

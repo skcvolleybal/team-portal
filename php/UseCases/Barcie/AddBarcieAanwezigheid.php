@@ -3,15 +3,13 @@
 namespace TeamPortal\UseCases;
 
 use TeamPortal\Common\DateFunctions;
-use TeamPortal\Gateways\BarcieGateway;
-use TeamPortal\Gateways\JoomlaGateway;
 use UnexpectedValueException;
 
 class AddBarcieAanwezigheid implements Interactor
 {
     public function __construct(
-        JoomlaGateway $joomlaGateway,
-        BarcieGateway $barcieGateway
+        IJoomlaGateway $joomlaGateway,
+        IBarcieGateway $barcieGateway
     ) {
         $this->barcieGateway = $barcieGateway;
         $this->joomlaGateway = $joomlaGateway;

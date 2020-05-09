@@ -7,8 +7,8 @@ namespace TeamPortal\Tests;
 use DateTime;
 use PHPUnit\Framework\TestCase;
 use TeamPortal\Entities\Bardag;
-use TeamPortal\Gateways\BarcieGateway;
-use TeamPortal\Tests\Gateways\JoomlaGateway;
+use TeamPortal\Entities\Bardienst;
+use TeamPortal\Entities\Persoon;
 use TeamPortal\UseCases\AddBarcieAanwezigheid;
 use TeamPortal\UseCases\IBarcieGateway;
 use TeamPortal\UseCases\IJoomlaGateway;
@@ -17,18 +17,23 @@ class BarcieTest extends TestCase
 {
     function test_When_BarlidId_is_Null_throw_Exception()
     {
-        // arrange        
-        $barcieGateway = $this->getMockBuilder(IBarcieGateway::class)->setMockClassName(IBarcieGateway::class)->getMock();
-        $joomlaGateway = $this->getMockBuilder(IJoomlaGateway::class)->getMock();
-
+        // arrange     
         $today = new DateTime();
-        $barcieGateway
-            ->method('GetBardag')
-            ->willReturn(new Bardag(1, $today));
+
+        $barcieGateway = $this->createMock(IBarcieGateway::class);
+        $barcieGateway->method('GetBardag')->willReturn(new Bardag(1, $today));
+        $barcieGateway->method('GetBardienst')->willReturn(new Bardienst(
+            new Bardag(1, new DateTime()),
+            new Persoon(1, "Thomas", "thomas@ghpomasd.asd"),
+            null, null
+        ));
+
+        $joomlaGateway = $this->createMock(IJoomlaGateway::class);
+        $joomlaGateway->method('GetUser')->willReturn(new Persoon(1, "Sjon", "sjons@sjons.clm"));
 
         $asd = $barcieGateway->GetBardag($today);
 
-        $interactor = new AddBarcieAanwezigheid($barcieGateway, $joomlaGateway);
+        $interactor = new AddBarcieAanwezigheid($joomlaGateway, $barcieGateway);
 
         $data = (object) [
             "barlidId" => 1,
