@@ -211,7 +211,7 @@ class TelFluitGateway
                         WHERE M.group_id = (select id from J3_usergroups G where title = "Scheidsrechters")
                     )
                   ) T
-                  LEFT JOIN TeamPortal_wedstrijden W ON W.teller1_id = t.id or W.teller2_id = t.id
+                  LEFT JOIN TeamPortal_wedstrijden W ON W.teller1_id = T.id or W.teller2_id = T.id
                   LEFT JOIN J3_user_usergroup_map M on M.user_id = T.id
                   LEFT JOIN J3_usergroups G on M.group_id = G.id
                   WHERE M.group_id in (
