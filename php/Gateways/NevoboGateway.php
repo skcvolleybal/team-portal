@@ -11,9 +11,10 @@ use TeamPortal\Entities\Stand;
 use TeamPortal\Entities\Team;
 use TeamPortal\Entities\Wedstrijd;
 use TeamPortal\Entities\Wedstrijddag;
+use TeamPortal\UseCases\INevoboGateway;
 use UnexpectedValueException;
 
-class NevoboGateway
+class NevoboGateway implements INevoboGateway
 {
     public $cacheDuration = 3600 * 24; // 24 uur
     public $cacheLocation = './cache';
