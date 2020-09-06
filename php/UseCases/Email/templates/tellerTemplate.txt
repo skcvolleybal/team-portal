@@ -6,7 +6,7 @@ Beste {{naam}},<br>
 Aanstaande {{datum}} moet jouw team een wedstrijd tellen om {{tijd}}.<br>
 Jullie zullen de wedstrijd {{teams}} gaan tellen.<br>
 <br>
-Voor vragen stuur een mail naar scheids@skcvolleybal.nl of stuur een appje naar 0681215527. <br>
+Voor vragen stuur een mail naar scheids@skcvolleybal.nl of stuur een appje naar 0683092391. <br>
 <br>
 Tip: Agenda's Importeren:<br>
 <a target="_blank" href="https://www.google.com/calendar/render?cid=http%3A%2F%2Fwww.skcvolleybal.nl%2Fteam-portal%2Fapi%2Fcalendar%3Fuserid%3D{{userId}}">Google Calendar: Tellen & Zaalwacht</a><br>

@@ -3,7 +3,7 @@
 <body>
 Beste {{naam}},<br>
 <br>
-Aanstaande {{datum}} heeft jouw team zaalwacht.<br>
+Aanstaande {{datum}} heeft jouw team de {{zaalwachttype}}.<br>
 Tip: Agenda's Importeren:<br>
 <a target="_blank" href="https://www.google.com/calendar/render?cid=http%3A%2F%2Fwww.skcvolleybal.nl%2Fteam-portal%2Fapi%2Fcalendar%3Fuserid%3D{{userId}}">Google Calendar: Tellen & Zaalwacht</a><br>
 <br>
