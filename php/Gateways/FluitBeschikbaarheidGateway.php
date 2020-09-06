@@ -8,14 +8,14 @@ use TeamPortal\Common\DateFunctions;
 use TeamPortal\Entities\Beschikbaarheid;
 use TeamPortal\Entities\Persoon;
 
-class FluitBeschikbaarheidGateway
+class BeschikbaarheidGateway
 {
     public function __construct(Database $database)
     {
         $this->database = $database;
     }
 
-    public function GetFluitBeschikbaarheden(Persoon $user): array
+    public function GetBeschikbaarheden(Persoon $user): array
     {
         $query = 'SELECT 
                     B.id,
@@ -43,7 +43,7 @@ class FluitBeschikbaarheidGateway
         return $result;
     }
 
-    public function GetFluitBeschikbaarheid(Persoon $user, DateTime $date): Beschikbaarheid
+    public function GetBeschikbaarheid(Persoon $user, DateTime $date): Beschikbaarheid
     {
         $query = 'SELECT 
                     B.id,

@@ -15,7 +15,7 @@ class Wedstrijd
     public ?DateTime $timestamp;
     public bool $isVeranderd;
     public ?string $locatie = null;
-    public ?Team $telteam = null;
+    public array $tellers = [null, null];
     public ?Persoon $scheidsrechter = null;
     public ?string $uitslag = null;
     public ?string $setstanden = null;
@@ -124,7 +124,7 @@ class Wedstrijd
         $this->poule = $this->poule ?? $wedstrijd->poule;
         $this->team1 = $this->team1 ?? $wedstrijd->team1;
         $this->team2 = $this->team2 ?? $wedstrijd->team2;
-        $this->telteam = $this->telteam ?? $wedstrijd->telteam;
+        $this->tellers = $this->tellers ?? $wedstrijd->tellers;
         $this->scheidsrechter = $this->scheidsrechter ?? $wedstrijd->scheidsrechter;
     }
 

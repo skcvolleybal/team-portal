@@ -67,8 +67,8 @@ $entryPoint =
         ], AuthorizationRole::USER),
 
         new RouteGroup('/fluiten', [
-            new GetRoute('', UseCases\GetFluitBeschikbaarheid::class),
-            new PostRoute('', UseCases\UpdateFluitBeschikbaarheid::class)
+            new GetRoute('', UseCases\GetBeschikbaarheid::class),
+            new PostRoute('', UseCases\UpdateBeschikbaarheid::class)
         ], AuthorizationRole::SCHEIDSRECHTER),
 
         new RouteGroup('/barcie', [
@@ -101,7 +101,7 @@ $entryPoint =
                 new PostRoute('', UseCases\UpdateScheidsrechter::class)
             ]),
             new RouteGroup('/tellers', [
-                new GetRoute('', UseCases\GetTelTeams::class),
+                new GetRoute('', UseCases\GetTellers::class),
                 new PostRoute('', UseCases\UpdateTellers::class)
             ])
         ], AuthorizationRole::TEAMCOORDINATOR),

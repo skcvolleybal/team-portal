@@ -8,11 +8,11 @@ class ScheidsrechterModel
 {
     public int $id;
     public string $naam;
-    public string $niveau;
+    public ?string $niveau;
     public int $gefloten;
     public string $team;
-    public string $eigenTijd;
-    public bool $isBeschikbaar;
+    public ?string $eigenTijd;
+    public ?bool $isBeschikbaar;
 
     public function __construct(Scheidsrechter $scheidsrechter)
     {

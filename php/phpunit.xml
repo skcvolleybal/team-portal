@@ -1,0 +1,10 @@
+<phpunit>
+    <filter>
+        <whitelist>
+            <directory suffix=".php">Common</directory>
+            <directory suffix=".php">Entities</directory>
+            <directory suffix=".php">UseCases</directory>
+            <directory suffix=".php">Gateways</directory>
+        </whitelist>
+    </filter>
+</phpunit>

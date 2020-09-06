@@ -24,13 +24,18 @@ class GetScheidscoOverzicht implements Interactor
         $wedstrijddagen = $this->nevoboGateway->GetWedstrijddagenForSporthal('LDNUN', 365);
 
         foreach ($wedstrijddagen as $wedstrijddag) {
-            $wedstrijddag->zaalwacht = $this->zaalwachtGateway->GetZaalwacht($wedstrijddag->date);
+            $zaalwacht = $this->zaalwachtGateway->GetZaalwacht($wedstrijddag->date);
+            if ($zaalwacht) {
+                $wedstrijddag->eersteZaalwacht = $zaalwacht->eersteZaalwacht;
+                $wedstrijddag->tweedeZaalwacht = $zaalwacht->tweedeZaalwacht;
+            }
+
             foreach ($wedstrijddag->speeltijden as $speeltijd) {
                 foreach ($speeltijd->wedstrijden as &$wedstrijd) {
                     $indeling = $this->telFluitGateway->GetWedstrijd($wedstrijd->matchId);
                     if ($indeling !== null) {
                         $wedstrijd->scheidsrechter = $indeling->scheidsrechter;
-                        $wedstrijd->telteam = $indeling->telteam;
+                        $wedstrijd->tellers = $indeling->tellers;
                     }
                 }
             }

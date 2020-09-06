@@ -9,10 +9,10 @@ use TeamPortal\Common\Utilities;
 
 class TemplateTest extends TestCase
 {
-    public function testTemplate()
+    public function test_Template_Engine()
     {
         // arrange
-        $template = "{{thomas}} blalasd {{jonathan}}";
+        $template = "{{thomas}} en {{jonathan}}";
         $variables = (object) [
             "{{thomas}}" => "thomas",
             "{{jonathan}}" => "jonathan"
@@ -22,6 +22,6 @@ class TemplateTest extends TestCase
         $result = Utilities::FillTemplate($template, $variables);
 
         // assert
-        $this->assertEquals($result, "thomas blalasd jonathan");
+        $this->assertEquals($result, "thomas en jonathan");
     }
 }

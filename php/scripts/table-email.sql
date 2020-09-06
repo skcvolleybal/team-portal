@@ -1,4 +1,4 @@
-CREATE TABLE teamportal_email (
+CREATE TABLE TeamPortal_email (
   id int AUTO_INCREMENT PRIMARY KEY,
   sender_email VARCHAR(64) NOT NULL,
   sender_naam VARCHAR(64) NOT NULL,

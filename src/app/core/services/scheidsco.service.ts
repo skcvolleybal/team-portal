@@ -1,10 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { Team } from 'src/app/models/Team';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ScheidscoService {
   constructor(private httpClient: HttpClient) {}
@@ -19,7 +20,7 @@ export class ScheidscoService {
     return this.httpClient.get<any>(
       environment.baseUrl + 'scheidsco/scheidsrechters',
       {
-        params: { matchId }
+        params: { matchId },
       }
     );
   }
@@ -32,7 +33,7 @@ export class ScheidscoService {
       environment.baseUrl + 'scheidsco/scheidsrechters',
       {
         matchId,
-        scheidsrechterId
+        scheidsrechterId,
       }
     );
   }
@@ -40,17 +41,18 @@ export class ScheidscoService {
   GetTelTeams(matchId: string) {
     return this.httpClient.get<any>(environment.baseUrl + 'scheidsco/tellers', {
       params: {
-        matchId
-      }
+        matchId,
+      },
     });
   }
 
-  UpdateTellers(matchId: string, tellers: string) {
+  UpdateTellers(matchId: string, tellerId: number, tellerIndex: number) {
     return this.httpClient.post<any>(
       environment.baseUrl + 'scheidsco/tellers',
       {
         matchId,
-        tellers
+        tellerId,
+        tellerIndex,
       }
     );
   }
@@ -60,18 +62,19 @@ export class ScheidscoService {
       environment.baseUrl + 'scheidsco/zaalwachtteams',
       {
         params: {
-          date
-        }
+          date,
+        },
       }
     );
   }
 
-  UpdateZaalwacht(date: string, team: string) {
+  UpdateZaalwacht(date: string, team: string, zaalwachttype: string) {
     return this.httpClient.post<any>(
       environment.baseUrl + 'scheidsco/zaalwacht',
       {
         date,
-        team
+        team,
+        zaalwachttype,
       }
     );
   }

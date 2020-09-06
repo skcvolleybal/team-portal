@@ -1,11 +1,6 @@
 <div class="modal-header">
   <h6>{{ teams }}, {{ tijd }}</h6>
-  <button
-    type="button"
-    class="close"
-    aria-label="Close"
-    (click)="modal.dismiss()"
-  >
+  <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
     <span aria-hidden="true">&times;</span>
   </button>
 </div>
@@ -22,19 +17,31 @@
         Spelende Teams
       </div>
       <div class="card-body">
-        <div class="input-group mb-3" *ngFor="let team of spelendeTeams">
-          <button
-            type="button"
-            (click)="UpdateTellers(team.naam)"
-            class="btn btn-block"
-            [ngClass]="{
-              'btn-danger': !team.isMogelijk,
-              'btn-success': team.isMogelijk,
-              'btn-warning': team.isMogelijk == null
-            }"
-          >
-            {{ team.naam + " (" + team.geteld + ") om " + team.eigenTijd }}
-          </button>
+        <div class="accordion" id="accordionExample">
+          <div class="card" *ngFor="let team of spelendeTeams">
+            <div class="card-header" id="headingOne">
+              <h2 class="mb-0">
+                <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse"
+                  data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                  {{ team.naam + " om " + team.eigenTijd }}
+                </button>
+              </h2>
+            </div>
+
+            <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+              <div class="card-body">
+                <div class="input-group mb-3" *ngFor="let teller of team.teamgenoten">
+                  <button type="button" (click)="UpdateTeller(teller)" class="btn btn-block" [ngClass]="{
+                    'btn-danger': teller.isBeschikbaar === false,
+                    'btn-success': teller.isBeschikbaar,
+                    'btn-warning': teller.isBeschikbaar == null
+                  }">
+                    {{ teller.naam + " (" +  teller.aantalKeerGeteld +  ")" }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -44,14 +51,31 @@
         Overige Teams
       </div>
       <div class="card-body">
-        <div class="input-group mb-3" *ngFor="let team of overigeTeams">
-          <button
-            type="button"
-            (click)="UpdateTellers(team.naam)"
-            class="btn btn-success btn-block"
-          >
-            {{ team.naam + " (" + team.geteld + ")" }}
-          </button>
+        <div class="accordion" id="accordionExample">
+          <div class="card" *ngFor="let team of overigeTeams">
+            <div class="card-header" id="headingOne">
+              <h2 class="mb-0">
+                <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse"
+                  data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                  {{ team.naam }}
+                </button>
+              </h2>
+            </div>
+
+            <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+              <div class="card-body">
+                <div class="input-group mb-3" *ngFor="let teller of team.teamgenoten">
+                  <button type="button" (click)="UpdateTeller(teller)" class="btn btn-block" [ngClass]="{
+                    'btn-danger': teller.isBeschikbaar === false,
+                    'btn-success': teller.isBeschikbaar,
+                    'btn-warning': teller.isBeschikbaar == null
+                  }">
+                    {{ teller.naam + " (" +  teller.aantalKeerGeteld +  ")" }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

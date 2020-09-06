@@ -2,9 +2,10 @@
 
 namespace TeamPortal\UseCases;
 
+use InvalidArgumentException;
 use TeamPortal\Common\DateFunctions;
 use TeamPortal\Entities\Persoon;
-use TeamPortal\Gateways\FluitBeschikbaarheidGateway;
+use TeamPortal\Gateways\BeschikbaarheidGateway;
 use TeamPortal\Gateways\JoomlaGateway;
 use TeamPortal\Gateways\NevoboGateway;
 use TeamPortal\Gateways\TelFluitGateway;
@@ -16,12 +17,12 @@ class GetScheidsrechters implements Interactor
         JoomlaGateway $joomlaGateway,
         TelFluitGateway $telFluitGateway,
         NevoboGateway $nevoboGateway,
-        FluitBeschikbaarheidGateway $fluitBeschikbaarheidGateway
+        BeschikbaarheidGateway $beschikbaarheidGateway
     ) {
         $this->joomlaGateway = $joomlaGateway;
         $this->telFluitGateway = $telFluitGateway;
         $this->nevoboGateway = $nevoboGateway;
-        $this->fluitBeschikbaarheidGateway = $fluitBeschikbaarheidGateway;
+        $this->beschikbaarheidGateway = $beschikbaarheidGateway;
     }
 
     public function Execute(object $data = null): array
@@ -54,7 +55,7 @@ class GetScheidsrechters implements Interactor
             }
         }
 
-        $fluitBeschikbaarheden = $this->fluitBeschikbaarheidGateway->GetAllBeschikbaarheden($date);
+        $fluitBeschikbaarheden = $this->beschikbaarheidGateway->GetAllBeschikbaarheden($date);
         $scheidsrechters = $this->telFluitGateway->GetScheidsrechters();
 
         $result = [
@@ -64,7 +65,7 @@ class GetScheidsrechters implements Interactor
 
         foreach ($scheidsrechters as $scheidsrechter) {
             $wedstrijd = $scheidsrechter->team != null ? $scheidsrechter->team->GetWedstrijdOfTeam($wedstrijden) : null;
-            $isBeschikbaar = $this->GetFluitbeschikbaarheid($scheidsrechter, $fluitBeschikbaarheden);
+            $isBeschikbaar = $this->GetBeschikbaarheid($scheidsrechter, $fluitBeschikbaarheden);
 
             $newScheidsrechter = new ScheidsrechterModel($scheidsrechter);
             $newScheidsrechter->eigenTijd = $wedstrijd ? DateFunctions::GetTime($wedstrijd->timestamp) : null;
@@ -76,11 +77,11 @@ class GetScheidsrechters implements Interactor
         return $result;
     }
 
-    private function GetFluitbeschikbaarheid(Persoon $scheidsrechter, array $fluitBeschikbaarheden)
+    private function GetBeschikbaarheid(Persoon $scheidsrechter, array $beschikbaarheden)
     {
-        foreach ($fluitBeschikbaarheden as $fluitBeschikbaarheid) {
-            if ($fluitBeschikbaarheid->persoon->id == $scheidsrechter->id) {
-                return $fluitBeschikbaarheid->isBeschikbaar;
+        foreach ($beschikbaarheden as $beschikbaarheid) {
+            if ($beschikbaarheid->persoon->id == $scheidsrechter->id) {
+                return $beschikbaarheid->isBeschikbaar;
             }
         }
         return null;

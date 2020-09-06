@@ -4,14 +4,13 @@ namespace TeamPortal\UseCases;
 
 use InvalidArgumentException;
 use TeamPortal\Entities\Team;
-use TeamPortal\Gateways\NevoboGateway;
 use UnexpectedValueException;
 
 class GetTeamoverzicht implements Interactor
 {
     public function __construct(
         IJoomlaGateway $joomlaGateway,
-        NevoboGateway $nevoboGateway
+        INevoboGateway $nevoboGateway
     ) {
         $this->nevoboGateway = $nevoboGateway;
         $this->joomlaGateway = $joomlaGateway;

@@ -1,7 +1,7 @@
 import { Route } from '@angular/router';
 import { BarcieIndelingComponent } from './barco/barcie-indeling/barcie-indeling.component';
 import { BarcieBeschikbaarheidComponent } from './beschikbaarheid/barcie-beschikbaarheid/barcie-beschikbaarheid.component';
-import { FluitBeschikbaarheidComponent } from './beschikbaarheid/fluit-beschikbaarheid/fluit-beschikbaarheid.component';
+import { TelFluitBeschikbaarheidComponent } from './beschikbaarheid/tel-fluit-beschikbaarheid/tel-fluit-beschikbaarheid.component';
 import { MijnOverzichtComponent } from './mijn-overzicht/mijn-overzicht/mijn-overzicht.component';
 import { ScheidscoComponent } from './scheidsco/scheidsco/scheidsco.component';
 import { StatistiekenComponent } from './statistiek/statistieken/statistieken.component';
@@ -16,57 +16,56 @@ export const appRoutes: IToggleRoute[] = [
     path: '',
     redirectTo: 'mijn-overzicht',
     pathMatch: 'full',
-    isHidden: false
+    isHidden: false,
   },
   {
     path: 'mijn-overzicht',
     component: MijnOverzichtComponent,
     data: { title: 'Mijn Overzicht' },
-    isHidden: false
+    isHidden: false,
   },
   {
     path: 'wedstrijd-overzicht',
     component: WedstrijdOverzichtComponent,
     data: { title: 'Wedstrijd Overzicht' },
-    isHidden: false
+    isHidden: false,
   },
   {
     path: 'statistieken',
     component: StatistiekenComponent,
     data: {
       title: 'Statistieken',
-      groups: ['statistieken']
+      groups: ['statistieken'],
     },
-    isHidden: true
+    isHidden: true,
   },
   {
     path: 'fluit-beschikbaarheid',
-    component: FluitBeschikbaarheidComponent,
+    component: TelFluitBeschikbaarheidComponent,
     data: {
-      title: 'Fluit Beschikbaarheid',
-      groups: ['scheidsrechter']
+      title: 'Tel/Fluit Beschikbaarheid',
     },
-    isHidden: true
+    isHidden: false,
   },
   {
     path: 'barcie-beschikbaarheid',
     component: BarcieBeschikbaarheidComponent,
     data: {
       title: 'Barcie Beschikbaarheid',
-      groups: ['barcie', 'webcie']
+      groups: ['barcie', 'webcie'],
     },
-    isHidden: true
+    isHidden: true,
   },
   {
     path: 'scheidsco',
     component: ScheidscoComponent,
     data: { title: 'Scheidsco', groups: ['teamcoordinator', 'webcie'] },
-    isHidden: true
+    isHidden: true,
   },
   {
     path: 'Barco',
     component: BarcieIndelingComponent,
     data: { title: 'Barco', groups: ['teamcoordinator', 'webcie'] },
-    isHidden: true
-  }
+    isHidden: true,
+  },
 ];

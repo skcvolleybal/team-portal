@@ -1,69 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.0"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js"></script>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Document</title>
-  </head>
-  <body>
-    <div id="voorpagina-rooster">
-      <div class="panel panel-primary" v-for="dag in dagen">
-        <div class="panel-heading">
-          {{ dag.datum }}
-          <span style="margin-left: 10px;" v-if="dag.zaalwacht"
-            >(Zaalwacht: {{ dag.zaalwacht }})</span
-          >
-        </div>
-        <table class="table">
-          <caption></caption>
-          <thead>
-            <tr>
-              <th scope="col">Tijd</th>
-              <th scope="col">Teams</th>
-              <th scope="col">Fluiten</th>
-              <th scope="col">Tellen</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="wedstrijd in dag.wedstrijden">
-              <td>{{ wedstrijd.tijd }}</td>
-              <td>{{ wedstrijd.teams }}</td>
-              <td>{{ wedstrijd.scheidsrechter }}</td>
-              <td>{{ wedstrijd.tellers }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-    <script>
-      axios("/team-portal/api/website/voorpagina-rooster").then(function(
-        response
-      ) {
-        new Vue({
-          el: "#voorpagina-rooster",
-          data() {
-            dagen = response.data;
-            
-            for (var i = 0; i < dagen.length; i++) {
-              wedstrijden = [];
-              for (var j = 0; j < dagen[i].speeltijden.length; j++) {
-                for (var k = 0; k < dagen[i].speeltijden[j].wedstrijden.length; k++) {
-                  wedstrijden.push(dagen[i].speeltijden[j].wedstrijden[k]);
-                }
-              }
-              dagen[i].wedstrijden = wedstrijden;
-            }
 
-            console.log(dagen);
-            return {
-              dagen: response.data
-            };
+<head>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.0"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>Document</title>
+</head>
+
+<body>
+  <div id="voorpagina-rooster">
+    <div class="panel panel-primary" v-for="dag in dagen">
+      <div class="panel-heading">
+        {{ dag.datum }}
+        <span style="margin-left: 10px;" v-if="dag.zaalwacht">(Zaalwacht: {{ dag.zaalwacht }})</span>
+      </div>
+      <table class="table">
+        <caption></caption>
+        <thead>
+          <tr>
+            <th scope="col">Tijd</th>
+            <th scope="col">Teams</th>
+            <th scope="col">Fluiten</th>
+            <th scope="col">Tellen</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="wedstrijd in dag.wedstrijden">
+            <td>{{ wedstrijd.tijd }}</td>
+            <td>{{ wedstrijd.teams }}</td>
+            <td>{{ wedstrijd.scheidsrechter }}</td>
+            <td>{{ wedstrijd.tellers }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <script>
+    axios("/team-portal/api/website/voorpagina-rooster").then(function (
+      response
+    ) {
+      new Vue({
+        el: "#voorpagina-rooster",
+        data() {
+          dagen = response.data;
+
+          for (var i = 0; i < dagen.length; i++) {
+            wedstrijden = [];
+            for (var j = 0; j < dagen[i].speeltijden.length; j++) {
+              for (var k = 0; k < dagen[i].speeltijden[j].wedstrijden.length; k++) {
+                wedstrijden.push(dagen[i].speeltijden[j].wedstrijden[k]);
+              }
+            }
+            dagen[i].wedstrijden = wedstrijden;
           }
-        });
+
+          return {
+            dagen: response.data
+          };
+        }
       });
-    </script>
-  </body>
+    });
+  </script>
+</body>
+
 </html>

@@ -12,7 +12,7 @@ import { appRoutes } from './route.config';
 @Component({
   selector: 'teamportal-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css'],
 })
 export class AppComponent implements OnInit {
   isWebcie = false;
@@ -21,6 +21,8 @@ export class AppComponent implements OnInit {
   loginModal = false;
   impersonatedUser: any;
   appRoutes: any;
+  searching = false;
+  searchFailed = false;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -32,7 +34,7 @@ export class AppComponent implements OnInit {
     config.backdrop = 'static';
     config.keyboard = false;
 
-    this.appRoutes = appRoutes.filter(appRoute => appRoute.path !== '');
+    this.appRoutes = appRoutes.filter((appRoute) => appRoute.path !== '');
   }
 
   onLinkClick() {
@@ -56,18 +58,18 @@ export class AppComponent implements OnInit {
       );
     });
 
-    this.joomalService.GetGroupsOfUser().subscribe(response => {
+    this.joomalService.GetGroupsOfUser().subscribe((response) => {
       this.ShowMenuItems(response);
-      this.isWebcie = response.findIndex(group => group === 'webcie') !== -1;
+      this.isWebcie = response.findIndex((group) => group === 'webcie') !== -1;
       this.stateService.isWebcie = this.isWebcie;
     });
   }
 
   ShowMenuItems(groups) {
-    groups.forEach(subscription => {
-      this.appRoutes.forEach(appRoute => {
+    groups.forEach((subscription) => {
+      this.appRoutes.forEach((appRoute) => {
         if (appRoute.data.groups) {
-          appRoute.data.groups.forEach(group => {
+          appRoute.data.groups.forEach((group) => {
             if (group === subscription) {
               appRoute.isHidden = false;
             }
@@ -87,7 +89,7 @@ export class AppComponent implements OnInit {
     text.pipe(
       debounceTime(300),
       distinctUntilChanged(),
-      switchMap(term => this.joomalService.GetUsers(term))
+      switchMap((term) => this.joomalService.GetUsers(term))
       // tslint:disable-next-line:semicolon
     );
 

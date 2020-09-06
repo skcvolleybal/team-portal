@@ -3,15 +3,16 @@
 namespace TeamPortal\UseCases;
 
 use DateTime;
+use InvalidArgumentException;
 use TeamPortal\Gateways;
 
-class UpdateFluitBeschikbaarheid implements Interactor
+class UpdateBeschikbaarheid implements Interactor
 {
     public function __construct(
-        Gateways\FluitBeschikbaarheidGateway $fluitBeschikbaarheidGateway,
+        Gateways\BeschikbaarheidGateway $beschikbaarheidGateway,
         Gateways\JoomlaGateway $joomlaGateway
     ) {
-        $this->fluitBeschikbaarheidGateway = $fluitBeschikbaarheidGateway;
+        $this->beschikbaarheidGateway = $beschikbaarheidGateway;
         $this->joomlaGateway = $joomlaGateway;
     }
 
@@ -31,17 +32,17 @@ class UpdateFluitBeschikbaarheid implements Interactor
         }
 
         $user = $this->joomlaGateway->GetUser();
-        $beschikbaarheid = $this->fluitBeschikbaarheidGateway->GetFluitBeschikbaarheid($user, $date);
+        $beschikbaarheid = $this->beschikbaarheidGateway->GetBeschikbaarheid($user, $date);
         $beschikbaarheid->isBeschikbaar = $isBeschikbaar;
         if ($beschikbaarheid->id === null) {
             if ($beschikbaarheid->isBeschikbaar !== null) {
-                $this->fluitBeschikbaarheidGateway->Insert($beschikbaarheid);
+                $this->beschikbaarheidGateway->Insert($beschikbaarheid);
             }
         } else {
             if ($beschikbaarheid->isBeschikbaar === null) {
-                $this->fluitBeschikbaarheidGateway->Delete($beschikbaarheid);
+                $this->beschikbaarheidGateway->Delete($beschikbaarheid);
             } else {
-                $this->fluitBeschikbaarheidGateway->Update($beschikbaarheid);
+                $this->beschikbaarheidGateway->Update($beschikbaarheid);
             }
         }
     }

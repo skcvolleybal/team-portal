@@ -35,11 +35,11 @@ class MijnOverzicht implements Interactor
 
         $zaalwachten = $this->zaalwachtGateway->GetZaalwachtenOfUser($user);
         foreach ($zaalwachten as $zaalwacht) {
-            $this->AddZaalwachtToOverzicht($overzicht, $zaalwacht);
+            $this->AddZaalwachtToOverzicht($overzicht, $zaalwacht, $user);
         }
 
         $uscWedstrijden = $this->nevoboGateway->GetProgrammaForSporthal();
-        $wedstrijden = $this->telFluitGateway->GetFluitEnTelbeurten($user);
+        $wedstrijden = $this->telFluitGateway->GetFluitEnTelbeurtenFor($user);
         foreach ($wedstrijden as $wedstrijd) {
             $uscMatch = Wedstrijd::GetWedstrijdWithMatchId($uscWedstrijden, $wedstrijd->matchId);
             $wedstrijd->AppendInformation($uscMatch);
@@ -101,12 +101,14 @@ class MijnOverzicht implements Interactor
     {
         foreach ($dagen as $dag) {
             if (DateFunctions::AreDatesEqual($dag->date, $zaalwacht->date)) {
-                $dag->zaalwacht = $zaalwacht;
+                $dag->eersteZaalwacht = $zaalwacht->eersteZaalwacht;
+                $dag->tweedeZaalwacht = $zaalwacht->tweedeZaalwacht;
                 return;
             }
         }
         $dag = new Wedstrijddag($zaalwacht->date);
-        $dag->zaalwacht = $zaalwacht;
+        $dag->eersteZaalwacht = $zaalwacht->eersteZaalwacht;
+        $dag->tweedeZaalwacht = $zaalwacht->tweedeZaalwacht;
         $dagen[] = $dag;
     }
 

@@ -25,11 +25,16 @@ class UpdateZaalwacht implements Interactor
         }
 
         $zaalwacht = $this->zaalwachtGateway->GetZaalwacht($date) ?? new Zaalwacht(null, $date, null);
-        $zaalwacht->team = $this->joomlaGateway->GetTeamByNaam($data->team);
+        if ($data->zaalwachttype === 'eerste') {
+            $zaalwacht->eersteZaalwacht = $this->joomlaGateway->GetTeamByNaam($data->team);
+        } else {
+            $zaalwacht->tweedeZaalwacht = $this->joomlaGateway->GetTeamByNaam($data->team);
+        }
+
         if ($zaalwacht->id === null) {
             $this->zaalwachtGateway->Insert($zaalwacht);
         } else {
-            if ($zaalwacht->team === null) {
+            if ($zaalwacht->eersteZaalwacht === null && $zaalwacht->tweedeZaalwacht === null) {
                 $this->zaalwachtGateway->Delete($zaalwacht);
             } else {
                 $this->zaalwachtGateway->Update($zaalwacht);

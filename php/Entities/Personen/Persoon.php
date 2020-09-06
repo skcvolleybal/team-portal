@@ -11,6 +11,7 @@ class Persoon
     public ?Team $coachteam = null;
     public ?string $positie = null;
     public ?int $rugnummer = null;
+    public int $aantalKeerGeteld = 0;
 
     function __construct(int $id, string $naam, string $email)
     {

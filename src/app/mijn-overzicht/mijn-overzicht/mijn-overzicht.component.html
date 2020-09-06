@@ -5,12 +5,22 @@
     </tr>
   </thead>
   <tbody>
-    <ng-container *ngIf="dag.zaalwacht">
+    <ng-container *ngIf="dag.eersteZaalwacht">
       <tr class="gray-background">
         <td></td>
         <td colspan="3">
-          Zaalwacht:
-          <span class="badge big-badge badge-success">{{ dag.zaalwacht }}</span>
+          1e Zaalwacht:
+          <span class="badge big-badge badge-success">{{ dag.eersteZaalwacht }}</span>
+        </td>
+      </tr>
+    </ng-container>
+
+    <ng-container *ngIf="dag.tweedeZaalwacht">
+      <tr class="gray-background">
+        <td></td>
+        <td colspan="3">
+          2e Zaalwacht:
+          <span class="badge big-badge badge-success">{{ dag.tweedeZaalwacht }}</span>
         </td>
       </tr>
     </ng-container>

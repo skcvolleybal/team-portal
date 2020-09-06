@@ -2,6 +2,7 @@
 
 namespace TeamPortal\UseCases;
 
+use InvalidArgumentException;
 use TeamPortal\Gateways;
 use TeamPortal\Entities\Wedstrijd;
 
@@ -22,9 +23,13 @@ class UpdateTellers implements Interactor
         if ($data->matchId === null) {
             throw new InvalidArgumentException("matchId is null");
         }
+        if (!in_array($data->tellerIndex, [0, 1])) {
+            throw new InvalidArgumentException("tellerIndex klopt niet: '$data->tellerIndex'");
+        }
 
         $wedstrijd = $this->telFluitGateway->GetWedstrijd($data->matchId);
-        $wedstrijd->telteam = $this->joomlaGateway->GetTeamByNaam($data->tellers);
+        $teller = $data->tellerId ? $this->joomlaGateway->GetUser($data->tellerId) : null;
+        $wedstrijd->tellers[$data->tellerIndex] = $teller;
 
         $uscWedstrijden = $this->nevoboGateway->GetProgrammaForSporthal();
         $uscWedstrijd = Wedstrijd::GetWedstrijdWithMatchId($uscWedstrijden, $data->matchId);
@@ -33,12 +38,8 @@ class UpdateTellers implements Interactor
         if ($wedstrijd->id === null) {
             $this->telFluitGateway->Insert($wedstrijd);
         } else {
-            if ($wedstrijd->telteam === null) {
-                if ($wedstrijd->scheidsrechter === null) {
-                    $this->telFluitGateway->Delete($wedstrijd);
-                } else {
-                    $this->telFluitGateway->Update($wedstrijd);
-                }
+            if ($wedstrijd->tellers[0] === null && $wedstrijd->tellers[1] === null && $wedstrijd->scheidsrechter === null) {
+                $this->telFluitGateway->Delete($wedstrijd);
             } else {
                 $this->telFluitGateway->Update($wedstrijd);
             }

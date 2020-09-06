@@ -11,7 +11,8 @@ class Wedstrijddag
     public array $barshifts = [];
     public array $bardiensten = [];
     public array $eigenWedstrijden = [];
-    public ?Zaalwacht $zaalwacht = null;
+    public ?Team $eersteZaalwacht = null;
+    public ?Team $tweedeZaalwacht = null;
 
     public function __get(string $property)
     {

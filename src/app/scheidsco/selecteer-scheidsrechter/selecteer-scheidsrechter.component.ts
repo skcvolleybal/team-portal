@@ -1,15 +1,17 @@
 import { Component, OnInit } from '@angular/core';
+
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ScheidscoService } from './../../core/services/scheidsco.service';
-// import { ScheidscoService } from '../../core/services/scheidsco.service';
+import { Team } from 'src/app/models/Team';
+import { Wedstrijd } from 'src/app/models/Wedstrijd';
 
 @Component({
   selector: 'teamportal-selecteer-scheidsrechter',
   templateUrl: './selecteer-scheidsrechter.component.html',
-  styleUrls: ['./selecteer-scheidsrechter.component.scss']
+  styleUrls: ['./selecteer-scheidsrechter.component.scss'],
 })
 export class SelecteerScheidsrechterComponent implements OnInit {
-  static wedstrijd: any;
+  static wedstrijd: Wedstrijd;
   static tijd: string;
 
   scheidsrechterOptiesLoading: boolean;
@@ -20,7 +22,7 @@ export class SelecteerScheidsrechterComponent implements OnInit {
   keuzes = ['Ja', 'Onbekend', 'Nee'];
 
   wedstrijd: any;
-  teams: string;
+  teams: Team[];
   tijd: string;
 
   constructor(
@@ -39,11 +41,11 @@ export class SelecteerScheidsrechterComponent implements OnInit {
     this.scheidsrechterOptiesLoading = true;
 
     this.scheidscoService.GetScheidsrechtersForMatch(matchId).subscribe(
-      result => {
+      (result) => {
         this.scheidsrechters = result;
         this.scheidsrechterOptiesLoading = false;
       },
-      error => {
+      (error) => {
         if (error.status === 500) {
           this.errorMessage = error.error.message;
           this.scheidsrechterOptiesLoading = false;
@@ -53,7 +55,7 @@ export class SelecteerScheidsrechterComponent implements OnInit {
   }
 
   getScheidsrechtersByKeuze(index: number, keuze: string) {
-    return this.scheidsrechters[index][keuze.toLowerCase()];
+    return this.scheidsrechters[index][keuze];
   }
 
   GetScheidsrechterText(scheidsrechter) {
@@ -72,7 +74,7 @@ export class SelecteerScheidsrechterComponent implements OnInit {
     return {
       'btn-danger': scheidsrechter.isBeschikbaar === false,
       'btn-success': scheidsrechter.isBeschikbaar === true,
-      'btn-warning': scheidsrechter.isBeschikbaar === null
+      'btn-warning': scheidsrechter.isBeschikbaar === null,
     };
   }
 

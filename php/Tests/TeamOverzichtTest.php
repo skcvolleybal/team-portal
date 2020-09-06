@@ -4,29 +4,32 @@ declare(strict_types=1);
 
 namespace TeamPortal\Tests;
 
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
-use TeamPortal\Gateways\NevoboGateway;
+use Teamportal\Tests\GatewayMocks;
 use TeamPortal\UseCases\GetTeamoverzicht;
-use TeamPortal\UseCases\IJoomlaGateway;
 
 class TeamoverzichtTest extends TestCase
 {
-    function test_That_it_works()
+    function test_Teamoverzicht_Happy_Flow()
     {
         // arrange
-        $nevobogateway = $this->createMock(NevoboGateway::class);
-        $joomlaGateway = $this->createMock(IJoomlaGateway::class);
+        $gatewayMocks = new GatewayMocks();
+        $joomlaGateway = $gatewayMocks->GetJoomlaGateway();
+        $nevobogateway = $gatewayMocks->GetNevobogateway();
 
-        $interactor = new GetTeamoverzicht($joomlaGateway, $nevobogateway);
         $data = (object) [
             'teamnaam' => null
         ];
+        $interactor = new GetTeamoverzicht($joomlaGateway, $nevobogateway);
 
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("Teamnaam is leeg");
+
         // act
-        $result = $interactor->Execute($data);
+        $response = $interactor->Execute($data);
 
         // assert
-
+        $this->assertNull($response);
     }
 }

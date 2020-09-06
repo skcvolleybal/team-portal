@@ -31,7 +31,7 @@ class EmailGateway
 
             $verzondenEmails++;
 
-            $query = "INSERT INTO teamportal_email (
+            $query = "INSERT INTO TeamPortal_email (
                         sender_naam,
                         sender_email,
                         receiver_naam,
@@ -66,7 +66,7 @@ class EmailGateway
                     receiver_naam as receiver,
                     titel,
                     body
-                  FROM teamportal_email WHERE send_date is null";
+                  FROM TeamPortal_email WHERE send_date is null";
         $rows = $this->database->Execute($query);
 
         if (count($rows) == 0) {
@@ -92,7 +92,7 @@ class EmailGateway
     private function DoesEmailExist(Email $email): bool
     {
         $signature = $email->signature;
-        $query = "SELECT id FROM teamportal_email WHERE signature = '$signature'";
+        $query = "SELECT id FROM TeamPortal_email WHERE signature = '$signature'";
         $emails = $this->database->Execute($query);
 
         return count($emails) > 0;
@@ -100,7 +100,7 @@ class EmailGateway
 
     private function MarkEmailAsSent(Email $email): void
     {
-        $query = "UPDATE teamportal_email set send_date = NOW() where id = ?";
+        $query = "UPDATE TeamPortal_email set send_date = NOW() where id = ?";
         $params = [$email->id];
         $this->database->Execute($query, $params);
     }

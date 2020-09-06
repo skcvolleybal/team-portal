@@ -4,25 +4,24 @@ namespace TeamPortal\UseCases;
 
 use TeamPortal\Gateways;
 use TeamPortal\Entities\Beschikbaarheid;
-use TeamPortal\Entities\Fluitbeschikbaarheid;
 use TeamPortal\Entities\Wedstrijd;
 
-class GetFluitBeschikbaarheid implements Interactor
+class GetBeschikbaarheid implements Interactor
 {
     public function __construct(
         Gateways\JoomlaGateway $joomlaGateway,
         Gateways\NevoboGateway $nevoboGateway,
-        Gateways\FluitBeschikbaarheidGateway $fluitBeschikbaarheidGateway
+        Gateways\BeschikbaarheidGateway $beschikbaarheidGateway
     ) {
         $this->joomlaGateway = $joomlaGateway;
         $this->nevoboGateway = $nevoboGateway;
-        $this->fluitBeschikbaarheidGateway = $fluitBeschikbaarheidGateway;
+        $this->beschikbaarheidGateway = $beschikbaarheidGateway;
     }
 
     public function Execute(object $data = null): array
     {
         $user = $this->joomlaGateway->GetUser();
-        $beschikbaarheden = $this->fluitBeschikbaarheidGateway->GetFluitBeschikbaarheden($user);
+        $beschikbaarheden = $this->beschikbaarheidGateway->GetBeschikbaarheden($user);
 
         $wedstrijden = $this->nevoboGateway->GetWedstrijdenForTeam($user->team);
         $coachWedstrijden = $this->nevoboGateway->GetWedstrijdenForTeam($user->coachteam);
@@ -40,7 +39,7 @@ class GetFluitBeschikbaarheid implements Interactor
 
             foreach ($wedstrijddag->speeltijden as $speeltijd) {
                 $speeltijd->isBeschikbaar = Beschikbaarheid::IsBeschikbaar($beschikbaarheden, $speeltijd->time);
-                $speeltijd->isMogelijk = Fluitbeschikbaarheid::isFluitenMogelijk($eigenWedstrijden, $speeltijd->time);
+                $speeltijd->isMogelijk = Beschikbaarheid::isFluitenMogelijk($eigenWedstrijden, $speeltijd->time);
             }
 
             $dag = new WedstrijddagModel($wedstrijddag);

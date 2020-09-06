@@ -6,4 +6,5 @@ class TeamModel
 {
     public string $naam;
     public int $aantalZaalwachten;
+    public array $teamgenoten;
 }

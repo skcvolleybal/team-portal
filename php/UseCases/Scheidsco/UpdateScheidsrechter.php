@@ -2,6 +2,7 @@
 
 namespace TeamPortal\UseCases;
 
+use InvalidArgumentException;
 use TeamPortal\Gateways;
 use TeamPortal\Entities\Wedstrijd;
 
@@ -33,12 +34,8 @@ class UpdateScheidsrechter implements Interactor
         if ($wedstrijd->id === null) {
             $this->telFluitGateway->Insert($wedstrijd);
         } else {
-            if ($wedstrijd->scheidsrechter === null) {
-                if ($wedstrijd->telteam === null) {
-                    $this->telFluitGateway->Delete($wedstrijd);
-                } else {
-                    $this->telFluitGateway->Update($wedstrijd);
-                }
+            if ($wedstrijd->scheidsrechter === null && $wedstrijd->tellers[0] === null && $wedstrijd->tellers[1] === null) {
+                $this->telFluitGateway->Delete($wedstrijd);
             } else {
                 $this->telFluitGateway->Update($wedstrijd);
             }

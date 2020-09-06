@@ -18,7 +18,7 @@ class WedstrijdModel extends Overzichtsitem
     public bool $isCoachTeam2 = false;
     public ?string $scheidsrechter;
     public bool $isScheidsrechter = false;
-    public ?string $tellers;
+    public array $tellers = [null, null];
     public bool $isTellers = false;
     public ?string $locatie;
     public array $coaches = [];
@@ -32,7 +32,10 @@ class WedstrijdModel extends Overzichtsitem
         $this->teams = $wedstrijd->team1->naam . " - " . $wedstrijd->team2->naam;
         $this->scheidsrechter = $wedstrijd->scheidsrechter !== null ? $wedstrijd->scheidsrechter->naam : null;
         $this->scheidsrechterId = $wedstrijd->scheidsrechter !== null ? $wedstrijd->scheidsrechter->id : null;
-        $this->tellers = $wedstrijd->telteam !== null ? $wedstrijd->telteam->GetShortNotation() : null;
+        $this->tellers = [
+            $wedstrijd->tellers[0] !== null ? $wedstrijd->tellers[0]->naam : null,
+            $wedstrijd->tellers[1] !== null ? $wedstrijd->tellers[1]->naam : null
+        ];
         $this->locatie = $wedstrijd->locatie;
         $this->uitslag = $wedstrijd->uitslag;
         $this->setstanden = $wedstrijd->setstanden;

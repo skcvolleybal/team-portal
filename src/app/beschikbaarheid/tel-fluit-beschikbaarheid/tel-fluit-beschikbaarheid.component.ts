@@ -3,10 +3,10 @@ import { BeschikbaarheidService } from '../../core/services/beschikbaarheid.serv
 
 @Component({
   selector: 'teamportal-fluit-beschikbaarheid',
-  templateUrl: './fluit-beschikbaarheid.component.html',
-  styleUrls: ['./fluit-beschikbaarheid.component.scss']
+  templateUrl: './tel-fluit-beschikbaarheid.component.html',
+  styleUrls: ['./tel-fluit-beschikbaarheid.component.scss']
 })
-export class FluitBeschikbaarheidComponent implements OnInit {
+export class TelFluitBeschikbaarheidComponent implements OnInit {
   loading: boolean;
   speeldagen: any[];
   errorMessage: string;

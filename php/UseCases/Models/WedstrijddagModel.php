@@ -13,16 +13,22 @@ class WedstrijddagModel
     public array $speeltijden = [];
     public array $bardiensten = [];
     public array $eigenWedstrijden = [];
-    public ?string $zaalwacht = null;
-    public ?string $zaalwachtShortNotation = null;
+    public ?string $eersteZaalwacht = null;
+    public ?string $eersteZaalwachtShortNotation = null;
+    public ?string $tweedeZaalwacht = null;
+    public ?string $tweedeZaalwachtShortNotation = null;
 
     public function __construct(Wedstrijddag $dag)
     {
         $this->date = DateFunctions::GetYmdNotation($dag->date);
         $this->datum = DateFunctions::GetDutchDate($dag->date);
-        if ($dag->zaalwacht !== null) {
-            $this->zaalwacht = $dag->zaalwacht->team->naam;
-            $this->zaalwachtShortNotation = $dag->zaalwacht->team->GetShortNotation();
+        if ($dag->eersteZaalwacht !== null) {
+            $this->eersteZaalwacht = $dag->eersteZaalwacht->naam;
+            $this->eersteZaalwachtShortNotation = $dag->eersteZaalwacht->GetShortNotation();
+        }
+        if ($dag->tweedeZaalwacht !== null) {
+            $this->tweedeZaalwacht = $dag->tweedeZaalwacht->naam;
+            $this->tweedeZaalwachtShortNotation = $dag->tweedeZaalwacht->GetShortNotation();
         }
 
         foreach ($dag->bardiensten as $bardienst) {

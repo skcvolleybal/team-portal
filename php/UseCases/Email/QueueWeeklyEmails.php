@@ -36,7 +36,7 @@ class QueueWeeklyEmails implements Interactor
 
     public function Execute(object $data = null)
     {
-        $this->scheidsco = $this->joomlaGateway->GetUser(2223); // E. vd B.
+        $this->scheidsco = $this->joomlaGateway->GetUser(2221); // E. vd B.
         $this->fromAddress = new Persoon(-1, $this->scheidsco->naam, "scheids@skcvolleybal.nl");
         $this->webcie = $this->joomlaGateway->GetUser(542);
 
@@ -52,10 +52,7 @@ class QueueWeeklyEmails implements Interactor
                 foreach ($speeltijd->wedstrijden as $wedstrijd) {
                     $fluitwedstrijd = $this->telFluitGateway->GetWedstrijd($wedstrijd->matchId);
                     $wedstrijd->scheidsrechter = $fluitwedstrijd->scheidsrechter;
-                    $wedstrijd->telteam = $fluitwedstrijd->telteam;
-                    if ($wedstrijd->telteam) {
-                        $wedstrijd->telteam->teamgenoten = $this->joomlaGateway->GetTeamgenoten($fluitwedstrijd->telteam);
-                    }
+                    $wedstrijd->tellers = $fluitwedstrijd->tellers;
                 }
             }
         }
@@ -78,11 +75,14 @@ class QueueWeeklyEmails implements Interactor
                         $samenvatting->scheidsrechters[] = $wedstrijd->scheidsrechter;
                     }
 
-                    if ($wedstrijd->telteam) {
-                        foreach ($wedstrijd->telteam->teamgenoten as $teller) {
-                            $emails[] = $this->CreateTellerMail($wedstrijd, $teller);
-                        }
-                        $samenvatting->telteams[] = $wedstrijd->telteam;
+                    if ($wedstrijd->tellers[0]) {
+                        $emails[] = $this->CreateTellerMail($wedstrijd, $wedstrijd->tellers[0]);
+                        $samenvatting->tellers[] = $wedstrijd->tellers[0];
+                    }
+
+                    if ($wedstrijd->tellers[1]) {
+                        $emails[] = $this->CreateTellerMail($wedstrijd, $wedstrijd->tellers[1]);
+                        $samenvatting->tellers[] = $wedstrijd->tellers[1];
                     }
                 }
             }
@@ -222,7 +222,7 @@ class QueueWeeklyEmails implements Interactor
     ): Email {
         $barcieContent = $this->GetBoldHeader(count($samenvatting->barleden) > 0 ? "Barleden" : "Geen barleden");
         $scheidsrechtersContent = $this->GetBoldHeader(count($samenvatting->scheidsrechters) > 0 ? "Scheidsrechters" : "Geen scheidsrechters");
-        $tellersContent = $this->GetBoldHeader(count($samenvatting->telteams) > 0 ? "Tellers" : "Geen tellers");
+        $tellersContent = $this->GetBoldHeader(count($samenvatting->tellers) > 0 ? "Tellers" : "Geen tellers");
         $zaalwachtersContent = $this->GetBoldHeader(count($samenvatting->zaalwachtteams) > 0 ? "Zaalwacht" : "Geen zaalwacht");
 
         foreach ($samenvatting->scheidsrechters as $scheidsrechter) {
@@ -236,11 +236,8 @@ class QueueWeeklyEmails implements Interactor
             }
         }
 
-        foreach ($samenvatting->telteams as $team) {
-            $tellersContent .= $this->GetBoldHeader($team->naam);
-            foreach ($team->teamgenoten as $teamgenoot) {
-                $tellersContent .= $this->GetNaamAndEmail($teamgenoot);
-            }
+        foreach ($samenvatting->tellers as $teller) {
+            $tellersContent .= $this->GetNaamAndEmail($teller);
         }
 
         foreach ($samenvatting->barleden as $barlid) {

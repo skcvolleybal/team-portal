@@ -3,21 +3,25 @@
 namespace TeamPortal\UseCases;
 
 use DateTime;
-use TeamPortal\Gateways;
 use Kigkonsult\Icalcreator\Vcalendar;
 use TeamPortal\Common\DateFunctions;
 use TeamPortal\Common\Utilities;
 use TeamPortal\Entities\Persoon;
 use TeamPortal\Entities\Wedstrijd;
+use TeamPortal\Gateways\BarcieGateway;
+use TeamPortal\Gateways\JoomlaGateway;
+use TeamPortal\Gateways\NevoboGateway;
+use TeamPortal\Gateways\TelFluitGateway;
+use TeamPortal\Gateways\ZaalwachtGateway;
 
 class GetCalendar implements Interactor
 {
     public function __construct(
-        Gateways\ZaalwachtGateway $zaalwachtGateway,
-        Gateways\JoomlaGateway $joomlaGateway,
-        Gateways\NevoboGateway $nevoboGateway,
-        Gateways\TelFluitGateway $telFluitGateway,
-        Gateways\BarcieGateway $barcieGateway
+        ZaalwachtGateway $zaalwachtGateway,
+        JoomlaGateway $joomlaGateway,
+        NevoboGateway $nevoboGateway,
+        TelFluitGateway $telFluitGateway,
+        BarcieGateway $barcieGateway
     ) {
         $this->zaalwachtGateway = $zaalwachtGateway;
         $this->joomlaGateway = $joomlaGateway;
@@ -63,7 +67,7 @@ class GetCalendar implements Interactor
             $bardiensten = $this->GetBardienstenForDate($allBardiensten, $wedstrijddag->date);
             foreach ($bardiensten as $bardienst) {
                 $start = $bardienst->GetStartTime();
-                $end = DateFunctions::AddMinutes($start, 4 * 60); // 4uur?
+                $end = DateFunctions::AddMinutes($start, 4 * 60); // 4uur
                 $this->AddEvent($calendar, $start, $end, $uscLocatie, "Bardienst");
             }
 

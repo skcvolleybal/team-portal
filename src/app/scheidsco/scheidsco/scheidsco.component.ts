@@ -2,30 +2,33 @@ import { Component, OnInit } from '@angular/core';
 import {
   faCalendarCheck,
   faPeopleCarry,
-  faTimes,
-  faUser
+  faTrashAlt,
+  faUser,
 } from '@fortawesome/free-solid-svg-icons';
+
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ScheidscoService } from '../../core/services/scheidsco.service';
 import { SelecteerScheidsrechterComponent } from '../selecteer-scheidsrechter/selecteer-scheidsrechter.component';
 import { SelecteerTellersComponent } from '../selecteer-tellers/selecteer-tellers.component';
 import { SelecteerZaalwachtComponent } from '../selecteer-zaalwacht/selecteer-zaalwacht.component';
+import { Speeldag } from 'src/app/models/Speeldag';
+import { Wedstrijd } from 'src/app/models/Wedstrijd';
 
 @Component({
   selector: 'teamportal-scheidsco',
   templateUrl: './scheidsco.component.html',
-  styleUrls: ['./scheidsco.component.scss']
+  styleUrls: ['./scheidsco.component.scss'],
 })
 export class ScheidscoComponent implements OnInit {
   icons = {
     scheidsrechter: faUser,
     tellers: faCalendarCheck,
     zaalwacht: faPeopleCarry,
-    verwijderen: faTimes
+    verwijderen: faTrashAlt,
   };
 
   scheidsrechters: any[];
-  speeldagen: any[];
+  speeldagen: Speeldag[];
   taken = ['scheidsrechter', 'tellers'];
   overzichtLoading: boolean;
   errorMessage: any;
@@ -38,11 +41,11 @@ export class ScheidscoComponent implements OnInit {
   getScheidscoOverzicht() {
     this.overzichtLoading = true;
     this.scheidscoService.GetScheidscoOverzicht().subscribe(
-      speeldagen => {
+      (speeldagen) => {
         this.speeldagen = speeldagen;
         this.overzichtLoading = false;
       },
-      error => {
+      (error) => {
         if (error.status === 500) {
           this.errorMessage = error.error.message;
           this.overzichtLoading = false;
@@ -55,56 +58,79 @@ export class ScheidscoComponent implements OnInit {
     this.getScheidscoOverzicht();
   }
 
-  SelecteerZaalwacht(datum, date) {
+  SelecteerZaalwacht(datum: string, date: string, zaalwachttype: string) {
     const component = SelecteerZaalwachtComponent;
     component.date = date;
     component.datum = datum;
+    component.zaalwachttype = zaalwachttype;
     this.modalService
       .open(component)
-      .result.then(team => {
-        this.SetZaalwacht(date, team);
+      .result.then((team) => {
+        this.SetZaalwacht(date, team, zaalwachttype);
       })
       .catch(() => {});
   }
 
-  SetZaalwacht(date, team) {
-    this.speeldagen.forEach(speeldag => {
-      if (speeldag.date === date) {
-        speeldag.zaalwacht = team;
-        speeldag.zaalwachtShortNotation =
-          team == null
-            ? null
-            : (speeldag.zaalwacht = `${team[0]}${team.substring(6)}`);
-        return;
-      }
-    });
+  getShortNotation(name: string): string {
+    if (!name) {
+      return;
+    }
+    const gender = name.charAt(0);
+    const teamnumber = name.substring(6);
+    return `${gender}${teamnumber}`;
   }
 
-  SelecteerUitvoerderVanTaak(taak, geselecteerdeWedstrijd, tijd) {
-    const component =
-      taak === 'scheidsrechter'
-        ? SelecteerScheidsrechterComponent
-        : SelecteerTellersComponent;
+  SetZaalwacht(date: string, team: string, zaalwachttype: string) {
+    const speeldag = this.speeldagen.find((dag) => dag.date === date);
+    if (zaalwachttype === 'eerste') {
+      speeldag.eersteZaalwacht = team;
+      speeldag.eersteZaalwachtShortNotation = this.getShortNotation(team);
+    } else {
+      speeldag.tweedeZaalwacht = team;
+      speeldag.tweedeZaalwachtShortNotation = this.getShortNotation(team);
+    }
+  }
+
+  SelecteerScheidsrechter(geselecteerdeWedstrijd: Wedstrijd, tijd: string) {
+    const component = SelecteerScheidsrechterComponent;
+    component.wedstrijd = geselecteerdeWedstrijd;
+    component.tijd = tijd;
+    const $this = this;
+    this.modalService
+      .open(component)
+      .result.then((result) =>
+        $this.SetScheidsrechter(geselecteerdeWedstrijd.matchId, result)
+      )
+      .catch(() => {});
+  }
+
+  SelecteerTeller(
+    geselecteerdeWedstrijd: Wedstrijd,
+    tijd: string,
+    tellerIndex: number
+  ) {
+    const component = SelecteerTellersComponent;
+    component.tellerIndex = tellerIndex;
     component.wedstrijd = geselecteerdeWedstrijd;
     component.tijd = tijd;
     this.modalService
       .open(component)
-      .result.then(uitvoerder => {
-        this.SetUitvoerderOnTaak(
+      .result.then((result) => {
+        this.SetTeller(
           geselecteerdeWedstrijd.matchId,
-          taak,
-          uitvoerder
+          result.teller.naam,
+          result.tellerIndex
         );
       })
       .catch(() => {});
   }
 
-  SetUitvoerderOnTaak(matchId, taak, uitvoerder) {
-    this.speeldagen.forEach(speeldag => {
-      speeldag.speeltijden.forEach(speeltijd => {
-        speeltijd.wedstrijden.forEach(wedstrijd => {
+  SetScheidsrechter(matchId, scheidsrechter) {
+    this.speeldagen.forEach((speeldag) => {
+      speeldag.speeltijden.forEach((speeltijd) => {
+        speeltijd.wedstrijden.forEach((wedstrijd) => {
           if (wedstrijd.matchId === matchId) {
-            wedstrijd[taak] = uitvoerder;
+            wedstrijd.scheidsrechter = scheidsrechter;
             return;
           }
         });
@@ -112,20 +138,33 @@ export class ScheidscoComponent implements OnInit {
     });
   }
 
-  DeleteTaak(matchId: string, taak: string) {
-    switch (taak) {
-      case 'tellers':
-        this.scheidscoService.UpdateTellers(matchId, null).subscribe();
-        break;
-      case 'scheidsrechter':
-        this.scheidscoService.UpdateScheidsrechter(matchId, null).subscribe();
-        break;
-    }
-    this.SetUitvoerderOnTaak(matchId, taak, null);
+  SetTeller(matchId, teller, tellerIndex) {
+    this.speeldagen.forEach((speeldag) => {
+      speeldag.speeltijden.forEach((speeltijd) => {
+        speeltijd.wedstrijden.forEach((wedstrijd) => {
+          if (wedstrijd.matchId === matchId) {
+            wedstrijd.tellers[tellerIndex] = teller;
+            return;
+          }
+        });
+      });
+    });
   }
 
-  DeleteZaalwacht(date: string) {
-    this.scheidscoService.UpdateZaalwacht(date, '').subscribe();
-    this.SetZaalwacht(date, null);
+  DeleteScheidsrechter(matchId: string) {
+    this.scheidscoService.UpdateScheidsrechter(matchId, null).subscribe();
+    this.SetScheidsrechter(matchId, null);
+  }
+
+  DeleteTeller(matchId: string, tellerIndex: number) {
+    this.scheidscoService.UpdateTellers(matchId, null, tellerIndex).subscribe();
+    this.SetTeller(matchId, null, tellerIndex);
+  }
+
+  DeleteZaalwacht(date: string, zaalwachttype: string) {
+    this.scheidscoService
+      .UpdateZaalwacht(date, null, zaalwachttype)
+      .subscribe();
+    this.SetZaalwacht(date, null, zaalwachttype);
   }
 }

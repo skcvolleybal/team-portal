@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+
 import { AanwezigheidService } from '../../core/services/aanwezigheid.service';
 import { BarcoService } from '../../core/services/barco.service';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'teamportal-selecteer-barcie-lid',
@@ -39,7 +40,6 @@ export class SelecteerBarcielidComponent implements OnInit {
       response => {
         this.isLoading = false;
         this.beschikbaarheden = response;
-        console.log(this.beschikbaarheden);
       },
       response => {
         this.isLoading = false;
