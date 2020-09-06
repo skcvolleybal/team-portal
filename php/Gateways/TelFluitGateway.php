@@ -192,34 +192,23 @@ class TelFluitGateway
     public function GetTellers(): array
     {
         $query = 'SELECT 
-                    T.id AS id,
-                    T.name AS naam,
-                    T.email,
-                    count(W.teller1_id) + count(W.teller2_id) AS geteld,
-                    G.id AS teamId,
+                    U.id, 
+                    U.name AS naam,
+                    U.email,
+                    count(W.teller1_id) + count(W.teller2_id) AS geteld, 
+                    G.id AS teamId, 
                     G.title AS teamnaam
-                  from (
-                    SELECT id, name, email FROM J3_users U
-                    INNER JOIN J3_user_usergroup_map M ON M.user_id = U.id
-                    where M.group_id IN (
-                        SELECT id FROM J3_usergroups WHERE parent_id = (
-                            SELECT id FROM J3_usergroups WHERE title = "Teams"
-                        )
-                    ) AND U.id not in (
-                        SELECT id FROM J3_users U
-                        INNER JOIN J3_user_usergroup_map M on U.id = M.user_id
-                        WHERE M.group_id = (select id from J3_usergroups G where title = "Scheidsrechters")
-                    )
-                  ) T
-                  LEFT JOIN TeamPortal_wedstrijden W ON W.teller1_id = T.id or W.teller2_id = T.id
-                  LEFT JOIN J3_user_usergroup_map M on M.user_id = T.id
-                  LEFT JOIN J3_usergroups G on M.group_id = G.id
-                  WHERE M.group_id in (
-                        SELECT id FROM J3_usergroups WHERE parent_id = (
-                            SELECT id FROM J3_usergroups WHERE title = "Teams"
-                        )
-                    )
-                  GROUP BY T.id
+                  FROM J3_users U
+                  INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
+                  INNER JOIN J3_usergroups G ON M.group_id = G.id
+                  LEFT JOIN TeamPortal_wedstrijden W ON (W.teller1_id = U.id OR W.teller2_id = U.id)
+                  WHERE G.parent_id in (SELECT id FROM J3_usergroups WHERE title = "Teams")
+                  AND U.id NOT IN (
+                    SELECT M.user_id FROM J3_usergroups G
+                    INNER JOIN J3_user_usergroup_map M ON G.id = M.group_id
+                    WHERE title = "Scheidsrechters"
+                  )
+                  GROUP BY U.id
                   ORDER BY SUBSTRING(teamnaam, 1, 1), LENGTH(teamnaam), teamnaam, geteld';
         $rows = $this->database->Execute($query);
         $result = [];
