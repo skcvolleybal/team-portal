@@ -69,7 +69,7 @@ $entryPoint =
         new RouteGroup('/fluiten', [
             new GetRoute('', UseCases\GetBeschikbaarheid::class),
             new PostRoute('', UseCases\UpdateBeschikbaarheid::class)
-        ], AuthorizationRole::SCHEIDSRECHTER),
+        ], AuthorizationRole::USER),
 
         new RouteGroup('/barcie', [
             new GetRoute('', UseCases\GetBarcieBeschikbaarheid::class),
