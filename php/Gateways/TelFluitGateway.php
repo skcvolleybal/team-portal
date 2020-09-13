@@ -225,6 +225,8 @@ class TelFluitGateway
             $persoon->aantalKeerGeteld = $row->geteld;
             $currentTeam->teamgenoten[] = $persoon;
         }
+        $result[] = $currentTeam;
+
         return $result;
     }
 
