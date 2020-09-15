@@ -31,7 +31,7 @@
     "chart.js": "^2.9.3",
     "core-js": "^2.6.11",
     "linq": "^3.2.2",
-    "ngx-spinner": "8.0.3",
+    "ngx-spinner": "^10.0.1",
     "protractor": "^7.0.0",
     "rxjs": "^6.6.2",
     "tslib": "^1.13.0",
