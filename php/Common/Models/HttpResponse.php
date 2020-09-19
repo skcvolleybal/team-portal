@@ -37,7 +37,7 @@ class HttpResponse
     public function GetHeader(string $name): ?string
     {
         foreach ($this->headers as $key => $value) {
-            if ($key === $name) {
+            if (strtoupper($key) === strtoupper($name)) {
                 return $value;
             }
         }

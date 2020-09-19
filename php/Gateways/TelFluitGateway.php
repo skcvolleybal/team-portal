@@ -60,10 +60,10 @@ class TelFluitGateway
                   LEFT JOIN J3_users U1 on U1.id = W.scheidsrechter_id
                   LEFT JOIN J3_users U2 on U2.id = W.teller1_id
                   LEFT JOIN J3_users U3 on U3.id = W.teller2_id
-                  WHERE (W.scheidsrechter_id = ? OR W.teller1_id = ? OR W.teller2_id) AND
+                  WHERE (W.scheidsrechter_id = ? OR W.teller1_id = ? OR W.teller2_id = ?) AND
                         W.timestamp >= CURRENT_TIMESTAMP()';
         $params = [
-            $user->id, $user->id
+            $user->id, $user->id, $user->id
         ];
         $rows = $this->database->Execute($query, $params);
         return $this->MapToWedstrijden($rows);
