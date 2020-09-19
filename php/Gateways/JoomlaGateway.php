@@ -229,7 +229,9 @@ class JoomlaGateway implements IJoomlaGateway
             return null;
         }
 
-        return new Team($team[0]->naam, $team[0]->id);
+        $team = new Team($team[0]->naam, $team[0]->id);
+        $team->teamgenoten = $this->GetTeamgenoten($team);
+        return $team;
     }
 
     public function GetCoaches(Team $team): array

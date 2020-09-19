@@ -3,11 +3,14 @@
 namespace TeamPortal\UseCases;
 
 use TeamPortal\Common\DateFunctions;
+use TeamPortal\Entities\Coach;
+use TeamPortal\Entities\Invaller;
 use TeamPortal\Entities\Persoon;
 use TeamPortal\Gateways;
 use TeamPortal\Entities\Speler;
 use TeamPortal\Entities\Team;
 use TeamPortal\Entities\Wedstrijd;
+use UnexpectedValueException;
 
 class GetWedstrijdOverzicht implements Interactor
 {
@@ -47,34 +50,32 @@ class GetWedstrijdOverzicht implements Interactor
 
         $aanwezigheden = $this->aanwezigheidGateway->GetAanwezighedenForMatchIds($allMatchIds);
 
-        $invalteams = $this->GetInvalteamsForTeam($user->team);
+        $eigenInvalteams = $this->GetInvalteamsForTeam($user->team);
+        $coachInvalteams = $this->GetInvalteamsForTeam($user->coachteam);
         foreach ($wedstrijden as $wedstrijd) {
             if ($wedstrijd->timestamp) {
                 $newWedstrijd = new WedstrijdModel($wedstrijd);
                 $newWedstrijd->SetPersonalInformation($user);
 
-                $aanwezighedenForMatch = new Aanwezigheidssamenvatting();
-
                 $isEigenWedstrijd = $wedstrijd->IsEigenWedstrijd($user);
                 if ($isEigenWedstrijd) {
-                    $teams = $this->GetInvalteams($invalteams, $wedstrijd);
-                    foreach ($teams as $team) {
-                        $newWedstrijd->invalTeams[] = new InvalteamModel($team);
-                    }
-
-                    $aanwezighedenForMatch = $this->GetAanwezighedenForWedstrijd($wedstrijd->matchId, $aanwezigheden, $user->team);
-                    $aanwezighedenForMatch->Onbekend = $this->GetOnbekenden($aanwezighedenForMatch, $user->team);
+                    $invalteams = $this->GetInvalteams($eigenInvalteams, $wedstrijd);
+                    $team = $user->team;
+                } else {
+                    $invalteams = $this->GetInvalteams($coachInvalteams, $wedstrijd);
+                    $team = $user->coachteam;
                 }
 
+                foreach ($invalteams as $invalteam) {
+                    $newWedstrijd->invalTeams[] = new InvalteamModel($invalteam);
+                }
+
+                $aanwezighedenForMatch = $this->GetAanwezighedenForWedstrijd($wedstrijd->matchId, $aanwezigheden, $team);
+                $newWedstrijd->onbekend = $this->GetOnbekenden($aanwezighedenForMatch, $team);
                 $newWedstrijd->isAanwezig = $this->IsAanwezig($aanwezigheden, $wedstrijd->matchId, $user);
                 $newWedstrijd->aanwezigen = $aanwezighedenForMatch->aanwezigen;
                 $newWedstrijd->afwezigen = $aanwezighedenForMatch->afwezigen;
-                $newWedstrijd->onbekend = $aanwezighedenForMatch->onbekend;
-                foreach ($aanwezighedenForMatch->coaches as $coach) {
-                    $newCoach = new CoachModel($coach->persoon);
-                    $newCoach->isAanwezig = $coach->isAanwezig;
-                    $newWedstrijd->coaches[] = $newCoach;
-                }
+
 
                 $newWedstrijd->isEigenWedstrijd = $isEigenWedstrijd;
 
@@ -149,19 +150,32 @@ class GetWedstrijdOverzicht implements Interactor
         $result = new Aanwezigheidssamenvatting();
         foreach ($aanwezigheden as $aanwezigheid) {
             if ($aanwezigheid->matchId == $matchId) {
-                if ($aanwezigheid->IsCoach()) {
-                    $result->coaches[] = $aanwezigheid;
-                } else {
-                    $newAanwezigheid = new Speler(
+                if ($aanwezigheid->rol == "speler") {
+                    if ($team->Equals($aanwezigheid->persoon->team)) {
+                        $persoon = new Speler(
+                            $aanwezigheid->persoon->id,
+                            $aanwezigheid->persoon->naam,
+                            $aanwezigheid->persoon->email
+                        );
+                    } else {
+                        $persoon = new Invaller(
+                            $aanwezigheid->persoon->id,
+                            $aanwezigheid->persoon->naam,
+                            $aanwezigheid->persoon->email
+                        );
+                    }
+                } else if ($aanwezigheid->rol == "coach") {
+                    $persoon = new Coach(
                         $aanwezigheid->persoon->id,
                         $aanwezigheid->persoon->naam,
-                        !$team->Equals($aanwezigheid->persoon->team)
+                        $aanwezigheid->persoon->email
                     );
-                    if ($aanwezigheid->isAanwezig) {
-                        $result->aanwezigen[] = $newAanwezigheid;
-                    } else {
-                        $result->afwezigen[] = $newAanwezigheid;
-                    }
+                }
+
+                if ($aanwezigheid->isAanwezig) {
+                    $result->aanwezigen[] = $persoon;
+                } else {
+                    $result->afwezigen[] = $persoon;
                 }
             }
         }

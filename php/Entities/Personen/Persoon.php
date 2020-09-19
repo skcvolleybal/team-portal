@@ -13,7 +13,7 @@ class Persoon
     public ?int $rugnummer = null;
     public int $aantalKeerGeteld = 0;
 
-    function __construct(int $id, string $naam, string $email)
+    function __construct(int $id, string $naam, ?string $email)
     {
         $this->id = $id;
         $this->email = $email;

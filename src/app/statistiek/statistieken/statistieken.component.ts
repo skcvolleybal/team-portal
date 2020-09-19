@@ -1,17 +1,18 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { Chart } from 'chart.js';
-import { StatistiekService } from '../../core/services/statistieken.service';
+
 import { AantalGespeeldePunten } from './grafieken/aantal-gespeelde-punten';
-import { SetPlusminusGraph } from './grafieken/plusminus-per-persoon';
+import { Chart } from 'chart.js';
 import { GetGrafiekPuntenPerRotatie } from './grafieken/punten-per-rotatie';
-import { SetServicesGraph } from './grafieken/services-per-persoon';
 import { IPunten } from './models/IPunten';
+import { SetPlusminusGraph } from './grafieken/plusminus-per-persoon';
+import { SetServicesGraph } from './grafieken/services-per-persoon';
+import { StatistiekService } from '../../core/services/statistieken.service';
 
 @Component({
   selector: 'teamportal-statistieken',
   templateUrl: './statistieken.component.html',
-  styleUrls: ['./statistieken.component.scss']
+  styleUrls: ['./statistieken.component.scss'],
 })
 export class StatistiekenComponent implements OnInit {
   statistiekForm: FormGroup;
@@ -37,7 +38,7 @@ export class StatistiekenComponent implements OnInit {
       spelsysteem: null,
       rotatiekeuze: 'puntenPerRotatie',
       service: 'totaal',
-      plusminusType: 'totaal'
+      plusminusType: 'totaal',
     });
 
     this.statistiekForm
@@ -60,7 +61,7 @@ export class StatistiekenComponent implements OnInit {
 
     this.statistiekService
       .GetEigenWedstrijden()
-      .subscribe(wedstrijden => (this.wedstrijden = wedstrijden));
+      .subscribe((wedstrijden) => (this.wedstrijden = wedstrijden));
 
     this.LoadStatistieken();
   }
@@ -69,7 +70,7 @@ export class StatistiekenComponent implements OnInit {
     this.isLoading = true;
     const matchId = this.statistiekForm.get('geselecteerdeWedstrijd').value;
     this.statistiekService.GetStatistieken(matchId).subscribe(
-      statistieken => {
+      (statistieken) => {
         this.statistieken = statistieken;
         const spelsysteem =
           statistieken.spelsystemen.length > 0
@@ -80,7 +81,7 @@ export class StatistiekenComponent implements OnInit {
 
         this.DisplayStatistieken();
       },
-      error => {
+      (error) => {
         this.errorMessage = error.error.message;
         this.isLoading = false;
       }
@@ -139,7 +140,7 @@ export class StatistiekenComponent implements OnInit {
     const rotatiekeuze = this.statistiekForm.get('rotatiekeuze').value;
     const type = this.statistiekForm.get('spelsysteem').value;
     const i = this.statistieken.spelsystemen.findIndex(
-      spelsysteem => spelsysteem.type === type
+      (spelsysteem) => spelsysteem.type === type
     );
 
     if (i === -1) {
@@ -149,7 +150,7 @@ export class StatistiekenComponent implements OnInit {
     const totaalAantalPunten = this.statistieken.spelsystemen[i]
       .totaalAantalPunten;
 
-    let label = `Winstpercentage (${totaalAantalPunten} punten)`;
+    const label = `Winstpercentage (${totaalAantalPunten} punten)`;
     let puntenPerRotatie: IPunten[];
     switch (rotatiekeuze) {
       case 'puntenPerRotatie':

@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { BarcieBeschikbaarheidComponent } from './barcie-beschikbaarheid.component';
 
@@ -6,7 +6,7 @@ describe('BarcieBeschikbaarheidComponent', () => {
   let component: BarcieBeschikbaarheidComponent;
   let fixture: ComponentFixture<BarcieBeschikbaarheidComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ BarcieBeschikbaarheidComponent ]
     })

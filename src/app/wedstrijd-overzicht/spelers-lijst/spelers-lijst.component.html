@@ -1,18 +1,11 @@
 <div class="alert" [ngClass]="class">
   <div (click)="isCollapsed = !isCollapsed">
-    {{ title }} ({{ spelers.length }})
-    <fa-icon
-      class="float-right"
-      [icon]="isCollapsed ? uitklappen : inklappen"
-    ></fa-icon>
+    {{ title }} ({{ numberOfPlayers }})
+    <fa-icon class="float-right" [icon]="isCollapsed ? uitklappen : inklappen"></fa-icon>
   </div>
 
   <div *ngFor="let speler of spelers" [ngbCollapse]="isCollapsed">
-    - {{ speler.naam }}
-    <fa-icon
-      *ngIf="speler.isInvaller"
-      (click)="DeleteSpeler(speler)"
-      [icon]="verwijderIcon"
-    ></fa-icon>
+    - {{ speler.naam }} {{ speler.rol == "coach" ? "(coach)" : "" }}
+    <fa-icon *ngIf="speler.rol == 'invaller'" (click)="DeleteSpeler(speler)" [icon]="verwijderIcon"></fa-icon>
   </div>
 </div>

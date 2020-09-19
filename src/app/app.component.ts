@@ -1,13 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
 import { NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
+
+import { ActivatedRoute } from '@angular/router';
 import { JoomlaService } from './core/services/request.service';
-import { StateService } from './core/services/state.service';
 import { LoginModalComponent } from './login-modal/login-modal.component';
+import { StateService } from './core/services/state.service';
 import { appRoutes } from './route.config';
+import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'teamportal-root',
@@ -47,21 +48,29 @@ export class AppComponent implements OnInit {
 
   GetNavigationTitle() {
     if (this.activatedRoute.firstChild) {
-      return this.activatedRoute.firstChild.snapshot.data['title'];
+      return this.activatedRoute.firstChild.snapshot.data.title;
     }
   }
 
   ngOnInit() {
-    this.stateService.isAuthorized.subscribe(() => {
-      setTimeout(() =>
-        this.modalService.open(LoginModalComponent, { centered: true })
-      );
+    this.stateService.isAuthenticated.subscribe((value) => {
+      if (value) {
+        return;
+      }
+
+      this.modalService.open(LoginModalComponent, { centered: true });
     });
 
     this.joomalService.GetGroupsOfUser().subscribe((response) => {
       this.ShowMenuItems(response);
       this.isWebcie = response.findIndex((group) => group === 'webcie') !== -1;
       this.stateService.isWebcie = this.isWebcie;
+    });
+
+    this.stateService.isAuthenticated.subscribe((isAuthenticated) => {
+      if (isAuthenticated) {
+        this.ngOnInit();
+      }
     });
   }
 

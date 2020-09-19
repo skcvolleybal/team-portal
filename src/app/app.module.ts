@@ -1,30 +1,30 @@
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
-import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { RouterModule } from '@angular/router';
-import { StoreModule } from '@ngrx/store';
+
+import { AanwezigheidService } from './core/services/aanwezigheid.service';
 import { AppComponent } from './app.component';
 import { BarcoModule } from './barco/barco.module';
+import { BarcoService } from './core/services/barco.service';
 import { BeschikbaarheidModule } from './beschikbaarheid/beschikbaarheid.module';
+import { BeschikbaarheidService } from './core/services/beschikbaarheid.service';
+import { BrowserModule } from '@angular/platform-browser';
 import { CoreModule } from './core/core.module';
-import { WithCredentialsInterceptor } from './core/interceptors/add-credentials.interceptor';
-import { ImpersonationInterceptor } from './core/interceptors/add-impersonation.interceptor';
 import { DefaultHeadersInterceptor } from './core/interceptors/default-headers.interceptor';
 import { HTTPListener } from './core/interceptors/is-authorized.interceptor';
-import { AanwezigheidService } from './core/services/aanwezigheid.service';
-import { BarcoService } from './core/services/barco.service';
-import { BeschikbaarheidService } from './core/services/beschikbaarheid.service';
+import { ImpersonationInterceptor } from './core/interceptors/add-impersonation.interceptor';
 import { JoomlaService } from './core/services/request.service';
-import { ScheidscoService } from './core/services/scheidsco.service';
-import { StateService } from './core/services/state.service';
-import { StatistiekService } from './core/services/statistieken.service';
 import { LoginModalComponent } from './login-modal/login-modal.component';
 import { MijnOverzichtModule } from './mijn-overzicht/mijn-overzicht.module';
-import { appRoutes } from './route.config';
+import { NgModule } from '@angular/core';
+import { RouterModule } from '@angular/router';
 import { ScheidscoModule } from './scheidsco/scheidsco.module';
+import { ScheidscoService } from './core/services/scheidsco.service';
 import { SharedModule } from './shared/shared.module';
+import { StateService } from './core/services/state.service';
 import { StatistiekModule } from './statistiek/statistiek.module';
+import { StatistiekService } from './core/services/statistieken.service';
 import { WedstrijdOverzichtModule } from './wedstrijd-overzicht/wedstrijd-overzicht.module';
+import { WithCredentialsInterceptor } from './core/interceptors/add-credentials.interceptor';
+import { appRoutes } from './route.config';
 
 @NgModule({
   entryComponents: [LoginModalComponent],
@@ -43,7 +43,6 @@ import { WedstrijdOverzichtModule } from './wedstrijd-overzicht/wedstrijd-overzi
     ScheidscoModule,
     StatistiekModule,
     SharedModule,
-    StoreModule,
   ],
   exports: [],
   providers: [

@@ -1,11 +1,12 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+
 import { TelFluitBeschikbaarheidComponent } from './tel-fluit-beschikbaarheid.component';
 
 describe('TelFluitBeschikbaarheidComponent', () => {
   let component: TelFluitBeschikbaarheidComponent;
   let fixture: ComponentFixture<TelFluitBeschikbaarheidComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [TelFluitBeschikbaarheidComponent]
     }).compileComponents();

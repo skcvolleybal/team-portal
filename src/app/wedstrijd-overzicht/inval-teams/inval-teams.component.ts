@@ -3,13 +3,13 @@ import {
   faInfoCircle,
   faMinusSquare,
   faPlus,
-  faPlusSquare
+  faPlusSquare,
 } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'teamportal-inval-teams',
   templateUrl: './inval-teams.component.html',
-  styleUrls: ['./inval-teams.component.scss']
+  styleUrls: ['./inval-teams.component.scss'],
 })
 export class InvalTeamsComponent implements OnInit {
   @Input()
@@ -27,6 +27,7 @@ export class InvalTeamsComponent implements OnInit {
   constructor() {}
 
   AddAanwezigheid(speler) {
+    speler.rol = 'invaller';
     this.addAanwezigheid.emit(speler);
   }
 

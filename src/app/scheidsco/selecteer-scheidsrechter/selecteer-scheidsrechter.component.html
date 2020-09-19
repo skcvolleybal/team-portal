@@ -1,11 +1,6 @@
 <div class="modal-header">
   <h6>{{ teams }}, {{ tijd }}</h6>
-  <button
-    type="button"
-    class="close"
-    aria-label="Close"
-    (click)="modal.dismiss()"
-  >
+  <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
     <span aria-hidden="true">&times;</span>
   </button>
 </div>
@@ -24,16 +19,9 @@
       <ul class="list-group list-group-flush" *ngFor="let keuze of keuzes">
         <li class="list-group-item">{{ keuze }}</li>
         <li class="list-group-item">
-          <div
-            class="input-group mb-3"
-            *ngFor="let scheidsrechter of getScheidsrechtersByKeuze(i, keuze)"
-          >
-            <button
-              type="button"
-              (click)="UpdateScheidsrechter(scheidsrechter)"
-              class="btn btn-block"
-              [ngClass]="GetClass(scheidsrechter)"
-            >
+          <div class="input-group mb-3" *ngFor="let scheidsrechter of getScheidsrechtersByKeuze(i, keuze)">
+            <button type="button" (click)="UpdateScheidsrechter(scheidsrechter)" class="btn btn-block"
+              [ngClass]="GetClass(scheidsrechter)">
               {{ GetScheidsrechterText(scheidsrechter) }}
             </button>
           </div>

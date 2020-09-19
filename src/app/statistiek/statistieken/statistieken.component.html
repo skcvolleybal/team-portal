@@ -7,10 +7,8 @@
     <div class="card-header">Langste servicereeksen van SKC</div>
     <div class="card-body">
       <ul class="list-group">
-        <li
-          *ngFor="let reeks of statistieken.servicereeksen"
-          class="list-group-item d-flex justify-content-between align-items-center"
-        >
+        <li *ngFor="let reeks of statistieken.servicereeksen"
+          class="list-group-item d-flex justify-content-between align-items-center">
           {{ GetReeksText(reeks) }}
           <span class="badge badge-success badge-pill">{{
             reeks.services
@@ -24,10 +22,7 @@
     <div class="card-body">
       <select formControlName="geselecteerdeWedstrijd" class="wedstrijd-select">
         <option value="">Alle wedstrijden</option>
-        <option
-          [value]="wedstrijd.matchId"
-          *ngFor="let wedstrijd of wedstrijden"
-        >
+        <option [value]="wedstrijd.matchId" *ngFor="let wedstrijd of wedstrijden">
           {{ wedstrijd.team1 + ' - ' + wedstrijd.team2 }}
         </option>
       </select>
@@ -47,46 +42,25 @@
     <div class="card-header">Punten per rotatie</div>
     <div class="card-body">
       <div class="card-text">
-        <div
-          class="btn-group btn-group-toggle spel-systeem"
-          ngbRadioGroup
-          name="radioBasic"
-          formControlName="spelsysteem"
-          *ngIf="statistieken && statistieken.spelsystemen.length > 1"
-        >
-          <label
-            ngbButtonLabel
-            class="btn-primary"
-            *ngFor="let spelsysteem of statistieken.spelsystemen"
-          >
+        <div class="btn-group btn-group-toggle spel-systeem" ngbRadioGroup name="radioBasic"
+          formControlName="spelsysteem" *ngIf="statistieken && statistieken.spelsystemen.length > 1">
+          <label ngbButtonLabel class="btn-primary" *ngFor="let spelsysteem of statistieken.spelsystemen">
             <input ngbButton type="radio" [value]="spelsysteem.type" />
             {{ spelsysteem.type }}
           </label>
         </div>
 
-        <div
-          class="btn-group btn-group-toggle formbuttons"
-          ngbRadioGroup
-          name="radioBasic"
-          formControlName="rotatiekeuze"
-        >
+        <div class="btn-group btn-group-toggle formbuttons" ngbRadioGroup name="radioBasic"
+          formControlName="rotatiekeuze">
           <label ngbButtonLabel class="btn-primary">
             <input ngbButton type="radio" value="puntenPerRotatie" /> Totaal
           </label>
           <label ngbButtonLabel class="btn-primary">
-            <input
-              ngbButton
-              type="radio"
-              value="puntenPerRotatieEigenService"
-            />
+            <input ngbButton type="radio" value="puntenPerRotatieEigenService" />
             Eigen service
           </label>
           <label ngbButtonLabel class="btn-primary">
-            <input
-              ngbButton
-              type="radio"
-              value="puntenPerRotatieServiceontvangst"
-            />
+            <input ngbButton type="radio" value="puntenPerRotatieServiceontvangst" />
             Service-ontvangst
           </label>
         </div>
@@ -107,12 +81,8 @@
     <div class="card-header">Plusminus per persoon</div>
     <div class="card-body">
       <div class="card-text">
-        <div
-          class="btn-group btn-group-toggle formbuttons"
-          ngbRadioGroup
-          name="radioBasic"
-          formControlName="plusminusType"
-        >
+        <div class="btn-group btn-group-toggle formbuttons" ngbRadioGroup name="radioBasic"
+          formControlName="plusminusType">
           <label ngbButtonLabel class="btn-primary">
             <input ngbButton type="radio" value="totaal" />
             Totaal

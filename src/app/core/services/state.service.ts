@@ -5,11 +5,11 @@ import { Subject } from 'rxjs';
   providedIn: 'root',
 })
 export class StateService {
-  public isAuthorized = new Subject<any>();
+  public isAuthenticated = new Subject<boolean>();
   public isWebcie = false;
   public impersonationId: string;
 
-  setUnauthorized() {
-    this.isAuthorized.next();
+  setIsAuthenticated(value: boolean) {
+    this.isAuthenticated.next(value);
   }
 }

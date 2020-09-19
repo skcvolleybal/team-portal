@@ -2,29 +2,29 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import {
   faMinusSquare,
   faPlusSquare,
-  faTimesCircle
+  faTimesCircle,
 } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'teamportal-spelers-lijst',
   templateUrl: './spelers-lijst.component.html',
-  styleUrls: ['./spelers-lijst.component.scss']
+  styleUrls: ['./spelers-lijst.component.scss'],
 })
 export class SpelersLijstComponent {
-  @Input()
-  spelers;
-  @Input()
-  title;
-  @Input()
-  class;
+  @Input() spelers;
+  @Input() title;
+  @Input() class;
 
-  @Output()
-  deleteSpeler = new EventEmitter();
+  @Output() deleteSpeler = new EventEmitter();
 
   inklappen = faMinusSquare;
   uitklappen = faPlusSquare;
   verwijderIcon = faTimesCircle;
   isCollapsed = true;
+
+  get numberOfPlayers() {
+    return this.spelers.filter((speler) => speler.rol !== 'coach').length;
+  }
 
   constructor() {}
 

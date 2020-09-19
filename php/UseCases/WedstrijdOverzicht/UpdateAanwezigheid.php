@@ -22,6 +22,9 @@ class UpdateAanwezigheid implements Interactor
         $matchId = $data->matchId;
         $isAanwezig = $data->isAanwezig;
         $rol = $data->rol;
+        if ($rol === 'invaller') {
+            $rol = 'speler';
+        }
 
         $aanwezigheid = $this->aanwezigheidGateway->GetAanwezigheid($user, $matchId, $rol);
         $aanwezigheid->isAanwezig = $isAanwezig;
