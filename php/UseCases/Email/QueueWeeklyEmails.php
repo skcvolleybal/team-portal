@@ -195,10 +195,13 @@ class QueueWeeklyEmails implements Interactor
             Placeholder::ZAALWACHTTYPE => $zaalwachttype
         ];
         $body = Utilities::FillTemplate($template, $placeholders);
+        $titel = "Zaalwacht $datum";
+        if ($zaalwachttype === '1e zaalwacht shift') {
+            $earliestMatch = $wedstrijddag->speeltijden[0]->wedstrijden[0];
+            $tijdAanwezig = DateFunctions::AddMinutes($earliestMatch->timestamp, -60, true);
+            $titel .= " ($tijdAanwezig aanwezig)";
+        }
 
-        $earliestMatch = $wedstrijddag->speeltijden[0]->wedstrijden[0];
-        $tijdAanwezig = DateFunctions::AddMinutes($earliestMatch->timestamp, -60, true);
-        $titel = "Zaalwacht $datum ($tijdAanwezig aanwezig)";
         return new Email(
             $titel,
             $body,
