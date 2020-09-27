@@ -4,17 +4,22 @@ namespace TeamPortal\Entities;
 
 use TeamPortal\Common\Utilities;
 
-abstract class Email
+class Email
 {
     public ?Persoon $sender;
     public Persoon $receiver;
     public string $titel;
     public string $body;
-    private string $signature;
+    public int $id;
+    public string $signature;
 
-    function GetSignature()
+    public function __construct($titel, $body, $receiver, $sender, $id)
     {
-        return $this->signature;
+        $this->titel = $titel;
+        $this->body = $body;
+        $this->receiver = $receiver;
+        $this->sender = $sender;
+        $this->id = $id;
     }
 
     function SetSender(Persoon $persoon)

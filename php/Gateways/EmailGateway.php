@@ -49,7 +49,7 @@ class EmailGateway
                 $email->receiver->email,
                 $email->titel,
                 $email->body,
-                $email->GetSignature()
+                $email->signature
             ];
             $this->database->Execute($query, $params);
             $this->PrintEmail($email);
@@ -93,8 +93,7 @@ class EmailGateway
 
     private function DoesEmailExist(Email $email): bool
     {
-        $signature = $email->GetSignature();
-        $query = "SELECT id FROM TeamPortal_email WHERE signature = '$signature'";
+        $query = "SELECT id FROM TeamPortal_email WHERE signature = '$email->signature'";
         $emails = $this->database->Execute($query);
 
         return count($emails) > 0;
