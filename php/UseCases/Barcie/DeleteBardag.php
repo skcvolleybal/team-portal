@@ -2,6 +2,7 @@
 
 namespace TeamPortal\UseCases;
 
+use InvalidArgumentException;
 use TeamPortal\Common\DateFunctions;
 use TeamPortal\Gateways\BarcieGateway;
 use TeamPortal\Gateways\JoomlaGateway;

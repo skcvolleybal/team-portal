@@ -59,7 +59,7 @@ class ZaalwachtGateway
                       SELECT id FROM J3_usergroups WHERE title = \'Teams\'
                     )
                   )
-                  GROUP BY G.title
+                  GROUP BY G.id, G.title
                   ORDER BY aantal, SUBSTRING(teamnaam, 1, 1), LENGTH(teamnaam), teamnaam';
         $rows = $this->database->Execute($query);
         $result = [];

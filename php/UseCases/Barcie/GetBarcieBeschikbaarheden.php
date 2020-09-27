@@ -2,6 +2,7 @@
 
 namespace TeamPortal\UseCases;
 
+use InvalidArgumentException;
 use TeamPortal\Common\DateFunctions;
 use TeamPortal\Entities\Barlid;
 use TeamPortal\Entities\Persoon;

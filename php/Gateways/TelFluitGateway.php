@@ -147,7 +147,7 @@ class TelFluitGateway
                   LEFT JOIN J3_comprofiler C ON C.user_id = U.id
                   LEFT JOIN TeamPortal_wedstrijden W ON W.scheidsrechter_id = U.id
                   WHERE G.id IN (SELECT id FROM J3_usergroups WHERE title = "Scheidsrechters")
-                  GROUP BY U.name
+                  GROUP BY U.id, U.name, U.email, C.cb_scheidsrechterscode, teamId, teamnaam
                   ORDER BY gefloten, naam';
         $rows = $this->database->Execute($query);
         $result = [];
@@ -195,21 +195,22 @@ class TelFluitGateway
                     U.id, 
                     U.name AS naam,
                     U.email,
-                    count(W.teller1_id) + count(W.teller2_id) AS geteld, 
+                    COUNT(W1.teller1_id) + COUNT(W2.teller2_id) AS geteld, 
                     G.id AS teamId, 
                     G.title AS teamnaam
                   FROM J3_users U
                   INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
                   INNER JOIN J3_usergroups G ON M.group_id = G.id
-                  LEFT JOIN TeamPortal_wedstrijden W ON (W.teller1_id = U.id OR W.teller2_id = U.id)
+                  LEFT JOIN TeamPortal_wedstrijden W1 ON (W1.teller1_id = U.id)
+                  LEFT JOIN TeamPortal_wedstrijden W2 ON (W2.teller2_id = U.id)
                   WHERE G.parent_id in (SELECT id FROM J3_usergroups WHERE title = "Teams")
                   AND U.id NOT IN (
                     SELECT M.user_id FROM J3_usergroups G
                     INNER JOIN J3_user_usergroup_map M ON G.id = M.group_id
                     WHERE title = "Scheidsrechters"
                   )
-                  GROUP BY U.id
-                  ORDER BY SUBSTRING(teamnaam, 1, 1), LENGTH(teamnaam), teamnaam, geteld';
+                  GROUP BY U.id, U.name, U.email, G.id, G.title, W1.teller1_id, W2.teller2_id
+                  ORDER BY SUBSTRING(teamnaam, 1, 1), LENGTH(teamnaam), teamnaam, geteld;';
         $rows = $this->database->Execute($query);
         $result = [];
         $currentTeam = new Team($rows[0]->teamnaam, $rows[0]->teamId);
@@ -246,13 +247,18 @@ class TelFluitGateway
     public function Update(Wedstrijd $wedstrijd): void
     {
         $query = 'UPDATE TeamPortal_wedstrijden
-                  SET scheidsrechter_id = ?, teller1_id = ?, teller2_id = ?, is_veranderd = ?, timestamp = ?
+                  SET 
+                    scheidsrechter_id = ?, 
+                    teller1_id = ?, 
+                    teller2_id = ?, 
+                    is_veranderd = ?, 
+                    timestamp = ?
                   WHERE match_id = ?';
         $params = [
             $wedstrijd->scheidsrechter !== null ? $wedstrijd->scheidsrechter->id : null,
             $wedstrijd->tellers[0] !== null ? $wedstrijd->tellers[0]->id : null,
             $wedstrijd->tellers[1] !== null ? $wedstrijd->tellers[1]->id : null,
-            $wedstrijd->isVeranderd,
+            $wedstrijd->isVeranderd ? 1 : 0,
             DateFunctions::GetMySqlTimestamp($wedstrijd->timestamp),
             $wedstrijd->matchId
         ];

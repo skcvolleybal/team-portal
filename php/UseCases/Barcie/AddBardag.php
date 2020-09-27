@@ -3,6 +3,7 @@
 namespace TeamPortal\UseCases;
 
 use DateTime;
+use InvalidArgumentException;
 use TeamPortal\Common\DateFunctions;
 use TeamPortal\Gateways;
 use UnexpectedValueException;

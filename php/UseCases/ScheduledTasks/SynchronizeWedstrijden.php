@@ -2,13 +2,14 @@
 
 namespace TeamPortal\UseCases;
 
+use TeamPortal\Common\Database;
 use TeamPortal\Entities\Wedstrijd;
 use TeamPortal\Gateways;
 
 class SynchronizeWedstrijden implements Interactor
 {
     public function __construct(
-        Gateways\Database $database,
+        Database $database,
         Gateways\TelFluitGateway $telFluitGateway,
         Gateways\NevoboGateway $nevoboWedstrijd
     ) {

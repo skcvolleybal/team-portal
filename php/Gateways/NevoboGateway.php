@@ -3,6 +3,7 @@
 namespace TeamPortal\Gateways;
 
 use DateTime;
+use InvalidArgumentException;
 use SimplePie;
 use TeamPortal\Common\DateFunctions;
 use TeamPortal\Common\Utilities;

@@ -2,6 +2,8 @@
 
 namespace TeamPortal\UseCases;
 
+use TeamPortal\Entities\Zaalwacht;
+
 class ZaalwachtModel extends Overzichtsitem
 {
     public string $team;

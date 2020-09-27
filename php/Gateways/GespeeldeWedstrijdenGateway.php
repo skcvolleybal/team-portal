@@ -62,8 +62,8 @@ class GespeeldeWedstrijdenGateway
         $isSkcService = $punt->serverendTeam === ThuisUit::THUIS;
         $isSkcPunt = $punt->scorendTeam === ThuisUit::THUIS;
 
-        $query = 'INSERT INTO DWF_punten (matchId, skcTeam, `set`, isSkcService, isSkcPunt, puntenSkcTeam, puntenOtherTeam, ra, rv, mv, lv, la, ma)
-                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+        $query = 'INSERT INTO DWF_punten (matchId, skcTeam, `set`, isSkcService, isSkcPunt, puntenSkcTeam, puntenOtherTeam, ra, rv, mv, lv, la, ma, rotatie)
+                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
         $params = [
             $wedstrijdId,
             $team->naam,
@@ -77,7 +77,8 @@ class GespeeldeWedstrijdenGateway
             $opstelling->GetUserIdMidvoor(),
             $opstelling->GetUserIdLinksvoor(),
             $opstelling->GetUserIdLinksachter(),
-            $opstelling->GetUserIdMidAchter()
+            $opstelling->GetUserIdMidAchter(),
+            $opstelling->rotatie
         ];
         $this->database->Execute($query, $params);
     }
@@ -177,12 +178,13 @@ class GespeeldeWedstrijdenGateway
                     S.services,
                     U.name AS naam,
                     W.skcTeam,
+                    S.set,
                     W.otherTeam
                   FROM (
-                    SELECT P.matchId, ra, skcTeam, COUNT(*) AS services 
+                    SELECT P.matchId, ra, skcTeam, `set`, COUNT(*) AS services 
                     FROM DWF_punten P
                     WHERE isSkcService = 'Y' AND ra IS NOT null
-                    GROUP BY P.matchId, `set`, ra, puntenOtherTeam
+                    GROUP BY P.matchId, skcTeam, `set`, isSkcService, ra, rotatie
                     ORDER BY services desc
                     LIMIT 1, 10
                   ) S

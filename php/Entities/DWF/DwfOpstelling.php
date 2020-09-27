@@ -7,27 +7,33 @@ use UnexpectedValueException;
 class DwfOpstelling
 {
     private array $opstelling = [null, null, null, null, null, null];
+    public int $rotatie = 1;
 
     public function GetUserIdRechtsachter()
     {
         return $this->GetUserIdOfPosition(0);
     }
+
     public function GetUserIdRechtsvoor()
     {
         return $this->GetUserIdOfPosition(1);
     }
+
     public function GetUserIdMidvoor()
     {
         return $this->GetUserIdOfPosition(2);
     }
+
     public function GetUserIdLinksvoor()
     {
         return $this->GetUserIdOfPosition(3);
     }
+
     public  function GetUserIdLinksachter()
     {
         return $this->GetUserIdOfPosition(4);
     }
+
     public  function GetUserIdMidachter()
     {
         return $this->GetUserIdOfPosition(5);
@@ -61,6 +67,8 @@ class DwfOpstelling
         $this->opstelling[3] = $this->opstelling[4];
         $this->opstelling[4] = $this->opstelling[5];
         $this->opstelling[5] = $tmp;
+
+        $this->rotatie++;
     }
 
     function Terugdraaien(): void
@@ -72,6 +80,8 @@ class DwfOpstelling
         $this->opstelling[2] = $this->opstelling[1];
         $this->opstelling[1] = $this->opstelling[0];
         $this->opstelling[0] = $tmp;
+
+        $this->rotatie--;
     }
 
     private function GetUserIdOfPosition(int $positie): ?int

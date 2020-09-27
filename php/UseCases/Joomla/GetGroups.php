@@ -19,21 +19,23 @@ class GetGroups implements Interactor
         if ($user === null) {
             return $result;
         }
-        
-        $dwfTeams = ["SKC HS 1", "SKC HS 2", "SKC DS 1", "SKC DS 2", "SKC DS 4"];
-        if (($user->team && in_array($user->team->naam, $dwfTeams)) || $this->joomlaGateway->IsTeamcoordinator($user)) {
+
+        if ($this->joomlaGateway->IsTeamcoordinator($user)) {
             $result[] = "statistieken";
         }
 
         if ($this->joomlaGateway->IsScheidsrechter($user)) {
             $result[] = "scheidsrechter";
         }
+
         if ($this->joomlaGateway->IsBarcie($user)) {
             $result[] = "barcie";
         }
+
         if ($this->joomlaGateway->IsTeamcoordinator($user)) {
             $result[] = "teamcoordinator";
         }
+
         if ($this->joomlaGateway->IsWebcie($user)) {
             $result[] = "webcie";
         }

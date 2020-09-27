@@ -6,6 +6,8 @@ use DateInterval;
 use DateTime;
 use DateTimeImmutable;
 
+setlocale(LC_ALL, 'nl_NL');
+
 class DateFunctions
 {
     private static $DATE_FORMAT = 'Y-m-d';

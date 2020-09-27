@@ -3,6 +3,7 @@
 namespace TeamPortal\UseCases;
 
 use DateTime;
+use InvalidArgumentException;
 use Kigkonsult\Icalcreator\Vcalendar;
 use TeamPortal\Common\DateFunctions;
 use TeamPortal\Common\Utilities;

@@ -1,6 +1,6 @@
 <?php
 
-namespace TeamPortal\UseCases;
+namespace TeamPortal\Entities;
 
 class Placeholder
 {

@@ -19,6 +19,8 @@ class EmailGateway
         $verzondenEmails = 0;
 
         foreach ($emails as $email) {
+            $email->Build();
+
             if (!$emails) {
                 continue;
             }
@@ -47,7 +49,7 @@ class EmailGateway
                 $email->receiver->email,
                 $email->titel,
                 $email->body,
-                $email->signature
+                $email->GetSignature()
             ];
             $this->database->Execute($query, $params);
             $this->PrintEmail($email);
@@ -91,7 +93,7 @@ class EmailGateway
 
     private function DoesEmailExist(Email $email): bool
     {
-        $signature = $email->signature;
+        $signature = $email->GetSignature();
         $query = "SELECT id FROM TeamPortal_email WHERE signature = '$signature'";
         $emails = $this->database->Execute($query);
 

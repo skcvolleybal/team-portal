@@ -171,6 +171,6 @@ export class StatistiekenComponent implements OnInit {
 
   GetReeksText(reeks: any) {
     const naam = reeks.naam ? reeks.naam : `Rugnummer ${reeks.rugnummer}`;
-    return `${naam} (${reeks.skcTeam} - ${reeks.otherTeam}) `;
+    return `${naam} (${reeks.skcTeam} - ${reeks.otherTeam}, ${reeks.set}e set)`;
   }
 }

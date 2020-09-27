@@ -94,7 +94,8 @@ class JoomlaGateway implements IJoomlaGateway
         $rows = $this->database->Execute($query, $params);
         if (count($rows) != 1) {
             return null;
-        };
+        }
+        
         return new Scheidsrechter(
             new Persoon($rows[0]->id, $rows[0]->name, $rows[0]->email)
         );
@@ -360,7 +361,7 @@ class JoomlaGateway implements IJoomlaGateway
                   WHERE user_id = ?";
         $params = [$user->id];
         $rows = $this->database->Execute($query, $params);
-        return count($rows) == 0 ? null : Utilities::StringToInt($rows[0]->rugnummer);
+        return empty($rows) ? null : Utilities::StringToInt($rows[0]->rugnummer);
     }
 
     public function GetAllSpelers()
