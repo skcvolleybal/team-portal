@@ -1,4 +1,5 @@
 # build angular application
+npm i
 npm run build
 
 # build php code
@@ -19,7 +20,7 @@ tar --append -f deployment.tar php static-pages
 ssh -T deb105013n2@skcvolleybal.nl -i /c/Users/jonat/.ssh/antagonist-ssh <<- 'END'
 cd /home/deb105013n2/public_html/team-portal
 shopt -s extglob
-rm -R !("Configuration.php"|".htaccess")
+rm -R !("configuration.php"|".htaccess")
 shopt -u extglob
 END
 
@@ -30,7 +31,7 @@ scp -i /c/Users/jonat/.ssh/antagonist-ssh deployment.tar deb105013n2@skcvolleyba
 ssh -T deb105013n2@skcvolleybal.nl -i /c/Users/jonat/.ssh/antagonist-ssh <<- 'END'
 cd /home/deb105013n2/public_html/team-portal
 tar -xf ./deployment.tar
-cp /home/deb105013n2/public_html/team-portal/Configuration.php /home/deb105013n2/public_html/team-portal/php/Configuration.php
+cp /home/deb105013n2/public_html/team-portal/configuration.php /home/deb105013n2/public_html/team-portal/php/configuration.php
 rm ./deployment.tar
 END
 
