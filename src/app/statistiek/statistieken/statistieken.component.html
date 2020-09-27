@@ -43,7 +43,7 @@
     <div class="card-body">
       <div class="card-text">
         <div class="btn-group btn-group-toggle spel-systeem" ngbRadioGroup name="radioBasic"
-          formControlName="spelsysteem" *ngIf="statistieken && statistieken.spelsystemen.length > 1">
+          formControlName="spelsysteem" *ngIf="statistieken?.spelsystemen?.length > 1">
           <label ngbButtonLabel class="btn-primary" *ngFor="let spelsysteem of statistieken.spelsystemen">
             <input ngbButton type="radio" [value]="spelsysteem.type" />
             {{ spelsysteem.type }}

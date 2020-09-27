@@ -3,6 +3,7 @@ npm run build
 
 # build php code
 cd php
+composer install
 composer dumpautoload
 cd ..
 
