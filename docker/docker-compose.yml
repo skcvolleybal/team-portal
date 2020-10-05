@@ -18,3 +18,13 @@ services:
     ports:
       - 8025:8025
       - 1025:1025
+
+  joomla:
+    image: joomla
+    environment:
+      JOOMLA_DB_HOST: database:mysql
+      JOOMLA_DB_USER: root
+      JOOMLA_DB_PASSWORD: root
+      JOOMLA_DB_NAME: deb105013n2_SKC
+    ports:
+      - 8080:80
