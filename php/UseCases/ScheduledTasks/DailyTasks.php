@@ -25,9 +25,9 @@ class DailyTasks implements Interactor
             $rankings = $this->nevoboGateway->GetStandForPoule($team->poule);
             $team->skcNaam = $team->GetSkcNaam();
             $team->numberOfTeamsInPoule = count($rankings);
-            foreach ($rankings as $ranking) {
+            foreach ($rankings as $i => $ranking) {
                 if ($ranking->team->naam === $team->naam) {
-                    $team->positie = $ranking->nummer;
+                    $team->positie = $ranking->nummer ?? ($i + 1);
                 }
             }
         }

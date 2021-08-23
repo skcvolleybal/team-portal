@@ -1,45 +1,45 @@
 [
   {
     "naam": "SKC DS 1",
-    "poule": "DPC",
+    "poule": "DPD",
     "niveau": "promotieklasse",
     "trainingstijden": "Ma 18:30-20:00, Wo 20:00-21:30"
   },
   {
     "naam": "SKC DS 2",
-    "poule": "D1E",
+    "poule": "D1F",
     "niveau": "1e klasse",
     "trainingstijden": "Ma 18:30-20:00, Wo 18:30-20:00",
     "facebook": "https://www.facebook.com/SKCDames2/"
   },
   {
     "naam": "SKC DS 3",
-    "poule": "D2J",
+    "poule": "D1G",
     "niveau": "2e klasse",
     "trainingstijden": "Di 18:30-20:00",
     "facebook": "https://www.facebook.com/SKC-Dames-3-1783269245270161/"
   },
   {
     "naam": "SKC DS 4",
-    "poule": "D2I",
+    "poule": "D2J",
     "niveau": "2e klasse",
     "trainingstijden": "Di 20:00-21:30"
   },
   {
     "naam": "SKC DS 5",
-    "poule": "D3N",
+    "poule": "D2I",
     "niveau": "3e klasse",
     "trainingstijden": "Ma 21:30-23:00"
   },
   {
     "naam": "SKC DS 6",
-    "poule": "D3M",
+    "poule": "D2I",
     "niveau": "3e klasse",
     "trainingstijden": "Ma 20:00-21:30 "
   },
   {
     "naam": "SKC DS 7",
-    "poule": "D3Q",
+    "poule": "D3M",
     "niveau": "3e klasse",
     "trainingstijden": "Di 21:30-23:00"
   },
@@ -57,13 +57,13 @@
   },
   {
     "naam": "SKC DS 10",
-    "poule": "D4G",
+    "poule": "D4H",
     "niveau": "4e klasse",
     "trainingstijden": "Di 20:00-21:30"
   },
   {
     "naam": "SKC DS 11",
-    "poule": "D4H",
+    "poule": "D4G",
     "niveau": "4e klasse",
     "trainingstijden": "Di 18:30-20:00"
   },
@@ -81,25 +81,25 @@
   },
   {
     "naam": "SKC DS 14",
-    "poule": "D4G",
-    "niveau": "4e klasse",
-    "trainingstijden": "Di 21:30-23:00"
-  },
-  {
-    "naam": "SKC DS 15",
     "poule": "D4H",
     "niveau": "4e klasse",
     "trainingstijden": "Di 21:30-23:00"
   },
   {
+    "naam": "SKC DS 15",
+    "poule": "D4G",
+    "niveau": "4e klasse",
+    "trainingstijden": "Di 21:30-23:00"
+  },
+  {
     "naam": "SKC HS 1",
-    "poule": "H1F",
+    "poule": "HPD",
     "niveau": "1e klasse",
     "trainingstijden": "Ma 20:00-21:30, Wo 18:30-20:00"
   },
   {
     "naam": "SKC HS 2",
-    "poule": "H1E",
+    "poule": "HPD",
     "niveau": "1e klasse",
     "trainingstijden": "Ma 18:30-20:00, Wo 21:30-23:00"
   },
@@ -111,7 +111,7 @@
   },
   {
     "naam": "SKC HS 4",
-    "poule": "H3N",
+    "poule": "H3M",
     "niveau": "3e klasse",
     "trainingstijden": "Ma 21:30-23:00"
   },
@@ -123,7 +123,7 @@
   },
   {
     "naam": "SKC HS 6",
-    "poule": "H4G",
+    "poule": "H4H",
     "niveau": "4e klasse",
     "trainingstijden": "Wo 18:30-20:00"
   },
@@ -135,7 +135,7 @@
   },
   {
     "naam": "SKC HS 8",
-    "poule": "H4A",
+    "poule": "H4H",
     "niveau": "4e klasse",
     "trainingstijden": "Di 20:00-21:30"
   },
