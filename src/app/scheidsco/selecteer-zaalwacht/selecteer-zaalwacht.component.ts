@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ScheidscoService } from '../../core/services/scheidsco.service';
-import { Team } from 'src/app/models/Team';
 
 @Component({
   selector: 'teamportal-selecteer-zaalwacht',

@@ -1,9 +1,5 @@
 import { FormBuilder, Validators } from '@angular/forms';
-import {
-  NgbActiveModal,
-  NgbModal,
-  NgbModalConfig,
-} from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
 
 import { Component } from '@angular/core';
 import { JoomlaService } from '../core/services/request.service';

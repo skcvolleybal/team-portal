@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
-import { Observable, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 
 import { ActivatedRoute } from '@angular/router';
 import { JoomlaService } from './core/services/request.service';
 import { LoginModalComponent } from './login-modal/login-modal.component';
+import { Observable } from 'rxjs';
 import { StateService } from './core/services/state.service';
 import { appRoutes } from './route.config';
 import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
