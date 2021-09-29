@@ -25,6 +25,7 @@ import { StatistiekService } from './core/services/statistieken.service';
 import { WedstrijdOverzichtModule } from './wedstrijd-overzicht/wedstrijd-overzicht.module';
 import { WithCredentialsInterceptor } from './core/interceptors/add-credentials.interceptor';
 import { appRoutes } from './route.config';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @NgModule({
   entryComponents: [LoginModalComponent],
@@ -44,6 +45,7 @@ import { appRoutes } from './route.config';
     ScheidscoModule,
     StatistiekModule,
     SharedModule,
+    FontAwesomeModule,
   ],
   exports: [],
   providers: [
