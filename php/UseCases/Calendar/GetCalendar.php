@@ -56,13 +56,14 @@ class GetCalendar implements Interactor
         $wedstrijddagen = $this->nevoboGateway->GetWedstrijddagenForSporthal('LDNUN', 355);
         foreach ($wedstrijddagen as $wedstrijddag) {
             $zaalwacht = $this->zaalwachtGateway->GetZaalwacht($wedstrijddag->date);
-            if ($zaalwacht && $zaalwacht->team->Equals($user->team)) {
-                $firstMatch = $wedstrijddag->speeltijden[0]->wedstrijden[0];
-                $i = count($wedstrijddag->speeltijden) - 1;
-                $lastMatch = $wedstrijddag->speeltijden[$i]->wedstrijden[0];
-                $start = $firstMatch->timestamp;
-                $end = DateFunctions::AddMinutes($lastMatch->timestamp, 120);
-                $this->AddEvent($calendar, $start, $end, $uscLocatie, "Zaalwacht");
+            if ($zaalwacht) {
+                if ($zaalwacht->eersteZaalwacht->Equals($user->team)) {
+                    $this->AddZaalwacht($calendar, $wedstrijddag, $uscLocatie);
+                }
+
+                if ($zaalwacht->tweedeZaalwacht->Equals($user->team)) {
+                    $this->AddZaalwacht($calendar, $wedstrijddag, $uscLocatie);
+                }
             }
 
             $bardiensten = $this->GetBardienstenForDate($allBardiensten, $wedstrijddag->date);
@@ -99,6 +100,16 @@ class GetCalendar implements Interactor
             }
         }
         echo $calendar->createCalendar();
+    }
+
+    private function AddZaalwacht($calendar, $wedstrijddag, $uscLocatie)
+    {
+        $firstMatch = $wedstrijddag->speeltijden[0]->wedstrijden[0];
+        $i = count($wedstrijddag->speeltijden) - 1;
+        $lastMatch = $wedstrijddag->speeltijden[$i]->wedstrijden[0];
+        $start = $firstMatch->timestamp;
+        $end = DateFunctions::AddMinutes($lastMatch->timestamp, 120);
+        $this->AddEvent($calendar, $start, $end, $uscLocatie, "Zaalwacht");
     }
 
     private function GetBardienstenForDate(array $allBardiensten, DateTime $date): array
