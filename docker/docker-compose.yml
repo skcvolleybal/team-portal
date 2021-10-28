@@ -1,16 +1,40 @@
-version: "3.1"
+version: '3.8'
 
 services:
-  database:
-    image: mysql:8
+  php:
+    build:
+      dockerfile: ./php/Dockerfile
+      context: ./
     restart: always
     ports:
-      - 3306:3306
+      - 8080:80
+    environment:
+      JOOMLA_DB_HOST: mysql
+      JOOMLA_DB_PASSWORD: root
+      JOOMLA_DB_NAME: joomla
+    volumes:
+      - ../php:/var/www/html/team-portal
+      - ./php/.htaccess:/var/www/html/.htaccess
+      - ./php/php-development.ini://usr/local/etc/php/php.ini
+      - type: bind
+        source: ./php/www-root
+        target: /var/www/html
+
+  mysql:
+    image: mysql:5.6
+    restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
-    volumes:
-      - /c/Users/jonat/github/team-portal/docker/mysql/initial-content:/docker-entrypoint-initdb.d
-      - /c/Users/jonat/github/team-portal/docker/mysql/content:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    restart: always
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: root
+      PMA_PASSWORD: root
+    ports:
+      - '8081:80'
 
   mailhog:
     image: mailhog/mailhog:latest
@@ -18,13 +42,3 @@ services:
     ports:
       - 8025:8025
       - 1025:1025
-
-  joomla:
-    image: joomla
-    environment:
-      JOOMLA_DB_HOST: database:mysql
-      JOOMLA_DB_USER: root
-      JOOMLA_DB_PASSWORD: root
-      JOOMLA_DB_NAME: deb105013n2_SKC
-    ports:
-      - 8080:80

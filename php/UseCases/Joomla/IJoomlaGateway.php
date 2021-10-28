@@ -19,7 +19,7 @@ interface IJoomlaGateway
     function IsBarcie(?Persoon $user): bool;
     function GetTeam(Persoon $user): ?Team;
     function GetTeamgenoten(?Team $team): array;
-    function GetCoachTeam(Persoon $user): ?Team;
+    function GetCoachteams(Persoon $user): array;
     function GetCoaches(Team $team): array;
     function GetTrainers(Team $team): array;
     function GetUsersInGroup(string $groupname): array;

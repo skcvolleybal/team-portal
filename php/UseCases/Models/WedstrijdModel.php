@@ -51,9 +51,11 @@ class WedstrijdModel extends Overzichtsitem
             $this->isTellers = $this->tellers === $user->team->GetShortNotation();
         }
 
-        if ($user->coachteam) {
-            $this->isCoachTeam1 = $this->team1 === $user->coachteam->naam;
-            $this->isCoachTeam2 = $this->team2 === $user->coachteam->naam;
+        $this->isCoachTeam1 = false;
+        $this->isCoachTeam2 = false;
+        foreach ($user->coachteams as $team) {
+            if ($this->team1 === $team->naam) $this->isCoachTeam1 = true;
+            if ($this->team2 === $team->naam) $this->isCoachTeam2 = true;
         }
 
         $this->isScheidsrechter = $user->naam === $this->scheidsrechter;

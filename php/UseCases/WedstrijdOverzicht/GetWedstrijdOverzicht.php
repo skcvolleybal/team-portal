@@ -33,7 +33,14 @@ class GetWedstrijdOverzicht implements Interactor
         }
 
         $teamprogramma = $this->nevoboGateway->GetWedstrijdenForTeam($user->team);
-        $coachProgramma = $this->nevoboGateway->GetWedstrijdenForTeam($user->coachteam);
+        $coachProgramma = [];
+        foreach ($user->coachteams as $team) {
+            $coachwedstrijden = $this->nevoboGateway->GetWedstrijdenForTeam($team);
+            $coachProgramma = array_merge(
+                $coachwedstrijden,
+                $coachProgramma
+            );
+        }
         $wedstrijden = array_merge(
             $teamprogramma,
             $coachProgramma
@@ -51,7 +58,11 @@ class GetWedstrijdOverzicht implements Interactor
         $aanwezigheden = $this->aanwezigheidGateway->GetAanwezighedenForMatchIds($allMatchIds);
 
         $eigenInvalteams = $this->GetInvalteamsForTeam($user->team);
-        $coachInvalteams = $this->GetInvalteamsForTeam($user->coachteam);
+        $coachInvalteams = [];
+        foreach ($user->coachteams as $team) {
+            $coachInvalteams[] = $this->GetInvalteamsForTeam($team);
+        }
+
         foreach ($wedstrijden as $wedstrijd) {
             if ($wedstrijd->timestamp) {
                 $newWedstrijd = new WedstrijdModel($wedstrijd);
@@ -62,8 +73,9 @@ class GetWedstrijdOverzicht implements Interactor
                     $invalteams = $this->GetInvalteams($eigenInvalteams, $wedstrijd);
                     $team = $user->team;
                 } else {
-                    $invalteams = $this->GetInvalteams($coachInvalteams, $wedstrijd);
-                    $team = $user->coachteam;
+                    $i = $this->GetCoachteamIndex($wedstrijd, $user->coachteams);
+                    $invalteams = $this->GetInvalteams($coachInvalteams[$i], $wedstrijd);
+                    $team = $user->coachteams[$i];
                 }
 
                 foreach ($invalteams as $invalteam) {
@@ -76,7 +88,6 @@ class GetWedstrijdOverzicht implements Interactor
                 $newWedstrijd->aanwezigen = $aanwezighedenForMatch->aanwezigen;
                 $newWedstrijd->afwezigen = $aanwezighedenForMatch->afwezigen;
 
-
                 $newWedstrijd->isEigenWedstrijd = $isEigenWedstrijd;
 
                 $overzicht[] = $newWedstrijd;
@@ -84,6 +95,15 @@ class GetWedstrijdOverzicht implements Interactor
         }
 
         return $overzicht;
+    }
+
+    private function GetCoachteamIndex(Wedstrijd $wedstrijd, array $coachteams): int
+    {
+        foreach ($coachteams as $i => $team) {
+            if ($team->naam === $wedstrijd->team1->naam  || $team->naam === $wedstrijd->team2->naam) {
+                return $i;
+            }
+        }
     }
 
     private function GetInvalteams(array $invalteams, Wedstrijd $eigenWedstrijd)

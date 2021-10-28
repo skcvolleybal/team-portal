@@ -27,7 +27,12 @@ class GetBarcieBeschikbaarheid implements Interactor
         $user = $this->joomlaGateway->GetUser();
 
         $alleWedstrijden = $this->nevoboGateway->GetWedstrijdenForTeam($user->team);
-        $alleCoachWedstrijden = $this->nevoboGateway->GetWedstrijdenForTeam($user->coachteam);
+
+        $alleCoachWedstrijden = [];
+        foreach ($user->coachteams as $team) {
+            $coachwedstrijden = $this->nevoboGateway->GetWedstrijdenForTeam($team);
+            $alleCoachWedstrijden = array_merge($alleCoachWedstrijden, $coachwedstrijden);
+        }
 
         $bardagen = $this->barcieGateway->GetBardagen();
         $beschikbaarheden = $this->barcieGateway->GetBeschikbaarheden($user);

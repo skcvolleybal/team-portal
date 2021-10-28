@@ -9,14 +9,13 @@
   ],
   "require": {
     "kigkonsult/icalcreator": "2.28.2",
-    "phpmailer/phpmailer": "^6.1",
+    "phpmailer/phpmailer": "^6.5",
     "simplepie/simplepie": "^1.5",
-    "slim/slim": "^4.3",
-    "guzzlehttp/psr7": "^1.6",
-    "http-interop/http-factory-guzzle": "^1.0",
-    "php-di/php-di": "^6.0",
-    "php": "^7.4",
-    "symfony/validator": "^5.0"
+    "slim/slim": "^4.9",
+    "guzzlehttp/psr7": "^2.1",
+    "http-interop/http-factory-guzzle": "^1.2",
+    "php-di/php-di": "^6.3",
+    "php": "^7.4"
   },
   "autoload": {
     "classmap": [

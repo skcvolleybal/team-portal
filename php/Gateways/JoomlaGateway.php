@@ -32,7 +32,7 @@ class JoomlaGateway implements IJoomlaGateway
         }
 
         $user->team = $this->GetTeam($user);
-        $user->coachteam = $this->GetCoachTeam($user);
+        $user->coachteams = $this->GetCoachteams($user);
 
         return $user;
     }
@@ -95,7 +95,7 @@ class JoomlaGateway implements IJoomlaGateway
         if (count($rows) != 1) {
             return null;
         }
-        
+
         return new Scheidsrechter(
             new Persoon($rows[0]->id, $rows[0]->name, $rows[0]->email)
         );
@@ -214,7 +214,7 @@ class JoomlaGateway implements IJoomlaGateway
         return $this->MapToPersonen($rows);
     }
 
-    public function GetCoachTeam(Persoon $user): ?Team
+    public function GetCoachteams(Persoon $user): array
     {
         $query = 'SELECT 
                     G2.id,
@@ -225,14 +225,16 @@ class JoomlaGateway implements IJoomlaGateway
                   WHERE M.user_id = ? and G.title like \'Coach %\'';
         $params = [$user->id];
 
-        $team = $this->database->Execute($query, $params);
-        if (count($team) != 1) {
-            return null;
+        $teams = $this->database->Execute($query, $params);
+
+        $result = [];
+        foreach ($teams as $team) {
+            $newTeam = new Team($team->naam, $team->id);
+            $newTeam->teamgenoten = $this->GetTeamgenoten($newTeam);
+            $result[] = $newTeam;
         }
 
-        $team = new Team($team[0]->naam, $team[0]->id);
-        $team->teamgenoten = $this->GetTeamgenoten($team);
-        return $team;
+        return $result;
     }
 
     public function GetCoaches(Team $team): array

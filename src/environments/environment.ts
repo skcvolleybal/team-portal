@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  baseUrl: 'http://localhost/team-portal/api/'
+  baseUrl: 'http://localhost:8080/team-portal/api/',
 };
 
 /*

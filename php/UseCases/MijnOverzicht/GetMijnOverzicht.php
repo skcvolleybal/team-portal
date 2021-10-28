@@ -63,8 +63,8 @@ class MijnOverzicht implements Interactor
             $this->AddWedstrijdToOverzicht($overzicht, $wedstrijd);
         }
 
-        if ($user->coachteam) {
-            $wedstrijden = $this->nevoboGateway->GetWedstrijdenForTeam($user->coachteam);
+        foreach ($user->coachteams as $team) {
+            $wedstrijden = $this->nevoboGateway->GetWedstrijdenForTeam($team);
             foreach ($wedstrijden as $wedstrijd) {
                 if ($wedstrijd->timestamp === null) {
                     continue;

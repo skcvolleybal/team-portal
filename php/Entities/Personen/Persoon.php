@@ -8,7 +8,7 @@ class Persoon
     public string $naam;
     public ?string $email;
     public ?Team $team;
-    public ?Team $coachteam = null;
+    public array $coachteams = [];
     public ?string $positie = null;
     public ?int $rugnummer = null;
     public int $aantalKeerGeteld = 0;

@@ -94,7 +94,10 @@ class Wedstrijd
 
     function IsEigenWedstrijd(Persoon $user): bool
     {
-        return $user !== null && ($this->team1->naam === $user->team->naam || $this->team2->naam === $user->team->naam);
+        return
+            $user !== null &&
+            $user->team !== null &&
+            ($this->team1->naam === $user->team->naam || $this->team2->naam === $user->team->naam);
     }
 
     public function GetTeams(): string

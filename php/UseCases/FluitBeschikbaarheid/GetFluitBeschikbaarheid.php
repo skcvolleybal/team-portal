@@ -24,13 +24,17 @@ class GetBeschikbaarheid implements Interactor
         $beschikbaarheden = $this->beschikbaarheidGateway->GetBeschikbaarheden($user);
 
         $wedstrijden = $this->nevoboGateway->GetWedstrijdenForTeam($user->team);
-        $coachWedstrijden = $this->nevoboGateway->GetWedstrijdenForTeam($user->coachteam);
+        $coachwedstrijden = [];
+        foreach ($user->coachteams as $team) {
+            $nieuweWedstrijden = $this->nevoboGateway->GetWedstrijdenForTeam($team);
+            $coachwedstrijden = array_merge($coachwedstrijden, $nieuweWedstrijden);
+        }
 
         $rooster = [];
         $wedstrijddagen = $this->nevoboGateway->GetWedstrijddagenForSporthal('LDNUN', 365);
         foreach ($wedstrijddagen as $wedstrijddag) {
             $speelWedstrijd = Wedstrijd::GetWedstrijdWithDate($wedstrijden, $wedstrijddag->date);
-            $coachWedstrijd = Wedstrijd::GetWedstrijdWithDate($coachWedstrijden, $wedstrijddag->date);
+            $coachWedstrijd = Wedstrijd::GetWedstrijdWithDate($coachwedstrijden, $wedstrijddag->date);
             $eigenWedstrijden = array_filter([$speelWedstrijd, $coachWedstrijd], function ($value) {
                 return $value !== null;
             });

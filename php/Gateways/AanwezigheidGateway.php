@@ -70,16 +70,33 @@ class AanwezigheidGateway
                     G.title AS teamnaam
                   FROM TeamPortal_aanwezigheden A
                   INNER JOIN J3_users U ON A.user_id = U.id
-                  INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
-                  INNER JOIN J3_usergroups G ON M.group_id = G.id
+                  LEFT JOIN J3_user_usergroup_map M ON U.id = M.user_id
+                  LEFT JOIN J3_usergroups G ON M.group_id = G.id
                   WHERE
                     A.match_id IN ($inClause) AND
-                    (
-                        ((G.title LIKE 'Heren %' OR G.title LIKE 'Dames %') AND A.rol = 'speler') OR
-                        (G.title LIKE 'Coach %' AND A.rol = 'coach')
-                    )
+                    (G.title LIKE 'Heren %' OR G.title LIKE 'Dames %') AND
+                    A.rol = 'speler'
+                  UNION 
+                  SELECT
+                    A.id,
+                    A.match_id AS matchId,
+                    A.rol,
+                    A.is_aanwezig AS isAanwezig,
+                    U.id AS userId,
+                    U.name AS naam,
+                    U.email,
+                    null AS teamId,
+                    null AS teamnaam
+                  FROM TeamPortal_aanwezigheden A
+                  INNER JOIN J3_users U ON A.user_id = U.id
+                  LEFT JOIN J3_user_usergroup_map M ON U.id = M.user_id
+                  LEFT JOIN J3_usergroups G ON M.group_id = G.id
+                  WHERE
+                    A.match_id IN ($inClause) AND
+                    G.title LIKE 'Coach %' AND
+                    A.rol = 'coach'
                   ORDER BY naam";
-        $params = $matchIds;
+        $params = array_merge($matchIds, $matchIds);
         $rows = $this->database->Execute($query, $params);
         return $this->MapToAanwezigheden($rows);
     }
