@@ -117,9 +117,6 @@ class EmailGateway
         }
 
         $PHPMailer = new PHPMailer();
-        $PHPMailer->isSMTP();
-        $PHPMailer->Host = ini_get('SMTP');
-        $PHPMailer->Port = ini_get('smtp_port');
         $PHPMailer->CharSet = 'UTF-8';
         $PHPMailer->setFrom($email->sender->email, $email->sender->naam);
         $PHPMailer->addAddress($email->receiver->email, $email->receiver->naam);
