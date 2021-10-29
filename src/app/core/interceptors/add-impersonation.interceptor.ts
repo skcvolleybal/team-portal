@@ -2,8 +2,9 @@ import {
   HttpEvent,
   HttpHandler,
   HttpInterceptor,
-  HttpRequest
+  HttpRequest,
 } from '@angular/common/http';
+
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/internal/Observable';
 import { StateService } from '../services/state.service';
@@ -19,8 +20,8 @@ export class ImpersonationInterceptor implements HttpInterceptor {
     if (this.stateService.isWebcie && this.stateService.impersonationId) {
       request = request.clone({
         setParams: {
-          impersonationId: this.stateService.impersonationId
-        }
+          impersonationId: this.stateService.impersonationId,
+        },
       });
     }
 

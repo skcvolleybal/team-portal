@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class JoomlaService {
   constructor(private httpClient: HttpClient) {}
@@ -18,8 +18,8 @@ export class JoomlaService {
     const url = environment.baseUrl + 'joomla/users';
     return this.httpClient.get(url, {
       params: {
-        naam
-      }
+        naam,
+      },
     });
   }
 
@@ -27,7 +27,7 @@ export class JoomlaService {
     const url = environment.baseUrl + 'joomla/inloggen';
     return this.httpClient.post<any>(url, {
       username,
-      password
+      password,
     });
   }
 

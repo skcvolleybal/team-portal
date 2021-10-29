@@ -1,9 +1,10 @@
-import { CommonModule } from '@angular/common';
-import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
+import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { KeuzeComponent } from './keuze/keuze.component';
+import { NgModule } from '@angular/core';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ScheidsrechterComponent } from './scheidsrechter/scheidsrechter.component';
 import { SpinnerComponent } from './spinner/spinner.component';
 import { TellersComponent } from './tellers/tellers.component';
@@ -18,7 +19,7 @@ import { WedstrijdenCardComponent } from './wedstrijden-card/wedstrijden-card.co
     TellersComponent,
     SpinnerComponent,
     WedstrijdenCardComponent,
-    KeuzeComponent
+    KeuzeComponent,
   ],
   exports: [
     FontAwesomeModule,
@@ -30,7 +31,7 @@ import { WedstrijdenCardComponent } from './wedstrijden-card/wedstrijden-card.co
     KeuzeComponent,
     TellersComponent,
     SpinnerComponent,
-    WedstrijdenCardComponent
-  ]
+    WedstrijdenCardComponent,
+  ],
 })
 export class SharedModule {}

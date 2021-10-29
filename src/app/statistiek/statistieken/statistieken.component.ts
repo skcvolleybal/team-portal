@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 
 import { AantalGespeeldePunten } from './grafieken/aantal-gespeelde-punten';
@@ -147,8 +147,8 @@ export class StatistiekenComponent implements OnInit {
       return;
     }
 
-    const totaalAantalPunten = this.statistieken.spelsystemen[i]
-      .totaalAantalPunten;
+    const totaalAantalPunten =
+      this.statistieken.spelsystemen[i].totaalAantalPunten;
 
     const label = `Winstpercentage (${totaalAantalPunten} punten)`;
     let puntenPerRotatie: IPunten[];
@@ -157,12 +157,12 @@ export class StatistiekenComponent implements OnInit {
         puntenPerRotatie = this.statistieken.spelsystemen[i].puntenPerRotatie;
         break;
       case 'puntenPerRotatieEigenService':
-        puntenPerRotatie = this.statistieken.spelsystemen[i]
-          .puntenPerRotatieEigenService;
+        puntenPerRotatie =
+          this.statistieken.spelsystemen[i].puntenPerRotatieEigenService;
         break;
       case 'puntenPerRotatieServiceontvangst':
-        puntenPerRotatie = this.statistieken.spelsystemen[i]
-          .puntenPerRotatieServiceontvangst;
+        puntenPerRotatie =
+          this.statistieken.spelsystemen[i].puntenPerRotatieServiceontvangst;
         break;
     }
 

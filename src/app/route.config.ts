@@ -1,10 +1,10 @@
-import { Route } from '@angular/router';
-import { BarcieIndelingComponent } from './barco/barcie-indeling/barcie-indeling.component';
 import { BarcieBeschikbaarheidComponent } from './beschikbaarheid/barcie-beschikbaarheid/barcie-beschikbaarheid.component';
-import { TelFluitBeschikbaarheidComponent } from './beschikbaarheid/tel-fluit-beschikbaarheid/tel-fluit-beschikbaarheid.component';
+import { BarcieIndelingComponent } from './barco/barcie-indeling/barcie-indeling.component';
 import { MijnOverzichtComponent } from './mijn-overzicht/mijn-overzicht/mijn-overzicht.component';
+import { Route } from '@angular/router';
 import { ScheidscoComponent } from './scheidsco/scheidsco/scheidsco.component';
 import { StatistiekenComponent } from './statistiek/statistieken/statistieken.component';
+import { TelFluitBeschikbaarheidComponent } from './beschikbaarheid/tel-fluit-beschikbaarheid/tel-fluit-beschikbaarheid.component';
 import { WedstrijdOverzichtComponent } from './wedstrijd-overzicht/wedstrijd-overzicht/wedstrijd-overzicht.component';
 
 interface IToggleRoute extends Route {
@@ -35,9 +35,8 @@ export const appRoutes: IToggleRoute[] = [
     component: StatistiekenComponent,
     data: {
       title: 'Statistieken',
-      groups: ['statistieken'],
     },
-    isHidden: true,
+    isHidden: false,
   },
   {
     path: 'fluit-beschikbaarheid',

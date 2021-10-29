@@ -15,7 +15,7 @@ services:
     volumes:
       - ../php:/var/www/html/team-portal
       - ./php/.htaccess:/var/www/html/.htaccess
-      - ./php/php-development.ini://usr/local/etc/php/php.ini
+      - ./php/php-development.ini:/usr/local/etc/php/php.ini
       - type: bind
         source: ./php/www-root
         target: /var/www/html

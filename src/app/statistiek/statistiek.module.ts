@@ -5,6 +5,6 @@ import { StatistiekenComponent } from './statistieken/statistieken.component';
 
 @NgModule({
   declarations: [StatistiekenComponent],
-  imports: [CommonModule, SharedModule]
+  imports: [CommonModule, SharedModule],
 })
 export class StatistiekModule {}

@@ -12,13 +12,13 @@ abstract class CrudRoute
 {
     function FillBody(Response $response, $data)
     {
-        if (!empty($data)) {
-            $jsonData = json_encode($data);
-            if ($data === false) {
-                $response->getBody()->write($data);
-            } else {
-                $response->getBody()->write($jsonData);
-            }
+        if (is_null($data)) return $response;
+
+        $jsonData = json_encode($data);
+        if ($data === false) {
+            $response->getBody()->write($data);
+        } else {
+            $response->getBody()->write($jsonData);
         }
 
         return $response;

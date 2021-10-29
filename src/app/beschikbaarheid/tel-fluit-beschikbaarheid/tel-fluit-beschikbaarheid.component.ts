@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+
 import { BeschikbaarheidService } from '../../core/services/beschikbaarheid.service';
 
 @Component({
   selector: 'teamportal-fluit-beschikbaarheid',
   templateUrl: './tel-fluit-beschikbaarheid.component.html',
-  styleUrls: ['./tel-fluit-beschikbaarheid.component.scss']
+  styleUrls: ['./tel-fluit-beschikbaarheid.component.scss'],
 })
 export class TelFluitBeschikbaarheidComponent implements OnInit {
   loading: boolean;
@@ -26,11 +27,11 @@ export class TelFluitBeschikbaarheidComponent implements OnInit {
   getFluitBeschikbaarheid() {
     this.loading = true;
     this.beschikbaarheidService.GetFluitBeschikbaarheid().subscribe(
-      speeldagen => {
+      (speeldagen) => {
         this.speeldagen = speeldagen;
         this.loading = false;
       },
-      error => {
+      (error) => {
         if (error.status === 500) {
           this.errorMessage = error.error.message;
           this.loading = false;

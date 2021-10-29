@@ -7,7 +7,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 @Component({
   selector: 'teamportal-selecteer-barcie-lid',
   templateUrl: './selecteer-barcie-lid.component.html',
-  styleUrls: ['./selecteer-barcie-lid.component.scss']
+  styleUrls: ['./selecteer-barcie-lid.component.scss'],
 })
 export class SelecteerBarcielidComponent implements OnInit {
   static date: string;
@@ -37,11 +37,11 @@ export class SelecteerBarcielidComponent implements OnInit {
   GetBarLeden() {
     this.isLoading = true;
     this.barcoService.GetBarcieBeschikbaarheden(this.date).subscribe(
-      response => {
+      (response) => {
         this.isLoading = false;
         this.beschikbaarheden = response;
       },
-      response => {
+      (response) => {
         this.isLoading = false;
         this.errorMessage = response.error.message;
       }
@@ -55,7 +55,7 @@ export class SelecteerBarcielidComponent implements OnInit {
         () => {
           this.modal.close(barcielid);
         },
-        response => {
+        (response) => {
           this.errorMessage = response.error.message;
         }
       );

@@ -20,10 +20,6 @@ class GetGroups implements Interactor
             return $result;
         }
 
-        if ($this->joomlaGateway->IsTeamcoordinator($user)) {
-            $result[] = "statistieken";
-        }
-
         if ($this->joomlaGateway->IsScheidsrechter($user)) {
             $result[] = "scheidsrechter";
         }

@@ -22,16 +22,16 @@ export function GetGrafiekPuntenPerRotatie(punten: IPunten[], label: string) {
   return new Chart('puntenPerRotatie', {
     type: 'bar',
     data: {
-      labels: punten.map(punt => punt.type),
+      labels: punten.map((punt) => punt.type),
       datasets: [
         {
           label,
-          data: punten.map(punt => punt.percentage),
+          data: punten.map((punt) => punt.percentage),
           backgroundColor: 'rgba(255, 206, 86, 0.2)',
           borderColor: 'rgba(255, 206, 86, 1)',
-          borderWidth: 1
-        }
-      ]
+          borderWidth: 1,
+        },
+      ],
     },
     options: {
       scales: {
@@ -39,11 +39,11 @@ export function GetGrafiekPuntenPerRotatie(punten: IPunten[], label: string) {
           {
             ticks: {
               min: 0,
-              callback: (value: string) => value + '%'
-            }
-          }
-        ]
-      }
-    }
+              callback: (value: string) => value + '%',
+            },
+          },
+        ],
+      },
+    },
   });
 }

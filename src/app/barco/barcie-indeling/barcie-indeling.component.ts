@@ -1,20 +1,21 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { faHeart as heartRegular } from '@fortawesome/free-regular-svg-icons';
+import { NgbDate, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import {
   faCalendarAlt,
+  faTrashAlt,
   faHeart as heartSolid,
-  faTrashAlt
 } from '@fortawesome/free-solid-svg-icons';
-import { NgbDate, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+
 import { AanwezigheidService } from '../../core/services/aanwezigheid.service';
 import { BarcoService } from '../../core/services/barco.service';
 import { SelecteerBarcielidComponent } from '../selecteer-barcie-lid/selecteer-barcie-lid.component';
+import { faHeart as heartRegular } from '@fortawesome/free-regular-svg-icons';
 
 @Component({
   selector: 'teamportal-barcie-indeling',
   templateUrl: './barcie-indeling.component.html',
-  styleUrls: ['./barcie-indeling.component.scss']
+  styleUrls: ['./barcie-indeling.component.scss'],
 })
 export class BarcieIndelingComponent implements OnInit {
   calendar = faCalendarAlt;
@@ -35,7 +36,7 @@ export class BarcieIndelingComponent implements OnInit {
 
   ngOnInit() {
     this.newDate = new FormGroup({
-      date: new FormControl(null, [Validators.required])
+      date: new FormControl(null, [Validators.required]),
     });
     this.GetBarcieRooster();
   }
@@ -46,7 +47,7 @@ export class BarcieIndelingComponent implements OnInit {
       () => {
         this.GetBarcieRooster();
       },
-      response => {
+      (response) => {
         this.errorMessage = response.error.message;
       }
     );
@@ -57,7 +58,7 @@ export class BarcieIndelingComponent implements OnInit {
       () => {
         this.GetBarcieRooster();
       },
-      response => {
+      (response) => {
         this.errorMessage = response.error.message;
       }
     );
@@ -70,9 +71,9 @@ export class BarcieIndelingComponent implements OnInit {
       selectedBarcielid.id
     );
 
-    this.barciedagen.forEach(barciedag => {
+    this.barciedagen.forEach((barciedag) => {
       if (barciedag.date === selectedBarcieDag.date) {
-        barciedag.shifts[shift - 1].barleden.forEach(barcielid => {
+        barciedag.shifts[shift - 1].barleden.forEach((barcielid) => {
           if (selectedBarcielid.id === barcielid.id) {
             barcielid.isBhv = !barcielid.isBhv;
             return;
@@ -90,9 +91,9 @@ export class BarcieIndelingComponent implements OnInit {
         selectedBarcielid.id
       )
       .subscribe(() => {
-        this.barciedagen.forEach(barciedag => {
+        this.barciedagen.forEach((barciedag) => {
           if (barciedag.date === selectedBarcieDag.date) {
-            barciedag.shifts.forEach(shift => {
+            barciedag.shifts.forEach((shift) => {
               shift.barleden.forEach((barlid, i) => {
                 if (
                   selectedBarcielid.id === barlid.id &&
@@ -111,11 +112,11 @@ export class BarcieIndelingComponent implements OnInit {
   GetBarcieRooster() {
     this.isLoading = true;
     this.barcoService.GetBarcieRooster().subscribe(
-      response => {
+      (response) => {
         this.isLoading = false;
         this.barciedagen = response;
       },
-      response => {
+      (response) => {
         this.isLoading = true;
         this.errorMessage = response.error.message;
       }
@@ -123,12 +124,12 @@ export class BarcieIndelingComponent implements OnInit {
   }
 
   AddShift(date) {
-    this.barciedagen.forEach(barciedag => {
+    this.barciedagen.forEach((barciedag) => {
       if (barciedag.date === date) {
         const lastShift = barciedag.shifts[barciedag.shifts.length - 1].shift;
         barciedag.shifts.push({
           barleden: [],
-          shift: lastShift + 1
+          shift: lastShift + 1,
         });
         return;
       }

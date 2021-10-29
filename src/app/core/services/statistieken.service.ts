@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class StatistiekService {
   constructor(private httpClient: HttpClient) {}
@@ -14,8 +14,8 @@ export class StatistiekService {
 
     return this.httpClient.get<any[]>(url, {
       params: {
-        matchId
-      }
+        matchId,
+      },
     });
   }
 

@@ -2,8 +2,9 @@ import {
   HttpEvent,
   HttpHandler,
   HttpInterceptor,
-  HttpRequest
+  HttpRequest,
 } from '@angular/common/http';
+
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/internal/Observable';
 
@@ -16,7 +17,7 @@ export class WithCredentialsInterceptor implements HttpInterceptor {
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
     request = request.clone({
-      withCredentials: true
+      withCredentials: true,
     });
 
     return next.handle(request);

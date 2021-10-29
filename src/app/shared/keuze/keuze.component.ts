@@ -2,13 +2,13 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import {
   faCheck,
   faQuestion,
-  faTimes
+  faTimes,
 } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'teamportal-keuze',
   templateUrl: './keuze.component.html',
-  styleUrls: ['./keuze.component.scss']
+  styleUrls: ['./keuze.component.scss'],
 })
 export class KeuzeComponent {
   @Input()

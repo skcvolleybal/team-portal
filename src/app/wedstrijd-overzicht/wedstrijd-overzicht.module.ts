@@ -9,8 +9,8 @@ import { WedstrijdOverzichtComponent } from './wedstrijd-overzicht/wedstrijd-ove
   declarations: [
     InvalTeamsComponent,
     SpelersLijstComponent,
-    WedstrijdOverzichtComponent
+    WedstrijdOverzichtComponent,
   ],
-  imports: [CommonModule, SharedModule]
+  imports: [CommonModule, SharedModule],
 })
 export class WedstrijdOverzichtModule {}

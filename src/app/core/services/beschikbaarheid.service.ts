@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class BeschikbaarheidService {
   constructor(private httpClient: HttpClient) {}
@@ -15,14 +15,14 @@ export class BeschikbaarheidService {
     return this.httpClient.post(environment.baseUrl + 'fluiten', {
       datum,
       tijd,
-      isBeschikbaar
+      isBeschikbaar,
     });
   }
 
   UpdateBarcieBeschikbaarheid(date: string, isBeschikbaar: boolean) {
     return this.httpClient.post(environment.baseUrl + 'barcie', {
       date,
-      isBeschikbaar
+      isBeschikbaar,
     });
   }
 

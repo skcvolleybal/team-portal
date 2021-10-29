@@ -2,8 +2,9 @@ import {
   HttpEvent,
   HttpHandler,
   HttpInterceptor,
-  HttpRequest
+  HttpRequest,
 } from '@angular/common/http';
+
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/internal/Observable';
 
@@ -16,8 +17,8 @@ export class DefaultHeadersInterceptor implements HttpInterceptor {
     if (request.headers.get('content-type') === null) {
       request = request.clone({
         setHeaders: {
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
       });
     }
 

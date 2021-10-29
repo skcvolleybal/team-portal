@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AanwezigheidService {
   constructor(private httpClient: HttpClient) {}
@@ -19,32 +19,26 @@ export class AanwezigheidService {
         matchId,
         spelerId,
         isAanwezig,
-        rol
+        rol,
       })
       .subscribe();
   }
 
   DeleteBarcieAanwezigheid(date: string, shift: string, barlidId: string) {
-    return this.httpClient.delete<any>(
-      environment.baseUrl + 'barco/dienst',
-      {
-        params: {
-          date,
-          barlidId,
-          shift
-        }
-      }
-    );
+    return this.httpClient.delete<any>(environment.baseUrl + 'barco/dienst', {
+      params: {
+        date,
+        barlidId,
+        shift,
+      },
+    });
   }
 
   AddBarcieAanwezigheid(date: string, shift: number, barlidId: string) {
-    return this.httpClient.post<any>(
-      environment.baseUrl + 'barco/dienst',
-      {
-        date,
-        shift,
-        barlidId
-      }
-    );
+    return this.httpClient.post<any>(environment.baseUrl + 'barco/dienst', {
+      date,
+      shift,
+      barlidId,
+    });
   }
 }
