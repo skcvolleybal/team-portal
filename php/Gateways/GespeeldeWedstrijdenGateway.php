@@ -186,7 +186,7 @@ class GespeeldeWedstrijdenGateway
                     WHERE isSkcService = 'Y' AND ra IS NOT null
                     GROUP BY P.matchId, skcTeam, `set`, isSkcService, ra, rotatie
                     ORDER BY services desc
-                    LIMIT 1, 10
+                    LIMIT 10
                   ) S
                   INNER JOIN DWF_wedstrijden W ON S.matchId = W.id AND S.skcTeam = W.skcTeam
                   INNER JOIN J3_users U ON S.ra = U.id";
