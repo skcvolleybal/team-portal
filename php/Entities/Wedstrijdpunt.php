@@ -4,7 +4,7 @@ namespace TeamPortal\Entities;
 
 class Wedstrijdpunt
 {
-    public ?int $id;
+    public int $id;
     public string $matchId;
     public int $set;
     public bool $isSkcService;
@@ -19,6 +19,7 @@ class Wedstrijdpunt
     public ?int $midachter;
 
     public function __construct(
+        int $id,
         string $matchId,
         int $set,
         bool $isSkcService,
@@ -26,6 +27,7 @@ class Wedstrijdpunt
         int $puntenSkcTeam,
         int  $puntenOtherTeam
     ) {
+        $this->id = $id;
         $this->matchId = $matchId;
         $this->set = $set;
         $this->isSkcService = $isSkcService;

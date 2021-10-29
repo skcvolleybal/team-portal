@@ -22,26 +22,30 @@ class GetDwfStatistieken implements Interactor
         $matchId = $data->matchId ?? "";
 
         $user = $this->joomlaGateway->GetUser();
-        if ($user->team == null) {
-            return null;
+        $this->team = $user->team;
+        if ($this->team === null) {
+            if (count($user->coachteams) !== 1) {
+                return null;
+            }
+
+            $this->team = $user->coachteams[0];
         }
 
-        $this->team = $user->team;
-
-        $spelers = $this->joomlaGateway->GetTeamgenoten($user->team);
+        $spelers = $this->joomlaGateway->GetTeamgenoten($this->team);
         $result = new DwfStatistiekenModel($spelers);
         $spelverdelers = $this->GetSpelverdelerIds($spelers);
         if (count($spelverdelers) === 0) {
-            throw new UnexpectedValueException("Het aantal spelverdelers in jouw team is 0. Dit kan je in het profiel (van de spelverdeler) aanpassen.");
+            $teamnaam = $this->team->GetSkcNaam();
+            throw new UnexpectedValueException("Er zijn geen spelverdelers bekend voor $teamnaam. Dit kan je in het profiel (van de spelverdeler) aanpassen, op de skc website.");
         }
 
-        $wedstrijden = $this->gespeeldeWedstrijdenGateway->GetGespeeldeWedstrijdenByTeam($user->team);
+        $wedstrijden = $this->gespeeldeWedstrijdenGateway->GetGespeeldeWedstrijdenByTeam($this->team);
         foreach ($wedstrijden as $wedstrijd) {
             if (!empty($matchId) && $wedstrijd->matchId !== $matchId) {
                 continue;
             }
 
-            $punten = $this->gespeeldeWedstrijdenGateway->GetAllePuntenByMatchId($wedstrijd->matchId, $user->team);
+            $punten = $this->gespeeldeWedstrijdenGateway->GetAllePuntenByMatchId($wedstrijd->matchId, $this->team);
             foreach ($punten as $punt) {
                 $spelerIds = $punt->GetSpelerIds();
                 $this->AddMissingSpelers($spelers, $spelerIds);
@@ -49,7 +53,7 @@ class GetDwfStatistieken implements Interactor
             }
         }
 
-        $result->gespeeldePunten = $this->gespeeldeWedstrijdenGateway->GetGespeeldePunten($user->team, $matchId);
+        $result->gespeeldePunten = $this->gespeeldeWedstrijdenGateway->GetGespeeldePunten($this->team, $matchId);
         $result->servicereeksen = $this->gespeeldeWedstrijdenGateway->GetLangsteServicereeksen();
 
         $result->CalculateRotatieStatistieken();

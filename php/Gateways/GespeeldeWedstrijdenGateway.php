@@ -155,7 +155,7 @@ class GespeeldeWedstrijdenGateway
         $query = 'SELECT P.* 
                   FROM DWF_punten P
                   INNER JOIN DWF_wedstrijden W ON P.matchId = W.id
-                  WHERE P.matchId = ? AND P.skcTeam = ?
+                  WHERE W.id = ? AND W.skcTeam = ?
                   ORDER BY P.id';
         $params = [$matchId, $team->naam];
         $rows = $this->database->Execute($query, $params);
@@ -198,6 +198,7 @@ class GespeeldeWedstrijdenGateway
         $result = [];
         foreach ($rows as $row) {
             $punt = new Wedstrijdpunt(
+                $row->id,
                 $row->matchId,
                 $row->set,
                 $row->isSkcService === "Y",

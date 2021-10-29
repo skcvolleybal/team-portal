@@ -20,11 +20,16 @@ class GetEigenDwfWedstrijden implements Interactor
     function Execute(object $data = null)
     {
         $user = $this->joomlaGateway->GetUser();
-        if ($user->team == null) {
-            return null;
+        $team = $user->team;
+        if ($team === null) {
+            if (count($user->coachteams) !== 1) {
+                return null;
+            }
+
+            $team = $user->coachteams[0];
         }
 
-        $wedstrijden = $this->gespeeldeWedstrijdenGateway->GetGespeeldeWedstrijdenByTeam($user->team);
+        $wedstrijden = $this->gespeeldeWedstrijdenGateway->GetGespeeldeWedstrijdenByTeam($team);
 
         $result = [];
         foreach ($wedstrijden as $wedstrijd) {
