@@ -2,6 +2,8 @@
 <html>
 <body>
 Beste {{naam}},<br>
+<br> 
+For the English version, scroll down.<br>
 <br>
 Aanstaande {{datum}} moet jouw team een wedstrijd tellen om {{tijd}}.<br>
 Jullie zullen de wedstrijd {{teams}} gaan tellen.<br>
@@ -23,5 +25,30 @@ Tip: Agenda's Importeren:<br>
 Met vriendelijke groet,<br>
 <br>
 {{afzender}}<br>
+<br>
+<br>
+<br>
+<br>
+Dear [[naam]],
+
+Upcoming {{datum}}, you have been assigned as a scorekeeper at {{tijd}}.<br>
+You are the scorekeeper of the {{teams}} match.<br>
+<br>
+Additional information about scorekeeping can be found by clicking on the link below.<br>
+SKC website: <a href="https://www.skcvolleybal.nl/index.php/informatie/praktische-info/documenten"<br>
+The following document can be found:<br>
+    - The DWF manual ‘DWF manual 2021-2022’ <br>
+DWF instruction video:<br>
+<a href="https://www.youtube.com/watch?v=YSYA5cY2r3c&t=1s"><br>
+<br>
+Agenda's Import:<br>
+<a target="_blank" href="https://www.google.com/calendar/render?cid=http%3A%2F%2Fwww.skcvolleybal.nl%2Fteam-portal%2Fapi%calendar%3Fuserid%3D{{userId}}">Google Calendar: Referee & Hallwatch</a><br>
+If you import this, all matches are automatically placed in your google calendar and you are aware of all your services at once.<br>
+(It can take a little while to synchronise with you calendar...)<br>
+<br>
+Kind regards,<br>
+<br>
+{{afzender}}<br>
+<br>
 </body>
 </html>
