@@ -6,6 +6,16 @@ Beste {{naam}},<br>
 Aanstaande {{datum}} moet je een wedstrijd fluiten om {{tijd}}.<br>
 Je zult de wedstrijd {{teams}} gaan fluiten.<br>
 <br>
+Extra informatie over scheidsen vind je door op onderstaande links te klikken.<br>
+SKC website: <a href="https://www.skcvolleybal.nl/index.php/informatie/praktische-info/documenten#"><br>
+Hier zijn de volgende documenten te vinden:<br>
+    - De PowerPoint van de scheidsrechtercursus ‘Scheidsrechters cursus 2021’<br>
+    - De scheidshulp (deze is ook in de zaal aanwezig) ‘Scheidsrechters hulp 2021-2022’<br>
+De Nevobo spelregels:<br>
+<a href="https://www.nevobo.nl/cms/download/7231/Spelregels%202021-2022%20-%20Topdivisie%20en%20lager%20-%20mei%202021.pdf"><br>
+DWF instructievideo: <br>
+<a href="https://www.youtube.com/watch?v=YSYA5cY2r3c&t=1s"><br>
+<br>
 Agenda's Importeren:<br>
 <a target="_blank" href="https://www.google.com/calendar/render?cid=http%3A%2F%2Fwww.skcvolleybal.nl%2Fteam-portal%2Fapi%calendar%3Fuserid%3D{{userId}}">Google Calendar: Fluiten & Zaalwacht</a><br>
 <br>
