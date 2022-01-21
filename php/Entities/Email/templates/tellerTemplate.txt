@@ -29,8 +29,8 @@ Met vriendelijke groet,<br>
 <br>
 <br>
 <br>
-Dear [[naam]],
-
+Dear {{naam}},<br>
+<br>
 Upcoming {{datum}}, you have been assigned as a scorekeeper at {{tijd}}.<br>
 You are the scorekeeper of the {{teams}} match.<br>
 <br>
