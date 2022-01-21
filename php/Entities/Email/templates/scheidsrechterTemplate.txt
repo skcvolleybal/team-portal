@@ -1,6 +1,8 @@
 <!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
 <html>
 <body>
+For the English version, scroll down.<br>
+<br>
 Beste {{naam}},<br>
 <br>
 Aanstaande {{datum}} moet je een wedstrijd fluiten om {{tijd}}.<br>
@@ -26,6 +28,33 @@ Met vriendelijke groet,<br>
 <br>
 {{afzender}}<br>
 <br>
-(Dit is een automatisch gegenereerd bericht)
+(Dit is een automatisch gegenereerd bericht)<br>
+<br>
+<br>
+<br>
+<br>
+Dear {{naam}},<br>
+<br>
+Upcoming {{datum}}, you have been assigned as a referee at {{tijd}}.<br>
+You are the referee of the {{teams}} match.<br>
+<br>
+Additional information about being a referee can be found by clicking on the link below.<br>
+SKC website: https://www.skcvolleybal.nl/index.php/informatie/praktische-info/documenten<br>
+The following documents can be found:<br>
+    - The Referee Course PowerPoint ‘Refereecourse 2021’<br>
+    - The Referee help (this is also present in the hall) ‘Referee manual 2021-2022’<br>
+The Nevobo game rules: <br>
+https://www.nevobo.nl/cms/download/7231/Spelregels%202021-2022%20-%20Topdivisie%20en%20lager%20-%20mei%202021.pdf<br>
+DWF instruction video: <br>
+https://www.youtube.com/watch?v=YSYA5cY2r3c&t=1s<br>
+<br>
+Agenda's Import:<br>
+<a target="_blank" href="https://www.google.com/calendar/render?cid=http%3A%2F%2Fwww.skcvolleybal.nl%2Fteam-portal%2Fapi%calendar%3Fuserid%3D{{userId}}">Google Calendar: Fluiten & Zaalwacht</a><br>
+If you import this, all matches are automatically placed in your google calendar and you are aware of all your services at once.<br>
+(It may take a while for your calendar to sync...)<br>
+<br>
+Kind Regards,<br>
+<br>
+{{afzender}}<br>
 </body>
 </html>
