@@ -8,12 +8,12 @@ use TeamPortal\Common\Utilities;
 
 class Bardienstmail extends Email
 {
-    function __construct(Bardienst $bardienst, DateTime $dag)
+    function __construct(Barlid $barlid, Persoon $scheidsco, DateTime $date)
     {
-        $datum = DateFunctions::GetDutchDateLong($dag->date);
-        $naam = $bardienst->persoon->naam;
-        $shift = $bardienst->shift;
-        $bhv = $bardienst->isBhv == 1 ? "<br>Je bent BHV'er." : "";
+        $datum = DateFunctions::GetDutchDateLong($date);
+        $naam = $barlid->naam;
+        $shift = $barlid->shift;
+        $bhv = $barlid->isBhv == 1 ? "<br>Je bent BHV'er." : "";
 
         $template = file_get_contents("./Entities/Email/templates/barcieTemplate.txt");
         $placeholders = [
@@ -21,11 +21,12 @@ class Bardienstmail extends Email
             Placeholder::NAAM => $naam,
             Placeholder::SHIFT => $shift,
             Placeholder::BHV => $bhv,
-            Placeholder::AFZENDER => $this->scheidsco->naam
+            Placeholder::AFZENDER => $scheidsco->naam,
+            Placeholder::USER_ID => $barlid->id
         ];
 
         $this->titel = "Bardienst " . $datum;
         $this->body = Utilities::FillTemplate($template, $placeholders);
-        $this->receiver = $bardienst->persoon;
+        $this->receiver = $barlid;
     }
 }

@@ -106,9 +106,11 @@ class QueueWeeklyEmails implements Interactor
                 $samenvatting->zaalwachtteams[] = $dag->tweedeZaalwacht;
             }
 
-            foreach ($dag->bardiensten as $bardienst) {
-                $emails[] = new Bardienstmail($bardienst, $dag);
-                $samenvatting->barleden[] = $bardienst->persoon;
+            foreach ($dag->barshifts as $barshift) {
+                foreach ($barshift->barleden as $barlid) {
+                    $emails[] = new Bardienstmail($barlid, $this->scheidsco, $dag->date);
+                    $samenvatting->barleden[] = $barlid;
+                }
             }
         }
 

@@ -18,7 +18,7 @@ DWF instructievideo:<br>
 Voor vragen stuur een mail naar teamtakenco@skcvolleybal.nl<br>
 Vergeet verder vooral niet de wedstrijd live bij te houden op het DWF. Dit is tenslotte verplicht. Mocht je hier verdere vragen over hebben, dan kan je altijd bij de aanwezige bestuursleden terecht.<br>
 <br>
-Tip: Agenda's Importeren:<br>
+Tip: Agenda's Importeren:
 <a target="_blank" href="https://www.google.com/calendar/render?cid=http%3A%2F%2Fwww.skcvolleybal.nl%2Fteam-portal%2Fapi%2Fcalendar%3Fuserid%3D{{userId}}">Google Calendar: Tellen & Zaalwacht</a><br>
 (het kan even duren voordat je agenda wordt gesynchroniseerd...)<br>
 <br>
@@ -42,7 +42,7 @@ DWF instruction video:<br>
 <a href="https://www.youtube.com/watch?v=YSYA5cY2r3c&t=1s"><br>
 <br>
 Agenda's Import:<br>
-<a target="_blank" href="https://www.google.com/calendar/render?cid=http%3A%2F%2Fwww.skcvolleybal.nl%2Fteam-portal%2Fapi%calendar%3Fuserid%3D{{userId}}">Google Calendar: Referee & Hallwatch</a><br>
+<a target="_blank" href="https://www.google.com/calendar/render?cid=http%3A%2F%2Fwww.skcvolleybal.nl%2Fteam-portal%2Fapi%2Fcalendar%3Fuserid%3D{{userId}}">Google Calendar: Referee & Hallwatch</a><br>
 If you import this, all matches are automatically placed in your google calendar and you are aware of all your services at once.<br>
 (It can take a little while to synchronise with you calendar...)<br>
 <br>
