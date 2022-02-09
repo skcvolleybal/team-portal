@@ -4,6 +4,7 @@ namespace TeamPortal\UseCases;
 
 use TeamPortal\Gateways;
 use TeamPortal\Entities\Bardienstmail;
+use TeamPortal\Entities\Persoon;
 use TeamPortal\Entities\Samenvattingsmail;
 use TeamPortal\Entities\Scheidsrechtersmail;
 use TeamPortal\Entities\Tellersmail;
@@ -12,8 +13,8 @@ use TeamPortal\Entities\Zaalwachttype;
 
 class QueueWeeklyEmails implements Interactor
 {
-    private $scheidsco;
-    private $webcie;
+    private Persoon $scheidsco;
+    private array $webcieMembers;
 
     public function __construct(
         Gateways\NevoboGateway $nevoboGateway,
@@ -34,7 +35,11 @@ class QueueWeeklyEmails implements Interactor
     public function Execute(object $data = null)
     {
         $this->scheidsco = $this->joomlaGateway->GetUser(2573); // scheidsco-ID
-        $this->webcie = $this->joomlaGateway->GetUser(542);
+        $this->webcieMembers = [
+            $this->joomlaGateway->GetUser(542),  // Sjon
+            $this->joomlaGateway->GetUser(2036), // Banda
+            $this->joomlaGateway->GetUser(2212)  // Bas
+        ];
 
         $wedstrijddagen = $this->nevoboGateway->GetWedstrijddagenForSporthal('LDNUN', 7);
         foreach ($wedstrijddagen as $dag) {
@@ -114,8 +119,10 @@ class QueueWeeklyEmails implements Interactor
             }
         }
 
-        $emails[] = new Samenvattingsmail($samenvatting, $this->scheidsco, $this->webcie);
-        $emails[] = new Samenvattingsmail($samenvatting, $this->scheidsco, $this->scheidsco);
+        $emails[] = new Samenvattingsmail($samenvatting, $this->scheidsco);
+        foreach ($this->webcieMembers as $webcieMember) {
+            $emails[] = new Samenvattingsmail($samenvatting, $webcieMember);
+        }
 
         return $emails;
     }

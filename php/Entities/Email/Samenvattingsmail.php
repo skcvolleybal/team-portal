@@ -9,7 +9,6 @@ class Samenvattingsmail extends Email
 {
     public function __construct(
         Emailsamenvatting $samenvatting,
-        Persoon $scheidsco,
         Persoon $receiver
     ) {
         $barcieContent = $this->GetBoldHeader(count($samenvatting->barleden) > 0 ? "Barleden" : "Geen barleden");
@@ -38,7 +37,7 @@ class Samenvattingsmail extends Email
 
         $template = file_get_contents("./Entities/Email/templates/samenvattingTemplate.txt");
         $placeholders = [
-            Placeholder::NAAM => $scheidsco->naam,
+            Placeholder::NAAM => $receiver->naam,
             Placeholder::SCHEIDSRECHTERS => $scheidsrechtersContent,
             Placeholder::TELLERS => $tellersContent,
             Placeholder::ZAALWACHTERS => $zaalwachtersContent,
