@@ -29,15 +29,15 @@ class Bardienst
         $date = DateFunctions::GetYmdNotation($this->bardag->date);
         switch ($weekday) {
             case 0:
-                return DateFunctions::CreateDateTime($date, "13:00");
+                return DateFunctions::CreateDateTime($date, "20:00");
             case 1:
             case 2:
             case 3:
             case 4:
             case 5:
-                return DateFunctions::CreateDateTime($date, "22:00");
+                return DateFunctions::CreateDateTime($date, "23:30");
             case 6:
-                return DateFunctions::CreateDateTime($date, "18:00");
+                return DateFunctions::CreateDateTime($date, "20:00");
             default:
                 throw new UnexpectedValueException();
         }
