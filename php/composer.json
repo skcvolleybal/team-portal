@@ -8,7 +8,7 @@
     }
   ],
   "require": {
-    "kigkonsult/icalcreator": "2.28.2",
+    "kigkonsult/icalcreator": "2.39.2",
     "phpmailer/phpmailer": "^6.5",
     "simplepie/simplepie": "^1.5",
     "slim/slim": "^4.9",

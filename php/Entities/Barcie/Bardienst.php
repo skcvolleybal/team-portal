@@ -25,7 +25,7 @@ class Bardienst
 
     public function GetStartTime()
     {
-        $weekday = Utilities::StringToInt(date('w', $this->bardag->date));
+        $weekday = $this->bardag->date->format('w');
         $date = DateFunctions::GetYmdNotation($this->bardag->date);
         switch ($weekday) {
             case 0:
