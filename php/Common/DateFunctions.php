@@ -32,7 +32,7 @@ class DateFunctions
 
     static function GetTime(DateTime $timestamp): string
     {
-        return $timestamp->format('G:i');
+        return $timestamp->format('H:i');
     }
 
     static function CreateDateTime(string $date, string $time = "00:00:00")
