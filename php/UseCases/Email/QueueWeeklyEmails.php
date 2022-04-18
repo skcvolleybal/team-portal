@@ -86,7 +86,7 @@ class QueueWeeklyEmails implements Interactor
                     }
 
                     if ($wedstrijd->tellers[0]) {
-                        $mails[] = new Tellersmail($wedstrijd, $wedstrijd->tellers[0], $this->scheidsco);
+                        $emails[] = new Tellersmail($wedstrijd, $wedstrijd->tellers[0], $this->scheidsco);
                         $samenvatting->tellers[] = $wedstrijd->tellers[0];
                     }
 

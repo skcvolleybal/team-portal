@@ -9,11 +9,11 @@ Aanstaande {{datum}} moet jouw team een wedstrijd tellen om {{tijd}}.<br>
 Jullie zullen de wedstrijd {{teams}} gaan tellen.<br>
 <br>
 Extra informatie over tellen vind je door op onderstaande links te klikken.<br>
-SKC website: <a href="https://www.skcvolleybal.nl/index.php/informatie/praktische-info/documenten"<br>
+SKC website:<br>
 Hier is het volgende document te vinden: <br>
-    - De DWF hulp ‘DWF hulp 2021-2022’ <br>
-DWF instructievideo:<br>
-<a href="https://www.youtube.com/watch?v=YSYA5cY2r3c&t=1s"><br>
+    - De DWF hulp <a href="https://www.skcvolleybal.nl/index.php/informatie/praktische-info/documenten"/>‘DWF hulp 2021-2022’</a><br>
+<br>
+DWF <a href="https://www.youtube.com/watch?v=YSYA5cY2r3c&t=1s">instructievideo</a><br>
 <br>
 Voor vragen stuur een mail naar teamtakenco@skcvolleybal.nl<br>
 Vergeet verder vooral niet de wedstrijd live bij te houden op het DWF. Dit is tenslotte verplicht. Mocht je hier verdere vragen over hebben, dan kan je altijd bij de aanwezige bestuursleden terecht.<br>
@@ -35,14 +35,14 @@ Upcoming {{datum}}, you have been assigned as a scorekeeper at {{tijd}}.<br>
 You are the scorekeeper of the {{teams}} match.<br>
 <br>
 Additional information about scorekeeping can be found by clicking on the link below.<br>
-SKC website: <a href="https://www.skcvolleybal.nl/index.php/informatie/praktische-info/documenten"<br>
+SKC website:<br>
 The following document can be found:<br>
-    - The DWF manual ‘DWF manual 2021-2022’ <br>
-DWF instruction video:<br>
-<a href="https://www.youtube.com/watch?v=YSYA5cY2r3c&t=1s"><br>
+    - The DWF manual <a href="https://www.skcvolleybal.nl/index.php/informatie/praktische-info/documenten"/>‘DWF manual 2021-2022’</a> <br>
 <br>
-Agenda's Import:<br>
-<a target="_blank" href="https://www.google.com/calendar/render?cid=http%3A%2F%2Fwww.skcvolleybal.nl%2Fteam-portal%2Fapi%2Fcalendar%3Fuserid%3D{{userId}}">Google Calendar: Referee & Hallwatch</a><br>
+DWF instruction <a href="https://www.youtube.com/watch?v=YSYA5cY2r3c&t=1s">video</a><br>
+<br>
+<br>
+Agenda's Import: <a target="_blank" href="https://www.google.com/calendar/render?cid=http%3A%2F%2Fwww.skcvolleybal.nl%2Fteam-portal%2Fapi%2Fcalendar%3Fuserid%3D{{userId}}">Google Calendar: Referee & Hallwatch</a><br>
 If you import this, all matches are automatically placed in your google calendar and you are aware of all your services at once.<br>
 (It can take a little while to synchronise with you calendar...)<br>
 <br>

@@ -44,13 +44,13 @@ SKC website:<br>
 The following documents can be found:<br>
     - The Referee Course PowerPoint <a href="https://www.skcvolleybal.nl/index.php/informatie/praktische-info/documenten">‘Refereecourse 2021’</a><br>
     - The Referee help (this is also present in the hall) <a href="https://www.skcvolleybal.nl/index.php/informatie/praktische-info/documenten">‘Referee manual 2021-2022’</a><br>
+<br>
 The Nevobo <a href="https://www.nevobo.nl/cms/download/7231/Spelregels%202021-2022%20-%20Topdivisie%20en%20lager%20-%20mei%202021.pdf">game rules</a><br>
 <br>
-DWF instruction video: <br>
-https://www.youtube.com/watch?v=YSYA5cY2r3c&t=1s<br>
+DWF instruction <a href="https://www.youtube.com/watch?v=YSYA5cY2r3c&t=1s">video</a><br>
 <br>
-Agenda's Import:<br>
-<a target="_blank" href="https://www.google.com/calendar/render?cid=http%3A%2F%2Fwww.skcvolleybal.nl%2Fteam-portal%2Fapi%2Fcalendar%3Fuserid%3D{{userId}}">Google Calendar: Fluiten & Zaalwacht</a><br>
+<br>
+Agenda's Import: <a target="_blank" href="https://www.google.com/calendar/render?cid=http%3A%2F%2Fwww.skcvolleybal.nl%2Fteam-portal%2Fapi%2Fcalendar%3Fuserid%3D{{userId}}">Google Calendar: Fluiten & Zaalwacht</a><br>
 If you import this, all matches are automatically placed in your google calendar and you are aware of all your services at once.<br>
 (It may take a while for your calendar to sync...)<br>
 <br>
