@@ -7,11 +7,10 @@ services:
       context: ./
     restart: always
     ports:
-      - 8080:80
+      - 10080:80
     environment:
       JOOMLA_DB_HOST: mysql
       JOOMLA_DB_PASSWORD: root
-      JOOMLA_DB_NAME: joomla
     volumes:
       - ../php:/var/www/html/team-portal
       - ./php/.htaccess:/var/www/html/.htaccess
@@ -22,9 +21,12 @@ services:
 
   mysql:
     image: mysql:5.6
+    command:
+      - --max_allowed_packet=256M
+      - --innodb-log-file-size=100M
     restart: always
     ports:
-      - 3306:3306
+      - 13306:3306
     environment:
       MYSQL_ROOT_PASSWORD: root
 
@@ -36,11 +38,11 @@ services:
       PMA_USER: root
       PMA_PASSWORD: root
     ports:
-      - '8081:80'
+      - '10081:80'
 
   mailhog:
     image: mailhog/mailhog:latest
     restart: always
     ports:
-      - 8025:8025
-      - 1025:1025
+      - 18025:8025
+      - 11025:1025
