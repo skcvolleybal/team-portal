@@ -1,4 +1,4 @@
-FROM joomla:3.10.3-php7.4
+FROM joomla:3.10.11
 
 RUN \
   pecl install xdebug-3.1.1 && \
