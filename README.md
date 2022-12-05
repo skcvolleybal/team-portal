@@ -6,7 +6,7 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
 ## Required: 
 1. Install Node.js: https://nodejs.org/en/download/
-2. Install Angular CLI: npm install -g @angular/cli
+2. Install Angular CLI: `npm install -g @angular/cli`
 3. Install Composer: https://getcomposer.org/download/
 4. Clone the team-portal repository to your machine. 
 
