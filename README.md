@@ -25,7 +25,7 @@ The Angular frontend is now working, but can't communicate with the PHP backend 
 9. Rename configuration_example.php to configuration.php
 10. Open configuration.php, ensure public $JpathBase and $AccessControlAllowOrigin are set correctly, and that the database host, name, username and password are correct. The $JpathBase should point to the root of your website on disk (for example: "C:\\xampp\\htdocs"). Make sure $AccessControlAllowOrigin is set to the URL that Team-Portal Angular runs on. For development: http://localhost:4200.
 11. Remove the composer.lock file
-12. Run composer install to install all required PHP packages. If you get PHP version errors, change the composer.json file to require "php": "^8.1". 
+12. Run `composer install` to install all required PHP packages. If you get PHP version errors, change the composer.json file to require "php": "^8.1". 
 
 ## Joomla
 13. Install a webserver such as Xampp. Make sure Apache and MySQL are running. 
