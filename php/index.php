@@ -112,9 +112,9 @@ $entryPoint =
             new GetRoute('/importeer-wedstrijden', UseCases\WedstrijdenImporteren::class, AuthorizationRole::UNREGISTERED),
         ], AuthorizationRole::USER),
 
-        new RouteGroup('/statistieken', [
-            new GetRoute('/wedstrijden', UseCases\GetDwfStatistieken::class)
-        ], AuthorizationRole::USER),
+        //new RouteGroup('/statistieken', [
+        //    new GetRoute('/wedstrijden', UseCases\GetDwfStatistieken::class)
+        //], AuthorizationRole::USER),
 
         new GetRoute('/calendar', UseCases\GetCalendar::class, AuthorizationRole::UNREGISTERED),
 
