@@ -15,7 +15,7 @@ jobs:
     - name: Installing NPM dependencies
       run: npm install -g @angular/cli
     - name: Building Angular
-      run: npm run build --prod
+      run: npm run build --prod -vvv
     - name: Installing PHP dependencies
       run: composer update --ignore-platform-reqs
     - name: 📂 Sync files
