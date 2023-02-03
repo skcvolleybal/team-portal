@@ -1,0 +1,27 @@
+on:
+  workflow_dispatch:
+  push: 
+    branches: 
+      - dev
+name: 🚀 Deploy Team-Portal to test
+jobs:
+  web-deploy:
+    name: 🎉 Deploy
+    runs-on: ubuntu-latest
+    steps:
+    - name: 🚚 Get latest code
+      uses: actions/checkout@v2
+    - uses: actions/setup-node@master
+    - name: Installing NPM dependencies
+      run: npm install
+    - name: Building Angular
+      run: ng build
+    - name: Installing PHP dependencies
+      run: composer update --ignore-platform-reqs
+    - name: 📂 Sync files
+      uses: SamKirkland/FTP-Deploy-Action@4.3.3
+      with:
+        server: ftp.skcvolleybal.nl
+        username: ${{ secrets.test_ftp_username }}
+        password: ${{ secrets.test_ftp_password }}
+        # Server-dir not necessary: the FTP account only has rights to write in test/public_html/team-portal. See webhost control panel for FTP. 
