@@ -15,7 +15,7 @@ jobs:
     - name: Installing NPM dependencies
       run: npm install -g
     - name: Building Angular
-      run: ng build
+      run: npm run build
     - name: Installing PHP dependencies
       run: composer update --ignore-platform-reqs
     - name: 📂 Sync files
