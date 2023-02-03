@@ -13,7 +13,7 @@ jobs:
       uses: actions/checkout@v2
     - uses: actions/setup-node@master
     - name: Installing NPM dependencies
-      run: npm install
+      run: npm install -g
     - name: Building Angular
       run: ng build
     - name: Installing PHP dependencies
