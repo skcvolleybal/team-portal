@@ -22,26 +22,26 @@ jobs:
     name: 🎉 Deploy
     runs-on: ubuntu-latest
     steps: 
-      - name: 🚚 Get latest code
-        uses: actions/checkout@v2
-      - uses: actions/setup-node@master
-      - name: 🏗️ Installing NPM dependencies
-        run: npm i -f
-      - name: 🔨 Building Angular
-        run: npm run build
-      - name: 🏗️ Installing PHP dependencies
-        run: |
-          composer update --ignore-platform-reqs --working-dir=php
-          composer dumpautoload --working-dir=php
-      - name: rsync deployments
-        uses: burnett01/rsync-deployments@5.2.1
-        with:
-          switches: -avzr --delete
-          path: ./  
-          remote_path: public_html/test/public_html/team-portal/
-          remote_host: ${{ secrets.REMOTE_HOST }}
-          remote_user: ${{ secrets.REMOTE_USER }}
-          remote_key: ${{ secrets.PRIVATE_KEY }}
+    - name: 🚚 Get latest code
+      uses: actions/checkout@v2
+    - uses: actions/setup-node@master
+    - name: 🏗️ Installing NPM dependencies
+      run: npm i -f
+    - name: 🔨 Building Angular
+      run: npm run build
+    - name: 🏗️ Installing PHP dependencies
+      run: |
+        composer update --ignore-platform-reqs --working-dir=php
+        composer dumpautoload --working-dir=php
+    - name: rsync deployments
+      uses: burnett01/rsync-deployments@5.2.1
+      with:
+        switches: -avzr --delete
+        path: ./  
+        remote_path: public_html/test/public_html/team-portal/
+        remote_host: ${{ secrets.REMOTE_HOST }}
+        remote_user: ${{ secrets.REMOTE_USER }}
+        remote_key: ${{ secrets.PRIVATE_KEY }}
   deploy-via-rsync:
     name: 🎉 Deploy 
     needs: [whitelist-IP, get-dependencies-and-build]
