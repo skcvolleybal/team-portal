@@ -16,7 +16,7 @@ jobs:
         run: curl https://api.ipify.org
       - name: You have 30 seconds to add the Github Runner IP to Antagonist SSH key!
         run: |
-          echo "For the IP: see previous step ('Show Github Runner IP'). Then, go to https://skcvolleybal.nl:2223/user/plugins/ssh and add the IP to 'Github Runner Key Antagonist. '
+          echo "For the IP: see previous step ('Show Github Runner IP'). Then, go to https://skcvolleybal.nl:2223/user/plugins/ssh and add the IP to 'Github Runner Key Antagonist."
           sleep 30s
         shell: bash
         # Continue
