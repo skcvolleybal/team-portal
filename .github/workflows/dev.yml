@@ -11,9 +11,6 @@ jobs:
     steps:
       - name: 🚚 Get latest code
         uses: actions/checkout@v2
-      - name: Add IP to 
-        if: always()
-        run: 
       - name: 🔎 Show Github Runner IP
         if: always()
         run: curl https://api.ipify.org
