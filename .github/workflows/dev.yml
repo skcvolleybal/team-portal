@@ -11,11 +11,11 @@ jobs:
     steps:
     - name: 🚚 Get latest code
       uses: actions/checkout@v2
-    # - uses: actions/setup-node@master
-    # - name: 🏗️ Installing NPM dependencies
-    #   run: npm i -f
-    # - name: 🔨 Building Angular
-    #   run: npm run build
+    - uses: actions/setup-node@master
+    - name: 🏗️ Installing NPM dependencies
+      run: npm i -f
+    - name: 🔨 Building Angular
+      run: npm run build
     - name: 🏗️ Installing PHP dependencies
       run: composer update --ignore-platform-reqs --working-dir=php
     - name: 📂 Sync files
