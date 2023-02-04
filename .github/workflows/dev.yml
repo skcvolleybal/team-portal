@@ -46,12 +46,12 @@ jobs:
     name: 🎉 Deploy 
     needs: [whitelist-IP, get-dependencies-and-build]
     runs-on: ubuntu-latest
-      - name: rsync deployments
-        uses: burnett01/rsync-deployments@5.2.1
-        with:
-          switches: -avzr --delete
-          path: ./  
-          remote_path: public_html/test/public_html/team-portal/
-          remote_host: ${{ secrets.REMOTE_HOST }}
-          remote_user: ${{ secrets.REMOTE_USER }}
-          remote_key: ${{ secrets.PRIVATE_KEY }}
+    - name: rsync deployments
+      uses: burnett01/rsync-deployments@5.2.1
+      with:
+        switches: -avzr --delete
+        path: ./  
+        remote_path: public_html/test/public_html/team-portal/
+        remote_host: ${{ secrets.REMOTE_HOST }}
+        remote_user: ${{ secrets.REMOTE_USER }}
+        remote_key: ${{ secrets.PRIVATE_KEY }}
