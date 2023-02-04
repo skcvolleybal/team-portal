@@ -16,10 +16,8 @@ jobs:
       run: npm i -f
     - name: Building Angular
       run: npm run build
-    - name: On to PHP...
-      run: cd php
     - name: Installing PHP dependencies
-      run: composer update --ignore-platform-reqs
+      run: composer update --ignore-platform-reqs --working-dir=php
     - name: 📂 Sync files
       uses: SamKirkland/FTP-Deploy-Action@4.3.3
       with:
