@@ -5,7 +5,7 @@ on:
       - dev
 name: 🚀 Deploy Team-Portal to test
 jobs:
-  whitelist-IP: 
+  Deploy-Team-Portal-to-Test: 
     name: Whitelist runner IP
     runs-on: ubuntu-latest
     steps:
@@ -35,8 +35,8 @@ jobs:
     - name: 🚚 Transfer files to webhost 
       uses: burnett01/rsync-deployments@5.2.1
       with:
-        switches: -avzr --delete
-        path: ./  
+        switches: -avzr --delete --exclude="configuration.php"
+        path: ./dist/*
         remote_path: public_html/test/public_html/team-portal/
         remote_host: ${{ secrets.REMOTE_HOST }}
         remote_user: ${{ secrets.REMOTE_USER }}
