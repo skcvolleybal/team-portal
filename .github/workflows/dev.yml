@@ -27,12 +27,12 @@ jobs:
       #     remote_host: ${{ secrets.REMOTE_HOST }}
       #     remote_user: ${{ secrets.REMOTE_USER }}
       #     remote_key: ${{ secrets.PRIVATE_KEY }}
-        - name: Check Antagonist SSH
-          - if: always()
-          - run: echo "Did the previous job (Rsync) fail? Make sure you've whitelisted the current GitHub Runners IP in Antagonist SSH key. Go to https://skcvolleybal.nl:2223/user/plugins/ssh and add the following IP address to the 'Github Runner Key Antagonist --> "
-        - name: 🔎 Show Github Runner IP
-          if: always()
-          run: curl https://api.ipify.org
+      - name: Check Antagonist SSH
+        - if: always()
+        - run: echo "Did the previous job (Rsync) fail? Make sure you've whitelisted the current GitHub Runners IP in Antagonist SSH key. Go to https://skcvolleybal.nl:2223/user/plugins/ssh and add the following IP address to the 'Github Runner Key Antagonist --> "
+      - name: 🔎 Show Github Runner IP
+        if: always()
+        run: curl https://api.ipify.org
       # - name: 📂 Sync files
       #   uses: SamKirkland/FTP-Deploy-Action@4.3.3
       #   with:
