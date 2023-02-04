@@ -17,11 +17,6 @@ jobs:
         echo "For the IP: see previous step ('Show Github Runner IP'). Then, go to https://skcvolleybal.nl:2223/user/plugins/ssh and add the IP to 'Github Runner Key Antagonist."
         sleep 30s
       shell: bash
-      # Continue
-  get-dependencies-and-build:
-    name: 🏗️ Get dependencies and build!
-    runs-on: ubuntu-latest
-    steps: 
     - name: 🏗️ Get latest code
       uses: actions/checkout@v2
     - uses: actions/setup-node@master
@@ -33,12 +28,11 @@ jobs:
       run: |
         composer update --ignore-platform-reqs --working-dir=php
         composer dumpautoload --working-dir=php
-  deploy-via-rsync:
-    name: 🚚 Transfer files to webhost 
-    needs: [get-dependencies-and-build]
-    runs-on: ubuntu-latest
-    steps: 
-    - name: Deploying via Rsync
+    - name: Prepare package
+      run: |
+        mv php/ dist/
+        mv static-pages/ dist/
+    - name: 🚚 Transfer files to webhost 
       uses: burnett01/rsync-deployments@5.2.1
       with:
         switches: -avzr --delete
