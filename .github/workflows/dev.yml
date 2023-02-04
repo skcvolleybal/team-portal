@@ -6,7 +6,7 @@ on:
 name: 🚀 Deploy Team-Portal to test
 jobs:
   whitelist-IP: 
-    name: whitelist runner IP
+    name: Whitelist runner IP
     runs-on: ubuntu-latest
     steps:
     - name: 🔎 Show Github Runner IP
@@ -19,10 +19,10 @@ jobs:
       shell: bash
       # Continue
   get-dependencies-and-build:
-    name: 🎉 Deploy
+    name: 🏗️ Get dependencies and build!
     runs-on: ubuntu-latest
     steps: 
-    - name: 🚚 Get latest code
+    - name: 🏗️ Get latest code
       uses: actions/checkout@v2
     - uses: actions/setup-node@master
     - name: 🏗️ Installing NPM dependencies
@@ -33,21 +33,12 @@ jobs:
       run: |
         composer update --ignore-platform-reqs --working-dir=php
         composer dumpautoload --working-dir=php
-    - name: rsync deployments
-      uses: burnett01/rsync-deployments@5.2.1
-      with:
-        switches: -avzr --delete
-        path: ./  
-        remote_path: public_html/test/public_html/team-portal/
-        remote_host: ${{ secrets.REMOTE_HOST }}
-        remote_user: ${{ secrets.REMOTE_USER }}
-        remote_key: ${{ secrets.PRIVATE_KEY }}
   deploy-via-rsync:
-    name: 🎉 Deploy 
-    needs: [whitelist-IP, get-dependencies-and-build]
+    name: 🚚 Transfer files to webhost 
+    needs: [get-dependencies-and-build]
     runs-on: ubuntu-latest
     steps: 
-    - name: rsync deployments
+    - name: Deploying via Rsync
       uses: burnett01/rsync-deployments@5.2.1
       with:
         switches: -avzr --delete
