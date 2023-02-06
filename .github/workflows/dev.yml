@@ -23,7 +23,7 @@ jobs:
       with: 
         node-version: 14
     - name: 🏗️ Installing NPM dependencies
-      run: npm i
+      run: npm i -f
     - name: 🔨 Building Angular
       run: npm run build
     - name: 🏗️ Installing PHP dependencies
