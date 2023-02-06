@@ -6,7 +6,6 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
 ## Required: 
 1. Install Node.js: https://nodejs.org/en/download/. Make sure it's an even release! Such as 16, 18. 
-2. -
 3. Install a webserver such as Xampp: https://www.apachefriends.org/download.html
 4. Install Composer: https://getcomposer.org/download/. Use Xampps PHP version, likely installed in C:\xampp\php (Windows)
 5. Clone the team-portal repository to your machine into Xampps htdocs directory, likely C:\xampp\htdocs. Ensure you emptied the directory first.  
