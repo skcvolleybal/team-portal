@@ -5,8 +5,8 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 # Installation instructions
 
 ## Required: 
-1. Install Node.js: https://nodejs.org/en/download/
-2. Install Node packages: `npm i -f`. 
+1. Install Node.js: https://nodejs.org/en/download/. Make sure it's an even release! Such as 16, 18. 
+2. -
 3. Install a webserver such as Xampp: https://www.apachefriends.org/download.html
 4. Install Composer: https://getcomposer.org/download/. Use Xampps PHP version, likely installed in C:\xampp\php (Windows)
 5. Clone the team-portal repository to your machine into Xampps htdocs directory, likely C:\xampp\htdocs. Ensure you emptied the directory first.  
@@ -15,7 +15,7 @@ Team-Portal consists of 2 parts, an Angular frontend and PHP backend. However, i
 
 ## Angular
 
-6. Navigate to the cloned repository directory. Likely C:\xampp\htdocs\team-portal. Run `npm install` to install all required Angular packages.
+6. Navigate to the cloned repository directory. Likely C:\xampp\htdocs\team-portal. Run `npm i -f` to (force) install all required Angular packages.
 7. Next, run `ng serve` (or `npm run ng serve` if ng serve doesn't work) to create a dev server. Navigate to http://localhost:4200/ in your webbrowser to view the app. As long as `ng serve` is running, the app will automatically reload if you change any of the source files.
 8. In team-portal\src\environments\environment.ts, make sure your baseUrl is set properly to match the URL where Team-Portal API is available. For example: http://localhost/team-portal/api/
 
