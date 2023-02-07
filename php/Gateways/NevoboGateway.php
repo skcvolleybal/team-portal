@@ -15,6 +15,11 @@ use TeamPortal\Entities\Wedstrijddag;
 use TeamPortal\UseCases\INevoboGateway;
 use UnexpectedValueException;
 
+error_reporting(E_ALL ^ E_DEPRECATED); // Suppress warnings on PHP 8.0. Make sure to fix the usort() functions in this file for PHP 8.1. 
+
+
+
+
 class NevoboGateway implements INevoboGateway
 {
     public $cacheDuration = 3600 * 24; // 24 uur
