@@ -4,8 +4,11 @@
 
 export const environment = {
   production: false,
-  baseUrl: 'http://localhost:8080/team-portal/api/',
+  baseUrl: 'http://localhost/team-portal/api/',
 };
+
+// baseUrl: 'http://localhost:8080/team-portal/api/',
+// Old baseUrl until 7 2 2023
 
 /*
  * For easier debugging in development mode, you can import the following file
