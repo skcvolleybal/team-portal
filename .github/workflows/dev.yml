@@ -13,7 +13,7 @@ jobs:
       run: |
         curl icanhazip.com > runner_ip.txt
         runner_ip=$(cat runner_ip.txt)
-        curl --location --request POST 'https://skcvolleybal.nl:2223/CMD_PLUGINS/ssh?iframe=yes' --header 'Authorization: Basic ${{ secrets.base64_username_colon_password_antagonist }}' --header 'Content-Type: application/x-www-form-urlencoded' --header  --data-urlencode 'ip='10.15.18.20' --data-urlencode 'expires=180' --data-urlencode 'sshkey=5f:8d:bd:86:30:7e:cf:5c:8d:a1:c2:bd:c0:8b:af:53' --data-urlencode 'newkey_title= ' --data-urlencode 'newkey_key= ' --data-urlencode 'add_key_ip=Voeg IP toe aan key'
+        curl --location --request POST 'https://skcvolleybal.nl:2223/CMD_PLUGINS/ssh?iframe=yes' --header 'Authorization: Basic ${{ secrets.base64_username_colon_password_antagonist }}' --header 'Content-Type: application/x-www-form-urlencoded' --header  --data-urlencode 'ip=10.15.18.20' --data-urlencode 'expires=180' --data-urlencode 'sshkey=5f:8d:bd:86:30:7e:cf:5c:8d:a1:c2:bd:c0:8b:af:53' --data-urlencode 'newkey_title= ' --data-urlencode 'newkey_key= ' --data-urlencode 'add_key_ip=Voeg IP toe aan key'
     # - name: 🔎 Show Github Runner IP
     #   if: always()
     #   run: curl https://api.ipify.org
