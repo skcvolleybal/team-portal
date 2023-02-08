@@ -1,5 +1,5 @@
 # TeamPortal
-# Beschrijving
+## Beschrijving
 TeamPortal ondersteunt de TeamTakenCoordinator van SKC bij het maken van planningen voor wedstrijddagen. SKC-leden worden ingepland op wedstrijddagen om BHV'er te zijn, scheidsrechter, teller of voor het op- en afbouwen van de zaal. Om te zorgen dat leden beschikbaar zijn kunnen leden zelf inloggen om hun beschikbaarheid door te geven. 
 
 TeamPortal gebruikt de Nevobo RSS feed om de voor SKC relevante wedstrijden op te halen. Verder gebruikt het de Joomla 3 interne database van de SKC website om teams en leden te koppelen. 
