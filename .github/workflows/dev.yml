@@ -12,7 +12,7 @@ jobs:
     - name: 🔎 Show Github Runner IP
       run: | 
         curl icanhazip.com > .runner_ip.txt
-        echo .runner_ip.txt
+        cat .runner_ip.txt
     
 
     # - name: 🔎 Show Github Runner IP
