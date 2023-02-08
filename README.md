@@ -1,11 +1,17 @@
 # TeamPortal
+TeamPortal ondersteunt de TeamTakenCoordinator van SKC bij het maken van planningen voor wedstrijddagen. SKC-leden worden ingepland op wedstrijddagen om BHV'er te zijn, scheidsrechter, teller of voor het op- en afbouwen van de zaal. Om te zorgen dat leden beschikbaar zijn kunnen leden zelf inloggen om hun beschikbaarheid door te geven. 
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 6.2.3.
+TeamPortal gebruikt de Nevobo RSS feed om de voor SKC relevante wedstrijden op te halen. Verder gebruikt het de Joomla 3 interne database van de SKC website om teams en leden te koppelen. 
+
+## Systeemeisen:
+- PHP 8.0
+- Node.js even release (16, 18)
+- Angular v15
 
 # Installation instructions
 
 ## Required: 
-1. Install Node.js: https://nodejs.org/en/download/. Make sure it's an even release! Such as 16, 18. 
+1. Install Node.js: https://nodejs.org/en/download/. Make sure it's an even release such as 16, 18. 
 3. Install a webserver such as Xampp: https://www.apachefriends.org/download.html
 4. Install Composer: https://getcomposer.org/download/. Use Xampps PHP version, likely installed in C:\xampp\php (Windows)
 5. Clone the team-portal repository to your machine into Xampps htdocs directory, likely C:\xampp\htdocs. Ensure you emptied the directory first.  
