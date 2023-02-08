@@ -13,7 +13,7 @@ jobs:
       run: curl icanhazip.com > ../.runner_ip.txt
     - name: Assign IP to variable
       run: | 
-        $(runner_ip ../.runner_ip.txt)
+        runner_ip=`cat ../.runner_ip.txt`
         echo $runner_ip
     - name: Curl whitelist Github Runner IP at Antagonist
       run: |
