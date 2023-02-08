@@ -15,7 +15,7 @@ TeamPortal gebruikt de Nevobo RSS feed om de voor SKC relevante wedstrijden op t
 
 ## Required: 
 1. Install Node.js: https://nodejs.org/en/download/. Make sure it's an even release such as 16, 18. 
-3. Install a webserver such as Xampp: https://www.apachefriends.org/download.html
+3. Install a webserver such as Xampp with PHP 8.0 (!): https://www.apachefriends.org/download.html
 4. Install Composer: https://getcomposer.org/download/. Use Xampps PHP version, likely installed in C:\xampp\php (Windows)
 5. Clone the team-portal repository to your machine into Xampps htdocs directory, likely C:\xampp\htdocs. Ensure you emptied the directory first.  
 
@@ -34,7 +34,7 @@ The Angular frontend is now working, but can't communicate with the PHP backend 
 10. Rename configuration_example.php to configuration.php
 11. Open configuration.php, ensure $JpathBase and $AccessControlAllowOrigin are set correctly, and that the database host, name, username and password are correct. The $JpathBase should point to the root of your website on disk (for example: "C:\xampp\htdocs"). Make sure $AccessControlAllowOrigin is set to the URL that Team-Portal Angular runs on. For development: http://localhost:4200.
 12. Remove the composer.lock file
-13. Run `composer install` to install all required PHP packages. If you get PHP version errors, change the composer.json file to require "php": "^8.1". 
+13. Run `composer install` to install all required PHP packages. If you get PHP version errors, change the composer.json file to require "php": "^8.0". 
 
 ## Joomla
 14. In Xampp, make sure Apache and MySQL are running. 
