@@ -9,10 +9,12 @@ jobs:
     name: Deploy Team-Portal to test on host
     runs-on: ubuntu-latest
     steps:
-    - name: 🔎 Show Github Runner IP
-      run: | 
-        curl icanhazip.com > ../runner_ip.txt
-        cat ../runner_ip.txt
+    - name: 🔎 Get Github Runner IP
+      run: curl icanhazip.com > ../.runner_ip.txt
+    - name: Assign IP to variable
+      run: runner_ip=$( cat ../.runner_ip.txt )
+    - name: Curl whitelist Github Runner IP at Antagonist
+      run: curl --location --request POST 'https://skcvolleybal.nl:2223/CMD_PLUGINS/ssh?iframe=yes' --header 'Authorization: Basic ${{ secrets.base64_username_colon_password_antagonist }}' --header 'Content-Type: application/x-www-form-urlencoded' --header  --data-urlencode 'ip=\"$runner_ip\"' --data-urlencode 'expires=180' --data-urlencode 'sshkey=5f:8d:bd:86:30:7e:cf:5c:8d:a1:c2:bd:c0:8b:af:53' --data-urlencode 'newkey_title= ' --data-urlencode 'newkey_key= ' --data-urlencode 'add_key_ip=Voeg IP toe aan key'
     
 
     # - name: 🔎 Show Github Runner IP
