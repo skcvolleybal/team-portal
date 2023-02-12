@@ -1,5 +1,5 @@
 export const environment = {
-    production: true,
+    production: false,
     baseUrl: 'https://test.skcvolleybal.nl/public_html/team-portal/api/'
   };
   
