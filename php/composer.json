@@ -25,7 +25,6 @@
       "Common",
       "TeamPortalErrorHandler.php",
       "RouteObjects",
-      "configuration.php",
       "configuration_example.php",
       "Tests"
     ]
