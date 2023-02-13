@@ -25,6 +25,8 @@ jobs:
     #   run: |
     #     composer update --ignore-platform-reqs --working-dir=php
     #     composer dumpautoload --working-dir=php
+    - name: Rename configuration_example.php
+      run: mv php/configuration_example.php php/configuration.php
     - name: Install dependencies
       uses: php-actions/composer@master
       with:
@@ -35,7 +37,6 @@ jobs:
       run: |
         mv php/ dist/
         mv static-pages/ dist/
-        mv php/configuration_example.php configuration.php
     - name: 🚚 Transfer files to webhost 
       uses: burnett01/rsync-deployments@5.2.1
       with:
