@@ -20,8 +20,8 @@ jobs:
     - name: 🏗️ Installing NPM dependencies
       run: npm i -f
     - name: 🔨 Building Angular
-      # run: npm run test_deploy
-      run: npm run build -- --configuration=test_deploy
+      run: npm run test_deploy
+      # run: npm run build -- --configuration=test_deploy
     # - name: 🏗️ Installing PHP dependencies
     #   run: |
     #     composer update --ignore-platform-reqs --working-dir=php
