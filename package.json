@@ -6,7 +6,7 @@
     "start": "ng serve",
     "build": "ng build --configuration production --base-href /team-portal/",
     "test": "ng test",
-    "test_deploy": "ng build --configuration test_deploy --base-href /test/public_html/team-portal/",
+    "test_deploy": "ng build --configuration test_deploy --base-href /public_html/team-portal/",
     "lint": "ng lint",
     "e2e": "ng e2e",
     "scan": "sonar-scanner.bat -Dsonar.projectKey=jonathanneuteboom_team-portal -Dsonar.organization=jonathanneuteboom-github -Dsonar.sources=. -Dsonar.host.url=https://sonarcloud.io"
