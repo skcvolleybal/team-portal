@@ -58,35 +58,8 @@
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true
-            }
-          },
-          "defaultConfiguration": ""
-        },
-        "test_deploy": {
-          "builder": "@angular-devkit/build-angular:browser",
-          "options": {
-            "outputPath": "dist",
-            "index": "src/index.html",
-            "main": "src/main.ts",
-            "polyfills": "src/polyfills.ts",
-            "tsConfig": "src/tsconfig.app.json",
-            "assets": [
-              "src/favicon.png",
-              "src/assets"
-            ],
-            "styles": [
-              "src/styles.scss"
-            ],
-            "scripts": [],
-            "vendorChunk": true,
-            "extractLicenses": false,
-            "buildOptimizer": false,
-            "sourceMap": true,
-            "optimization": false,
-            "namedChunks": true
-          },
-          "configurations": {
-            "production": {
+            },
+            "test_deploy": {
               "budgets": [
                 {
                   "type": "anyComponentStyle",
@@ -110,7 +83,7 @@
           },
           "defaultConfiguration": ""
         },
-                
+        
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
