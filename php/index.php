@@ -58,7 +58,7 @@ $app->addBodyParsingMiddleware();
 $app->addRoutingMiddleware();
 
 $entryPoint =
-    new RouteGroup('/test/public_html/team-portal/api', [
+    new RouteGroup('/public_html/team-portal/api', [
         new GetRoute('/mijn-overzicht', UseCases\MijnOverzicht::class, AuthorizationRole::USER),
 
         new RouteGroup('/wedstrijd-overzicht', [
