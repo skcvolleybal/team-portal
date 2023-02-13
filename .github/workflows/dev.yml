@@ -35,7 +35,7 @@ jobs:
       run: |
         mv php/ dist/
         mv static-pages/ dist/
-        mv php/configuration_example.php php/configuration.php
+        mv php/configuration_example.php configuration.php
     - name: 🚚 Transfer files to webhost 
       uses: burnett01/rsync-deployments@5.2.1
       with:
