@@ -80,7 +80,7 @@ class MijnOverzicht implements Interactor
             usort($dag->speeltijden, [Speeltijd::class, "Compare"]);
         }
 
-        print_r($overzicht);
+
 
         return $this->MapToUseCaseModel($overzicht, $user);
     }
