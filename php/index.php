@@ -57,8 +57,15 @@ $app->addBodyParsingMiddleware();
 
 $app->addRoutingMiddleware();
 
+// If we're deploying to SKC test server, prepend /test/public_html
+$baseRoute = '/team-portal/api';
+if (str_contains($_SERVER['REQUEST_URI'], '/test/')) {
+    $baseRoute = '/test/public_html/'. $baseroute;
+}
+
+
 $entryPoint =
-    new RouteGroup('/test/public_html/team-portal/api', [
+    new RouteGroup($baseRoute, [
         new GetRoute('/mijn-overzicht', UseCases\MijnOverzicht::class, AuthorizationRole::USER),
 
         new RouteGroup('/wedstrijd-overzicht', [
