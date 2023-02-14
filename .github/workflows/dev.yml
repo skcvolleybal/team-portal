@@ -24,6 +24,7 @@ jobs:
       run: npm run test_deploy
     - name: Rename configuration_example.php
       run: cp php/configuration_example.php php/configuration.php
+    # We want configuration.php to be in the /php directory before running composer, because the classmap requires configuration.php 
     # run: npm run build -- --configuration=test_deploy
     - name: 🏗️ Installing PHP dependencies
       run: |
