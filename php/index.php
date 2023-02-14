@@ -57,8 +57,17 @@ $app->addBodyParsingMiddleware();
 
 $app->addRoutingMiddleware();
 
+// If we're deploying to SKC test server, the request URL will contain "/test/public_html". 
+// So we need to prepend /test/public_html to every route so that Slim framework processes the Route. 
+$baseRoute = '/team-portal/api';
+$testUrl = '/test/public_html';
+if (str_contains($_SERVER['REQUEST_URI'], $testUrl)) {
+    $baseRoute = $testUrl . $baseRoute;
+}
+
+
 $entryPoint =
-    new RouteGroup('/team-portal/api', [
+    new RouteGroup($baseRoute, [
         new GetRoute('/mijn-overzicht', UseCases\MijnOverzicht::class, AuthorizationRole::USER),
 
         new RouteGroup('/wedstrijd-overzicht', [

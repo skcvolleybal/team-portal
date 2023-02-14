@@ -11,6 +11,8 @@ use TeamPortal\Entities\Wedstrijddag;
 use TeamPortal\Entities\Zaalwacht;
 use TeamPortal\Gateways;
 
+error_reporting(E_ALL ^ E_DEPRECATED); // Suppress warnings on PHP 8.0. Make sure to fix the usort() functions in this file for PHP 8.1. 
+
 class MijnOverzicht implements Interactor
 {
     public function __construct(
@@ -77,6 +79,8 @@ class MijnOverzicht implements Interactor
         foreach ($overzicht as $dag) {
             usort($dag->speeltijden, [Speeltijd::class, "Compare"]);
         }
+
+
 
         return $this->MapToUseCaseModel($overzicht, $user);
     }
