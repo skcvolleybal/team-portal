@@ -23,5 +23,36 @@ jobs:
         key: ${{ secrets.PRIVATE_KEY }}
         port: 22
         script: |
-          whoami
-          ls -al 
+          cd /home/deb105013n2/public_html/test/public_html/team-portal/
+          shopt -s extglob
+          rm -R !("configuration.php"|".htaccess")
+          shopt -u extglob
+          # Remove all teamportal files except config and htaccess to ensure fresh deployment
+    - name: 🏗️ Get latest code
+      uses: actions/checkout@v2
+    - uses: actions/setup-node@master
+    - name: 🏗️ Installing NPM dependencies
+      run: npm i -f
+    - name: 🔨 Building Angular
+      run: npm run test_deploy
+    - name: Rename configuration_example.php
+      run: cp php/configuration_example.php php/configuration.php
+    # We want configuration.php to be in the /php directory before running composer, because the classmap requires configuration.php 
+    # run: npm run build -- --configuration=test_deploy
+    - name: 🏗️ Installing PHP dependencies
+      run: |
+        composer update --ignore-platform-reqs --working-dir=php
+        composer dumpautoload --working-dir=php
+    - name: Prepare package
+      run: |
+        mv php/ dist/
+        mv static-pages/ dist/
+    - name: 🚚 Transfer files to webhost 
+      uses: burnett01/rsync-deployments@5.2.1
+      with:
+        switches: -avzr --delete --exclude="configuration.php"
+        path: dist/*
+        remote_path: public_html/test/public_html/team-portal/
+        remote_host: ${{ secrets.REMOTE_HOST }}
+        remote_user: ${{ secrets.REMOTE_USER }}
+        remote_key: ${{ secrets.PRIVATE_KEY }}
