@@ -3,7 +3,7 @@ on:
   push: 
     branches: 
       - dev
-name: 🚀 Deploy Team-Portal to test
+name: 🧪 Deploy Team-Portal to test
 jobs:
   Deploy-Team-Portal-to-Test: 
     name: Deploy Team-Portal to test on host
