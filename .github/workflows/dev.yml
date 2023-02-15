@@ -43,9 +43,11 @@ jobs:
         port: 22
         script: |
           cd /home/deb105013n2/public_html/test/public_html/team-portal/
+          mv php/configuration.php ../configuration.php
           shopt -s extglob
-          rm -R !("php/configuration.php"|".htaccess")
+          rm -R !(".htaccess")
           shopt -u extglob
+          mv ../configuration.php php/configuration.php
           # Remove all teamportal files except config and htaccess to ensure fresh deployment
     - name: 🚚 Transfer files to webhost 
       uses: burnett01/rsync-deployments@5.2.1
