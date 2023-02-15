@@ -34,21 +34,19 @@ jobs:
       run: |
         mv php/ dist/
         mv static-pages/ dist/
-    - name: Wipe Team-Portal directory for fresh deployment
-      uses: appleboy/ssh-action@v0.1.7
-      with:
-        host: ${{ secrets.REMOTE_HOST }}
-        username: ${{ secrets.REMOTE_USER }}
-        key: ${{ secrets.PRIVATE_KEY }}
-        port: 22
-        script: |
-          cd /home/deb105013n2/public_html/test/public_html/team-portal/
-          mv php/configuration.php ../configuration.php
-          shopt -s extglob
-          rm -R !(".htaccess")
-          shopt -u extglob
-          mv ../configuration.php php/configuration.php
-          # Remove all teamportal files except config and htaccess to ensure fresh deployment
+    # - name: Wipe Team-Portal directory for fresh deployment
+    #   uses: appleboy/ssh-action@v0.1.7
+    #   with:
+    #     host: ${{ secrets.REMOTE_HOST }}
+    #     username: ${{ secrets.REMOTE_USER }}
+    #     key: ${{ secrets.PRIVATE_KEY }}
+    #     port: 22
+    #     script: |
+    #       cd /home/deb105013n2/public_html/test/public_html/team-portal/
+    #       shopt -s extglob
+    #       rm -R !("configuration.php"|".htaccess")
+    #       shopt -u extglob
+    #       # Remove all teamportal files except config and htaccess to ensure fresh deployment
     - name: 🚚 Transfer files to webhost 
       uses: burnett01/rsync-deployments@5.2.1
       with:
