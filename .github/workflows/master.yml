@@ -1,0 +1,44 @@
+on:
+  workflow_dispatch:
+  push: 
+    branches: 
+      - master
+name: 🔴 Deploy Team-Portal to production
+jobs:
+  Deploy-Team-Portal-to-Test: 
+    name: Deploy Team-Portal to Production
+    runs-on: ubuntu-latest
+    steps:
+    - name: Curl whitelist Github Runner IP at Antagonist
+      run: |
+        curl icanhazip.com > runner_ip.txt
+        runner_ip=$(cat runner_ip.txt)
+        curl --location --request POST 'https://skcvolleybal.nl:2223/CMD_PLUGINS/ssh?iframe=yes' --header 'Authorization: Basic ${{ secrets.base64_username_colon_password_antagonist }}' --header 'Content-Type: application/x-www-form-urlencoded' --data-urlencode 'ip='"$runner_ip"'' --data-urlencode 'expires=1800' --data-urlencode 'sshkey=5f:8d:bd:86:30:7e:cf:5c:8d:a1:c2:bd:c0:8b:af:53' --data-urlencode 'newkey_title= ' --data-urlencode 'newkey_key= ' --data-urlencode 'add_key_ip=Voeg IP toe aan key'
+    - name: 🏗️ Get latest code
+      uses: actions/checkout@v2
+    - uses: actions/setup-node@master
+    - name: 🏗️ Installing NPM dependencies
+      run: npm i -f
+    - name: 🔨 Building Angular
+      run: npm run build
+    - name: Rename configuration_example.php
+      run: cp php/configuration_example.php php/configuration.php
+    # We want configuration.php to be in the /php directory before running composer, because the classmap requires configuration.php 
+    # run: npm run build -- --configuration=test_deploy
+    - name: 🏗️ Installing PHP dependencies
+      run: |
+        composer update --ignore-platform-reqs --working-dir=php
+        composer dumpautoload --working-dir=php
+    - name: Prepare package
+      run: |
+        mv php/ dist/
+        mv static-pages/ dist/
+    - name: 🚚 Transfer files to webhost 
+      uses: burnett01/rsync-deployments@5.2.1
+      with:
+        switches: -avzr --delete --exclude="configuration.php"
+        path: dist/*
+        remote_path: public_html/team-portal/
+        remote_host: ${{ secrets.REMOTE_HOST }}
+        remote_user: ${{ secrets.REMOTE_USER }}
+        remote_key: ${{ secrets.PRIVATE_KEY }}
