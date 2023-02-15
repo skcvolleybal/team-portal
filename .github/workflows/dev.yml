@@ -15,19 +15,6 @@ jobs:
         runner_ip=$(cat runner_ip.txt)
         curl --location --request POST 'https://skcvolleybal.nl:2223/CMD_PLUGINS/ssh?iframe=yes' --header 'Authorization: Basic ${{ secrets.base64_username_colon_password_antagonist }}' --header 'Content-Type: application/x-www-form-urlencoded' --data-urlencode 'ip='"$runner_ip"'' --data-urlencode 'expires=1800' --data-urlencode 'sshkey=5f:8d:bd:86:30:7e:cf:5c:8d:a1:c2:bd:c0:8b:af:53' --data-urlencode 'newkey_title= ' --data-urlencode 'newkey_key= ' --data-urlencode 'add_key_ip=Voeg IP toe aan key'
         # To create the base64_username_colon_password_antagonist variable, get a key from Antagonist dashboard at skcvolleybal.nl:2223/users/login-keys. Format like deb999999:sleutelwaarde. Encode base64. Store in Github Secrets in repo. 
-    - name: multiple command
-      uses: appleboy/ssh-action@v0.1.7
-      with:
-        host: ${{ secrets.REMOTE_HOST }}
-        username: ${{ secrets.REMOTE_USER }}
-        key: ${{ secrets.PRIVATE_KEY }}
-        port: 22
-        script: |
-          cd /home/deb105013n2/public_html/test/public_html/team-portal/
-          shopt -s extglob
-          rm -R !("configuration.php"|".htaccess")
-          shopt -u extglob
-          # Remove all teamportal files except config and htaccess to ensure fresh deployment
     - name: 🏗️ Get latest code
       uses: actions/checkout@v2
     - uses: actions/setup-node@master
@@ -47,6 +34,19 @@ jobs:
       run: |
         mv php/ dist/
         mv static-pages/ dist/
+    - name: Wipe Team-Portal directory for fresh deployment
+      uses: appleboy/ssh-action@v0.1.7
+      with:
+        host: ${{ secrets.REMOTE_HOST }}
+        username: ${{ secrets.REMOTE_USER }}
+        key: ${{ secrets.PRIVATE_KEY }}
+        port: 22
+        script: |
+          cd /home/deb105013n2/public_html/test/public_html/team-portal/
+          shopt -s extglob
+          rm -R !("php/configuration.php"|".htaccess")
+          shopt -u extglob
+          # Remove all teamportal files except config and htaccess to ensure fresh deployment
     - name: 🚚 Transfer files to webhost 
       uses: burnett01/rsync-deployments@5.2.1
       with:
