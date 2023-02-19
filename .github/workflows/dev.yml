@@ -48,7 +48,8 @@ jobs:
     - name: 🏗️ Get latest code
       uses: actions/checkout@v2
     - uses: actions/setup-node@master
-      with: node-version: 18
+      with: 
+        node-version: 18
     - name: 🏗️ Installing NPM dependencies
       run: npm i -f
     - name: 🔨 Building Angular
