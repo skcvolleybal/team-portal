@@ -3,14 +3,14 @@ on:
   push: 
     branches: 
       - master
-name: 🔴 Deploy Team-Portal to production
+name: 💚 Deploy Team-Portal to production
 jobs:
   Deploy-Team-Portal-to-Test: 
-    name: Deploy Team-Portal to Production
+    name: Deploy Team-Portal to production
     runs-on: ubuntu-latest
     steps:
     - name: 🏗️ Get latest code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - uses: actions/setup-node@master
     - name: 🏗️ Installing NPM dependencies
       run: npm i -f
