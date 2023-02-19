@@ -72,13 +72,13 @@
                   "with": "src/environments/environment.test_deploy.ts"
                 }
               ],
-              "optimization": false,
-              "outputHashing": "none",
+              "optimization": true,
+              "outputHashing": "all",
               "sourceMap": false,
               "namedChunks": false,
-              "extractLicenses": false,
-              "vendorChunk": true,
-              "buildOptimizer": false
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true
             }
           },
           "defaultConfiguration": ""
