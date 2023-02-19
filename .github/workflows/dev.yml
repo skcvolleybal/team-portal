@@ -46,10 +46,12 @@ jobs:
         remote_user: ${{ secrets.REMOTE_USER }}
         remote_key: ${{ secrets.PRIVATE_KEY }} 
     - name: Remove PHP Github Runner IP from Antagonist
-      run: |
-        curl icanhazip.com > runner_ip.txt
-        runner_ip=$(cat runner_ip.txt)
-        curl --location --request POST 'https://skcvolleybal.nl:2223/CMD_PLUGINS/ssh?iframe=yes' --header 'Authorization: Basic ${{ secrets.base64_username_colon_password_antagonist }}' --header 'Content-Type: application/x-www-form-urlencoded' --data-urlencode 'delip=5f:8d:bd:86:30:7e:cf:5c:8d:a1:c2:bd:c0:8b:af:53_'"$runner_ip"'' --data-urlencode 'del_key_ip=Verwijder keys en/of IP'\''s'
+      run: >
+        curl --location --request POST 'https://skcvolleybal.nl:2223/CMD_PLUGINS/ssh?iframe=yes' 
+        --header 'Authorization: Basic ${{ secrets.base64_username_colon_password_antagonist }}' 
+        --header 'Content-Type: application/x-www-form-urlencoded' 
+        --data-urlencode 'delip=5f:8d:bd:86:30:7e:cf:5c:8d:a1:c2:bd:c0:8b:af:53_'"$runner_ip"'' 
+        --data-urlencode 'del_key_ip=Verwijder keys en/of IP'\''s'
         # Remove the IP again from Antagonist
   Deploy-Angular-to-Test: 
     name: Deploy Angular app to test on host
@@ -67,13 +69,23 @@ jobs:
       run: npm run test_deploy
     - name: Prepare package
       run: mv static-pages/ dist/
-    - name: Whitelist Angular Github Runner IP at Antagonist
+    - name: Set Runner IP
       run: |
         curl icanhazip.com > runner_ip.txt
         runner_ip=$(cat runner_ip.txt)
-        curl --location --request POST 'https://skcvolleybal.nl:2223/CMD_PLUGINS/ssh?iframe=yes' --header 'Authorization: Basic ${{ secrets.base64_username_colon_password_antagonist }}' --header 'Content-Type: application/x-www-form-urlencoded' --data-urlencode 'ip='"$runner_ip"'' --data-urlencode 'expires=1800' --data-urlencode 'sshkey=5f:8d:bd:86:30:7e:cf:5c:8d:a1:c2:bd:c0:8b:af:53' --data-urlencode 'newkey_title= ' --data-urlencode 'newkey_key= ' --data-urlencode 'add_key_ip=Voeg IP toe aan key'
+    - name: Whitelist Angular Github Runner IP at Antagonist
+      run: >
+        curl 
+        --location --request POST 'https://skcvolleybal.nl:2223/CMD_PLUGINS/ssh?iframe=yes' 
+        --header 'Authorization: Basic ${{ secrets.base64_username_colon_password_antagonist }}' 
+        --header 'Content-Type: application/x-www-form-urlencoded' 
+        --data-urlencode 'ip='"$runner_ip"'' 
+        --data-urlencode 'expires=1800' 
+        --data-urlencode 'sshkey=5f:8d:bd:86:30:7e:cf:5c:8d:a1:c2:bd:c0:8b:af:53' 
+        --data-urlencode 'newkey_title= ' 
+        --data-urlencode 'newkey_key= ' 
+        --data-urlencode 'add_key_ip=Voeg IP toe aan key'
         # To create the base64_username_colon_password_antagonist variable, get a key from Antagonist dashboard at skcvolleybal.nl:2223/users/login-keys. Format like deb999999:sleutelwaarde. Encode base64. Store in Github Secrets in repo. 
-    - name: 🚚 Transfer Angular files to webhost 
       uses: burnett01/rsync-deployments@5.2.1
       with:
         switches: -avzr --delete --exclude="php/"
@@ -83,8 +95,10 @@ jobs:
         remote_user: ${{ secrets.REMOTE_USER }}
         remote_key: ${{ secrets.PRIVATE_KEY }} 
     - name: Remove Angular Github Runner IP from Antagonist
-      run: |
-        curl icanhazip.com > runner_ip.txt
-        runner_ip=$(cat runner_ip.txt)
-        curl --location --request POST 'https://skcvolleybal.nl:2223/CMD_PLUGINS/ssh?iframe=yes' --header 'Authorization: Basic ${{ secrets.base64_username_colon_password_antagonist }}' --header 'Content-Type: application/x-www-form-urlencoded' --data-urlencode 'delip=5f:8d:bd:86:30:7e:cf:5c:8d:a1:c2:bd:c0:8b:af:53_'"$runner_ip"'' --data-urlencode 'del_key_ip=Verwijder keys en/of IP'\''s'
+      run: >
+        curl --location --request POST 'https://skcvolleybal.nl:2223/CMD_PLUGINS/ssh?iframe=yes' 
+        --header 'Authorization: Basic ${{ secrets.base64_username_colon_password_antagonist }}' 
+        --header 'Content-Type: application/x-www-form-urlencoded' 
+        --data-urlencode 'delip=5f:8d:bd:86:30:7e:cf:5c:8d:a1:c2:bd:c0:8b:af:53_'"$runner_ip"'' 
+        --data-urlencode 'del_key_ip=Verwijder keys en/of IP'\''s'
         # Remove the IP again from Antagonist
