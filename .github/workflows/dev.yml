@@ -41,7 +41,7 @@ jobs:
         curl --location --request POST 'https://skcvolleybal.nl:2223/CMD_PLUGINS/ssh?iframe=yes' --header 'Authorization: Basic ${{ secrets.base64_username_colon_password_antagonist }}' --header 'Content-Type: application/x-www-form-urlencoded' --data-urlencode 'delip=5f:8d:bd:86:30:7e:cf:5c:8d:a1:c2:bd:c0:8b:af:53_'"$runner_ip"'' --data-urlencode 'del_key_ip=Verwijder keys en/of IP'\''s'
         # Remove the IP again from Antagonist
   Deploy-Angular-to-Test: 
-    name: Deploy Angular app to test on host
+    name: Deploy Angular app to test environment
     runs-on: ubuntu-latest
     steps:
     - name: 🏗️ Get latest code
