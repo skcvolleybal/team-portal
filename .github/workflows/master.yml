@@ -11,7 +11,10 @@ jobs:
     steps:
     - name: 🏗️ Get latest code
       uses: actions/checkout@v3
-    - uses: actions/setup-node@master
+    - name: Setup node
+      uses: actions/setup-node@v3
+      with:
+        node-version: 16
     - name: 🏗️ Installing NPM dependencies
       run: npm i -f
     - name: 🔨 Building Angular
