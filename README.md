@@ -4,7 +4,7 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
 # Installation instructions
 
-## Required: 
+## Required:  
 1. Install Node.js: https://nodejs.org/en/download/
 2. Install Node packages: `npm i -f`. 
 3. Install a webserver such as Xampp: https://www.apachefriends.org/download.html
