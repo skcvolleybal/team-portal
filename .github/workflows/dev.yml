@@ -19,10 +19,11 @@ jobs:
       run: |
         composer update --ignore-platform-reqs --working-dir=php
         composer dumpautoload --working-dir=php
-    - name: Whitelist PHP Github Runner IP at Antagonist
+    - name: Set Runner IP
       run: |
         curl icanhazip.com > runner_ip.txt
         runner_ip=$(cat runner_ip.txt)
+    - name: Whitelist PHP Github Runner IP at Antagonist
       run: >
         curl 
         --location --request POST 'https://skcvolleybal.nl:2223/CMD_PLUGINS/ssh?iframe=yes' 
