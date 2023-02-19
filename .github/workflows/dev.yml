@@ -36,7 +36,7 @@ jobs:
         --data-urlencode 'newkey_key= ' 
         --data-urlencode 'add_key_ip=Voeg IP toe aan key'
         # To create the base64_username_colon_password_antagonist variable, get a key from Antagonist dashboard at skcvolleybal.nl:2223/users/login-keys. Format like deb999999:sleutelwaarde. Encode base64. Store in Github Secrets in repo. 
-    - name: 🚚 Transfer files to webhost 
+    - name: 🚚 Transfer PHP files to webhost 
       uses: burnett01/rsync-deployments@5.2.1
       with:
         switches: -avzr --delete --exclude="configuration.php"
@@ -86,6 +86,7 @@ jobs:
         --data-urlencode 'newkey_key= ' 
         --data-urlencode 'add_key_ip=Voeg IP toe aan key'
         # To create the base64_username_colon_password_antagonist variable, get a key from Antagonist dashboard at skcvolleybal.nl:2223/users/login-keys. Format like deb999999:sleutelwaarde. Encode base64. Store in Github Secrets in repo. 
+    - name: 🚚 Transfer Angular files to webhost 
       uses: burnett01/rsync-deployments@5.2.1
       with:
         switches: -avzr --delete --exclude="php/"
