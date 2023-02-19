@@ -20,7 +20,6 @@ jobs:
         composer update --ignore-platform-reqs --working-dir=php
         composer dumpautoload --working-dir=php
     - name: Prepare package
-      run: mv php/ dist/
     - name: Whitelist PHP Github Runner IP at Antagonist
       run: |
         curl icanhazip.com > runner_ip.txt
@@ -31,7 +30,7 @@ jobs:
       uses: burnett01/rsync-deployments@5.2.1
       with:
         switches: -avzr --delete --exclude="configuration.php"
-        path: dist/php/*
+        path: php/*
         remote_path: public_html/test/public_html/team-portal/php/
         remote_host: ${{ secrets.REMOTE_HOST }}
         remote_user: ${{ secrets.REMOTE_USER }}
@@ -49,6 +48,7 @@ jobs:
     - name: 🏗️ Get latest code
       uses: actions/checkout@v2
     - uses: actions/setup-node@master
+      with: node-version: 18
     - name: 🏗️ Installing NPM dependencies
       run: npm i -f
     - name: 🔨 Building Angular
