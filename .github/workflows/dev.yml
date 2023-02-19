@@ -48,7 +48,6 @@ jobs:
       uses: actions/checkout@v2
     - uses: actions/setup-node@master
     - name: 🏗️ Installing NPM dependencies
-      uses: actions/setup-node@master
       run: npm i -f
     - name: 🔨 Building Angular
       run: npm run test_deploy
