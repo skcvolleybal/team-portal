@@ -30,14 +30,15 @@ export const appRoutes: IToggleRoute[] = [
     data: { title: 'Wedstrijd Overzicht' },
     isHidden: false,
   },
-  {
-    path: 'statistieken',
-    component: StatistiekenComponent,
-    data: {
-      title: 'Statistieken',
-    },
-    isHidden: false,
-  },
+  // Obsolete; due to DWF 2.0 update stats need to be rewritten
+  // {
+  //   path: 'statistieken',
+  //   component: StatistiekenComponent,
+  //   data: {
+  //     title: 'Statistieken',
+  //   },
+  //   isHidden: false,
+  // },
   {
     path: 'fluit-beschikbaarheid',
     component: TelFluitBeschikbaarheidComponent,
@@ -46,15 +47,16 @@ export const appRoutes: IToggleRoute[] = [
     },
     isHidden: false,
   },
-  {
-    path: 'barcie-beschikbaarheid',
-    component: BarcieBeschikbaarheidComponent,
-    data: {
-      title: 'Barcie Beschikbaarheid',
-      groups: ['barcie', 'webcie'],
-    },
-    isHidden: true,
-  },
+  // Obsolete; is now barco
+  // {
+  //   path: 'barcie-beschikbaarheid',
+  //   component: BarcieBeschikbaarheidComponent,
+  //   data: {
+  //     title: 'Barcie Beschikbaarheid',
+  //     groups: ['barcie', 'webcie'],
+  //   },
+  //   isHidden: true,
+  // },
   {
     path: 'scheidsco',
     component: ScheidscoComponent,
