@@ -21,13 +21,13 @@ export const appRoutes: IToggleRoute[] = [
   {
     path: 'mijn-overzicht',
     component: MijnOverzichtComponent,
-    data: { title: 'Mijn Overzicht' },
+    data: { title: '🏠 Mijn Overzicht' },
     isHidden: false,
   },
   {
     path: 'wedstrijd-overzicht',
     component: WedstrijdOverzichtComponent,
-    data: { title: 'Wedstrijd Overzicht' },
+    data: { title: '👥 Wedstrijd Beschikbaarheid' },
     isHidden: false,
   },
   // Obsolete; due to DWF 2.0 update stats need to be rewritten
@@ -43,7 +43,7 @@ export const appRoutes: IToggleRoute[] = [
     path: 'fluit-beschikbaarheid',
     component: TelFluitBeschikbaarheidComponent,
     data: {
-      title: 'Tel/Fluit Beschikbaarheid',
+      title: '📆 Tel/Fluit Beschikbaarheid',
     },
     isHidden: false,
   },
@@ -60,13 +60,13 @@ export const appRoutes: IToggleRoute[] = [
   {
     path: 'scheidsco',
     component: ScheidscoComponent,
-    data: { title: 'Scheidsco', groups: ['teamcoordinator', 'webcie'] },
+    data: { title: '🏁 Scheidsco', groups: ['teamcoordinator', 'webcie'] },
     isHidden: true,
   },
   {
     path: 'Barco',
     component: BarcieIndelingComponent,
-    data: { title: 'Barco', groups: ['teamcoordinator', 'webcie'] },
+    data: { title: '🍺 Barco', groups: ['teamcoordinator', 'webcie'] },
     isHidden: true,
   },
 ];
