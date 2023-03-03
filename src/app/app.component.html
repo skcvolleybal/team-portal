@@ -2,12 +2,12 @@
   <div class="left">
     <a class="navbar-brand" (click)="toggleNavbar()" style="color: white;">
       <div style="display: flex;">
-        TeamPortal
+        SKC TeamPortal
         <div
           style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden;"
         >
           <span class="show-title">
-            <fa-icon [icon]="rightIcon"></fa-icon> {{ GetNavigationTitle() }}
+            <fa-icon style="margin-left: 0.4rem" [icon]="rightIcon"></fa-icon> {{ GetNavigationTitle() }}
           </span>
         </div>
       </div>
@@ -51,10 +51,10 @@
         }}</a>
       </li>
       <li *ngIf="isWebcie">
-        <div class="form-group">
+        <div class="form-group" style="margin-bottom: 0rem; margin-left: 0.8rem; margin-top: 0.3rem;">
           <input
             (change)="setImpersonation()"
-            class="form-control"
+            class="form-control form-control-sm"
             [(ngModel)]="impersonatedUser"
             [inputFormatter]="formatter"
             [ngbTypeahead]="searchUsers"
