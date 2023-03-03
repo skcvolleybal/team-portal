@@ -1,13 +1,21 @@
 # TeamPortal
+## Beschrijving
+TeamPortal ondersteunt de TeamTakenCoordinator van SKC bij het maken van planningen voor wedstrijddagen. SKC-leden worden ingepland op wedstrijddagen om BHV'er te zijn, scheidsrechter, teller of voor het op- en afbouwen van de zaal. Om te zorgen dat leden beschikbaar zijn kunnen leden zelf inloggen in TeamPortal om hun beschikbaarheid door te geven. 
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 6.2.3.
+De planningen worden wekelijks verzonden via een Cronjob. 
+
+TeamPortal gebruikt de Nevobo RSS feed om de voor SKC relevante wedstrijden op te halen. Verder gebruikt het de Joomla 3 interne database van de SKC website om teams en leden te koppelen. 
+
+## Systeemeisen:
+- PHP 8.0
+- Node.js even release (16, 18)
+- Angular v15
 
 # Installation instructions
 
 ## Required: 
-1. Install Node.js: https://nodejs.org/en/download/
-2. Install Node packages: `npm i -f`. 
-3. Install a webserver such as Xampp: https://www.apachefriends.org/download.html
+1. Install Node.js: https://nodejs.org/en/download/. Make sure it's an even release such as 16, 18. 
+3. Install a webserver such as Xampp with PHP 8.0 (!): https://www.apachefriends.org/download.html
 4. Install Composer: https://getcomposer.org/download/. Use Xampps PHP version, likely installed in C:\xampp\php (Windows)
 5. Clone the team-portal repository to your machine into Xampps htdocs directory, likely C:\xampp\htdocs. Ensure you emptied the directory first.  
 
@@ -15,7 +23,7 @@ Team-Portal consists of 2 parts, an Angular frontend and PHP backend. However, i
 
 ## Angular
 
-6. Navigate to the cloned repository directory. Likely C:\xampp\htdocs\team-portal. Run `npm install` to install all required Angular packages.
+6. Navigate to the cloned repository directory. Likely C:\xampp\htdocs\team-portal. Run `npm i -f` to (force) install all required Angular packages.
 7. Next, run `ng serve` (or `npm run ng serve` if ng serve doesn't work) to create a dev server. Navigate to http://localhost:4200/ in your webbrowser to view the app. As long as `ng serve` is running, the app will automatically reload if you change any of the source files.
 8. In team-portal\src\environments\environment.ts, make sure your baseUrl is set properly to match the URL where Team-Portal API is available. For example: http://localhost/team-portal/api/
 
@@ -25,8 +33,7 @@ The Angular frontend is now working, but can't communicate with the PHP backend 
 9. Navigate to the php directory in your cloned repository
 10. Rename configuration_example.php to configuration.php
 11. Open configuration.php, ensure $JpathBase and $AccessControlAllowOrigin are set correctly, and that the database host, name, username and password are correct. The $JpathBase should point to the root of your website on disk (for example: "C:\xampp\htdocs"). Make sure $AccessControlAllowOrigin is set to the URL that Team-Portal Angular runs on. For development: http://localhost:4200.
-12. Remove the composer.lock file
-13. Run `composer install` to install all required PHP packages. If you get PHP version errors, change the composer.json file to require "php": "^8.1". 
+13. Run `composer install` to install all required PHP packages. If you get PHP version errors, change the composer.json file to require "php": "^8.0". 
 
 ## Joomla
 14. In Xampp, make sure Apache and MySQL are running. 
