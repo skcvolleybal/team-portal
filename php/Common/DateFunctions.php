@@ -22,7 +22,8 @@ class DateFunctions
 
     static function GetDutchDateLong(DateTime $date): string
     {
-        return strftime('%A %e %B %Y', $date->getTimestamp());
+        // ucfirst because in Dutch, day name is not capitalized
+        return ucfirst(strftime('%A %e %B %Y', $date->getTimestamp()));
     }
 
     static function GetYmdNotation(DateTime $timestamp): string
