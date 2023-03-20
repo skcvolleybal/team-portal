@@ -23,7 +23,7 @@ class WedstrijddagModel
     {
         $this->date = DateFunctions::GetYmdNotation($dag->date);
         $this->datum = DateFunctions::GetDutchDate($dag->date);
-        $this->datum_long = DateFunctions::GetDutchDate($dag->date);
+        $this->datum_long = DateFunctions::GetDutchDateLong($dag->date);
 
         if ($dag->eersteZaalwacht !== null) {
             $this->eersteZaalwacht = $dag->eersteZaalwacht->naam;
