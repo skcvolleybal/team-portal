@@ -10,12 +10,14 @@ class BardagModel
 {
     public string $date;
     public string $datum;
+    public string $datum_long;
     public array $shifts = [];
 
     public function __construct(Bardag $dag)
     {
         $this->date = DateFunctions::GetYmdNotation($dag->date);
         $this->datum = DateFunctions::GetDutchDate($dag->date);
+        $this->datum_long = DateFunctions::GetDutchDateLong($dag->date);
 
         foreach ($dag->shifts as $i => $shift) {
             $this->shifts[] = new BarshiftModel($shift);
