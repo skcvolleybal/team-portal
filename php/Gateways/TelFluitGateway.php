@@ -224,6 +224,7 @@ class TelFluitGateway
 
             $persoon = new Persoon($row->id, $row->naam, $row->email);
             $persoon->aantalKeerGeteld = $row->geteld;
+            $persoon->spelertijd = 'abc';
             $currentTeam->teamgenoten[] = $persoon;
         }
         $result[] = $currentTeam;

@@ -29,7 +29,6 @@ class UpdateTellers implements Interactor
 
         $wedstrijd = $this->telFluitGateway->GetWedstrijd($data->matchId);
         $teller = $data->tellerId ? $this->joomlaGateway->GetUser($data->tellerId) : null;
-        $teller .= "abc";
         $wedstrijd->tellers[$data->tellerIndex] = $teller;
 
         $uscWedstrijden = $this->nevoboGateway->GetProgrammaForSporthal();
