@@ -66,7 +66,7 @@ export const appRoutes: IToggleRoute[] = [
   {
     path: 'Barco',
     component: BarcieIndelingComponent,
-    data: { title: '🍺 Barco', groups: ['teamcoordinator', 'webcie'] },
+    data: { title: '🍺 Barcie', groups: ['teamcoordinator', 'webcie'] },
     isHidden: true,
   },
 ];
