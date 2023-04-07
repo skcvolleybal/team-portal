@@ -12,6 +12,7 @@ class Persoon
     public ?string $positie = null;
     public ?int $rugnummer = null;
     public int $aantalKeerGeteld = 0;
+    public string $spelertijd;
 
     function __construct(int $id, string $naam, ?string $email)
     {
