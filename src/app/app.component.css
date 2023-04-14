@@ -11,3 +11,11 @@
 .hidden {
     display: none;
 }
+
+.panel-body {
+    background-color: white;
+    border-radius: 5px;
+    padding: 30px;
+    margin-top: 25px;
+}
+
