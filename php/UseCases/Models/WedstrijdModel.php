@@ -10,6 +10,7 @@ class WedstrijdModel extends Overzichtsitem
 {
     public string $wedstrijdId;
     public string $tijd;
+    public string $datum_long;
     public string $team1;
     public bool $isTeam1 = false;
     public bool $isCoachTeam1 = false;
@@ -27,6 +28,7 @@ class WedstrijdModel extends Overzichtsitem
     {
         $this->matchId = $wedstrijd->matchId;
         $this->tijd = $wedstrijd->timestamp !== null ? DateFunctions::GetTime($wedstrijd->timestamp) : "NA";
+        $this->datum_long = $wedstrijd->timestamp !== null ? DateFunctions::GetDutchDateLong($wedstrijd->timestamp) : "NA";
         $this->team1 = $wedstrijd->team1->naam;
         $this->team2 = $wedstrijd->team2->naam;
         $this->teams = $wedstrijd->team1->naam . " - " . $wedstrijd->team2->naam;

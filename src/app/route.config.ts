@@ -60,13 +60,13 @@ export const appRoutes: IToggleRoute[] = [
   {
     path: 'scheidsco',
     component: ScheidscoComponent,
-    data: { title: '🏁 Scheidsco', groups: ['teamcoordinator', 'webcie'] },
+    data: { title: '🏁 TeamTakenCo', groups: ['teamcoordinator', 'webcie'] },
     isHidden: true,
   },
   {
     path: 'Barco',
     component: BarcieIndelingComponent,
-    data: { title: '🍺 Barco', groups: ['teamcoordinator', 'webcie'] },
+    data: { title: '🍺 Barcie', groups: ['teamcoordinator', 'webcie'] },
     isHidden: true,
   },
 ];

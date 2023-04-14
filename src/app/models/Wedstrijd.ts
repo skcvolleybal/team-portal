@@ -4,6 +4,7 @@ export class Wedstrijd {
   coaches: Persoon[];
   date: string;
   datum: string;
+  datum_long: string;
   isCoachTeam1: boolean;
   isCoachTeam2: boolean;
   isScheidsrechter: boolean;

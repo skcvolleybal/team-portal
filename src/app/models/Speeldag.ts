@@ -8,6 +8,7 @@ export class Speeldag {
   zaalwacht: Zaalwacht;
   date: string;
   datum: string;
+  datum_long: string;
   speeltijden = new Array<Speeltijd>();
   eersteZaalwacht: string;
   eersteZaalwachtShortNotation: string;
