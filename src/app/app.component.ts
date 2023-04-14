@@ -9,6 +9,8 @@ import { Observable } from 'rxjs';
 import { StateService } from './core/services/state.service';
 import { appRoutes } from './route.config';
 import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
+import { environment } from '../environments/environment';
+
 
 @Component({
   selector: 'teamportal-root',
@@ -24,6 +26,7 @@ export class AppComponent implements OnInit {
   appRoutes: any;
   searching = false;
   searchFailed = false;
+  isProd = false;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -36,7 +39,12 @@ export class AppComponent implements OnInit {
     config.keyboard = false;
 
     this.appRoutes = appRoutes.filter((appRoute) => appRoute.path !== '');
-  }
+
+    if (environment.production) {
+      this.isProd = true;
+      }
+    }
+
 
   onLinkClick() {
     this.isNavbarHidden = true;
@@ -71,8 +79,9 @@ export class AppComponent implements OnInit {
       if (isAuthenticated) {
         this.ngOnInit();
       }
-    });
+    });    
   }
+
 
   ShowMenuItems(groups) {
     groups.forEach((subscription) => {

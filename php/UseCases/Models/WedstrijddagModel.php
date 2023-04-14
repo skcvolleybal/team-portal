@@ -10,6 +10,7 @@ class WedstrijddagModel
 {
     public string $date;
     public string $datum;
+    public string $datum_long;
     public array $speeltijden = [];
     public array $bardiensten = [];
     public array $eigenWedstrijden = [];
@@ -22,6 +23,8 @@ class WedstrijddagModel
     {
         $this->date = DateFunctions::GetYmdNotation($dag->date);
         $this->datum = DateFunctions::GetDutchDate($dag->date);
+        $this->datum_long = DateFunctions::GetDutchDateLong($dag->date);
+
         if ($dag->eersteZaalwacht !== null) {
             $this->eersteZaalwacht = $dag->eersteZaalwacht->naam;
             $this->eersteZaalwachtShortNotation = $dag->eersteZaalwacht->GetShortNotation();

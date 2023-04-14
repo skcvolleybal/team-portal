@@ -1,13 +1,15 @@
+
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+
   <div class="left">
     <a class="navbar-brand" (click)="toggleNavbar()" style="color: white;">
       <div style="display: flex;">
-        TeamPortal
+        SKC TeamPortal
         <div
           style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden;"
         >
           <span class="show-title">
-            <fa-icon [icon]="rightIcon"></fa-icon> {{ GetNavigationTitle() }}
+            <fa-icon style="margin-left: 0.4rem" [icon]="rightIcon"></fa-icon> {{ GetNavigationTitle() }}
           </span>
         </div>
       </div>
@@ -31,13 +33,14 @@
 
   <ng-template #rt let-r="result" let-t="term">
     <ngb-highlight [result]="r.naam" [term]="t"></ngb-highlight>
-  </ng-template>
+  </ng-template>  
 
   <div
     [ngbCollapse]="isNavbarHidden"
     class="navbar-collapse collapse"
     id="navbarColor02"
   >
+  
     <ul class="navbar-nav mr-auto">
       <li
         class="nav-item"
@@ -51,10 +54,10 @@
         }}</a>
       </li>
       <li *ngIf="isWebcie">
-        <div class="form-group">
+        <div class="form-group" style="margin-bottom: 0rem; margin-left: 0.8rem; margin-top: 0.3rem;">
           <input
             (change)="setImpersonation()"
-            class="form-control"
+            class="form-control form-control-sm"
             [(ngModel)]="impersonatedUser"
             [inputFormatter]="formatter"
             [ngbTypeahead]="searchUsers"
@@ -68,6 +71,12 @@
         </div>
       </li>
     </ul>
+    <span *ngIf="!isProd" class="badge badge-warning">You're on Test or Localhost 🔧</span>
+
   </div>
 </nav>
+
+
+
+
 <router-outlet></router-outlet>
