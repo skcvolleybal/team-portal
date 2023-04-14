@@ -19,3 +19,7 @@
     margin-top: 25px;
 }
 
+html {
+    overflow-x: hidden;
+    /* Used to ensure no scroll bars appear, when elements outside of the viewport (for example tel/fluit beschikbaarheid in menu bar)   */
+}
