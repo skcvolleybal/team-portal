@@ -1,13 +1,14 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
   <div class="left">
-    <a class="navbar-brand" (click)="toggleNavbar()" style="color: white;">
-      <div style="display: flex;">
+    <a class="navbar-brand" (click)="toggleNavbar()" style="color: white">
+      <div style="display: flex">
         SKC TeamPortal
         <div
-          style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden;"
+          style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden"
         >
           <span class="show-title">
-            <fa-icon style="margin-left: 0.4rem" [icon]="rightIcon"></fa-icon> {{ GetNavigationTitle() }}
+            <fa-icon style="margin-left: 0.4rem" [icon]="rightIcon"></fa-icon>
+            {{ GetNavigationTitle() }}
           </span>
         </div>
       </div>
@@ -51,7 +52,10 @@
         }}</a>
       </li>
       <li *ngIf="isWebcie">
-        <div class="form-group" style="margin-bottom: 0rem; margin-left: 0.8rem; margin-top: 0.3rem;">
+        <div
+          class="form-group"
+          style="margin-bottom: 0rem; margin-left: 0.8rem; margin-top: 0.3rem"
+        >
           <input
             (change)="setImpersonation()"
             class="form-control form-control-sm"
@@ -70,4 +74,17 @@
     </ul>
   </div>
 </nav>
-<router-outlet></router-outlet>
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title"></h3>
+        </div>
+        <div class="panel-body">
+          <router-outlet></router-outlet>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
