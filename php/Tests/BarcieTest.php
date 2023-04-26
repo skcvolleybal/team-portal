@@ -33,7 +33,7 @@ class BarcieTest extends TestCase
         // $response = $interactor->Execute($data);
 
         // assert
-        $response = "Making a test fail on purpose, to check if Github actions CICD works";
+        $response = null; // This line should be removed; only here for testing purposes
         $this->assertNull($response);
     // commented out until here
     }
