@@ -25,7 +25,7 @@ jobs:
         configuration: "php/phpunit.xml"
         memory_limit: "128M"
         bootstrap: php/vendor/autoload.php
-        args: Tests
+        args: php/Tests
     - name: Whitelist PHP Github Runner IP at Antagonist
       run: |
         curl icanhazip.com > runner_ip.txt
