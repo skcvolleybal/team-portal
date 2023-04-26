@@ -22,7 +22,7 @@ jobs:
     - name: 👨‍🔬 Running PHP Unit tests
       uses: php-actions/phpunit@v3
       with:
-        php_version: "8.0.*"
+        php_version: "8.0"
         configuration: "php/phpunit.xml"
         memory_limit: "128M"
         bootstrap: php/vendor/autoload.php
