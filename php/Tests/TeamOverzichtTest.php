@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 use Teamportal\Tests\GatewayMocks;
 use TeamPortal\UseCases\GetTeamoverzicht;
 
-class TeamoverzichtTest extends TestCase
+class TeamOverzichtTest extends TestCase
 {
     function test_Teamoverzicht_Happy_Flow()
     {
