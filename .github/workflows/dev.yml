@@ -20,14 +20,7 @@ jobs:
         composer update --ignore-platform-reqs --working-dir=php
         composer dumpautoload --working-dir=php
     - name: 👨‍🔬 Running PHP Unit tests
-      uses: php-actions/phpunit@v3
-      with:
-        version: "9.6"
-        php_version: "8.0"
-        configuration: "php/phpunit.xml"
-        memory_limit: "128M"
-        bootstrap: php/vendor/autoload.php
-        args: php/Tests
+      run: php/vendor/bin/phpunit php/Tests
     - name: Whitelist PHP Github Runner IP at Antagonist
       run: |
         curl icanhazip.com > runner_ip.txt
