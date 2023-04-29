@@ -344,8 +344,7 @@ class NevoboGateway implements INevoboGateway
     private function CreateSimplePieFeed(string $url): SimplePie
     {
         $feed = new SimplePie();
-        $content = file_get_contents("https://www.skcvolleybal.nl/programma_nevobo_rss_22_02_2023.rss");
-        $feed->set_feed_url($content);
+        $feed->set_feed_url($url);
         $feed->enable_order_by_date(false);
         $feed->handle_content_type();
         $feed->set_cache_duration($this->cacheDuration);
