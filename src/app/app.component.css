@@ -1,13 +1,22 @@
 @media (min-width: 992px) {
-    .show-title {
-        display: none !important;
-    }
+  .show-title {
+    display: none !important;
+  }
 }
 
 .show-title {
-    font-size: 15px;
+  font-size: 15px;
 }
 
 .hidden {
-    display: none;
+  display: none;
 }
+
+.panel-body {
+  background-color: white;
+  border-radius: 5px;
+  padding: 30px;
+  margin-top: 25px;
+}
+
+ 

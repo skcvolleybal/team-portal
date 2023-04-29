@@ -1,47 +1,61 @@
-<table class="table table-sm mb-0" *ngFor="let wedstrijd of wedstrijden">
-  <thead>
-    <tr>
-      <th scope="col" colspan="2">
-        {{ wedstrijd.datum_long }}, {{ wedstrijd.tijd }}
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td class="align-middle">
-        <teamportal-wedstrijd [wedstrijd]="wedstrijd"></teamportal-wedstrijd>
-      </td>
-      <td style="text-align:right" class="align-middle">
-        <teamportal-keuze [keuze]="wedstrijd.isAanwezig" (updateKeuze)="UpdateAanwezigheid(wedstrijd, $event, user)">
-        </teamportal-keuze>
-      </td>
-    </tr>
-    <tr>
-      <td colspan="2">
-        <div>
-          <teamportal-spelers-lijst (deleteSpeler)="UpdateAanwezigheid(wedstrijd, null, $event)"
-            *ngIf="wedstrijd.aanwezigen.length > 0" [spelers]="wedstrijd.aanwezigen" title="Aanwezigen"
-            class="alert-success"></teamportal-spelers-lijst>
+<p>Hier kan je opgeven bij welke wedstrijden je aanwezig bent.</p>
+<br>
 
-          <teamportal-spelers-lijst *ngIf="wedstrijd.onbekend.length > 0" [spelers]="wedstrijd.onbekend"
-            title="Onbekend" class="alert-warning"></teamportal-spelers-lijst>
+<div *ngIf="wedstrijdenEmpty; then showInfo else showMijnOverzicht"></div>
 
-          <teamportal-spelers-lijst *ngIf="wedstrijd.afwezigen.length > 0" [spelers]="wedstrijd.afwezigen"
-            title="Afwezigen" class="alert-danger"></teamportal-spelers-lijst>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td colspan="2" style="padding: 0px;">
-        <teamportal-inval-teams (addAanwezigheid)="UpdateAanwezigheid(wedstrijd, true, $event)"
-          [teams]="wedstrijd.invalTeams"></teamportal-inval-teams>
-      </td>
-    </tr>
-    <tr class="gray-background">
-      <td colspan="2" class="no-border"></td>
-    </tr>
-  </tbody>
-</table>
+<ng-template #showInfo>
+<p><em>Je hebt geen aankomende wedstrijden of diensten.</em></p>
+<br>
+</ng-template>
+
+<ng-template #showMijnOverzicht>
+  <table class="table table-sm mb-0" *ngFor="let wedstrijd of wedstrijden">
+    <thead>
+      <tr>
+        <th scope="col" colspan="2">
+          {{ wedstrijd.datum_long }}, {{ wedstrijd.tijd }}
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="align-middle">
+          <teamportal-wedstrijd [wedstrijd]="wedstrijd"></teamportal-wedstrijd>
+        </td>
+        <td style="text-align:right" class="align-middle">
+          <teamportal-keuze [keuze]="wedstrijd.isAanwezig" (updateKeuze)="UpdateAanwezigheid(wedstrijd, $event, user)">
+          </teamportal-keuze>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <div>
+            <teamportal-spelers-lijst (deleteSpeler)="UpdateAanwezigheid(wedstrijd, null, $event)"
+              *ngIf="wedstrijd.aanwezigen.length > 0" [spelers]="wedstrijd.aanwezigen" title="Aanwezigen"
+              class="alert-success"></teamportal-spelers-lijst>
+
+            <teamportal-spelers-lijst *ngIf="wedstrijd.onbekend.length > 0" [spelers]="wedstrijd.onbekend"
+              title="Onbekend" class="alert-warning"></teamportal-spelers-lijst>
+
+            <teamportal-spelers-lijst *ngIf="wedstrijd.afwezigen.length > 0" [spelers]="wedstrijd.afwezigen"
+              title="Afwezigen" class="alert-danger"></teamportal-spelers-lijst>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" style="padding: 0px;">
+          <teamportal-inval-teams (addAanwezigheid)="UpdateAanwezigheid(wedstrijd, true, $event)"
+            [teams]="wedstrijd.invalTeams"></teamportal-inval-teams>
+        </td>
+      </tr>
+      <tr class="gray-background">
+        <td colspan="2" class="no-border"></td>
+      </tr>
+    </tbody>
+  </table>
+</ng-template>
+
+<hr>
 <div class="alert alert-danger" role="alert" *ngIf="errorMessage">
   {{ errorMessage }}
 </div>

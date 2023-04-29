@@ -365,11 +365,10 @@ class NevoboGateway implements INevoboGateway
             $rssFeedItem = new RssFeedItem;
             $rssFeedItem->title = $feed->get_item($i)->get_title();
             $rssFeedItem->date = $feed->get_item($i)->get_date("Y-m-d G:i:s");
-            $rssFeedItem->description = $feed->get_item($i)->get_description();
-
+            $rssFeedItem->description = $feed->get_item($i)->get_description();            
             $result[] = $rssFeedItem;
         }
-
+        
         return $result;
     }
 }

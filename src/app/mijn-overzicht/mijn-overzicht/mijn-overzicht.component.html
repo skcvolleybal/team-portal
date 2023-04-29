@@ -1,79 +1,91 @@
-<table class="table table-sm mb-0" *ngFor="let dag of dagen">
-  <thead>
-    <tr>
-      <th scope="col" colspan="4">{{ dag.datum_long }}</th>
-    </tr>
-  </thead>
-  <tbody>
-    <ng-container *ngIf="dag.eersteZaalwacht">
-      <tr class="gray-background">
-        <td></td>
-        <td colspan="3">
-          1e Zaalwacht:
-          <span class="badge big-badge badge-success">{{ dag.eersteZaalwacht }}</span>
-        </td>
-      </tr>
-    </ng-container>
+<p>Hier zie je welke dagen je zaalwacht hebt, wanneer je wedstrijden zijn, wanneer je moet tellen, indien je bardiensten hebt en wanneer je moet scheidsen.</p>
 
-    <ng-container *ngIf="dag.tweedeZaalwacht">
-      <tr class="gray-background">
-        <td></td>
-        <td colspan="3">
-          2e Zaalwacht:
-          <span class="badge big-badge badge-success">{{ dag.tweedeZaalwacht }}</span>
-        </td>
-      </tr>
-    </ng-container>
+<div *ngIf="dagenEmpty; then showInfo else showMijnOverzicht"></div>
 
-    <ng-container *ngIf="dag.bardiensten.length > 0">
-      <tr class="gray-background" *ngFor="let bardienst of dag.bardiensten">
-        <td></td>
-        <td colspan="3">
-          Bardienst:
-          <span class="badge big-badge badge-success"
-            >Shift {{ bardienst.shift }}
-            {{ bardienst.isBhv ? " (BHV)" : "" }}</span
-          >
-        </td>
+<ng-template #showInfo>
+<br>
+<p><em>Je hebt geen aankomende wedstrijden of diensten.</em></p>
+<br>
+</ng-template>
+
+<ng-template #showMijnOverzicht>
+  <table class="table table-sm mb-0" *ngFor="let dag of dagen">
+    <thead>
+      <tr>
+        <th scope="col" colspan="4">{{ dag.datum_long }}</th>
       </tr>
-    </ng-container>
-    <ng-container *ngFor="let speeltijd of dag.speeltijden">
-      <tr *ngFor="let wedstrijd of speeltijd.wedstrijden">
-        <td colspan="4">
-          <div style="display: flex;">
-            <div style="margin-top: auto;margin-bottom: auto; width: 45px;">
-              {{ speeltijd.tijd }}
-            </div>
-            <div style="margin-top: auto;margin-bottom: auto;">
-              <teamportal-scheidsrechter
-                *ngIf="wedstrijd.isScheidsrechter"
-                [scheidsrechter]="wedstrijd.scheidsrechter"
-                [isScheidsrechter]="wedstrijd.isScheidsrechter"
-              ></teamportal-scheidsrechter>
-              <teamportal-wedstrijd
-                [wedstrijd]="wedstrijd"
-              ></teamportal-wedstrijd>
-            </div>
-            <div
-              style="padding: 10px;margin-top: auto;margin-bottom: auto;"
-              *ngIf="wedstrijd.isTellers"
+    </thead>
+    <tbody>
+      <ng-container *ngIf="dag.eersteZaalwacht">
+        <tr class="gray-background">
+          <td></td>
+          <td colspan="3">
+            1e Zaalwacht:
+            <span class="badge big-badge badge-success">{{ dag.eersteZaalwacht }}</span>
+          </td>
+        </tr>
+      </ng-container>
+
+      <ng-container *ngIf="dag.tweedeZaalwacht">
+        <tr class="gray-background">
+          <td></td>
+          <td colspan="3">
+            2e Zaalwacht:
+            <span class="badge big-badge badge-success">{{ dag.tweedeZaalwacht }}</span>
+          </td>
+        </tr>
+      </ng-container>
+
+      <ng-container *ngIf="dag.bardiensten.length > 0">
+        <tr class="gray-background" *ngFor="let bardienst of dag.bardiensten">
+          <td></td>
+          <td colspan="3">
+            Bardienst:
+            <span class="badge big-badge badge-success"
+              >Shift {{ bardienst.shift }}
+              {{ bardienst.isBhv ? " (BHV)" : "" }}</span
             >
-              <teamportal-tellers
-                [tellers]="wedstrijd.tellers"
-                [isTellers]="wedstrijd.isTellers"
+          </td>
+        </tr>
+      </ng-container>
+      <ng-container *ngFor="let speeltijd of dag.speeltijden">
+        <tr *ngFor="let wedstrijd of speeltijd.wedstrijden">
+          <td colspan="4">
+            <div style="display: flex;">
+              <div style="margin-top: auto;margin-bottom: auto; width: 45px;">
+                {{ speeltijd.tijd }}
+              </div>
+              <div style="margin-top: auto;margin-bottom: auto;">
+                <teamportal-scheidsrechter
+                  *ngIf="wedstrijd.isScheidsrechter"
+                  [scheidsrechter]="wedstrijd.scheidsrechter"
+                  [isScheidsrechter]="wedstrijd.isScheidsrechter"
+                ></teamportal-scheidsrechter>
+                <teamportal-wedstrijd
+                  [wedstrijd]="wedstrijd"
+                ></teamportal-wedstrijd>
+              </div>
+              <div
+                style="padding: 10px;margin-top: auto;margin-bottom: auto;"
+                *ngIf="wedstrijd.isTellers"
               >
-              </teamportal-tellers>
+                <teamportal-tellers
+                  [tellers]="wedstrijd.tellers"
+                  [isTellers]="wedstrijd.isTellers"
+                >
+                </teamportal-tellers>
+              </div>
             </div>
-          </div>
-        </td>
+          </td>
+        </tr>
+      </ng-container>
+      <tr class="gray-background">
+        <td colspan="4"></td>
       </tr>
-    </ng-container>
-    <tr class="gray-background">
-      <td colspan="4"></td>
-    </tr>
-  </tbody>
-</table>
-<div class="alert alert-danger" role="alert" *ngIf="errorMessage">
-  {{ errorMessage }}
-</div>
-<teamportal-spinner *ngIf="loading"></teamportal-spinner>
+    </tbody>
+  </table>
+</ng-template>
+  <div class="alert alert-danger" role="alert" *ngIf="errorMessage">
+    {{ errorMessage }}
+  </div>
+  <teamportal-spinner *ngIf="loading"></teamportal-spinner>
