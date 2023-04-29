@@ -19,6 +19,8 @@ jobs:
       run: |
         composer update --ignore-platform-reqs --working-dir=php
         composer dumpautoload --working-dir=php
+    - name: 👨‍🔬 Running PHP Unit tests
+      run: php/vendor/bin/phpunit php/Tests
     - name: Whitelist PHP Github Runner IP at Antagonist
       run: |
         curl icanhazip.com > runner_ip.txt

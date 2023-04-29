@@ -1,10 +1,11 @@
-<phpunit>
-    <filter>
-        <whitelist>
-            <directory suffix=".php">Common</directory>
-            <directory suffix=".php">Entities</directory>
-            <directory suffix=".php">UseCases</directory>
-            <directory suffix=".php">Gateways</directory>
-        </whitelist>
-    </filter>
+<?xml version="1.0"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
+  <coverage>
+    <include>
+      <directory suffix=".php">Common</directory>
+      <directory suffix=".php">Entities</directory>
+      <directory suffix=".php">UseCases</directory>
+      <directory suffix=".php">Gateways</directory>
+    </include>
+  </coverage>
 </phpunit>
