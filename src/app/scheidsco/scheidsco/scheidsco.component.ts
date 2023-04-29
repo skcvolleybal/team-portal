@@ -32,7 +32,7 @@ export class ScheidscoComponent implements OnInit {
   taken = ['scheidsrechter', 'tellers'];
   overzichtLoading: boolean;
   errorMessage: any;
-
+  speeldagenEmpty:boolean = false;
   constructor(
     private scheidscoService: ScheidscoService,
     private modalService: NgbModal
@@ -44,6 +44,9 @@ export class ScheidscoComponent implements OnInit {
       (speeldagen) => {
         this.speeldagen = speeldagen;
         this.overzichtLoading = false;
+        if (this.speeldagen.length == 0) {
+          this.speeldagenEmpty = true;
+        }
       },
       (error) => {
         if (error.status === 500) {
