@@ -191,26 +191,45 @@ class TelFluitGateway
 
     public function GetTellers(): array
     {
-        $query = 'SELECT 
-                    U.id, 
-                    U.name AS naam,
-                    U.email,
-                    COUNT(W1.teller1_id) + COUNT(W2.teller2_id) AS geteld, 
-                    G.id AS teamId, 
-                    G.title AS teamnaam
-                  FROM J3_users U
-                  INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
-                  INNER JOIN J3_usergroups G ON M.group_id = G.id
-                  LEFT JOIN TeamPortal_wedstrijden W1 ON (W1.teller1_id = U.id)
-                  LEFT JOIN TeamPortal_wedstrijden W2 ON (W2.teller2_id = U.id)
-                  WHERE G.parent_id in (SELECT id FROM J3_usergroups WHERE title = "Teams")
-                  AND U.id NOT IN (
-                    SELECT M.user_id FROM J3_usergroups G
-                    INNER JOIN J3_user_usergroup_map M ON G.id = M.group_id
-                    WHERE title = "Scheidsrechters"
-                  )
-                  GROUP BY U.id, U.name, U.email, G.id, G.title, W1.teller1_id, W2.teller2_id
-                  ORDER BY SUBSTRING(teamnaam, 1, 1), LENGTH(teamnaam), teamnaam, geteld;';
+        $query = 'SELECT
+        U.id,
+        U.name AS naam,
+        U.email,
+        (SELECT COUNT(*) FROM TeamPortal_wedstrijden W WHERE W.teller1_id = U.id OR W.teller2_id = U.id) AS geteld,
+        G.id AS teamId,
+        G.title AS teamnaam
+        FROM J3_users U
+        INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
+        INNER JOIN J3_usergroups G ON M.group_id = G.id
+        WHERE G.parent_id IN (SELECT id FROM J3_usergroups WHERE title = "Teams")
+         AND U.id NOT IN (
+                SELECT M.user_id FROM J3_usergroups G
+                INNER JOIN J3_user_usergroup_map M ON G.id = M.group_id
+                WHERE title = "Scheidsrechters"
+            )
+            GROUP BY U.id, U.name, U.email, G.id, G.title';
+
+        // Oude query onderstaand. Nieuwe query nog niet getest ivm Nevobo RSS feed nog offline.     
+        // $query = 'SELECT 
+        //             U.id, 
+        //             U.name AS naam,
+        //             U.email,
+        //             COUNT(W1.teller1_id) + COUNT(W2.teller2_id) AS geteld, 
+        //             G.id AS teamId, 
+        //             G.title AS teamnaam
+        //           FROM J3_users U
+        //           INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
+        //           INNER JOIN J3_usergroups G ON M.group_id = G.id
+        //           LEFT JOIN TeamPortal_wedstrijden W1 ON (W1.teller1_id = U.id)
+        //           LEFT JOIN TeamPortal_wedstrijden W2 ON (W2.teller2_id = U.id)
+        //           WHERE G.parent_id in (SELECT id FROM J3_usergroups WHERE title = "Teams")
+        //           AND U.id NOT IN (
+        //             SELECT M.user_id FROM J3_usergroups G
+        //             INNER JOIN J3_user_usergroup_map M ON G.id = M.group_id
+        //             WHERE title = "Scheidsrechters"
+        //           )
+        //           GROUP BY U.id, U.name, U.email, G.id, G.title, W1.teller1_id, W2.teller2_id
+        //           ORDER BY SUBSTRING(teamnaam, 1, 1), LENGTH(teamnaam), teamnaam, geteld;';
         $rows = $this->database->Execute($query);
         $result = [];
         $currentTeam = new Team($rows[0]->teamnaam, $rows[0]->teamId);
