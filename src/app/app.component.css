@@ -19,17 +19,4 @@
   margin-top: 25px;
 }
 
-.slide-in {
-  animation: drop-in 1s ease 200ms backwards;
-}
-
-@keyframes drop-in {
-  from {
-    opacity: 0;
-    transform: translateX(-100px);
-  }
-  to {
-    opacity: 1;
-    transform: translate(0px);
-  }
-}
+ 
