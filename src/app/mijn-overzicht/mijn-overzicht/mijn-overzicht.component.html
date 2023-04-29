@@ -1,9 +1,10 @@
+<p>Hier zie je welke dagen je zaalwacht hebt, wanneer je wedstrijden zijn, wanneer je moet tellen, indien je bardiensten hebt en wanneer je moet scheidsen.</p>
+
 <div *ngIf="dagenEmpty; then showInfo else showMijnOverzicht"></div>
 
 <ng-template #showInfo>
-<p>Hier zie je welke dagen je zaalwacht hebt, wanneer je wedstrijden zijn, wanneer je moet tellen, indien je bardiensten hebt en wanneer je moet scheidsen.</p>
 <br>
-<p><em>Je hebt geen aankomende wedstrijden of diensten</em></p>
+<p><em>Je hebt geen aankomende wedstrijden of diensten.</em></p>
 <br>
 </ng-template>
 

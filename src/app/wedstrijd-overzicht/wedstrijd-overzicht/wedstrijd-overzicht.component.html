@@ -1,9 +1,10 @@
+<p>Hier kan je opgeven bij welke wedstrijden je aanwezig bent.</p>
+<br>
+
 <div *ngIf="wedstrijdenEmpty; then showInfo else showMijnOverzicht"></div>
 
 <ng-template #showInfo>
-  <p>Hier kan je opgeven bij welke wedstrijden je aanwezig bent.</p>
-  <br>
-<p><em>Je hebt geen aankomende wedstrijden of diensten</em></p>
+<p><em>Je hebt geen aankomende wedstrijden of diensten.</em></p>
 <br>
 </ng-template>
 
