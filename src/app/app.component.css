@@ -19,4 +19,12 @@
   margin-top: 25px;
 }
 
- 
+.navbar .left {
+  overflow-x: hidden;
+}
+
+.creds {
+  text-align: center;
+  font-size: 0.8em;
+  margin-top: 2em;
+}

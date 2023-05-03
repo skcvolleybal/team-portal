@@ -1,4 +1,4 @@
-<p>Hier kan je opgeven bij welke wedstrijden je aanwezig bent.</p>
+<p *ngIf="user">Hier kan je opgeven bij welke wedstrijden van jouw team ({{user.team.naam}}) je aanwezig bent.</p>
 <br>
 
 <div *ngIf="wedstrijdenEmpty; then showInfo else showMijnOverzicht"></div>
