@@ -1,3 +1,13 @@
+<!-- <div *ngIf="bardiedagenEmpty; then showInfo else showMijnOverzicht"></div>
+
+<ng-template #showInfo>
+  <p>Hier kun je barleden aan een bardienst koppelen.</p>
+  <p><em>Er zijn nog geen bardiensten ingepland</em></p>
+<br>
+</ng-template> -->
+  <p>Hier vul je bardiensten, barkeepers en BHV'ers in.</p>
+<br>
+
 <div class="alert alert-danger" role="alert" *ngIf="errorMessage">
   {{errorMessage}}
 </div>
@@ -19,6 +29,7 @@
     <td></td>
   </tr>
 </table>
+
 <table class="table table-sm" *ngFor="let barciedag of barciedagen" style="margin-bottom: 0px;">
   <thead>
     <tr>
@@ -66,4 +77,5 @@
     </tr>
   </tbody>
 </table>
+
 <teamportal-spinner *ngIf="isLoading"></teamportal-spinner>

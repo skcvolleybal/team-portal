@@ -11,6 +11,7 @@ export class TelFluitBeschikbaarheidComponent implements OnInit {
   loading: boolean;
   speeldagen: any[];
   errorMessage: string;
+  speeldagenEmpty: boolean = false;
 
   constructor(private beschikbaarheidService: BeschikbaarheidService) {}
 
@@ -30,6 +31,10 @@ export class TelFluitBeschikbaarheidComponent implements OnInit {
       (speeldagen) => {
         this.speeldagen = speeldagen;
         this.loading = false;
+        // If speeldagen is empty we display some text so that the user knows there is not an error.
+        if (this.speeldagen.length == 0) {
+          this.speeldagenEmpty = true;
+        }
       },
       (error) => {
         if (error.status === 500) {

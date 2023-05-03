@@ -13,6 +13,7 @@ export class WedstrijdOverzichtComponent implements OnInit {
   loading: boolean;
   errorMessage: string;
   user: any;
+  wedstrijdenEmpty: boolean = false;
 
   SortTeam = (speler1, speler2) => (speler1.naam > speler2.naam ? 1 : -1);
 
@@ -27,6 +28,10 @@ export class WedstrijdOverzichtComponent implements OnInit {
       (wedstrijden) => {
         this.wedstrijden = wedstrijden;
         this.loading = false;
+        // If wedstrijden is empty we display some text so that the user knows there is not an error.
+        if (this.wedstrijden.length == 0) {
+          this.wedstrijdenEmpty = true;
+        }
       },
       (error) => {
         if (error.status === 500) {

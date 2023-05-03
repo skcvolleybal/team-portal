@@ -2,10 +2,14 @@
 @import "~bootstrap/dist/css/bootstrap.css";
 
 .gray-background {
-  background-color: #80808021;
+  background-color: #fff;
 }
 
 button.navbar-toggler {
   padding: 2px;
   font-size: 1rem;
+}
+
+body {
+  background-color: #ebebeb;
 }
