@@ -1,4 +1,4 @@
-<p>Hier zie je welke dagen je zaalwacht hebt, wanneer je wedstrijden zijn, wanneer je moet tellen, indien je bardiensten hebt en wanneer je moet scheidsen.</p>
+<p>Welkom <span *ngIf="user">{{user.voornaam}}</span>! Hier zie je welke dagen je zaalwacht hebt, wanneer je wedstrijden zijn, wanneer je moet tellen, of je bardiensten hebt en wanneer je moet scheidsen.</p>
 
 <div *ngIf="dagenEmpty; then showInfo else showMijnOverzicht"></div>
 

@@ -23,6 +23,7 @@ export class MijnOverzichtComponent implements OnInit {
   dagen: any[];
   errorMessage: string;
   dagenEmpty: boolean = false;
+  user: any;
 
   constructor(
     private joomalService: JoomlaService,
@@ -53,6 +54,10 @@ export class MijnOverzichtComponent implements OnInit {
       if (isAuthenticated) {
         this.ngOnInit();
       }
+    });
+
+    this.joomalService.GetCurrentUser().subscribe((data) => {
+      this.user = data;
     });
   }
 }
