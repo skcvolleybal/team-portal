@@ -7,7 +7,6 @@ import {
 
 import { JoomlaService } from '../../core/services/request.service';
 import { StateService } from 'src/app/core/services/state.service';
-import { ClassGetter } from '@angular/compiler/src/output/output_ast';
 
 @Component({
   selector: 'teamportal-mijn-overzicht',
