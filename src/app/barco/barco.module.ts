@@ -5,8 +5,7 @@ import { SelecteerBarcielidComponent } from './selecteer-barcie-lid/selecteer-ba
 import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
-  entryComponents: [SelecteerBarcielidComponent],
-  declarations: [BarcieIndelingComponent, SelecteerBarcielidComponent],
-  imports: [CommonModule, SharedModule],
+    declarations: [BarcieIndelingComponent, SelecteerBarcielidComponent],
+    imports: [CommonModule, SharedModule]
 })
 export class BarcoModule {}
