@@ -82,3 +82,5 @@ deployment.tar
 Teamstanden
 docker/php/www-root/
 docker/wordpress/
+
+.env
