@@ -26,7 +26,7 @@ jobs:
     - name: 🚚 Transfer files to webhost 
       uses: burnett01/rsync-deployments@5.2.1
       with:
-        switches: -avzr --delete --exclude=".env"
+        switches: -avzr --delete --exclude=".env" --include=".htaccess"
         path: php/
         remote_path: public_html/test/public_html/team-portal/php/
         remote_host: ${{ secrets.REMOTE_HOST }}
@@ -53,7 +53,9 @@ jobs:
     - name: 🔨 Building Angular
       run: npm run test_deploy
     - name: Prepare package
-      run: mv static-pages/ dist/
+      run: |
+        mv static-pages/ dist/
+        cp .htaccess dist/.htaccess
     - name: Whitelist Angular Github Runner IP at Antagonist
       run: |
         curl icanhazip.com > runner_ip.txt
@@ -63,8 +65,8 @@ jobs:
     - name: 🚚 Transfer Angular files to webhost 
       uses: burnett01/rsync-deployments@5.2.1
       with:
-        switches: -avzr --delete --exclude="php/"
-        path: dist/*
+        switches: -avzr --delete --exclude="php/" --include=".htaccess"
+        path: dist/
         remote_path: public_html/test/public_html/team-portal/
         remote_host: ${{ secrets.REMOTE_HOST }}
         remote_user: ${{ secrets.REMOTE_USER }}

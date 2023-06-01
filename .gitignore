@@ -84,3 +84,4 @@ docker/php/www-root/
 docker/wordpress/
 
 .env
+php/.env

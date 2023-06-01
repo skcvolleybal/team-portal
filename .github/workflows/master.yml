@@ -29,6 +29,7 @@ jobs:
       run: |
         mv php/ dist/
         mv static-pages/ dist/
+        cp .htaccess dist/.htaccess
     - name: Curl whitelist Github Runner IP at Antagonist
       run: |
         curl icanhazip.com > runner_ip.txt
@@ -37,7 +38,7 @@ jobs:
     - name: 🚚 Transfer files to webhost 
       uses: burnett01/rsync-deployments@5.2.1
       with:
-        switches: -avzr --delete --exclude=".env"
+        switches: -avzr --delete --exclude=".env" --include=".htaccess"
         path: dist/
         remote_path: public_html/team-portal/
         remote_host: ${{ secrets.REMOTE_HOST }}
