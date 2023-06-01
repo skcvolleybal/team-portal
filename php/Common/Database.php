@@ -4,20 +4,26 @@ namespace TeamPortal\Common;
 
 use mysqli_sql_exception;
 use PDO;
-use TeamPortal\Configuration;
 use UnexpectedValueException;
 
 class Database
 {
     private $dbc;
+    public $host;
+    public $database;
+    public $username;
+    public $password;
+    public $options;
 
-    public function __construct(Configuration $config)
+    public function __construct()
     {
-        $this->host = $config->Database->Hostname;
-        $this->database = $config->Database->Name;
-        $this->username = $config->Database->Username;
-        $this->password = $config->Database->Password;
-        $this->options = $config->Database->Options;
+        $this->host = $_ENV['DBHOSTNAME'];
+        $this->database = $_ENV['DBNAME'];
+        $this->username = $_ENV['DBUSERNAME'];
+        $this->password = $_ENV['DBPASSWORD'];
+        $this->options = [
+            "PDO::MYSQL_ATTR_INIT_COMMAND" => "SET NAMES utf8"
+        ];
     }
 
     private function getDbConnection()

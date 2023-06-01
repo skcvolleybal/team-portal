@@ -1,0 +1,6 @@
+# DO NOT REMOVE 
+<Files .env>
+    Order allow,deny
+    Deny from all
+</Files>
+# Protects the .env file from being read from the web
