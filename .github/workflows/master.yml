@@ -19,17 +19,17 @@ jobs:
       run: npm i -f
     - name: 🔨 Building Angular
       run: npm run build
-    - name: Rename configuration_example.php
-      run: cp php/configuration_example.php php/configuration.php
-    # We want configuration.php to be in the /php directory before running composer, because the classmap requires configuration.php 
     - name: 🏗️ Installing PHP dependencies
       run: |
         composer update --ignore-platform-reqs --working-dir=php
         composer dumpautoload --working-dir=php
+    - name: 👨‍🔬 Running PHP Unit tests
+      run: php/vendor/bin/phpunit php/Tests
     - name: Prepare package
       run: |
         mv php/ dist/
         mv static-pages/ dist/
+        cp .htaccess dist/.htaccess
     - name: Curl whitelist Github Runner IP at Antagonist
       run: |
         curl icanhazip.com > runner_ip.txt
@@ -38,8 +38,8 @@ jobs:
     - name: 🚚 Transfer files to webhost 
       uses: burnett01/rsync-deployments@5.2.1
       with:
-        switches: -avzr --delete --exclude="configuration.php"
-        path: dist/*
+        switches: -avzr --delete --exclude=".env" --include=".htaccess"
+        path: dist/
         remote_path: public_html/team-portal/
         remote_host: ${{ secrets.REMOTE_HOST }}
         remote_user: ${{ secrets.REMOTE_USER }}

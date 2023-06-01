@@ -11,14 +11,12 @@ jobs:
     steps:
     - name: 🏗️ Get latest code
       uses: actions/checkout@v3
-    - name: Rename configuration_example.php
-      run: cp php/configuration_example.php php/configuration.php
-    # We want configuration.php to be in the /php directory before running composer, because the classmap requires configuration.php 
-    # run: npm run build -- --configuration=test_deploy
     - name: 🏗️ Installing PHP dependencies
       run: |
         composer update --ignore-platform-reqs --working-dir=php
         composer dumpautoload --working-dir=php
+    - name: 👨‍🔬 Running PHP Unit tests
+      run: php/vendor/bin/phpunit php/Tests
     - name: Whitelist PHP Github Runner IP at Antagonist
       run: |
         curl icanhazip.com > runner_ip.txt
@@ -28,8 +26,8 @@ jobs:
     - name: 🚚 Transfer files to webhost 
       uses: burnett01/rsync-deployments@5.2.1
       with:
-        switches: -avzr --delete --exclude="configuration.php"
-        path: php/*
+        switches: -avzr --delete --exclude=".env" --include=".htaccess"
+        path: php/
         remote_path: public_html/test/public_html/team-portal/php/
         remote_host: ${{ secrets.REMOTE_HOST }}
         remote_user: ${{ secrets.REMOTE_USER }}
@@ -55,7 +53,9 @@ jobs:
     - name: 🔨 Building Angular
       run: npm run test_deploy
     - name: Prepare package
-      run: mv static-pages/ dist/
+      run: |
+        mv static-pages/ dist/
+        cp .htaccess dist/.htaccess
     - name: Whitelist Angular Github Runner IP at Antagonist
       run: |
         curl icanhazip.com > runner_ip.txt
@@ -65,8 +65,8 @@ jobs:
     - name: 🚚 Transfer Angular files to webhost 
       uses: burnett01/rsync-deployments@5.2.1
       with:
-        switches: -avzr --delete --exclude="php/"
-        path: dist/*
+        switches: -avzr --delete --exclude="php/" --include=".htaccess"
+        path: dist/
         remote_path: public_html/test/public_html/team-portal/
         remote_host: ${{ secrets.REMOTE_HOST }}
         remote_user: ${{ secrets.REMOTE_USER }}

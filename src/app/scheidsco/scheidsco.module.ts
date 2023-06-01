@@ -7,17 +7,12 @@ import { SelecteerZaalwachtComponent } from './selecteer-zaalwacht/selecteer-zaa
 import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
-  entryComponents: [
-    SelecteerZaalwachtComponent,
-    SelecteerScheidsrechterComponent,
-    SelecteerTellersComponent,
-  ],
-  declarations: [
-    ScheidscoComponent,
-    SelecteerScheidsrechterComponent,
-    SelecteerTellersComponent,
-    SelecteerZaalwachtComponent,
-  ],
-  imports: [CommonModule, SharedModule],
+    declarations: [
+        ScheidscoComponent,
+        SelecteerScheidsrechterComponent,
+        SelecteerTellersComponent,
+        SelecteerZaalwachtComponent,
+    ],
+    imports: [CommonModule, SharedModule]
 })
 export class ScheidscoModule {}

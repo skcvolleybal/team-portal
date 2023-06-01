@@ -27,6 +27,7 @@ export class BarcieIndelingComponent implements OnInit {
   barciedagen = [];
   isLoading: boolean;
   errorMessage: string;
+  bardiedagenEmpty: boolean = false;
 
   constructor(
     private barcieService: BarcieService,
@@ -115,6 +116,9 @@ export class BarcieIndelingComponent implements OnInit {
       (response) => {
         this.isLoading = false;
         this.barciedagen = response;
+        if (this.barciedagen.length == 0) {
+          this.bardiedagenEmpty = true;
+        }
       },
       (response) => {
         this.isLoading = true;
