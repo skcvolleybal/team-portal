@@ -26,7 +26,7 @@ jobs:
     - name: 🚚 Transfer files to webhost 
       uses: burnett01/rsync-deployments@5.2.1
       with:
-        switches: -avzr --delete --exclude="configuration.php"
+        switches: -avzr --delete
         path: php/
         remote_path: public_html/test/public_html/team-portal/php/
         remote_host: ${{ secrets.REMOTE_HOST }}
