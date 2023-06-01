@@ -2,8 +2,8 @@ import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 
 import { AanwezigheidService } from './core/services/aanwezigheid.service';
 import { AppComponent } from './app.component';
-import { BarcoModule } from './barco/barco.module';
-import { BarcoService } from './core/services/barco.service';
+import { BarcieModule } from './barcie/barcie.module';
+import { BarcieService } from './core/services/barcie.service';
 import { BeschikbaarheidModule } from './beschikbaarheid/beschikbaarheid.module';
 import { BeschikbaarheidService } from './core/services/beschikbaarheid.service';
 import { BrowserModule } from '@angular/platform-browser';
@@ -39,7 +39,7 @@ import { appRoutes } from './route.config';
     BrowserModule,
     MijnOverzichtModule,
     WedstrijdOverzichtModule,
-    BarcoModule,
+    BarcieModule,
     BeschikbaarheidModule,
     CoreModule,
     ScheidscoModule,
@@ -52,7 +52,7 @@ import { appRoutes } from './route.config';
     StateService,
     JoomlaService,
     AanwezigheidService,
-    BarcoService,
+    BarcieService,
     BeschikbaarheidService,
     ScheidscoService,
     StatistiekService,

@@ -9,4 +9,4 @@ import { SharedModule } from '../shared/shared.module';
   declarations: [BarcieIndelingComponent, SelecteerBarcielidComponent],
   imports: [CommonModule, SharedModule],
 })
-export class BarcoModule {}
+export class BarcieModule {}

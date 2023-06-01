@@ -85,7 +85,7 @@ $entryPoint =
             new PostRoute('', UseCases\UpdateBarcieBeschikbaarheid::class)
         ], AuthorizationRole::BARCIE),
 
-        new RouteGroup('/barco', [
+        new RouteGroup('/barcie', [
             new PostRoute('/toggle-bhv', UseCases\ToggleBhv::class),
             new GetRoute('/rooster', UseCases\GetBarcieRooster::class),
             new GetRoute('/beschikbaarheden', UseCases\GetBarcieBeschikbaarheden::class),

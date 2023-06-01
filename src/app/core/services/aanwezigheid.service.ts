@@ -25,7 +25,7 @@ export class AanwezigheidService {
   }
 
   DeleteBarcieAanwezigheid(date: string, shift: string, barlidId: string) {
-    return this.httpClient.delete<any>(environment.baseUrl + 'barco/dienst', {
+    return this.httpClient.delete<any>(environment.baseUrl + 'barcie/dienst', {
       params: {
         date,
         barlidId,
@@ -35,7 +35,7 @@ export class AanwezigheidService {
   }
 
   AddBarcieAanwezigheid(date: string, shift: number, barlidId: string) {
-    return this.httpClient.post<any>(environment.baseUrl + 'barco/dienst', {
+    return this.httpClient.post<any>(environment.baseUrl + 'barcie/dienst', {
       date,
       shift,
       barlidId,

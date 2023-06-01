@@ -8,7 +8,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 import { AanwezigheidService } from '../../core/services/aanwezigheid.service';
-import { BarcoService } from '../../core/services/barco.service';
+import { BarcieService } from '../../core/services/barcie.service';
 import { SelecteerBarcielidComponent } from '../selecteer-barcie-lid/selecteer-barcie-lid.component';
 import { faHeart as heartRegular } from '@fortawesome/free-regular-svg-icons';
 
@@ -29,7 +29,7 @@ export class BarcieIndelingComponent implements OnInit {
   errorMessage: string;
 
   constructor(
-    private barcoService: BarcoService,
+    private barcieService: BarcieService,
     private aanwezigheidService: AanwezigheidService,
     private modalService: NgbModal
   ) {}
@@ -43,7 +43,7 @@ export class BarcieIndelingComponent implements OnInit {
 
   onDateSelection(date: NgbDate) {
     this.errorMessage = null;
-    this.barcoService.AddBarcieDag(date).subscribe(
+    this.barcieService.AddBarcieDag(date).subscribe(
       () => {
         this.GetBarcieRooster();
       },
@@ -54,7 +54,7 @@ export class BarcieIndelingComponent implements OnInit {
   }
 
   DeleteBarcieDate(date) {
-    this.barcoService.DeleteBarcieDag(date).subscribe(
+    this.barcieService.DeleteBarcieDag(date).subscribe(
       () => {
         this.GetBarcieRooster();
       },
@@ -65,7 +65,7 @@ export class BarcieIndelingComponent implements OnInit {
   }
 
   ToggleBhv(selectedBarcieDag, selectedBarcielid, shift) {
-    this.barcoService.ToggleBhv(
+    this.barcieService.ToggleBhv(
       selectedBarcieDag.date,
       shift,
       selectedBarcielid.id
@@ -111,7 +111,7 @@ export class BarcieIndelingComponent implements OnInit {
 
   GetBarcieRooster() {
     this.isLoading = true;
-    this.barcoService.GetBarcieRooster().subscribe(
+    this.barcieService.GetBarcieRooster().subscribe(
       (response) => {
         this.isLoading = false;
         this.barciedagen = response;

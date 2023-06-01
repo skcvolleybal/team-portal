@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 import { AanwezigheidService } from '../../core/services/aanwezigheid.service';
-import { BarcoService } from '../../core/services/barco.service';
+import { BarcieService } from '../../core/services/barcie.service';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
@@ -23,7 +23,7 @@ export class SelecteerBarcielidComponent implements OnInit {
 
   constructor(
     public modal: NgbActiveModal,
-    private barcoService: BarcoService,
+    private barcieService: BarcieService,
     private aanwezigheidService: AanwezigheidService
   ) {}
 
@@ -36,7 +36,7 @@ export class SelecteerBarcielidComponent implements OnInit {
 
   GetBarLeden() {
     this.isLoading = true;
-    this.barcoService.GetBarcieBeschikbaarheden(this.date).subscribe(
+    this.barcieService.GetBarcieBeschikbaarheden(this.date).subscribe(
       (response) => {
         this.isLoading = false;
         this.beschikbaarheden = response;

@@ -1,5 +1,5 @@
 import { BarcieBeschikbaarheidComponent } from './beschikbaarheid/barcie-beschikbaarheid/barcie-beschikbaarheid.component';
-import { BarcieIndelingComponent } from './barco/barcie-indeling/barcie-indeling.component';
+import { BarcieIndelingComponent } from './barcie/barcie-indeling/barcie-indeling.component';
 import { MijnOverzichtComponent } from './mijn-overzicht/mijn-overzicht/mijn-overzicht.component';
 import { Route } from '@angular/router';
 import { ScheidscoComponent } from './scheidsco/scheidsco/scheidsco.component';
@@ -47,7 +47,7 @@ export const appRoutes: IToggleRoute[] = [
     },
     isHidden: false,
   },
-  // Obsolete; is now barco
+  // Obsolete; is now barcie
   // {
   //   path: 'barcie-beschikbaarheid',
   //   component: BarcieBeschikbaarheidComponent,
@@ -64,7 +64,7 @@ export const appRoutes: IToggleRoute[] = [
     isHidden: true,
   },
   {
-    path: 'Barco',
+    path: 'Barcie',
     component: BarcieIndelingComponent,
     data: { title: '🍺 Barcie', groups: ['teamcoordinator', 'webcie'] },
     isHidden: true,
