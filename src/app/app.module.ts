@@ -21,8 +21,6 @@ import { ScheidscoModule } from './scheidsco/scheidsco.module';
 import { ScheidscoService } from './core/services/scheidsco.service';
 import { SharedModule } from './shared/shared.module';
 import { StateService } from './core/services/state.service';
-import { StatistiekModule } from './statistiek/statistiek.module';
-import { StatistiekService } from './core/services/statistieken.service';
 import { WedstrijdOverzichtModule } from './wedstrijd-overzicht/wedstrijd-overzicht.module';
 import { WithCredentialsInterceptor } from './core/interceptors/add-credentials.interceptor';
 import { appRoutes } from './route.config';
@@ -43,7 +41,6 @@ import { appRoutes } from './route.config';
     BeschikbaarheidModule,
     CoreModule,
     ScheidscoModule,
-    StatistiekModule,
     SharedModule,
     FontAwesomeModule,
   ],
@@ -55,7 +52,6 @@ import { appRoutes } from './route.config';
     BarcieService,
     BeschikbaarheidService,
     ScheidscoService,
-    StatistiekService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: HTTPListener,

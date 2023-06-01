@@ -3,7 +3,6 @@ import { BarcieIndelingComponent } from './barcie/barcie-indeling/barcie-indelin
 import { MijnOverzichtComponent } from './mijn-overzicht/mijn-overzicht/mijn-overzicht.component';
 import { Route } from '@angular/router';
 import { ScheidscoComponent } from './scheidsco/scheidsco/scheidsco.component';
-import { StatistiekenComponent } from './statistiek/statistieken/statistieken.component';
 import { TelFluitBeschikbaarheidComponent } from './beschikbaarheid/tel-fluit-beschikbaarheid/tel-fluit-beschikbaarheid.component';
 import { WedstrijdOverzichtComponent } from './wedstrijd-overzicht/wedstrijd-overzicht/wedstrijd-overzicht.component';
 
