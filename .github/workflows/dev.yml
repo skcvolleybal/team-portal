@@ -53,7 +53,9 @@ jobs:
     - name: 🔨 Building Angular
       run: npm run test_deploy
     - name: Prepare package
-      run: mv static-pages/ dist/
+      run: |
+        mv static-pages/ dist/
+        cp .htaccess dist/.htaccess
     - name: Whitelist Angular Github Runner IP at Antagonist
       run: |
         curl icanhazip.com > runner_ip.txt

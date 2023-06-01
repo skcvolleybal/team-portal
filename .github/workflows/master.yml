@@ -27,11 +27,9 @@ jobs:
       run: php/vendor/bin/phpunit php/Tests
     - name: Prepare package
       run: |
-        ls -a
         mv php/ dist/
         mv static-pages/ dist/
         cp .htaccess dist/.htaccess
-        ls -a dist/
     - name: Curl whitelist Github Runner IP at Antagonist
       run: |
         curl icanhazip.com > runner_ip.txt
