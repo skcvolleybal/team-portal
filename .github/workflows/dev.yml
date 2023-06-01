@@ -11,10 +11,6 @@ jobs:
     steps:
     - name: 🏗️ Get latest code
       uses: actions/checkout@v3
-    - name: Rename configuration_example.php
-      run: cp php/configuration_example.php php/configuration.php
-    # We want configuration.php to be in the /php directory before running composer, because the classmap requires configuration.php 
-    # run: npm run build -- --configuration=test_deploy
     - name: 🏗️ Installing PHP dependencies
       run: |
         composer update --ignore-platform-reqs --working-dir=php
@@ -30,8 +26,8 @@ jobs:
     - name: 🚚 Transfer files to webhost 
       uses: burnett01/rsync-deployments@5.2.1
       with:
-        switches: -avzr --delete --exclude="configuration.php"
-        path: php/*
+        switches: -avzr --delete --exclude=".env"
+        path: php/
         remote_path: public_html/test/public_html/team-portal/php/
         remote_host: ${{ secrets.REMOTE_HOST }}
         remote_user: ${{ secrets.REMOTE_USER }}

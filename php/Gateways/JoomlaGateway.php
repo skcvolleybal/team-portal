@@ -2,7 +2,7 @@
 
 namespace TeamPortal\Gateways;
 
-use TeamPortal\Configuration;
+use SimplePie\Parse\Date;
 use TeamPortal\Common\Database;
 use TeamPortal\Common\Utilities;
 use TeamPortal\Entities\Credentials;
@@ -14,12 +14,10 @@ use UnexpectedValueException;
 
 class JoomlaGateway implements IJoomlaGateway
 {
-    public function __construct(
-        Configuration $configuration,
-        Database $database
-    ) {
-        $this->configuration = $configuration;
-        $this->database = $database;
+    public $database;
+
+    public function __construct() {
+        $this->database = new Database();
     }
 
     private static $allSkcSpelers = null;
@@ -272,7 +270,7 @@ class JoomlaGateway implements IJoomlaGateway
             return;
         }
 
-        define('JPATH_BASE', $this->configuration->JpathBase);
+        define('JPATH_BASE', $_ENV['JPATHBASE']);
         define('_JEXEC', 1);
 
         require_once JPATH_BASE . '/includes/defines.php';
