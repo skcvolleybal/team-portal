@@ -106,19 +106,6 @@ class Team
         return $this->naam === $team->naam;
     }
 
-    public function GetSpelerByRugnummer(int $rugnummer): ?DwfSpeler
-    {
-        if ($rugnummer === null) {
-            return null;
-        }
-        foreach ($this->teamgenoten as $teamgenoot) {
-            if ($teamgenoot->rugnummer === $rugnummer) {
-                return $teamgenoot;
-            }
-        }
-        throw new UnexpectedValueException();
-    }
-
     function GetWedstrijdOfTeam(array $wedstrijden): ?Wedstrijd
     {
         foreach ($wedstrijden as $wedstrijd) {

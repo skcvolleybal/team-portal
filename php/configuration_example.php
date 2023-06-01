@@ -8,8 +8,6 @@ class Configuration
     public $DisplayErrors = true;
     public $JpathBase = "C:\\xampp\\htdocs"; # Example Xampp webserver
     public $AccessControlAllowOrigin = "http://localhost:4200"; 
-    public $DwfUsername = "dwfusername"; # Obsolete
-    public $DwfPassword = "dwfusername"; # Obsolete 
 
     function __construct()
     {

@@ -115,16 +115,6 @@ $entryPoint =
             ])
         ], AuthorizationRole::TEAMCOORDINATOR),
 
-        new RouteGroup('/dwf', [
-            new GetRoute('/dwf-punten', UseCases\GetDwfPunten::class, AuthorizationRole::UNREGISTERED),
-            new GetRoute('/eigen-wedstrijden', UseCases\GetEigenDwfWedstrijden::class),
-            new GetRoute('/importeer-wedstrijden', UseCases\WedstrijdenImporteren::class, AuthorizationRole::UNREGISTERED),
-        ], AuthorizationRole::USER),
-
-        //new RouteGroup('/statistieken', [
-        //    new GetRoute('/wedstrijden', UseCases\GetDwfStatistieken::class)
-        //], AuthorizationRole::USER),
-
         new GetRoute('/calendar', UseCases\GetCalendar::class, AuthorizationRole::UNREGISTERED),
 
         new RouteGroup('/tasks', [
