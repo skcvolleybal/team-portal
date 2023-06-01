@@ -63,7 +63,7 @@ jobs:
     - name: 🚚 Transfer Angular files to webhost 
       uses: burnett01/rsync-deployments@5.2.1
       with:
-        switches: -avzr --delete --exclude="php/"
+        switches: -avzr --delete --exclude="php/" --include=".htaccess"
         path: dist/
         remote_path: public_html/test/public_html/team-portal/
         remote_host: ${{ secrets.REMOTE_HOST }}
