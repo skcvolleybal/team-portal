@@ -27,6 +27,7 @@ jobs:
       run: php/vendor/bin/phpunit php/Tests
     - name: Prepare package
       run: |
+        ls -a
         mv php/ dist/
         mv static-pages/ dist/
         ls -a dist/
