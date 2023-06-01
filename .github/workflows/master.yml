@@ -30,6 +30,7 @@ jobs:
         ls -a
         mv php/ dist/
         mv static-pages/ dist/
+        mv -T .htaccess dist/
         ls -a dist/
     - name: Curl whitelist Github Runner IP at Antagonist
       run: |
