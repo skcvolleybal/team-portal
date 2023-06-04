@@ -150,9 +150,11 @@ class WordPressGateway implements IWordPressGateway
 
         $user = get_user_by('ID', $user->id);
 
-        if ( in_array( $usergroup, (array) $user->roles ) ) {
+        // Set all to lowercase, to make sure "Webcie" = "webcie"
+        if (in_array(strtolower($usergroup), array_map('strtolower', (array) $user->roles))) {
             return true;
         }
+        
         return false;
 
     }
