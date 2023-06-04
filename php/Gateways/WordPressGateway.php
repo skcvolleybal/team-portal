@@ -37,44 +37,44 @@ class WordPressGateway implements IWordPressGateway
 
     private function GetUserById(int $userId): Persoon
     {
-        $query = 'SELECT 
-                    U.id, 
-                    U.name AS naam, 
-                    U.email,
-                    C.cb_rugnummer as rugnummer,
-                    C.cb_positie as positie,
-                    C.cb_nevobocode as relatiecode
-                  FROM J3_users U
-                  LEFT JOIN J3_comprofiler C ON U.id = C.user_id
-                  WHERE U.id = ?';
-        $params = [$userId];
-        $users = $this->database->Execute($query, $params);
-        if (count($users) != 1) {
+        // WP Ready
+        $user = get_user_by('ID', $userId);
+        $userMeta = get_user_meta($userId);
+
+        if (! $user instanceof \WP_User) {
             throw new UnexpectedValueException("Gebruiker met id '$userId' bestaat niet");
         }
 
-        $persoon = new Persoon($users[0]->id, $users[0]->naam, $users[0]->email);
-        $persoon->rugnummer = Utilities::StringToInt($users[0]->rugnummer);
-        $persoon->positie = $users[0]->positie;
+
+        $persoon = new Persoon($user->data->ID, $user->data->user_nicename, $user->data->user_email);
+        // Tot hier werkend
+
+        $persoon->rugnummer = Utilities::StringToInt($userMeta->rugnummer);
+        $persoon->positie = $userMeta->positie;
         return $persoon;
     }
 
     public function GetLoggedInUser(): ?Persoon
     {
-        $this->InitWordPress();
+    // WP ready
 
-        $wordPressUser = \JFactory::getUser();
-        if ($wordPressUser->guest) {
+        $wploggedin = is_user_logged_in();
+        $wordPressUser = wp_get_current_user();
+  
+        if (!$wploggedin) {
             return null;
         }
-
+        
+        // Construct a TeamPortal Persoon
         $user = $this->GetUserById($wordPressUser->id);
-
+        
+        // Tot hier werkend
         if ($this->IsWebcie($user) && isset($_GET['impersonationId'])) {
+            // To-do: ImpersonationID checken
             $impersonationId = $_GET['impersonationId'];
             return $this->GetUserById($impersonationId);
         }
-
+        // Happy flow WP ready
         return $user;
     }
 
@@ -138,16 +138,18 @@ class WordPressGateway implements IWordPressGateway
 
     private function IsUserInUsergroup(?Persoon $user, string $usergroup): bool
     {
+        // WP ready
         if ($user === null) {
             return false;
         }
-        $query = 'SELECT *
-                  FROM J3_user_usergroup_map M
-                  INNER JOIN J3_usergroups G ON M.group_id = G.id
-                  WHERE M.user_id = ? and G.title = ?';
-        $params = [$user->id, $usergroup];
-        $result = $this->database->Execute($query, $params);
-        return count($result) > 0;
+
+        $user = get_user_by('ID', $user->id);
+
+        if ( in_array( $usergroup, (array) $user->roles ) ) {
+            return true;
+        }
+        return false;
+
     }
 
     public function IsScheidsrechter(?Persoon $user): bool
@@ -157,7 +159,8 @@ class WordPressGateway implements IWordPressGateway
 
     public function IsWebcie(?Persoon $user): bool
     {
-        return $this->IsUserInUsergroup($user, 'Super Users');
+        // In WordPress, it's not Super User but administrator
+        return $this->IsUserInUsergroup($user, 'administrator');
     }
 
     public function IsTeamcoordinator(?Persoon $user): bool
@@ -172,21 +175,26 @@ class WordPressGateway implements IWordPressGateway
 
     public function GetTeam(Persoon $user): ?Team
     {
-        $query = 'SELECT 
-                    G.id,
-                    title AS naam
-                  FROM J3_users U
-                  LEFT JOIN J3_user_usergroup_map M on U.id = M.user_id
-                  LEFT JOIN J3_usergroups G on G.id = M.group_id
-                  WHERE M.user_id = ? and G.parent_id in (SELECT id from J3_usergroups where title = \'Teams\')';
-        $params = [$user->id];
+        // WP Ready
 
-        $team = $this->database->Execute($query, $params);
-        if (count($team) != 1) {
+        $userMeta = get_user_meta($user->id);
+        $teamId = $userMeta['team'][0];
+
+        $params = array(
+            'where'=> "id='" . $teamId .  "'"
+        );
+        
+        $team = pods('team')->find( $params );
+
+        if ($team->total() != 1) {
             return null;
         }
 
-        return new Team($team[0]->naam, $team[0]->id);
+        while ( $team->fetch() ) {
+            return new Team($team->display('name'), $team->display('id'));
+        }
+
+
     }
 
     public function GetTeamgenoten(?Team $team): array
@@ -282,31 +290,29 @@ class WordPressGateway implements IWordPressGateway
 
     public function Login(string $username, string $password): bool
     {
-        $this->InitWordPress();
+        // WP ready
+        $credentials = [
+            'user_login' => $username,
+            'user_password' => $password,
+            'rememberme' => true
+         ];
+   
+        $result = wp_signon($credentials, true); // true - use HTTP only cookie
 
-        $credentials = new Credentials($username, $password);
-
-        $joomlaApp = \JFactory::getApplication('site');
-
-        $db = \JFactory::getDbo();
-        $query = $db->getQuery(true)
-            ->select('id, password')
-            ->from('#__users')
-            ->where('username=' . $db->quote($credentials->username));
-
-        $db->setQuery($query);
-        $result = $db->loadObject();
-        if ($result) {
-            $match = \JUserHelper::verifyPassword($credentials->password, $result->password, $result->id);
-            if ($match === true) {
-                $joomlaApp->login((array) $credentials);
-                return true;
-            } else {
-                return false;
-            }
-        } else {
+        if ($result instanceof \WP_Error) {
+            // Could not login
             return false;
-        }
+         } 
+         else {
+            $user_nicename = $result->data->user_nicename;
+            // SimpleLogger: https://wordpress.org/plugins/simple-history/
+            if (function_exists("SimpleLogger")) {
+                SimpleLogger()->info("User $user_nicename logged into Team-portal");
+            }
+            return true;   
+         }
+         return false;
+
     }
 
     private function MapToPersonen(array $rows): array
