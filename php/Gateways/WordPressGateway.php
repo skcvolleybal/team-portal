@@ -49,8 +49,11 @@ class WordPressGateway implements IWordPressGateway
         $persoon = new Persoon($user->data->ID, $user->data->user_nicename, $user->data->user_email);
         // Tot hier werkend
 
-        $persoon->rugnummer = Utilities::StringToInt($userMeta->rugnummer);
-        $persoon->positie = $userMeta->positie;
+        $persoon->rugnummer = isset($userMeta['rugnummer']) ? Utilities::StringToInt($userMeta['rugnummer']) : null;
+
+        $persoon->positie = isset($userMeta['positie']) ? $userMeta['positie'][0] : "";
+
+        // $persoon->positie = $userMeta['positie'][0];
         return $persoon;
     }
 
@@ -183,7 +186,7 @@ class WordPressGateway implements IWordPressGateway
         $params = array(
             'where'=> "id='" . $teamId .  "'"
         );
-        
+
         $team = pods('team')->find( $params );
 
         if ($team->total() != 1) {
@@ -199,46 +202,46 @@ class WordPressGateway implements IWordPressGateway
 
     public function GetTeamgenoten(?Team $team): array
     {
+        // WP ready
         if ($team === null) {
             return [];
         }
-        $query = 'SELECT 
-                    U.id, 
-                    name AS naam,
-                    email,
-                    cb_positie as positie,
-                    cb_rugnummer as rugnummer,
-                    C.cb_nevobocode as relatiecode
-                  FROM J3_users U
-                  INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
-                  INNER JOIN J3_usergroups G ON M.group_id = G.id
-                  LEFT JOIN J3_comprofiler C ON U.id = C.id
-                  WHERE G.title = ?
-                  ORDER BY name';
-        $params = [$team->GetSkcNaam($team)];
-        $rows =  $this->database->Execute($query, $params);
-        return $this->MapToPersonen($rows);
+
+        $team = pods( 'team', $team->id );
+        $teamGenoten =  $team->field( 'leden' );
+        if ( ! empty( $teamGenoten ) ) {
+            foreach ( $teamGenoten as $teamGenoot ) {
+                // Cast array of arrays to array of objects
+                $object = (object)$teamGenoot;
+                $teamObjects[] = $object;
+            }
+        }            
+        
+        return $this->MapToPersonen($teamObjects);
     }
 
     public function GetCoachteams(Persoon $user): array
     {
-        $query = 'SELECT 
-                    G2.id,
-                    G2.title AS naam
-                  FROM J3_usergroups G
-                  INNER JOIN J3_user_usergroup_map M on G.id = M.group_id
-                  INNER JOIN J3_usergroups G2 on G2.title = SUBSTRING(G.title, 7)
-                  WHERE M.user_id = ? and G.title like \'Coach %\'';
-        $params = [$user->id];
-
-        $teams = $this->database->Execute($query, $params);
+        // WP Working
+        $userMeta = get_user_meta($user->id);
 
         $result = [];
-        foreach ($teams as $team) {
-            $newTeam = new Team($team->naam, $team->id);
-            $newTeam->teamgenoten = $this->GetTeamgenoten($newTeam);
-            $result[] = $newTeam;
+
+        if (!isset($userMeta['coach_van'])) {
+            return $result;
         }
+
+        foreach ($userMeta['coach_van'] as $teamId) {
+            $params = array('where'=> "id='" . $teamId .  "'");
+            $team = pods('team')->find( $params );
+            while ( $team->fetch() ) {
+                $newTeam = new Team($team->display('name'), $team->display('id'));
+                // Tot hier werkend
+                $newTeam->teamgenoten = $this->GetTeamgenoten($newTeam);
+                $result[] = $newTeam;
+            }
+        }
+
 
         return $result;
     }
@@ -326,10 +329,18 @@ class WordPressGateway implements IWordPressGateway
 
     private function MapToPersoon(object $row): Persoon
     {
-        $persoon = new Persoon($row->id, $row->naam, $row->email);
-        $persoon->relatiecode = $row->relatiecode;
-        $persoon->positie = $row->positie;
-        $persoon->rugnummer = Utilities::StringToInt($row->rugnummer);
+        $persoon = new Persoon($row->ID, $row->user_nicename, $row->user_email);
+        $userMeta = get_user_meta($row->ID);
+
+
+        $persoon->rugnummer = isset($userMeta['rugnummer']) ? Utilities::StringToInt($userMeta['rugnummer']) : null;
+        // $persoon->relatiecode = isset($userMeta['relatiecode']) ? Utilities::StringToInt($userMeta['relatiecode']) : null;
+        $persoon->positie = isset($userMeta['positie']) ? $userMeta['positie'][0] : "";
+
+
+        // $persoon->relatiecode = $metaObjects->relatiecode;
+        // $persoon->positie = $metaObjects->positie;
+        // $persoon->rugnummer = Utilities::StringToInt($metaObjects->rugnummer);
         $result[] = $persoon;
 
         return $persoon;
