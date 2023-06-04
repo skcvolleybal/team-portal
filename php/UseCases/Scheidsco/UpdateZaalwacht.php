@@ -11,10 +11,10 @@ class UpdateZaalwacht implements Interactor
 {
     public function __construct(
         Gateways\ZaalwachtGateway $zaalwachtGateway,
-        Gateways\JoomlaGateway $joomlaGateway
+        Gateways\WordPressGateway $wordPressGateway
     ) {
         $this->zaalwachtGateway = $zaalwachtGateway;
-        $this->joomlaGateway = $joomlaGateway;
+        $this->wordPressGateway = $wordPressGateway;
     }
 
     public function Execute(object $data = null)
@@ -26,9 +26,9 @@ class UpdateZaalwacht implements Interactor
 
         $zaalwacht = $this->zaalwachtGateway->GetZaalwacht($date) ?? new Zaalwacht(null, $date, null);
         if ($data->zaalwachttype === 'eerste') {
-            $zaalwacht->eersteZaalwacht = $this->joomlaGateway->GetTeamByNaam($data->team);
+            $zaalwacht->eersteZaalwacht = $this->wordPressGateway->GetTeamByNaam($data->team);
         } else {
-            $zaalwacht->tweedeZaalwacht = $this->joomlaGateway->GetTeamByNaam($data->team);
+            $zaalwacht->tweedeZaalwacht = $this->wordPressGateway->GetTeamByNaam($data->team);
         }
 
         if ($zaalwacht->id === null) {

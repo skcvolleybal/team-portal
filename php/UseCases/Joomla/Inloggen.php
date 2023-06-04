@@ -3,14 +3,14 @@
 namespace TeamPortal\UseCases;
 
 use InvalidArgumentException;
-use TeamPortal\Gateways\JoomlaGateway;
+use TeamPortal\Gateways\WordPressGateway;
 use UnexpectedValueException;
 
 class Inloggen implements Interactor
 {
-    public function __construct(JoomlaGateway $joomlaGateway)
+    public function __construct(WordPressGateway $wordPressGateway)
     {
-        $this->joomlaGateway = $joomlaGateway;
+        $this->wordPressGateway = $wordPressGateway;
     }
 
     public function Execute(object $data = null)
@@ -19,7 +19,7 @@ class Inloggen implements Interactor
             throw new InvalidArgumentException("Vul alle gegevens in");
         }
 
-        if (!$this->joomlaGateway->Login($data->username, $data->password)) {
+        if (!$this->wordPressGateway->Login($data->username, $data->password)) {
             throw new UnexpectedValueException("Gebruikersnaam/wachtwoord combinatie klopt niet");
         }
     }

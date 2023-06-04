@@ -1,8 +1,8 @@
 <?php
 // config.php
 
-use TeamPortal\Gateways\JoomlaGateway;
-use TeamPortal\UseCases\IJoomlaGateway;
+use TeamPortal\Gateways\WordPressGateway;
+use TeamPortal\UseCases\IWordPressGateway;
 use DI\Container;
 use TeamPortal\Common\Database;
 use TeamPortal\Gateways\BarcieGateway;
@@ -11,8 +11,8 @@ use TeamPortal\UseCases\IBarcieGateway;
 use TeamPortal\UseCases\INevoboGateway;
 
 return [
-    IJoomlaGateway::class => DI\factory(function () {
-        return new JoomlaGateway();
+    IWordPressGateway::class => DI\factory(function () {
+        return new WordPressGateway();
     }),
     IBarcieGateway::class => DI\factory(function (Container $container) {
         $database = $container->get(Database::class);

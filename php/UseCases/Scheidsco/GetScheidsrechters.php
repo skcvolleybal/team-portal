@@ -6,7 +6,7 @@ use InvalidArgumentException;
 use TeamPortal\Common\DateFunctions;
 use TeamPortal\Entities\Persoon;
 use TeamPortal\Gateways\BeschikbaarheidGateway;
-use TeamPortal\Gateways\JoomlaGateway;
+use TeamPortal\Gateways\WordPressGateway;
 use TeamPortal\Gateways\NevoboGateway;
 use TeamPortal\Gateways\TelFluitGateway;
 use UnexpectedValueException;
@@ -14,12 +14,12 @@ use UnexpectedValueException;
 class GetScheidsrechters implements Interactor
 {
     public function __construct(
-        JoomlaGateway $joomlaGateway,
+        WordPressGateway $wordPressGateway,
         TelFluitGateway $telFluitGateway,
         NevoboGateway $nevoboGateway,
         BeschikbaarheidGateway $beschikbaarheidGateway
     ) {
-        $this->joomlaGateway = $joomlaGateway;
+        $this->wordPressGateway = $wordPressGateway;
         $this->telFluitGateway = $telFluitGateway;
         $this->nevoboGateway = $nevoboGateway;
         $this->beschikbaarheidGateway = $beschikbaarheidGateway;

@@ -2,7 +2,7 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
 
 import { Component } from '@angular/core';
-import { JoomlaService } from '../core/services/request.service';
+import { WordPressService } from '../core/services/request.service';
 import { Router } from '@angular/router';
 import { StateService } from '../core/services/state.service';
 
@@ -18,7 +18,7 @@ export class LoginModalComponent {
 
   constructor(
     private fb: FormBuilder,
-    private joomalService: JoomlaService,
+    private joomalService: WordPressService,
     private modelService: NgbModal,
     private stateService: StateService,
     private router: Router

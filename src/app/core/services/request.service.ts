@@ -6,16 +6,16 @@ import { environment } from '../../../environments/environment';
 @Injectable({
   providedIn: 'root',
 })
-export class JoomlaService {
+export class WordPressService {
   constructor(private httpClient: HttpClient) {}
 
   GetGroupsOfUser() {
-    const url = environment.baseUrl + 'joomla/groepen';
+    const url = environment.baseUrl + 'wordpress/groepen';
     return this.httpClient.get<string[]>(url);
   }
 
   GetUsers(naam) {
-    const url = environment.baseUrl + 'joomla/users';
+    const url = environment.baseUrl + 'wordpress/users';
     return this.httpClient.get(url, {
       params: {
         naam,
@@ -24,7 +24,7 @@ export class JoomlaService {
   }
 
   Login(username: string, password: string) {
-    const url = environment.baseUrl + 'joomla/inloggen';
+    const url = environment.baseUrl + 'wordpress/inloggen';
     return this.httpClient.post<any>(url, {
       username,
       password,
@@ -42,7 +42,7 @@ export class JoomlaService {
   }
 
   GetCurrentUser(): Observable<any[]> {
-    const url = environment.baseUrl + 'joomla/user';
+    const url = environment.baseUrl + 'wordpress/user';
     return this.httpClient.get<any[]>(url);
   }
 }

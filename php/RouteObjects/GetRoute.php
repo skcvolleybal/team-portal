@@ -2,7 +2,7 @@
 
 namespace TeamPortal\RouteObjects;
 
-use TeamPortal\Gateways\JoomlaGateway;
+use TeamPortal\Gateways\WordPressGateway;
 use Slim\Routing\RouteCollectorProxy;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -23,8 +23,8 @@ class GetRoute extends CrudRoute
         $route = $this;
 
         $group->get($this->route, function (Request $request, Response $response, array $args) use ($interactor, $route) {
-            $joomlaGateway = $this->get(JoomlaGateway::class);
-            $route->Authorize($joomlaGateway, $route->role);
+            $wordPressGateway = $this->get(WordPressGateway::class);
+            $route->Authorize($wordPressGateway, $route->role);
 
             $interactor  = $this->get($interactor);
             $body = $request->getQueryParams();

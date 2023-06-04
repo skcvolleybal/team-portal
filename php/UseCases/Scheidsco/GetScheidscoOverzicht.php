@@ -7,12 +7,12 @@ use TeamPortal\Gateways;
 class GetScheidscoOverzicht implements Interactor
 {
     public function __construct(
-        Gateways\JoomlaGateway $joomlaGateway,
+        Gateways\WordPressGateway $wordPressGateway,
         Gateways\TelFluitGateway $telFluitGateway,
         Gateways\NevoboGateway $NevoboGateway,
         Gateways\ZaalwachtGateway $zaalwachtGateway
     ) {
-        $this->joomlaGateway = $joomlaGateway;
+        $this->wordPressGateway = $wordPressGateway;
         $this->telFluitGateway = $telFluitGateway;
         $this->nevoboGateway = $NevoboGateway;
         $this->zaalwachtGateway = $zaalwachtGateway;

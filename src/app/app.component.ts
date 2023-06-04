@@ -3,7 +3,7 @@ import { NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 
 import { ActivatedRoute } from '@angular/router';
-import { JoomlaService } from './core/services/request.service';
+import { WordPressService } from './core/services/request.service';
 import { LoginModalComponent } from './login-modal/login-modal.component';
 import { Observable } from 'rxjs';
 import { StateService } from './core/services/state.service';
@@ -32,7 +32,7 @@ export class AppComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private modalService: NgbModal,
     private stateService: StateService,
-    private joomalService: JoomlaService,
+    private joomalService: WordPressService,
     config: NgbModalConfig
   ) {
     config.backdrop = 'static';

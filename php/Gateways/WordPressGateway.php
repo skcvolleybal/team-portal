@@ -9,10 +9,10 @@ use TeamPortal\Entities\Credentials;
 use TeamPortal\Entities\Persoon;
 use TeamPortal\Entities\Scheidsrechter;
 use TeamPortal\Entities\Team;
-use TeamPortal\UseCases\IJoomlaGateway;
+use TeamPortal\UseCases\IWordPressGateway;
 use UnexpectedValueException;
 
-class JoomlaGateway implements IJoomlaGateway
+class WordPressGateway implements IWordPressGateway
 {
     public $database;
 
@@ -61,14 +61,14 @@ class JoomlaGateway implements IJoomlaGateway
 
     public function GetLoggedInUser(): ?Persoon
     {
-        $this->InitJoomla();
+        $this->InitWordPress();
 
-        $joomlaUser = \JFactory::getUser();
-        if ($joomlaUser->guest) {
+        $wordPressUser = \JFactory::getUser();
+        if ($wordPressUser->guest) {
             return null;
         }
 
-        $user = $this->GetUserById($joomlaUser->id);
+        $user = $this->GetUserById($wordPressUser->id);
 
         if ($this->IsWebcie($user) && isset($_GET['impersonationId'])) {
             $impersonationId = $_GET['impersonationId'];
@@ -264,7 +264,7 @@ class JoomlaGateway implements IJoomlaGateway
         return $result;
     }
 
-    public function InitJoomla(): void
+    public function InitWordPress(): void
     {
         if (defined('_JEXEC')) {
             return;
@@ -282,7 +282,7 @@ class JoomlaGateway implements IJoomlaGateway
 
     public function Login(string $username, string $password): bool
     {
-        $this->InitJoomla();
+        $this->InitWordPress();
 
         $credentials = new Credentials($username, $password);
 
