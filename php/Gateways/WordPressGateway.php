@@ -24,6 +24,8 @@ class WordPressGateway implements IWordPressGateway
 
     public function GetUser(?int $userId = null): ?Persoon
     {
+        // WP ready 
+
         $user = empty($userId) ? $this->GetLoggedInUser() : $this->GetUserById($userId);
         if (!$user) {
             return null;
@@ -304,6 +306,9 @@ class WordPressGateway implements IWordPressGateway
 
         if ($result instanceof \WP_Error) {
             // Could not login
+            if (function_exists("SimpleLogger")) {
+                SimpleLogger()->warning("User $username could not login into Team-portal");
+            }
             return false;
          } 
          else {
@@ -320,6 +325,7 @@ class WordPressGateway implements IWordPressGateway
 
     private function MapToPersonen(array $rows): array
     {
+        // WP Ready
         $result = [];
         foreach ($rows as $row) {
             $result[] = $this->MapToPersoon($row);
@@ -329,18 +335,17 @@ class WordPressGateway implements IWordPressGateway
 
     private function MapToPersoon(object $row): Persoon
     {
+        // WP Ready
+
         $persoon = new Persoon($row->ID, $row->user_nicename, $row->user_email);
         $userMeta = get_user_meta($row->ID);
 
 
         $persoon->rugnummer = isset($userMeta['rugnummer']) ? Utilities::StringToInt($userMeta['rugnummer']) : null;
-        // $persoon->relatiecode = isset($userMeta['relatiecode']) ? Utilities::StringToInt($userMeta['relatiecode']) : null;
         $persoon->positie = isset($userMeta['positie']) ? $userMeta['positie'][0] : "";
 
-
+        // Relatiecode seems not to be in use 
         // $persoon->relatiecode = $metaObjects->relatiecode;
-        // $persoon->positie = $metaObjects->positie;
-        // $persoon->rugnummer = Utilities::StringToInt($metaObjects->rugnummer);
         $result[] = $persoon;
 
         return $persoon;
