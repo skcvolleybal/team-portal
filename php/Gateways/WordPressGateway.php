@@ -48,7 +48,7 @@ class WordPressGateway implements IWordPressGateway
         }
 
 
-        $persoon = new Persoon($user->data->ID, $user->data->user_nicename, $user->data->user_email);
+        $persoon = new Persoon($user->data->ID, $userMeta['first_name'][0] . ' ' . $userMeta['last_name'][0], $user->data->user_email);
         // Tot hier werkend
 
         $persoon->rugnummer = isset($userMeta['rugnummer']) ? Utilities::StringToInt($userMeta['rugnummer']) : null;
