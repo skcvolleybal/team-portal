@@ -22,37 +22,55 @@ class BarcieGateway implements IBarcieGateway
 
     public function GetBardagen(): array
     {
+        // WP ready 
+
         $query = 'SELECT 
-                    D.id,
-                    date,
-                    U.id AS userId,
-                    U.name AS naam,
-                    U.email,
-                    shift,
-                    is_bhv AS isBhv
-                  FROM barcie_days D
-                  LEFT JOIN barcie_schedule_map M ON D.id = M.day_id
-                  LEFT JOIN J3_users U ON U.id = M.user_id
-                  WHERE CURRENT_DATE() <= D.date
-                  ORDER BY date, shift, name';
+            D.id,
+            date,
+            U.id AS userId,
+            U.display_name AS naam,
+            U.user_email AS email,
+            shift,
+            is_bhv AS isBhv
+            FROM ' . $_ENV['DBNAME'] . '.barcie_days D
+            LEFT JOIN ' . $_ENV['DBNAME'] . '.barcie_schedule_map M ON D.id = M.day_id
+            LEFT JOIN ' . $_ENV['WPDBNAME'] . '.wp_users U ON U.id = M.user_id
+            WHERE CURRENT_DATE() <= D.date
+            ORDER BY date, shift, naam';
+
+                
         $rows = $this->database->Execute($query);
         return $this->MapToBardagen($rows);
     }
 
     public function GetBardag(DateTime $date): Bardag
     {
+
         $query = 'SELECT 
-                    D.id,
-                    date,
-                    U.id AS userId,
-                    U.name AS naam,
-                    U.email,
-                    shift,
-                    is_bhv AS isBhv
-                  FROM barcie_days D
-                  LEFT JOIN barcie_schedule_map M ON D.id = M.day_id
-                  LEFT JOIN J3_users U ON U.id = M.user_id
-                  WHERE D.date = ?';
+                D.id,
+                date,
+                U.id AS userId,
+                U.display_name AS naam,
+                U.user_email AS email,
+                shift,
+                is_bhv AS isBhv
+            FROM ' . $_ENV['DBNAME'] . '.barcie_days D
+            LEFT JOIN ' . $_ENV['DBNAME'] . '.barcie_schedule_map M ON D.id = M.day_id
+            LEFT JOIN ' . $_ENV['WPDBNAME'] . '.wp_users U ON U.id = M.user_id
+            WHERE D.date = ?';
+ 
+        // $query = 'SELECT 
+        //             D.id,
+        //             date,
+        //             U.id AS userId,
+        //             U.name AS naam,
+        //             U.email,
+        //             shift,
+        //             is_bhv AS isBhv
+        //           FROM barcie_days D
+        //           LEFT JOIN barcie_schedule_map M ON D.id = M.day_id
+        //           LEFT JOIN J3_users U ON U.id = M.user_id
+        //           WHERE D.date = ?';
         $params = [DateFunctions::GetYmdNotation($date)];
         $rows = $this->database->Execute($query, $params);
         return count($rows) > 0 ? $this->MapToBardagen($rows)[0] : new Bardag(null, $date);
@@ -229,6 +247,7 @@ class BarcieGateway implements IBarcieGateway
     public function GetBarleden(): array
     {
         // WP Not yet Ready: should be tested extensively
+        // Seems ready
 
         // Maps WordPress user ID's on previous barcie_schedule_map Joomla User ID's
         // ID's are not the same, so either WP users should get Joomla's old ID's, or all barcie_schedule_map user ID's should be wiped. that should happen each season. 
