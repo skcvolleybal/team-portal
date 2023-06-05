@@ -228,26 +228,42 @@ class BarcieGateway implements IBarcieGateway
 
     public function GetBarleden(): array
     {
-        $query = 'SELECT
-                    U.id AS userId,
-                    U.name AS naam,
-                    U.email,
-                    count(B.id) AS aantalDiensten
-                  FROM J3_users U
-                  INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
-                  INNER JOIN J3_usergroups G ON G.id = M.group_id
-                  LEFT JOIN barcie_schedule_map B ON B.user_id = U.id
-                  WHERE title = "Barcie"
-                  GROUP BY U.id
-                  ORDER BY count(B.id) ASC';
+        // WP Not yet Ready: should be tested extensively
+
+        // Maps WordPress user ID's on previous barcie_schedule_map Joomla User ID's
+        // ID's are not the same, so either WP users should get Joomla's old ID's, or all barcie_schedule_map user ID's should be wiped. that should happen each season. 
+
+        $args = array(
+            'role'    => 'Barcie');
+        $users = get_users( $args );
+
+        // Map the aantal bardiensten on WordPress user ids
+        $query = 'SELECT B.user_id AS userId, 
+                count(B.id) AS aantalDiensten
+                FROM barcie_schedule_map B
+                GROUP BY B.user_id
+                ORDER BY count(B.id) ASC';
+
         $rows =  $this->database->Execute($query);
+
+        
         $result = [];
-        foreach ($rows as $row) {
+        foreach ($users as $user) {
+            $user->aantalDiensten = 0;
+            foreach ($rows as $bardienst) {
+                if ($user->ID == $bardienst->userId) {
+                    $user->aantalDiensten = $bardienst->aantalDiensten;
+                }
+            }
+        }
+
+        foreach ($users as $user) {
             $barlid = new Barlid(
-                new Persoon($row->userId, $row->naam, $row->email),
-                $row->aantalDiensten
+                new Persoon($user->data->ID, $user->data->user_nicename, $user->data->user_email),
+                $user->aantalDiensten
             );
             $result[] = $barlid;
+
         }
         return $result;
     }

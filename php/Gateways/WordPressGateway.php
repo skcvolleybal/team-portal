@@ -219,9 +219,9 @@ class WordPressGateway implements IWordPressGateway
                 $object = (object)$teamGenoot;
                 $teamObjects[] = $object;
             }
-        }            
-        
-        return $this->MapToPersonen($teamObjects);
+            return $this->MapToPersonen($teamObjects);
+        }
+        return array();          
     }
 
     public function GetCoachteams(Persoon $user): array
@@ -240,9 +240,9 @@ class WordPressGateway implements IWordPressGateway
             $team = pods('team')->find( $params );
             while ( $team->fetch() ) {
                 $newTeam = new Team($team->display('name'), $team->display('id'));
-                // Tot hier werkend
                 $newTeam->teamgenoten = $this->GetTeamgenoten($newTeam);
                 $result[] = $newTeam;
+                // Tot hier werkend
             }
         }
 
