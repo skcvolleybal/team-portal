@@ -1,0 +1,5 @@
+Stappen voor migratie naar test of live:
+
+- .env aanpassen 
+- Handmatig aanpassen van de barcie_schedule_map table via PHPMyAdmin. User_id verwijst naar de J3_users table maar deze constraint moet verwijderd.
+- 
