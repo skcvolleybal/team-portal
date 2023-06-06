@@ -177,22 +177,24 @@ class BarcieGateway implements IBarcieGateway
 
     public function GetBardienst(Bardag $dag, Persoon $user, int $shift): Bardienst
     {
+        // WP Working
         $query = 'SELECT 
                     M.id,
                     D.id as dayId,
                     D.date,
                     M.day_id AS dayId,
                     U.id AS userId,
-                    U.name AS naam,
-                    U.email,
+                    U.display_name AS naam,
+                    U.user_email AS email,
                     shift,
                     is_bhv AS isBhv
-                  FROM barcie_schedule_map M
-                  INNER JOIN barcie_days D ON M.day_id = D.id
-                  INNER JOIN J3_users U ON M.user_id = U.id
-                  WHERE day_id = ? and
-                        user_id = ? and
-                        shift = ?';
+                FROM ' . $_ENV['DBNAME'] . '.barcie_schedule_map M
+                INNER JOIN ' . $_ENV['DBNAME'] . '.barcie_days D ON M.day_id = D.id
+                INNER JOIN ' . $_ENV['WPDBNAME'] . '.wp_users U ON M.user_id = U.id
+                WHERE day_id = ? and
+                    user_id = ? and
+                    shift = ?';
+
         $params = [$dag->id, $user->id, $shift];
         $rows = $this->database->Execute($query, $params);
 
