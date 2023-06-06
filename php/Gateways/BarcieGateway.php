@@ -326,18 +326,20 @@ class BarcieGateway implements IBarcieGateway
 
     public function GetBardienstenForUser(Persoon $user): array
     {
+        // WP Working
         $query = 'SELECT 
-                    U.id AS userId, 
-                    U.name AS naam, 
-                    U.email,
-                    D.id as dayId,
-                    D.date, 
-                    M.shift, 
-                    M.is_bhv AS isBhv
-                  FROM J3_users U
-                  INNER JOIN barcie_schedule_map M ON M.user_id = U.id
-                  INNER JOIN barcie_days D ON M.day_id = D.id
-                  WHERE U.id = ? AND D.date >= CURDATE()';
+                U.id AS userId, 
+                U.display_name AS naam, 
+                U.user_email AS email,
+                D.id as dayId,
+                D.date, 
+                M.shift, 
+                M.is_bhv AS isBhv
+            FROM ' . $_ENV['WPDBNAME'] . '.wp_users U
+            INNER JOIN ' . $_ENV['DBNAME'] . '.barcie_schedule_map M ON M.user_id = U.id
+            INNER JOIN ' . $_ENV['DBNAME'] . '.barcie_days D ON M.day_id = D.id
+            WHERE U.id = ? AND D.date >= CURDATE()';
+
         $params = [$user->id];
         $rows = $this->database->Execute($query, $params);
         return $this->MapToBardiensten($rows);
@@ -345,6 +347,7 @@ class BarcieGateway implements IBarcieGateway
 
     public function MapToBardiensten(array $rows): array
     {
+        // WP working
         $diensten = [];
         foreach ($rows as $row) {
             $diensten[] = new Bardienst(
