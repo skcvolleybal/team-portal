@@ -59,18 +59,6 @@ class BarcieGateway implements IBarcieGateway
             LEFT JOIN ' . $_ENV['WPDBNAME'] . '.wp_users U ON U.id = M.user_id
             WHERE D.date = ?';
  
-        // $query = 'SELECT 
-        //             D.id,
-        //             date,
-        //             U.id AS userId,
-        //             U.name AS naam,
-        //             U.email,
-        //             shift,
-        //             is_bhv AS isBhv
-        //           FROM barcie_days D
-        //           LEFT JOIN barcie_schedule_map M ON D.id = M.day_id
-        //           LEFT JOIN J3_users U ON U.id = M.user_id
-        //           WHERE D.date = ?';
         $params = [DateFunctions::GetYmdNotation($date)];
         $rows = $this->database->Execute($query, $params);
         return count($rows) > 0 ? $this->MapToBardagen($rows)[0] : new Bardag(null, $date);
