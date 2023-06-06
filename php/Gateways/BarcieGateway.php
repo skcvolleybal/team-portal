@@ -280,7 +280,7 @@ class BarcieGateway implements IBarcieGateway
 
         foreach ($users as $user) {
             $barlid = new Barlid(
-                new Persoon($user->data->ID, $user->data->user_nicename, $user->data->user_email),
+                new Persoon($user->data->ID, $user->display_name, $user->data->user_email),
                 $user->aantalDiensten
             );
             $result[] = $barlid;

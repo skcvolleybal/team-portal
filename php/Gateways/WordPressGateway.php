@@ -122,22 +122,21 @@ class WordPressGateway implements IWordPressGateway
 
     public function GetUsersWithName(string $name): array
     {
-        $query = "SELECT 
-                    U.id,
-                    U.name as naam,
-                    U.email,
-                    C.cb_rugnummer as rugnummer,
-                    C.cb_positie as positie,
-                    C.cb_nevobocode as relatiecode
-                  FROM J3_users U
-                  LEFT JOIN J3_comprofiler C ON U.id = C.user_id
-                  WHERE name like '%$name%'
-                  ORDER BY 
-                  CASE 
-                    WHEN name LIKE '$name%' THEN 0 ELSE 1 end,
-                  name  
-                  LIMIT 0, 5";
-        $rows = $this->database->Execute($query);
+
+
+        $args = array(
+                'search'         => '*' . $name . '*',
+                'search_columns' => array(
+                    'display_name',
+                ),
+                'orderby'        => 'display_name',
+                'order'          => 'ASC',
+                'number'         => 5,
+            );
+            
+        $rows = get_users($args);
+            
+
         return $this->MapToPersonen($rows);
     }
 
@@ -339,8 +338,8 @@ class WordPressGateway implements IWordPressGateway
     {
         // WP Ready
 
-        $persoon = new Persoon($row->ID, $row->user_nicename, $row->user_email);
-        $userMeta = get_user_meta($row->ID);
+        $persoon = new Persoon($row->id, $row->display_name, $row->user_email);
+        $userMeta = get_user_meta($row->id);
 
 
         $persoon->rugnummer = isset($userMeta['rugnummer']) ? Utilities::StringToInt($userMeta['rugnummer']) : null;
