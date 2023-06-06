@@ -338,6 +338,13 @@ class WordPressGateway implements IWordPressGateway
     {
         // WP Ready
 
+        // WP Pods returns WP Users with ID's, not id's, so we add the id.
+        if (!isset($row->id)) {
+            if (isset($row->ID)) {
+                $row->id = $row->ID;
+            }
+        }
+
         $persoon = new Persoon($row->id, $row->display_name, $row->user_email);
         $userMeta = get_user_meta($row->id);
 
