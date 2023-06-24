@@ -7,7 +7,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ScheidscoService } from '../../core/services/scheidsco.service';
+import { TeamtakencoService } from '../../core/services/teamtakenco.service';
 import { SelecteerScheidsrechterComponent } from '../selecteer-scheidsrechter/selecteer-scheidsrechter.component';
 import { SelecteerTellersComponent } from '../selecteer-tellers/selecteer-tellers.component';
 import { SelecteerZaalwachtComponent } from '../selecteer-zaalwacht/selecteer-zaalwacht.component';
@@ -15,11 +15,11 @@ import { Speeldag } from 'src/app/models/Speeldag';
 import { Wedstrijd } from 'src/app/models/Wedstrijd';
 
 @Component({
-  selector: 'teamportal-scheidsco',
-  templateUrl: './scheidsco.component.html',
-  styleUrls: ['./scheidsco.component.scss'],
+  selector: 'teamportal-teamtakenco',
+  templateUrl: './teamtakenco.component.html',
+  styleUrls: ['./teamtakenco.component.scss'],
 })
-export class ScheidscoComponent implements OnInit {
+export class TeamtakencoComponent implements OnInit {
   icons = {
     scheidsrechter: faUser,
     tellers: faCalendarCheck,
@@ -34,13 +34,13 @@ export class ScheidscoComponent implements OnInit {
   errorMessage: any;
   speeldagenEmpty:boolean = false;
   constructor(
-    private scheidscoService: ScheidscoService,
+    private teamtakencoService: TeamtakencoService,
     private modalService: NgbModal
   ) {}
 
-  getScheidscoOverzicht() {
+  getTeamtakencoOverzicht() {
     this.overzichtLoading = true;
-    this.scheidscoService.GetScheidscoOverzicht().subscribe(
+    this.teamtakencoService.GetTeamtakencoOverzicht().subscribe(
       (speeldagen) => {
         this.speeldagen = speeldagen;
         this.overzichtLoading = false;
@@ -58,7 +58,7 @@ export class ScheidscoComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.getScheidscoOverzicht();
+    this.getTeamtakencoOverzicht();
   }
 
   SelecteerZaalwacht(datum: string, date: string, zaalwachttype: string) {
@@ -155,17 +155,17 @@ export class ScheidscoComponent implements OnInit {
   }
 
   DeleteScheidsrechter(matchId: string) {
-    this.scheidscoService.UpdateScheidsrechter(matchId, null).subscribe();
+    this.teamtakencoService.UpdateScheidsrechter(matchId, null).subscribe();
     this.SetScheidsrechter(matchId, null);
   }
 
   DeleteTeller(matchId: string, tellerIndex: number) {
-    this.scheidscoService.UpdateTellers(matchId, null, tellerIndex).subscribe();
+    this.teamtakencoService.UpdateTellers(matchId, null, tellerIndex).subscribe();
     this.SetTeller(matchId, null, tellerIndex);
   }
 
   DeleteZaalwacht(date: string, zaalwachttype: string) {
-    this.scheidscoService
+    this.teamtakencoService
       .UpdateZaalwacht(date, null, zaalwachttype)
       .subscribe();
     this.SetZaalwacht(date, null, zaalwachttype);

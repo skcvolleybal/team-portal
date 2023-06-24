@@ -2,7 +2,7 @@ import { BarcieBeschikbaarheidComponent } from './beschikbaarheid/barcie-beschik
 import { BarcieIndelingComponent } from './barcie/barcie-indeling/barcie-indeling.component';
 import { MijnOverzichtComponent } from './mijn-overzicht/mijn-overzicht/mijn-overzicht.component';
 import { Route } from '@angular/router';
-import { ScheidscoComponent } from './scheidsco/scheidsco/scheidsco.component';
+import { TeamtakencoComponent } from './teamtakenco/teamtakenco/teamtakenco.component';
 import { TelFluitBeschikbaarheidComponent } from './beschikbaarheid/tel-fluit-beschikbaarheid/tel-fluit-beschikbaarheid.component';
 import { WedstrijdOverzichtComponent } from './wedstrijd-overzicht/wedstrijd-overzicht/wedstrijd-overzicht.component';
 
@@ -57,8 +57,8 @@ export const appRoutes: IToggleRoute[] = [
   //   isHidden: true,
   // },
   {
-    path: 'scheidsco',
-    component: ScheidscoComponent,
+    path: 'teamtakenco',
+    component: TeamtakencoComponent,
     data: { title: '🏁 TeamTakenCo', groups: ['teamcoordinator', 'webcie'] },
     isHidden: true,
   },

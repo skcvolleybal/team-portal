@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { ScheidscoService } from '../../core/services/scheidsco.service';
+import { TeamtakencoService } from '../../core/services/teamtakenco.service';
 
 @Component({
   selector: 'teamportal-selecteer-tellers',
@@ -24,7 +24,7 @@ export class SelecteerTellersComponent implements OnInit {
 
   constructor(
     public modal: NgbActiveModal,
-    private scheidscoService: ScheidscoService
+    private teamtakencoService: TeamtakencoService
   ) {}
 
   ngOnInit() {
@@ -39,7 +39,7 @@ export class SelecteerTellersComponent implements OnInit {
   getTelTeams(matchId) {
     this.tellersOptiesLoading = true;
 
-    this.scheidscoService.GetTelTeams(matchId).subscribe(
+    this.teamtakencoService.GetTelTeams(matchId).subscribe(
       (zaalwachtopties) => {
         this.spelendeTeams = zaalwachtopties.spelendeTeams;
         this.overigeTeams = zaalwachtopties.overigeTeams;
@@ -56,7 +56,7 @@ export class SelecteerTellersComponent implements OnInit {
 
   UpdateTeller(teller) {
     const $this = this;
-    this.scheidscoService
+    this.teamtakencoService
       .UpdateTellers(this.wedstrijd.matchId, teller.id, this.tellerIndex)
       .subscribe(() =>
         this.modal.close({ teller, tellerIndex: $this.tellerIndex })

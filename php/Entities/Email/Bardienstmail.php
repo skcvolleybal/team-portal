@@ -8,7 +8,7 @@ use TeamPortal\Common\Utilities;
 
 class Bardienstmail extends Email
 {
-    function __construct(Barlid $barlid, Persoon $scheidsco, DateTime $date)
+    function __construct(Barlid $barlid, Persoon $teamtakenco, DateTime $date)
     {
         $datum = DateFunctions::GetDutchDateLong($date);
         $naam = $barlid->naam;
@@ -21,7 +21,7 @@ class Bardienstmail extends Email
             Placeholder::NAAM => $naam,
             Placeholder::SHIFT => $shift,
             Placeholder::BHV => $bhv,
-            Placeholder::AFZENDER => $scheidsco->naam,
+            Placeholder::AFZENDER => $teamtakenco->naam,
             Placeholder::USER_ID => $barlid->id
         ];
 

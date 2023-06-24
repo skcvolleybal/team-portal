@@ -98,8 +98,8 @@ $entryPoint =
             ])
         ], AuthorizationRole::TEAMCOORDINATOR),
 
-        new RouteGroup('/scheidsco', [
-            new GetRoute('/overzicht', UseCases\GetScheidscoOverzicht::class),
+        new RouteGroup('/teamtakenco', [
+            new GetRoute('/overzicht', UseCases\GetTeamtakencoOverzicht::class),
             new RouteGroup('/zaalwacht', [
                 new PostRoute('', UseCases\UpdateZaalwacht::class),
                 new GetRoute('teams', UseCases\GetZaalwachtTeams::class)
