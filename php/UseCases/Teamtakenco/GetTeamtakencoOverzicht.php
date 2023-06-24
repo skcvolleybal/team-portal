@@ -1,6 +1,6 @@
 <?php
 
-namespace TeamPortal\UseCases\Teamtakenco;
+namespace TeamPortal\UseCases;
 
 use TeamPortal\Gateways;
 
