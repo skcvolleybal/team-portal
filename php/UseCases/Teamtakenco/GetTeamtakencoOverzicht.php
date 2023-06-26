@@ -4,7 +4,7 @@ namespace TeamPortal\UseCases;
 
 use TeamPortal\Gateways;
 
-class GetScheidscoOverzicht implements Interactor
+class GetTeamtakencoOverzicht implements Interactor
 {
     public function __construct(
         Gateways\WordPressGateway $wordPressGateway,

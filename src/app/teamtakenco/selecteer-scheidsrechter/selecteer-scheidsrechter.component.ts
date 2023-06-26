@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { ScheidscoService } from './../../core/services/scheidsco.service';
+import { TeamtakencoService } from './../../core/services/teamtakenco.service';
 import { Team } from 'src/app/models/Team';
 import { Wedstrijd } from 'src/app/models/Wedstrijd';
 
@@ -26,7 +26,7 @@ export class SelecteerScheidsrechterComponent implements OnInit {
   tijd: string;
 
   constructor(
-    private scheidscoService: ScheidscoService,
+    private teamtakencoService: TeamtakencoService,
     public modal: NgbActiveModal
   ) {}
 
@@ -40,7 +40,7 @@ export class SelecteerScheidsrechterComponent implements OnInit {
   getScheidsrechterOpties(matchId: string) {
     this.scheidsrechterOptiesLoading = true;
 
-    this.scheidscoService.GetScheidsrechtersForMatch(matchId).subscribe(
+    this.teamtakencoService.GetScheidsrechtersForMatch(matchId).subscribe(
       (result) => {
         this.scheidsrechters = result;
         this.scheidsrechterOptiesLoading = false;
@@ -85,7 +85,7 @@ export class SelecteerScheidsrechterComponent implements OnInit {
   }
 
   UpdateScheidsrechter(scheidsrechter) {
-    this.scheidscoService
+    this.teamtakencoService
       .UpdateScheidsrechter(this.wedstrijd.matchId, scheidsrechter.id)
       .subscribe(() => {
         this.modal.close(scheidsrechter.naam);

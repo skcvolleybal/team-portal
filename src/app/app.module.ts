@@ -17,8 +17,8 @@ import { LoginModalComponent } from './login-modal/login-modal.component';
 import { MijnOverzichtModule } from './mijn-overzicht/mijn-overzicht.module';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { ScheidscoModule } from './scheidsco/scheidsco.module';
-import { ScheidscoService } from './core/services/scheidsco.service';
+import { TeamtakencoModule } from './teamtakenco/teamtakenco.module';
+import { TeamtakencoService } from './core/services/teamtakenco.service';
 import { SharedModule } from './shared/shared.module';
 import { StateService } from './core/services/state.service';
 import { WedstrijdOverzichtModule } from './wedstrijd-overzicht/wedstrijd-overzicht.module';
@@ -40,7 +40,7 @@ import { appRoutes } from './route.config';
     BarcieModule,
     BeschikbaarheidModule,
     CoreModule,
-    ScheidscoModule,
+    TeamtakencoModule,
     SharedModule,
     FontAwesomeModule,
   ],
@@ -51,7 +51,7 @@ import { appRoutes } from './route.config';
     AanwezigheidService,
     BarcieService,
     BeschikbaarheidService,
-    ScheidscoService,
+    TeamtakencoService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: HTTPListener,

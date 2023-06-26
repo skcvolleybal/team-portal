@@ -13,7 +13,7 @@ use TeamPortal\Entities\Zaalwachttype;
 
 class QueueWeeklyEmails implements Interactor
 {
-    private Persoon $scheidsco;
+    private Persoon $teamtakenco;
     private array $webcieMembers;
 
     public function __construct(
@@ -34,7 +34,7 @@ class QueueWeeklyEmails implements Interactor
 
     public function Execute(object $data = null)
     {
-        $this->scheidsco = $this->wordPressGateway->GetUser(2573); // scheidsco-ID
+        $this->teamtakenco = $this->joomlaGateway->GetUser(2573); // teamtakenco-ID
         $this->webcieMembers = [
             $this->wordPressGateway->GetUser(542),  // Sjon
             $this->wordPressGateway->GetUser(2036), // Banda
@@ -80,18 +80,18 @@ class QueueWeeklyEmails implements Interactor
             foreach ($dag->speeltijden as $speeltijd) {
                 foreach ($speeltijd->wedstrijden as $wedstrijd) {
                     if ($wedstrijd->scheidsrechter) {
-                        $mail = new Scheidsrechtersmail($wedstrijd, $this->scheidsco);
+                        $mail = new Scheidsrechtersmail($wedstrijd, $this->teamtakenco);
                         $emails[] = $mail;
                         $samenvatting->scheidsrechters[] = $wedstrijd->scheidsrechter;
                     }
 
                     if ($wedstrijd->tellers[0]) {
-                        $emails[] = new Tellersmail($wedstrijd, $wedstrijd->tellers[0], $this->scheidsco);
+                        $emails[] = new Tellersmail($wedstrijd, $wedstrijd->tellers[0], $this->teamtakenco);
                         $samenvatting->tellers[] = $wedstrijd->tellers[0];
                     }
 
                     if ($wedstrijd->tellers[1]) {
-                        $emails[] = new Tellersmail($wedstrijd, $wedstrijd->tellers[1], $this->scheidsco);
+                        $emails[] = new Tellersmail($wedstrijd, $wedstrijd->tellers[1], $this->teamtakenco);
                         $samenvatting->tellers[] = $wedstrijd->tellers[1];
                     }
                 }
@@ -99,27 +99,27 @@ class QueueWeeklyEmails implements Interactor
 
             if ($dag->eersteZaalwacht) {
                 foreach ($dag->eersteZaalwacht->teamgenoten as $teamgenoot) {
-                    $emails[] = new Zaalwachtmail($dag, $teamgenoot, $this->scheidsco, Zaalwachttype::EersteZaalwacht);
+                    $emails[] = new Zaalwachtmail($dag, $teamgenoot, $this->teamtakenco, Zaalwachttype::EersteZaalwacht);
                 }
                 $samenvatting->zaalwachtteams[] = $dag->eersteZaalwacht;
             }
 
             if ($dag->tweedeZaalwacht) {
                 foreach ($dag->tweedeZaalwacht->teamgenoten as $teamgenoot) {
-                    $emails[] = new Zaalwachtmail($dag, $teamgenoot, $this->scheidsco, Zaalwachttype::TweedeZaalwacht);
+                    $emails[] = new Zaalwachtmail($dag, $teamgenoot, $this->teamtakenco, Zaalwachttype::TweedeZaalwacht);
                 }
                 $samenvatting->zaalwachtteams[] = $dag->tweedeZaalwacht;
             }
 
             foreach ($dag->barshifts as $barshift) {
                 foreach ($barshift->barleden as $barlid) {
-                    $emails[] = new Bardienstmail($barlid, $this->scheidsco, $dag->date);
+                    $emails[] = new Bardienstmail($barlid, $this->teamtakenco, $dag->date);
                     $samenvatting->barleden[] = $barlid;
                 }
             }
         }
 
-        $emails[] = new Samenvattingsmail($samenvatting, $this->scheidsco);
+        $emails[] = new Samenvattingsmail($samenvatting, $this->teamtakenco);
         foreach ($this->webcieMembers as $webcieMember) {
             $emails[] = new Samenvattingsmail($samenvatting, $webcieMember);
         }

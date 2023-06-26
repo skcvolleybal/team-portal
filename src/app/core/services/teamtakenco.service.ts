@@ -6,18 +6,18 @@ import { environment } from '../../../environments/environment';
 @Injectable({
   providedIn: 'root',
 })
-export class ScheidscoService {
+export class TeamtakencoService {
   constructor(private httpClient: HttpClient) {}
 
-  GetScheidscoOverzicht(): Observable<any> {
+  GetTeamtakencoOverzicht(): Observable<any> {
     return this.httpClient.get<any[]>(
-      environment.baseUrl + 'scheidsco/overzicht'
+      environment.baseUrl + 'teamtakenco/overzicht'
     );
   }
 
   GetScheidsrechtersForMatch(matchId: string): Observable<any> {
     return this.httpClient.get<any>(
-      environment.baseUrl + 'scheidsco/scheidsrechters',
+      environment.baseUrl + 'teamtakenco/scheidsrechters',
       {
         params: { matchId },
       }
@@ -29,7 +29,7 @@ export class ScheidscoService {
     scheidsrechterId: number
   ): Observable<any> {
     return this.httpClient.post<any>(
-      environment.baseUrl + 'scheidsco/scheidsrechters',
+      environment.baseUrl + 'teamtakenco/scheidsrechters',
       {
         matchId,
         scheidsrechterId,
@@ -38,7 +38,7 @@ export class ScheidscoService {
   }
 
   GetTelTeams(matchId: string) {
-    return this.httpClient.get<any>(environment.baseUrl + 'scheidsco/tellers', {
+    return this.httpClient.get<any>(environment.baseUrl + 'teamtakenco/tellers', {
       params: {
         matchId,
       },
@@ -47,7 +47,7 @@ export class ScheidscoService {
 
   UpdateTellers(matchId: string, tellerId: number, tellerIndex: number) {
     return this.httpClient.post<any>(
-      environment.baseUrl + 'scheidsco/tellers',
+      environment.baseUrl + 'teamtakenco/tellers',
       {
         matchId,
         tellerId,
@@ -58,7 +58,7 @@ export class ScheidscoService {
 
   GetZaalwachtOpties(date: string) {
     return this.httpClient.get<any>(
-      environment.baseUrl + 'scheidsco/zaalwachtteams',
+      environment.baseUrl + 'teamtakenco/zaalwachtteams',
       {
         params: {
           date,
@@ -69,7 +69,7 @@ export class ScheidscoService {
 
   UpdateZaalwacht(date: string, team: string, zaalwachttype: string) {
     return this.httpClient.post<any>(
-      environment.baseUrl + 'scheidsco/zaalwacht',
+      environment.baseUrl + 'teamtakenco/zaalwacht',
       {
         date,
         team,
