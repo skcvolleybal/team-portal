@@ -76,7 +76,7 @@
       </li>
     </ul>
     <span *ngIf="!isProd" class="badge badge-warning">You're on Test or Localhost 🔧 <br>
-      <span style="font-weight: 500;">Branch: {{ gitVersion.branch }}. Commit: {{ gitVersion.hash | slice:0:7 }} </span>
+      <span *ngIf="gitVersion.branch !== 'unknown'" style="font-weight: 500;">Branch: {{ gitVersion.branch }}. Commit: {{ gitVersion.hash | slice:0:7 }} </span>
     </span>
 
   </div>
