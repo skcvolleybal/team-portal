@@ -14,15 +14,19 @@ class GetGit implements Interactor
 
     public function Execute(object $data = null)
     {
+        $data = '';
         if ($this->isShellExecEnabled('shell_exec')) {
-            shell_exec('echo "hello world"');
-        }
+            $branch = trim(shell_exec('git rev-parse --abbrev-ref HEAD'));
+            $hash = trim(shell_exec('git rev-parse HEAD'));
     
-        $branch = trim(shell_exec('git rev-parse --abbrev-ref HEAD'));
-        $hash = trim(shell_exec('git rev-parse HEAD'));
-
-        header('Content-Type: application/json');
-        return json_encode(array('branch' => $branch, 'hash' => $hash));
+            header('Content-Type: application/json');
+            $data = json_encode(array('branch' => $branch, 'hash' => $hash));
+        }
+        else {
+            $data = false;
+        }
+        return $data;
+    
     }
 
     private function isShellExecEnabled($func) {
