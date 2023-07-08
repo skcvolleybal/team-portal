@@ -17,6 +17,7 @@ jobs:
         composer dumpautoload --working-dir=php
     - name: 👨‍🔬 Running PHP Unit tests
       run: php/vendor/bin/phpunit php/Tests
+
     - name: Whitelist PHP Github Runner IP at Antagonist
       run: |
         curl icanhazip.com > runner_ip.txt
@@ -48,6 +49,24 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: 16
+
+    - name: Extract branch name
+      shell: bash
+      run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+      id: extract_branch
+
+    - name: Extract commit hash
+      shell: bash
+      run: echo "hash=${GITHUB_SHA}" >> $GITHUB_OUTPUT
+      id: extract_hash
+
+    - name: Create version file
+      run: |
+        echo "export const version = {" > ./src/environments/version.ts
+        echo "  branch: '${{ steps.extract_branch.outputs.branch }}'," >> ./src/environments/version.ts
+        echo "  hash: '${{ steps.extract_hash.outputs.hash }}'," >> ./src/environments/version.ts
+        echo "};" >> ./src/environments/version.ts
+
     - name: 🏗️ Installing NPM dependencies
       run: npm i -f
     - name: 🔨 Building Angular
