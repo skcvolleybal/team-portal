@@ -115,6 +115,7 @@ $entryPoint =
         ], AuthorizationRole::TEAMCOORDINATOR),
 
         new GetRoute('/calendar', UseCases\GetCalendar::class, AuthorizationRole::UNREGISTERED),
+        
 
         new RouteGroup('/tasks', [
             new GetRoute('/sync-matches', UseCases\SynchronizeWedstrijden::class),
