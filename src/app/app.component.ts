@@ -10,7 +10,7 @@ import { StateService } from './core/services/state.service';
 import { appRoutes } from './route.config';
 import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
 import { environment } from '../environments/environment';
-
+import { version } from '../environments/version';
 
 @Component({
   selector: 'teamportal-root',
@@ -27,6 +27,8 @@ export class AppComponent implements OnInit {
   searching = false;
   searchFailed = false;
   isProd = false;
+  gitVersion = version; // this will hold both branch and hash info
+
 
   constructor(
     private activatedRoute: ActivatedRoute,
