@@ -10,11 +10,11 @@ class UpdateScheidsrechter implements Interactor
 {
     public function __construct(
         Gateways\TelFluitGateway $telFluitGateway,
-        Gateways\JoomlaGateway $joomlaGateway,
+        Gateways\WordPressGateway $wordPressGateway,
         Gateways\NevoboGateway $nevoboGateway
     ) {
         $this->telFluitGateway = $telFluitGateway;
-        $this->joomlaGateway = $joomlaGateway;
+        $this->wordPressGateway = $wordPressGateway;
         $this->nevoboGateway = $nevoboGateway;
     }
 
@@ -25,7 +25,7 @@ class UpdateScheidsrechter implements Interactor
         }
 
         $wedstrijd = $this->telFluitGateway->GetWedstrijd($data->matchId);
-        $wedstrijd->scheidsrechter = $this->joomlaGateway->GetScheidsrechter($data->scheidsrechterId);
+        $wedstrijd->scheidsrechter = $this->wordPressGateway->GetScheidsrechter($data->scheidsrechterId);
 
         $uscWedstrijden = $this->nevoboGateway->GetProgrammaForSporthal();
         $uscWedstrijd = Wedstrijd::GetWedstrijdWithMatchId($uscWedstrijden, $data->matchId);

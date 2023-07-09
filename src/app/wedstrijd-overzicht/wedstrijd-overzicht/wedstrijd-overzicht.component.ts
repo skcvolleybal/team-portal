@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 import { AanwezigheidService } from '../../core/services/aanwezigheid.service';
-import { JoomlaService } from '../../core/services/request.service';
+import { WordPressService } from '../../core/services/request.service';
 
 @Component({
   selector: 'teamportal-wedstrijd-overzicht',
@@ -19,7 +19,7 @@ export class WedstrijdOverzichtComponent implements OnInit {
 
   constructor(
     private aanwezigheidService: AanwezigheidService,
-    private joomalService: JoomlaService
+    private joomalService: WordPressService
   ) {}
 
   ngOnInit() {

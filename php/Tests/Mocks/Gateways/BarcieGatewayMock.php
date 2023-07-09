@@ -8,7 +8,7 @@ use TeamPortal\Entities\Bardag;
 use TeamPortal\Entities\Bardienst;
 use TeamPortal\Entities\Persoon;
 use TeamPortal\UseCases\IBarcieGateway;
-use TeamPortal\UseCases\IJoomlaGateway;
+use TeamPortal\UseCases\IWordPressGateway;
 use TeamPortal\UseCases\INevoboGateway;
 
 class GatewayMocks extends TestCase
@@ -31,14 +31,14 @@ class GatewayMocks extends TestCase
         return $barcieGatewayMock;
     }
 
-    function GetJoomlaGateway(): IJoomlaGateway
+    function GetWordPressGateway(): IWordPressGateway
     {
-        /** @var \TeamPortal\UseCases\IJoomlaGateway */
-        $joomlaGatewwayMock = $this->createMock(IJoomlaGateway::class);
+        /** @var \TeamPortal\UseCases\IWordPressGateway */
+        $wordPressGatewwayMock = $this->createMock(IWordPressGateway::class);
         $newPerson = new Persoon(1, "Sjon", "sjons@sjons.clm");
-        $joomlaGatewwayMock->method('GetUser')->willReturn($newPerson);
+        $wordPressGatewwayMock->method('GetUser')->willReturn($newPerson);
 
-        return $joomlaGatewwayMock;
+        return $wordPressGatewwayMock;
     }
 
     function GetNevoboGateway(): INevoboGateway

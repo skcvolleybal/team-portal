@@ -17,10 +17,10 @@ class BarcieTest extends TestCase
         
         // Arrange
         $gatewayMocks = new GatewayMocks();
-        $joomlaGateway = $gatewayMocks->GetJoomlaGateway();
+        $wordPressGateway = $gatewayMocks->GetWordPressGateway();
         $barcieGateway = $gatewayMocks->GetBarcieGateway();
 
-        $interactor = new AddBarcieAanwezigheid($joomlaGateway, $barcieGateway);
+        $interactor = new AddBarcieAanwezigheid($wordPressGateway, $barcieGateway);
 
     // Half work; commented out for now
         // $data = new AddBarcieRequestModel();

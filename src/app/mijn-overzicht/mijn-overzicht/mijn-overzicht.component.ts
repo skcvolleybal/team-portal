@@ -5,7 +5,7 @@ import {
   faUser,
 } from '@fortawesome/free-solid-svg-icons';
 
-import { JoomlaService } from '../../core/services/request.service';
+import { WordPressService } from '../../core/services/request.service';
 import { StateService } from 'src/app/core/services/state.service';
 
 @Component({
@@ -25,7 +25,7 @@ export class MijnOverzichtComponent implements OnInit {
   user: any;
 
   constructor(
-    private joomalService: JoomlaService,
+    private joomalService: WordPressService,
     private stateService: StateService
   ) {}
 

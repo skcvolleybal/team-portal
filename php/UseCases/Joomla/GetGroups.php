@@ -2,37 +2,37 @@
 
 namespace TeamPortal\UseCases;
 
-use TeamPortal\Gateways\JoomlaGateway;
+use TeamPortal\Gateways\WordPressGateway;
 
 class GetGroups implements Interactor
 {
-    public function __construct(JoomlaGateway $joomlaGateway)
+    public function __construct(WordPressGateway $wordPressGateway)
     {
-        $this->joomlaGateway = $joomlaGateway;
+        $this->wordPressGateway = $wordPressGateway;
     }
 
     public function Execute(object $data = null): array
     {
         $result = [];
 
-        $user = $this->joomlaGateway->GetUser();
+        $user = $this->wordPressGateway->GetUser();
         if ($user === null) {
             return $result;
         }
 
-        if ($this->joomlaGateway->IsScheidsrechter($user)) {
+        if ($this->wordPressGateway->IsScheidsrechter($user)) {
             $result[] = "scheidsrechter";
         }
 
-        if ($this->joomlaGateway->IsBarcie($user)) {
+        if ($this->wordPressGateway->IsBarcie($user)) {
             $result[] = "barcie";
         }
 
-        if ($this->joomlaGateway->IsTeamcoordinator($user)) {
+        if ($this->wordPressGateway->IsTeamcoordinator($user)) {
             $result[] = "teamcoordinator";
         }
 
-        if ($this->joomlaGateway->IsWebcie($user)) {
+        if ($this->wordPressGateway->IsWebcie($user)) {
             $result[] = "webcie";
         }
 

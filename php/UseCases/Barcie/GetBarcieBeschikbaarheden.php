@@ -7,16 +7,16 @@ use TeamPortal\Common\DateFunctions;
 use TeamPortal\Entities\Barlid;
 use TeamPortal\Entities\Persoon;
 use TeamPortal\Gateways\BarcieGateway;
-use TeamPortal\Gateways\JoomlaGateway;
+use TeamPortal\Gateways\WordPressGateway;
 
 class GetBarcieBeschikbaarheden implements Interactor
 {
     public function __construct(
         BarcieGateway $barcieGateway,
-        JoomlaGateway $joomlaGateway
+        WordPressGateway $wordPressGateway
     ) {
         $this->barcieGateway = $barcieGateway;
-        $this->joomlaGateway = $joomlaGateway;
+        $this->wordPressGateway = $wordPressGateway;
     }
 
     public function Execute(object $data = null)

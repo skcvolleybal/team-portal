@@ -15,13 +15,13 @@ class TeamOverzichtTest extends TestCase
     {
         // arrange
         $gatewayMocks = new GatewayMocks();
-        $joomlaGateway = $gatewayMocks->GetJoomlaGateway();
+        $wordPressGateway = $gatewayMocks->GetWordPressGateway();
         $nevobogateway = $gatewayMocks->GetNevobogateway();
 
         $data = (object) [
             'teamnaam' => null
         ];
-        $interactor = new GetTeamoverzicht($joomlaGateway, $nevobogateway);
+        $interactor = new GetTeamoverzicht($wordPressGateway, $nevobogateway);
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("Teamnaam is leeg");

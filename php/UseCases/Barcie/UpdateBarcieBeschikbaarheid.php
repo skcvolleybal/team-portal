@@ -10,17 +10,17 @@ class UpdateBarcieBeschikbaarheid implements Interactor
 {
 
     public function __construct(
-        Gateways\JoomlaGateway $joomlaGateway,
+        Gateways\WordPressGateway $wordPressGateway,
         Gateways\BarcieGateway $barcieGateway
     ) {
-        $this->joomlaGateway = $joomlaGateway;
+        $this->wordPressGateway = $wordPressGateway;
         $this->barcieGateway = $barcieGateway;
     }
 
     public function Execute(object $data = null)
     {
         $date = DateFunctions::CreateDateTime($data->date);
-        $user = $this->joomlaGateway->GetUser();
+        $user = $this->wordPressGateway->GetUser();
         $isBeschikbaar = $data->isBeschikbaar;
 
         $bardag = $this->barcieGateway->GetBardag($date);

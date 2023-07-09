@@ -5,16 +5,16 @@ namespace TeamPortal\UseCases;
 use InvalidArgumentException;
 use TeamPortal\Common\DateFunctions;
 use TeamPortal\Gateways\BarcieGateway;
-use TeamPortal\Gateways\JoomlaGateway;
+use TeamPortal\Gateways\WordPressGateway;
 use UnexpectedValueException;
 
 class DeleteBardag implements Interactor
 {
     public function __construct(
-        JoomlaGateway $joomlaGateway,
+        WordPressGateway $wordPressGateway,
         BarcieGateway $barcieGateway
     ) {
-        $this->joomlaGateway = $joomlaGateway;
+        $this->wordPressGateway = $wordPressGateway;
         $this->barcieGateway = $barcieGateway;
     }
 

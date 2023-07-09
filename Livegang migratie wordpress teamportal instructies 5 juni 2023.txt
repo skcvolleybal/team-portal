@@ -1,0 +1,11 @@
+Stappen voor migratie naar test of live:
+
+- .env aanpassen 
+- Handmatig aanpassen van de barcie_schedule_map table via PHPMyAdmin. User_id verwijst naar de J3_users table maar deze constraint moet verwijderd.
+- 
+
+!!!! WordPress Cookiepath in wp-config.php aanpassen zodat het path correct staat. Zal niet nodig zijn zodra de Joomla site wordt vervangen, want dan draait de wordpress install op skcvolleybal.nl/ en niet zoals nu in de skcvolleybal.nl/wordpress submap.
+add: define('COOKIEPATH', '/test/public_html/');
+
+Scenario: zodra je inlogt in TeamPortal authenticeert TeamPortal met WordPress en de browser krijgt bij correcte login een cookie terug. De cookie wordt vervolgens gebruikt voor authenticatie. Het pad van wordpress (/wordpress) is echter anders dan dat van teamportal (/team-portal) waardoor de cookie niet geldig is. De browser vindt de cookie niet geldig voor de team-portal urls. 
+Zodra Joomla door WordPress wordt vervangen geen issue meer want dan zit wordpress niet meer in een submap op de server. 

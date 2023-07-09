@@ -12,7 +12,7 @@ import { DefaultHeadersInterceptor } from './core/interceptors/default-headers.i
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { HTTPListener } from './core/interceptors/is-authorized.interceptor';
 import { ImpersonationInterceptor } from './core/interceptors/add-impersonation.interceptor';
-import { JoomlaService } from './core/services/request.service';
+import { WordPressService } from './core/services/request.service';
 import { LoginModalComponent } from './login-modal/login-modal.component';
 import { MijnOverzichtModule } from './mijn-overzicht/mijn-overzicht.module';
 import { NgModule } from '@angular/core';
@@ -47,7 +47,7 @@ import { appRoutes } from './route.config';
   exports: [],
   providers: [
     StateService,
-    JoomlaService,
+    WordPressService,
     AanwezigheidService,
     BarcieService,
     BeschikbaarheidService,
