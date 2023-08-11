@@ -2,7 +2,8 @@ Stappen voor migratie naar test of live:
 
 - .env aanpassen 
 - Handmatig aanpassen van de barcie_schedule_map table via PHPMyAdmin. User_id verwijst naar de J3_users table maar deze constraint moet verwijderd.
-- 
+- Handmatig aanpassen van de teamportal_aanwezigheden table via PHPMyAdmin. Verwijder de User_id constraint die verwijst naar J3_users table 
+
 
 !!!! WordPress Cookiepath in wp-config.php aanpassen zodat het path correct staat. Zal niet nodig zijn zodra de Joomla site wordt vervangen, want dan draait de wordpress install op skcvolleybal.nl/ en niet zoals nu in de skcvolleybal.nl/wordpress submap.
 add: define('COOKIEPATH', '/test/public_html/');
