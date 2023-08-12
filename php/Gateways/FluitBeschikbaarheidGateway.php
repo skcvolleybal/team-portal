@@ -17,17 +17,32 @@ class BeschikbaarheidGateway
 
     public function GetBeschikbaarheden(Persoon $user): array
     {
+
+        // Working in WP
         $query = 'SELECT 
                     B.id,
                     U.id AS userId,
-                    U.name AS naam,
-                    U.email,
+                    U.display_name AS naam,
+                    U.user_email as email,
                     B.date,
                     SUBSTRING(B.`time`, 1, 5) AS time,
                     B.is_beschikbaar AS isBeschikbaar
-                  FROM TeamPortal_fluitbeschikbaarheid B
-                  INNER JOIN J3_users U ON U.id = B.user_id
+                  FROM ' . $_ENV['DBNAME'] . '.TeamPortal_fluitbeschikbaarheid B
+                  INNER JOIN ' . $_ENV['WPDBNAME'] . '.wp_users U ON U.id = B.user_id
                   WHERE user_id = ?';
+
+        // Old Joomla query
+        // $query = 'SELECT 
+        //             B.id,
+        //             U.id AS userId,
+        //             U.name AS naam,
+        //             U.email,
+        //             B.date,
+        //             SUBSTRING(B.`time`, 1, 5) AS time,
+        //             B.is_beschikbaar AS isBeschikbaar
+        //           FROM TeamPortal_fluitbeschikbaarheid B
+        //           INNER JOIN J3_users U ON U.id = B.user_id
+        //           WHERE user_id = ?';
         $params = [$user->id];
 
         $rows = $this->database->Execute($query, $params);
