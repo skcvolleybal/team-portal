@@ -200,18 +200,18 @@ class TelFluitGateway
                     W.timestamp,
                     W.is_veranderd as isVeranderd,
                     U1.id AS scheidsrechterId,
-                    U1.name AS scheidsrechter,
-                    U1.email emailScheidsrechter,
+                    U1.display_name AS scheidsrechter,
+                    U1.user_email emailScheidsrechter,
                     U2.id AS idTeller1,
-                    U2.name AS naamTeller1,
-                    U2.email AS emailTeller1,
+                    U2.display_name AS naamTeller1,
+                    U2.user_email AS emailTeller1,
                     U3.id AS idTeller2,
-                    U3.name AS naamTeller2,
-                    U3.email emailTeller2
-                  FROM TeamPortal_wedstrijden W
-                  LEFT JOIN J3_users U1 on U1.id = W.scheidsrechter_id
-                  LEFT JOIN J3_users U2 on U2.id = W.teller1_id
-                  LEFT JOIN J3_users U3 on U3.id = W.teller2_id
+                    U3.display_name AS naamTeller2,
+                    U3.user_email emailTeller2
+                  FROM ' . $_ENV['DBNAME'] . '.TeamPortal_wedstrijden W
+                  LEFT JOIN ' . $_ENV['WPDBNAME'] . '.wp_users U1 on U1.id = W.scheidsrechter_id
+                  LEFT JOIN ' . $_ENV['WPDBNAME'] . '.wp_users U2 on U2.id = W.teller1_id
+                  LEFT JOIN ' . $_ENV['WPDBNAME'] . '.wp_users U3 on U3.id = W.teller2_id
                   WHERE W.match_id = ?';
         $params = [$matchId];
         $rows = $this->database->Execute($query, $params);
