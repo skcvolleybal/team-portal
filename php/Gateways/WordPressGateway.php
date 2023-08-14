@@ -94,7 +94,7 @@ class WordPressGateway implements IWordPressGateway
         " . $_ENV['WPDBNAME'] . ".wp_users u      
         INNER JOIN
         " . $_ENV['WPDBNAME'] . ".wp_usermeta niveau_meta ON u.ID = niveau_meta.user_id AND niveau_meta.meta_key = 'scheidsrechter' AND niveau_meta.meta_value <> '' AND niveau_meta.meta_value IS NOT NULL
-        WHERE U.id = ?";
+        WHERE id = ?";
 
         // Oude Joomla query
         // $query = 'SELECT U.id, name, email
