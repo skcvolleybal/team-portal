@@ -60,16 +60,17 @@ class BeschikbaarheidGateway
 
     public function GetBeschikbaarheid(Persoon $user, DateTime $date): Beschikbaarheid
     {
+        // Todo: test edited query 
         $query = 'SELECT 
                     B.id,
                     U.id AS userId,
-                    U.name AS naam,
-                    U.email,
+                    U.display_name AS naam,
+                    U.user_email as email,
                     date,
                     time,
                     is_beschikbaar AS isBeschikbaar
-                  FROM TeamPortal_fluitbeschikbaarheid B
-                  INNER JOIN J3_users U on B.user_id = U.id
+                  FROM ' . $_ENV['DBNAME'] . '.TeamPortal_fluitbeschikbaarheid B
+                  INNER JOIN ' . $_ENV['WPDBNAME'] . '.wp_users U on B.user_id = U.id
                   WHERE user_id = ? and date = ? and time = ?';
         $params = [
             $user->id,

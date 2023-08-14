@@ -85,14 +85,28 @@ class WordPressGateway implements IWordPressGateway
 
     public function GetScheidsrechter(?int $userId): ?Scheidsrechter
     {
-        $query = 'SELECT U.id, name, email
-                  FROM J3_users U
-                  INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
-                  INNER JOIN J3_usergroups G ON M.group_id = G.id
-                  WHERE U.id = ? and
-                        G.id in (
-                            SELECT id FROM J3_usergroups WHERE title = "Scheidsrechters"
-                        )';
+
+        $query = "SELECT 
+        u.ID as id, 
+        u.display_name as name, 
+        u.user_email as email
+        FROM 
+        " . $_ENV['WPDBNAME'] . ".wp_users u      
+        INNER JOIN
+        " . $_ENV['WPDBNAME'] . ".wp_usermeta niveau_meta ON u.ID = niveau_meta.user_id AND niveau_meta.meta_key = 'scheidsrechter' AND niveau_meta.meta_value <> '' AND niveau_meta.meta_value IS NOT NULL
+        WHERE U.id = ?";
+
+        // Oude Joomla query
+        // $query = 'SELECT U.id, name, email
+        //           FROM J3_users U
+        //           INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
+        //           INNER JOIN J3_usergroups G ON M.group_id = G.id
+        //           WHERE U.id = ? and
+        //                 G.id in (
+        //                     SELECT id FROM J3_usergroups WHERE title = "Scheidsrechters"
+        //                 )';
+
+        
         $params = [$userId];
         $rows = $this->database->Execute($query, $params);
         if (count($rows) != 1) {
