@@ -221,24 +221,33 @@ class TelFluitGateway
     public function GetTellers(): array
     {
 
-        // Aankomende WordPress query
-        $query = 'SELECT
-        U.id,
-        U.name AS naam,
-        U.email,
-        (SELECT COUNT(*) FROM TeamPortal_wedstrijden W WHERE W.teller1_id = U.id OR W.teller2_id = U.id) AS geteld,
-        G.id AS teamId,
-        G.title AS teamnaam
-        FROM J3_users U
-        INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
-        INNER JOIN J3_usergroups G ON M.group_id = G.id
-        WHERE G.parent_id IN (SELECT id FROM J3_usergroups WHERE title = "Teams")
-         AND U.id NOT IN (
-                SELECT M.user_id FROM J3_usergroups G
-                INNER JOIN J3_user_usergroup_map M ON G.id = M.group_id
-                WHERE title = "Scheidsrechters"
-            )
-            GROUP BY U.id, U.name, U.email, G.id, G.title';
+        // Werkende WordPress query 
+        // Wel nog goed controleren op test/prod. De data lijkt te kloppen maar niet 100% sure 
+        $query = "SELECT
+        U.ID as id,
+        U.display_name AS naam,
+        U.user_email AS email,
+        (
+            SELECT COUNT(*)
+            FROM " . $_ENV['DBNAME'] . ".TeamPortal_wedstrijden W
+            WHERE W.teller1_id = U.ID OR W.teller2_id = U.ID
+        ) AS geteld,
+        P.ID AS teamId,
+        P.post_title AS teamnaam
+    FROM
+        " . $_ENV['WPDBNAME'] . ".wp_users U
+    INNER JOIN
+        " . $_ENV['WPDBNAME'] . ".wp_usermeta UM ON U.ID = UM.user_id AND UM.meta_key = 'team'
+    INNER JOIN
+        " . $_ENV['WPDBNAME'] . ".wp_posts P ON UM.meta_value = P.ID AND P.post_type = 'team'
+    WHERE
+        U.ID NOT IN (
+            SELECT user_id
+            FROM " . $_ENV['WPDBNAME'] . ".wp_usermeta
+            WHERE meta_key = 'scheidsrechter' AND meta_value <> '' AND meta_value IS NOT NULL
+        )
+    GROUP BY
+        U.ID, U.display_name, U.user_email, P.ID, P.post_title";
 
         // Werkende Joomla query: correcte count 
         // $query = 'SELECT
