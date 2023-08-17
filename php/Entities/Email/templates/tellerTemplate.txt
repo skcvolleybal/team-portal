@@ -11,7 +11,7 @@ Jullie zullen de wedstrijd {{teams}} gaan tellen.<br>
 Extra informatie over tellen vind je door op onderstaande links te klikken.<br>
 SKC website:<br>
 Hier is het volgende document te vinden: <br>
-    - De DWF hulp <a href="https://www.skcvolleybal.nl/index.php/informatie/praktische-info/documenten"/>‘DWF hulp 2021-2022’</a><br>
+    - De DWF hulp <a href="https://drive.google.com/file/d/1IyzXwH22VMbq4DZ6bhhePgB26Tw_e4X3/view?usp=sharing"/>‘DWF hulp 2021-2022’</a><br>
 <br>
 DWF <a href="https://www.youtube.com/watch?v=YSYA5cY2r3c&t=1s">instructievideo</a><br>
 <br>
@@ -33,8 +33,8 @@ You are the scorekeeper of the {{teams}} match.<br>
 <br>
 Additional information about scorekeeping can be found by clicking on the link below.<br>
 SKC website:<br>
-The following document can be found:<br>
-    - The DWF manual <a href="https://www.skcvolleybal.nl/index.php/informatie/praktische-info/documenten"/>‘DWF manual 2021-2022’</a> <br>
+The following documents can be found:<br>
+    - The DWF manual (NL) <a href="https://drive.google.com/file/d/1IyzXwH22VMbq4DZ6bhhePgB26Tw_e4X3/view?usp=sharing"/>‘DWF manual 2021-2022’</a> <br>
 <br>
 DWF instruction <a href="https://www.youtube.com/watch?v=YSYA5cY2r3c&t=1s">video</a><br>
 <br>
