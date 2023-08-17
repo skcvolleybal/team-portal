@@ -95,13 +95,13 @@ class BeschikbaarheidGateway
         $query = 'SELECT         
                     F.id,
                     U.id AS userId,
-                    U.name AS naam,
-                    U.email,
+                    U.display_name AS naam,
+                    U.user_email as email,
                     date,
                     time,
                     is_beschikbaar AS isBeschikbaar
-                  FROM TeamPortal_fluitbeschikbaarheid F
-                  INNER JOIN J3_users U on F.user_id = U.id
+                  FROM ' . $_ENV['DBNAME'] . '.TeamPortal_fluitbeschikbaarheid F
+                  INNER JOIN ' . $_ENV['WPDBNAME'] . '.wp_users U on F.user_id = U.id
                   WHERE date = ? and time = ?';
         $params = [
             DateFunctions::GetYmdNotation($date),
