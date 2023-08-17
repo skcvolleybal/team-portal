@@ -34,11 +34,12 @@ class QueueWeeklyEmails implements Interactor
 
     public function Execute(object $data = null)
     {
-        $this->teamtakenco = $this->joomlaGateway->GetUser(2573); // teamtakenco-ID
+
+        $this->teamtakenco = $this->wordPressGateway->GetUserByEmail('skc.scheidsco@gmail.com'); // Scheidsco account
         $this->webcieMembers = [
-            $this->wordPressGateway->GetUser(542),  // Sjon
-            $this->wordPressGateway->GetUser(2036), // Banda
-            $this->wordPressGateway->GetUser(2212)  // Bas
+            // $this->wordPressGateway->GetUser(),  // Sjon
+            // $this->wordPressGateway->GetUser(), // Banda
+            // $this->wordPressGateway->GetUser()  // Bas
         ];
 
         $wedstrijddagen = $this->nevoboGateway->GetWedstrijddagenForSporthal('LDNUN', 7);
