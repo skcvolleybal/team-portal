@@ -129,11 +129,6 @@ $entryPoint =
             new GetRoute('/daily-tasks', UseCases\DailyTasks::class)
         ], AuthorizationRole::UNREGISTERED),
 
-        new RouteGroup('/website', [
-            new GetRoute('/voorpagina-rooster', UseCases\GetVoorpaginaRooster::class),
-            new GetRoute('/teamoverzicht', UseCases\GetTeamoverzicht::class),
-            new GetRoute('/teamstanden', UseCases\GetTeamstanden::class),
-        ], AuthorizationRole::UNREGISTERED),
 
         new RouteGroup('/wordpress', [
             new GetRoute('/groepen', UseCases\GetGroups::class),
