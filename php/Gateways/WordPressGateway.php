@@ -134,6 +134,17 @@ class WordPressGateway implements IWordPressGateway
         return new Team($result[0]->title, $result[0]->id);
     }
 
+    public function GetUserByEmail (string $email): Persoon {
+        
+        $user = get_user_by('email', $email);
+        $user = $this->GetUserById($user->data->ID);
+
+        return $user;
+
+
+    }
+
+
     public function GetUsersWithName(string $name): array
     {
 
