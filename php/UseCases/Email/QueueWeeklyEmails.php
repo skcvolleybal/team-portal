@@ -37,9 +37,7 @@ class QueueWeeklyEmails implements Interactor
 
         $this->teamtakenco = $this->wordPressGateway->GetUserByEmail('skc.scheidsco@gmail.com'); // Scheidsco account
         $this->webcieMembers = [
-            // $this->wordPressGateway->GetUser(),  // Sjon
-            // $this->wordPressGateway->GetUser(), // Banda
-            // $this->wordPressGateway->GetUser()  // Bas
+            $this->wordPressGateway->GetUserByEmail('webcie@skcvolleybal.nl')
         ];
 
         $wedstrijddagen = $this->nevoboGateway->GetWedstrijddagenForSporthal('LDNUN', 7);
