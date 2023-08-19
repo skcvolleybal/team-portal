@@ -137,9 +137,9 @@ class ZaalwachtGateway
             Z.id,
             date,
             team1_id AS eersteZaalwachtId,
-            p1.post_title AS eersteZaalwacht,
+            P1.post_title AS eersteZaalwacht,
             team2_id AS tweedeZaalwachtId,
-            p2.post_title AS tweedeZaalwacht
+            P2.post_title AS tweedeZaalwacht
                 
             FROM 
             " . $_ENV['DBNAME'] . ".TeamPortal_zaalwacht Z
