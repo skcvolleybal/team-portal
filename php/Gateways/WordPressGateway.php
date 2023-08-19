@@ -123,9 +123,13 @@ class WordPressGateway implements IWordPressGateway
         if (empty($naam)) {
             return null;
         }
-        $team = new Team($naam);
-        $query = 'SELECT * FROM J3_usergroups
-                  WHERE title = ?';
+        $team = new Team($naam); 
+
+        $query = "SELECT ID as id, post_title as title FROM " . $_ENV['WPDBNAME'] . ".wp_posts where post_title=? and post_type='team'";
+
+        // Oude Joomla query
+        // $query = 'SELECT * FROM J3_usergroups
+                //   WHERE title = ?';
         $params = [$team->GetSkcNaam()];
         $result = $this->database->Execute($query, $params);
         if (count($result) != 1) {
