@@ -5,6 +5,7 @@ Stappen voor migratie naar test of live:
 - Handmatig aanpassen van de barcie_schedule_map table via PHPMyAdmin. User_id verwijst naar de J3_users table maar deze constraint moet verwijderd.
 - Handmatig aanpassen van de teamportal_aanwezigheden table via PHPMyAdmin. Verwijder de User_id constraint die verwijst naar J3_users table 
 - Zelfde handmatig aanpassen voor de teller ids in de teamportal_wedstrijden table
+- Zelfde in teamportal_zaalwacht
 
 (Liever zouden we de foreign key constraint laten wijzen naar de wordpress db, maar dit mag niet van mysql. #3780 - Referencing column 'teller1_id' and referenced column 'ID' in foreign key constraint 'teller1' are incompatible.
  Dus eruit slopen. )
