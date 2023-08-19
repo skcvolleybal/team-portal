@@ -71,25 +71,33 @@ class ZaalwachtGateway
 
     public function GetZaalwachtSamenvatting(): array 
     {
-        $query = 'SELECT
-                    G.id AS teamId,
-                    G.title AS teamnaam,
-                    count(Z.id) AS aantal
-                  FROM J3_usergroups G
-                  LEFT JOIN (
-                    SELECT id, date, team1_id AS team_id
-                    FROM TeamPortal_zaalwacht WHERE team1_id IS NOT NULL
-                    UNION
-                    SELECT id, date, team2_id AS team_id
-                    FROM TeamPortal_zaalwacht WHERE team2_id IS NOT NULL
-                  ) Z ON Z.team_id = G.id
-                  WHERE G.id in (
-                    SELECT id FROM J3_usergroups WHERE parent_id = (
-                      SELECT id FROM J3_usergroups WHERE title = \'Teams\'
-                    )
-                  )
-                  GROUP BY G.id, G.title
-                  ORDER BY aantal, SUBSTRING(teamnaam, 1, 1), LENGTH(teamnaam), teamnaam';
+        $query = "SELECT
+        p.ID AS teamId,
+        p.post_title AS teamnaam,
+        count(Z.id) AS aantal
+        FROM 
+            " . $_ENV['WPDBNAME'] . ".wp_posts p
+            
+        LEFT JOIN (
+            SELECT id, date, team1_id AS team_id
+            FROM " . $_ENV['DBNAME'] . ".TeamPortal_zaalwacht WHERE team1_id IS NOT NULL
+            UNION
+            SELECT id, date, team2_id AS team_id
+            FROM " . $_ENV['DBNAME'] . ".TeamPortal_zaalwacht WHERE team2_id IS NOT NULL
+        ) Z ON Z.team_id = p.ID
+        
+        WHERE 
+            p.post_type = 'team'
+            
+        GROUP BY 
+            p.ID, p.post_title
+        
+        ORDER BY 
+            aantal, 
+            SUBSTRING(p.post_title, 1, 1), 
+            LENGTH(p.post_title), 
+            p.post_title
+        ";
         $rows = $this->database->Execute($query);
         $result = [];
         foreach ($rows as $row) {
