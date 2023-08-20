@@ -16,13 +16,13 @@ error_reporting(E_ALL ^ E_DEPRECATED); // Suppress warnings on PHP 8.0. Make sur
 class MijnOverzicht implements Interactor
 {
     public function __construct(
-        Gateways\JoomlaGateway $joomlaGateway,
+        Gateways\WordPressGateway $wordPressGateway,
         Gateways\NevoboGateway $nevoboGateway,
         Gateways\TelFluitGateway $telFluitGateway,
         Gateways\ZaalwachtGateway $zaalwachtGateway,
         Gateways\BarcieGateway $barcieGateway
     ) {
-        $this->joomlaGateway = $joomlaGateway;
+        $this->wordPressGateway = $wordPressGateway;
         $this->nevoboGateway = $nevoboGateway;
         $this->telFluitGateway = $telFluitGateway;
         $this->zaalwachtGateway = $zaalwachtGateway;
@@ -33,7 +33,7 @@ class MijnOverzicht implements Interactor
     {
         $overzicht = [];
 
-        $user = $this->joomlaGateway->GetUser();
+        $user = $this->wordPressGateway->GetUser();
 
         $zaalwachten = $this->zaalwachtGateway->GetZaalwachtenOfUser($user);
         foreach ($zaalwachten as $zaalwacht) {
@@ -53,7 +53,7 @@ class MijnOverzicht implements Interactor
             $this->AddBardienstToOverzicht($overzicht, $bardienst);
         }
 
-        $team = $this->joomlaGateway->GetTeam($user);
+        $team = $this->wordPressGateway->GetTeam($user);
         $speelWedstrijden = $this->nevoboGateway->GetWedstrijdenForTeam($team);
         foreach ($speelWedstrijden as $wedstrijd) {
             if ($wedstrijd->timestamp === null) {

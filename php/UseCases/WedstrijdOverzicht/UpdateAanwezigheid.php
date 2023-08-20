@@ -7,18 +7,18 @@ use TeamPortal\Gateways;
 class UpdateAanwezigheid implements Interactor
 {
     public function __construct(
-        Gateways\JoomlaGateway $joomlaGateway,
+        Gateways\WordPressGateway $wordPressGateway,
         Gateways\AanwezigheidGateway $aanwezigheidGateway
     ) {
-        $this->joomlaGateway = $joomlaGateway;
+        $this->wordPressGateway = $wordPressGateway;
         $this->aanwezigheidGateway = $aanwezigheidGateway;
     }
 
     public function Execute(object $data = null)
     {
         $spelerId = $data->spelerId;
-        $user = $spelerId === null ? $this->joomlaGateway->GetUser() : $this->joomlaGateway->GetUser($spelerId);
-        $user->team = $this->joomlaGateway->GetTeam($user);
+        $user = $spelerId === null ? $this->wordPressGateway->GetUser() : $this->wordPressGateway->GetUser($spelerId);
+        $user->team = $this->wordPressGateway->GetTeam($user);
         $matchId = $data->matchId;
         $isAanwezig = $data->isAanwezig;
         $rol = $data->rol;

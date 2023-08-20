@@ -10,10 +10,10 @@ class UpdateBeschikbaarheid implements Interactor
 {
     public function __construct(
         Gateways\BeschikbaarheidGateway $beschikbaarheidGateway,
-        Gateways\JoomlaGateway $joomlaGateway
+        Gateways\WordPressGateway $wordPressGateway
     ) {
         $this->beschikbaarheidGateway = $beschikbaarheidGateway;
-        $this->joomlaGateway = $joomlaGateway;
+        $this->wordPressGateway = $wordPressGateway;
     }
 
     public function Execute(object $data = null)
@@ -31,7 +31,7 @@ class UpdateBeschikbaarheid implements Interactor
             throw new InvalidArgumentException("Unknown beschikbaarheid: $isBeschikbaar");
         }
 
-        $user = $this->joomlaGateway->GetUser();
+        $user = $this->wordPressGateway->GetUser();
         $beschikbaarheid = $this->beschikbaarheidGateway->GetBeschikbaarheid($user, $date);
         $beschikbaarheid->isBeschikbaar = $isBeschikbaar;
         if ($beschikbaarheid->id === null) {

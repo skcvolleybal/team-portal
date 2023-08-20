@@ -3,7 +3,7 @@ import { NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 
 import { ActivatedRoute } from '@angular/router';
-import { JoomlaService } from './core/services/request.service';
+import { WordPressService } from './core/services/request.service';
 import { LoginModalComponent } from './login-modal/login-modal.component';
 import { Observable } from 'rxjs';
 import { StateService } from './core/services/state.service';
@@ -11,8 +11,6 @@ import { appRoutes } from './route.config';
 import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
 import { environment } from '../environments/environment';
 import { version } from '../environments/version';
-
-
 
 @Component({
   selector: 'teamportal-root',
@@ -36,7 +34,7 @@ export class AppComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private modalService: NgbModal,
     private stateService: StateService,
-    private joomalService: JoomlaService,
+    private joomalService: WordPressService,
     config: NgbModalConfig
   ) {
     config.backdrop = 'static';

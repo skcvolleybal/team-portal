@@ -4,7 +4,7 @@ namespace TeamPortal\Tests\Gateways;
 
 use TeamPortal\Entities\Persoon;
 
-class JoomlaGateway
+class WordPressGateway
 {
     public function GetUser(?int $userId = null): ?Persoon
     {

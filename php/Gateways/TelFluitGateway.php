@@ -42,26 +42,62 @@ class TelFluitGateway
 
     public function GetFluitEnTelbeurtenFor(Persoon $user): array
     {
-        $query = 'SELECT
-                    W.id,
-                    W.match_id AS matchId,
-                    W.timestamp,
-                    W.is_veranderd as isVeranderd,
-                    U1.id AS scheidsrechterId,
-                    U1.name AS scheidsrechter,
-                    U1.email emailScheidsrechter,
-                    U2.id AS idTeller1,
-                    U2.name AS naamTeller1,
-                    U2.email AS emailTeller1,
-                    U3.id AS idTeller2,
-                    U3.name AS naamTeller2,
-                    U3.email emailTeller2
-                  FROM TeamPortal_wedstrijden W
-                  LEFT JOIN J3_users U1 on U1.id = W.scheidsrechter_id
-                  LEFT JOIN J3_users U2 on U2.id = W.teller1_id
-                  LEFT JOIN J3_users U3 on U3.id = W.teller2_id
-                  WHERE (W.scheidsrechter_id = ? OR W.teller1_id = ? OR W.teller2_id = ?) AND
-                        W.timestamp >= CURRENT_TIMESTAMP()';
+        $query = "SELECT
+        W.id,
+        W.match_id AS matchId,
+        W.timestamp,
+        W.is_veranderd as isVeranderd,
+        
+        U1.ID AS scheidsrechterId,
+        U1.display_name AS scheidsrechter,
+        U1.user_email AS emailScheidsrechter,
+        
+        U2.ID AS idTeller1,
+        U2.display_name AS naamTeller1,
+        U2.user_email AS emailTeller1,
+        
+        U3.ID AS idTeller2,
+        U3.display_name AS naamTeller2,
+        U3.user_email AS emailTeller2
+        
+    FROM 
+        " . $_ENV['DBNAME'] . ".TeamPortal_wedstrijden W
+    
+    LEFT JOIN 
+        " . $_ENV['WPDBNAME'] . ".wp_users U1 on U1.ID = W.scheidsrechter_id
+    
+    LEFT JOIN 
+        " . $_ENV['WPDBNAME'] . ".wp_users U2 on U2.ID = W.teller1_id
+    
+    LEFT JOIN 
+        " . $_ENV['WPDBNAME'] . ".wp_users U3 on U3.ID = W.teller2_id
+    
+    WHERE 
+        (W.scheidsrechter_id = ? OR W.teller1_id = ? OR W.teller2_id = ?) 
+        AND W.timestamp >= CURRENT_TIMESTAMP()
+    ";
+
+        // Oude Joomla query
+        // $query = 'SELECT
+        //             W.id,
+        //             W.match_id AS matchId,
+        //             W.timestamp,
+        //             W.is_veranderd as isVeranderd,
+        //             U1.id AS scheidsrechterId,
+        //             U1.name AS scheidsrechter,
+        //             U1.email emailScheidsrechter,
+        //             U2.id AS idTeller1,
+        //             U2.name AS naamTeller1,
+        //             U2.email AS emailTeller1,
+        //             U3.id AS idTeller2,
+        //             U3.name AS naamTeller2,
+        //             U3.email emailTeller2
+        //           FROM TeamPortal_wedstrijden W
+        //           LEFT JOIN J3_users U1 on U1.id = W.scheidsrechter_id
+        //           LEFT JOIN J3_users U2 on U2.id = W.teller1_id
+        //           LEFT JOIN J3_users U3 on U3.id = W.teller2_id
+        //           WHERE (W.scheidsrechter_id = ? OR W.teller1_id = ? OR W.teller2_id = ?) AND
+        //                 W.timestamp >= CURRENT_TIMESTAMP()';
         $params = [
             $user->id, $user->id, $user->id
         ];
@@ -125,30 +161,59 @@ class TelFluitGateway
 
     public function GetScheidsrechters(): array
     {
-        $query = 'SELECT
-                    U.id,
-                    U.name AS naam,
-                    U.email,
-                    C.cb_scheidsrechterscode AS niveau,
-                    COUNT(W.scheidsrechter_id) AS gefloten,
-                    teamId,
-                    teamnaam
-                  FROM J3_users U
-                  INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
-                  INNER JOIN J3_usergroups G ON M.group_id = G.id
-                  LEFT JOIN (
-                    SELECT 
-                      user_id, 
-                      group_id AS teamId, 
-                      title AS teamnaam
-                    FROM J3_user_usergroup_map M
-                    INNER JOIN J3_usergroups G ON M.group_id = G.id
-                    WHERE G.parent_id = (SELECT id FROM J3_usergroups WHERE title = \'Teams\')) G2 ON U.id = G2.user_id
-                  LEFT JOIN J3_comprofiler C ON C.user_id = U.id
-                  LEFT JOIN TeamPortal_wedstrijden W ON W.scheidsrechter_id = U.id
-                  WHERE G.id IN (SELECT id FROM J3_usergroups WHERE title = "Scheidsrechters")
-                  GROUP BY U.id, U.name, U.email, C.cb_scheidsrechterscode, teamId, teamnaam
-                  ORDER BY gefloten, naam';
+        // Working WordPress query.
+
+        $query = "SELECT 
+            u.ID as id, 
+            u.display_name as naam, 
+            u.user_email as email,
+            MAX(p.ID) as teamId, 
+            MAX(p.post_title) as teamnaam,
+            COALESCE(COUNT(w.scheidsrechter_id), 0) as gefloten,
+            MAX(niveau_meta.meta_value) as niveau
+        FROM 
+            " . $_ENV['WPDBNAME'] . ".wp_users u
+        INNER JOIN 
+        " . $_ENV['WPDBNAME'] . ".wp_usermeta um ON u.ID = um.user_id AND um.meta_key = 'team' 
+        INNER JOIN 
+        " . $_ENV['WPDBNAME'] . ".wp_posts p ON p.ID = um.meta_value
+        LEFT JOIN
+        " . $_ENV['DBNAME'] . ".TeamPortal_wedstrijden w ON u.ID = w.scheidsrechter_id        
+        INNER JOIN
+        " . $_ENV['WPDBNAME'] . ".wp_usermeta niveau_meta ON u.ID = niveau_meta.user_id AND niveau_meta.meta_key = 'scheidsrechter' AND niveau_meta.meta_value <> '' AND niveau_meta.meta_value IS NOT NULL
+        WHERE 
+            p.post_type = 'team'
+        GROUP BY 
+            u.ID  
+        ORDER BY 'gefloten' DESC";
+
+            // Oude Joomla versie
+            // $query = 'SELECT
+            //             U.id,
+            //             U.name AS naam,
+            //             U.email,
+            //             C.cb_scheidsrechterscode AS niveau,
+            //             COUNT(W.scheidsrechter_id) AS gefloten,
+            //             teamId,
+            //             teamnaam
+            //         FROM J3_users U
+            //         INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
+            //         INNER JOIN J3_usergroups G ON M.group_id = G.id
+            //         LEFT JOIN (
+            //             SELECT 
+            //             user_id, 
+            //             group_id AS teamId, 
+            //             title AS teamnaam
+            //             FROM J3_user_usergroup_map M
+            //             INNER JOIN J3_usergroups G ON M.group_id = G.id
+            //             WHERE G.parent_id = (SELECT id FROM J3_usergroups WHERE title = \'Teams\')) G2 ON U.id = G2.user_id
+            //         LEFT JOIN J3_comprofiler C ON C.user_id = U.id
+            //         LEFT JOIN TeamPortal_wedstrijden W ON W.scheidsrechter_id = U.id
+            //         WHERE G.id IN (SELECT id FROM J3_usergroups WHERE title = "Scheidsrechters")
+            //         GROUP BY U.id, U.name, U.email, C.cb_scheidsrechterscode, teamId, teamnaam
+            //         ORDER BY gefloten, naam';
+
+
         $rows = $this->database->Execute($query);
         $result = [];
         foreach ($rows as $row) {
@@ -171,18 +236,18 @@ class TelFluitGateway
                     W.timestamp,
                     W.is_veranderd as isVeranderd,
                     U1.id AS scheidsrechterId,
-                    U1.name AS scheidsrechter,
-                    U1.email emailScheidsrechter,
+                    U1.display_name AS scheidsrechter,
+                    U1.user_email emailScheidsrechter,
                     U2.id AS idTeller1,
-                    U2.name AS naamTeller1,
-                    U2.email AS emailTeller1,
+                    U2.display_name AS naamTeller1,
+                    U2.user_email AS emailTeller1,
                     U3.id AS idTeller2,
-                    U3.name AS naamTeller2,
-                    U3.email emailTeller2
-                  FROM TeamPortal_wedstrijden W
-                  LEFT JOIN J3_users U1 on U1.id = W.scheidsrechter_id
-                  LEFT JOIN J3_users U2 on U2.id = W.teller1_id
-                  LEFT JOIN J3_users U3 on U3.id = W.teller2_id
+                    U3.display_name AS naamTeller2,
+                    U3.user_email emailTeller2
+                  FROM ' . $_ENV['DBNAME'] . '.TeamPortal_wedstrijden W
+                  LEFT JOIN ' . $_ENV['WPDBNAME'] . '.wp_users U1 on U1.id = W.scheidsrechter_id
+                  LEFT JOIN ' . $_ENV['WPDBNAME'] . '.wp_users U2 on U2.id = W.teller1_id
+                  LEFT JOIN ' . $_ENV['WPDBNAME'] . '.wp_users U3 on U3.id = W.teller2_id
                   WHERE W.match_id = ?';
         $params = [$matchId];
         $rows = $this->database->Execute($query, $params);
@@ -191,23 +256,53 @@ class TelFluitGateway
 
     public function GetTellers(): array
     {
-        $query = 'SELECT
-        U.id,
-        U.name AS naam,
-        U.email,
-        (SELECT COUNT(*) FROM TeamPortal_wedstrijden W WHERE W.teller1_id = U.id OR W.teller2_id = U.id) AS geteld,
-        G.id AS teamId,
-        G.title AS teamnaam
-        FROM J3_users U
-        INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
-        INNER JOIN J3_usergroups G ON M.group_id = G.id
-        WHERE G.parent_id IN (SELECT id FROM J3_usergroups WHERE title = "Teams")
-         AND U.id NOT IN (
-                SELECT M.user_id FROM J3_usergroups G
-                INNER JOIN J3_user_usergroup_map M ON G.id = M.group_id
-                WHERE title = "Scheidsrechters"
-            )
-            GROUP BY U.id, U.name, U.email, G.id, G.title';
+
+        // Werkende WordPress query 
+        // Wel nog goed controleren op test/prod. De data lijkt te kloppen maar niet 100% sure 
+        $query = "SELECT
+        U.ID as id,
+        U.display_name AS naam,
+        U.user_email AS email,
+        (
+            SELECT COUNT(*)
+            FROM " . $_ENV['DBNAME'] . ".TeamPortal_wedstrijden W
+            WHERE W.teller1_id = U.ID OR W.teller2_id = U.ID
+        ) AS geteld,
+        P.ID AS teamId,
+        P.post_title AS teamnaam
+    FROM
+        " . $_ENV['WPDBNAME'] . ".wp_users U
+    INNER JOIN
+        " . $_ENV['WPDBNAME'] . ".wp_usermeta UM ON U.ID = UM.user_id AND UM.meta_key = 'team'
+    INNER JOIN
+        " . $_ENV['WPDBNAME'] . ".wp_posts P ON UM.meta_value = P.ID AND P.post_type = 'team'
+    WHERE
+        U.ID NOT IN (
+            SELECT user_id
+            FROM " . $_ENV['WPDBNAME'] . ".wp_usermeta
+            WHERE meta_key = 'scheidsrechter' AND meta_value <> '' AND meta_value IS NOT NULL
+        )
+    GROUP BY
+        U.ID, U.display_name, U.user_email, P.ID, P.post_title";
+
+        // Werkende Joomla query: correcte count 
+        // $query = 'SELECT
+        // U.id,
+        // U.name AS naam,
+        // U.email,
+        // (SELECT COUNT(*) FROM TeamPortal_wedstrijden W WHERE W.teller1_id = U.id OR W.teller2_id = U.id) AS geteld,
+        // G.id AS teamId,
+        // G.title AS teamnaam
+        // FROM J3_users U
+        // INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
+        // INNER JOIN J3_usergroups G ON M.group_id = G.id
+        // WHERE G.parent_id IN (SELECT id FROM J3_usergroups WHERE title = "Teams")
+        // AND U.id NOT IN (
+        //         SELECT M.user_id FROM J3_usergroups G
+        //         INNER JOIN J3_user_usergroup_map M ON G.id = M.group_id
+        //         WHERE title = "Scheidsrechters"
+        //     )
+        //     GROUP BY U.id, U.name, U.email, G.id, G.title';
 
         // Oude query onderstaand. Nieuwe query nog niet getest ivm Nevobo RSS feed nog offline.     
         // $query = 'SELECT 

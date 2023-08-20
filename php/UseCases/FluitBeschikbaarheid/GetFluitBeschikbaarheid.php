@@ -9,18 +9,18 @@ use TeamPortal\Entities\Wedstrijd;
 class GetBeschikbaarheid implements Interactor
 {
     public function __construct(
-        Gateways\JoomlaGateway $joomlaGateway,
+        Gateways\WordPressGateway $wordPressGateway,
         Gateways\NevoboGateway $nevoboGateway,
         Gateways\BeschikbaarheidGateway $beschikbaarheidGateway
     ) {
-        $this->joomlaGateway = $joomlaGateway;
+        $this->wordPressGateway = $wordPressGateway;
         $this->nevoboGateway = $nevoboGateway;
         $this->beschikbaarheidGateway = $beschikbaarheidGateway;
     }
 
     public function Execute(object $data = null): array
     {
-        $user = $this->joomlaGateway->GetUser();
+        $user = $this->wordPressGateway->GetUser();
         $beschikbaarheden = $this->beschikbaarheidGateway->GetBeschikbaarheden($user);
 
         $wedstrijden = $this->nevoboGateway->GetWedstrijdenForTeam($user->team);

@@ -6,7 +6,7 @@ use TeamPortal\Entities\Persoon;
 use TeamPortal\Entities\Scheidsrechter;
 use TeamPortal\Entities\Team;
 
-interface IJoomlaGateway
+interface IWordPressGateway
 {
     function GetUser(?int $userId = null): ?Persoon;
     function GetLoggedInUser(): ?Persoon;
@@ -23,7 +23,7 @@ interface IJoomlaGateway
     function GetCoaches(Team $team): array;
     function GetTrainers(Team $team): array;
     function GetUsersInGroup(string $groupname): array;
-    function InitJoomla(): void;
+    function InitWordPress(): void;
     function Login(string $username, string $password): bool;
     function GetSpelerByRugnummer(int $rugnummer, Team $team): ?Persoon;
     function GetRugnummerOfPersoon(Persoon $user);

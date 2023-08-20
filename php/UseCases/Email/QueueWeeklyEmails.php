@@ -22,23 +22,22 @@ class QueueWeeklyEmails implements Interactor
         Gateways\ZaalwachtGateway $zaalwachtGateway,
         Gateways\EmailGateway $emailGateway,
         Gateways\BarcieGateway $barcieGateway,
-        Gateways\JoomlaGateway $joomlaGateway
+        Gateways\WordPressGateway $wordPressGateway
     ) {
         $this->nevoboGateway = $nevoboGateway;
         $this->telFluitGateway = $telFluitGateway;
         $this->zaalwachtGateway = $zaalwachtGateway;
         $this->mailQueueGateway = $emailGateway;
         $this->barcieGateway = $barcieGateway;
-        $this->joomlaGateway = $joomlaGateway;
+        $this->wordPressGateway = $wordPressGateway;
     }
 
     public function Execute(object $data = null)
     {
-        $this->teamtakenco = $this->joomlaGateway->GetUser(2573); // teamtakenco-ID
+
+        $this->teamtakenco = $this->wordPressGateway->GetUserByEmail('skc.scheidsco@gmail.com'); // Scheidsco account
         $this->webcieMembers = [
-            $this->joomlaGateway->GetUser(542),  // Sjon
-            $this->joomlaGateway->GetUser(2036), // Banda
-            $this->joomlaGateway->GetUser(2212)  // Bas
+            $this->wordPressGateway->GetUserByEmail('webcie@skcvolleybal.nl')
         ];
 
         $wedstrijddagen = $this->nevoboGateway->GetWedstrijddagenForSporthal('LDNUN', 7);
@@ -49,12 +48,12 @@ class QueueWeeklyEmails implements Interactor
             if ($zaalwacht) {
                 if ($zaalwacht->eersteZaalwacht) {
                     $dag->eersteZaalwacht = $zaalwacht->eersteZaalwacht;
-                    $dag->eersteZaalwacht->teamgenoten = $this->joomlaGateway->GetTeamgenoten($dag->eersteZaalwacht);
+                    $dag->eersteZaalwacht->teamgenoten = $this->wordPressGateway->GetTeamgenoten($dag->eersteZaalwacht);
                 }
 
                 if ($zaalwacht->tweedeZaalwacht) {
                     $dag->tweedeZaalwacht = $zaalwacht->tweedeZaalwacht;
-                    $dag->tweedeZaalwacht->teamgenoten = $this->joomlaGateway->GetTeamgenoten($dag->tweedeZaalwacht);
+                    $dag->tweedeZaalwacht->teamgenoten = $this->wordPressGateway->GetTeamgenoten($dag->tweedeZaalwacht);
                 }
             }
             foreach ($dag->speeltijden as $speeltijd) {

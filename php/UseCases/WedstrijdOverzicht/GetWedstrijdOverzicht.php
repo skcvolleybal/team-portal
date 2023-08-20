@@ -18,11 +18,11 @@ error_reporting(E_ALL ^ E_DEPRECATED); // Suppress warnings on PHP 8.0. Make sur
 class GetWedstrijdOverzicht implements Interactor
 {
     public function __construct(
-        Gateways\JoomlaGateway $joomlaGateway,
+        Gateways\WordPressGateway $wordPressGateway,
         Gateways\AanwezigheidGateway $aanwezigheidGateway,
         Gateways\NevoboGateway $nevoboGateway
     ) {
-        $this->joomlaGateway = $joomlaGateway;
+        $this->wordPressGateway = $wordPressGateway;
         $this->aanwezigheidGateway = $aanwezigheidGateway;
         $this->nevoboGateway = $nevoboGateway;
     }
@@ -30,9 +30,9 @@ class GetWedstrijdOverzicht implements Interactor
     public function Execute(object $data = null)
     {
         $overzicht = [];
-        $user = $this->joomlaGateway->GetUser();
+        $user = $this->wordPressGateway->GetUser();
         if ($user->team !== null) {
-            $user->team->teamgenoten = $this->joomlaGateway->GetTeamgenoten($user->team);
+            $user->team->teamgenoten = $this->wordPressGateway->GetTeamgenoten($user->team);
         }
 
         $teamprogramma = $this->nevoboGateway->GetWedstrijdenForTeam($user->team);
@@ -155,7 +155,7 @@ class GetWedstrijdOverzicht implements Interactor
 
         foreach ($teams as $team) {
             if ($team->naam != $eigenTeam->naam && $team->niveau >= $eigenTeam->niveau) {
-                $team->teamgenoten = $this->joomlaGateway->GetTeamgenoten($team);
+                $team->teamgenoten = $this->wordPressGateway->GetTeamgenoten($team);
                 $team->programma = $this->nevoboGateway->GetWedstrijdenForTeam($team);
                 $invalTeams[] =  $team;
             }

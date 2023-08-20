@@ -7,7 +7,7 @@ use TeamPortal\Common\DateFunctions;
 use TeamPortal\Entities\Barbeschikbaarheid;
 use TeamPortal\Entities\Persoon;
 use TeamPortal\Gateways\BarcieGateway;
-use TeamPortal\Gateways\JoomlaGateway;
+use TeamPortal\Gateways\WordPressGateway;
 use TeamPortal\Gateways\NevoboGateway;
 
 class GetBarcieBeschikbaarheid implements Interactor
@@ -15,16 +15,16 @@ class GetBarcieBeschikbaarheid implements Interactor
     public function __construct(
         NevoboGateway $nevoboGateway,
         BarcieGateway $barcieGateway,
-        JoomlaGateway $joomlaGateway
+        WordPressGateway $wordPressGateway
     ) {
         $this->nevoboGateway = $nevoboGateway;
         $this->barcieGateway = $barcieGateway;
-        $this->joomlaGateway = $joomlaGateway;
+        $this->wordPressGateway = $wordPressGateway;
     }
 
     public function Execute(object $data = null): array
     {
-        $user = $this->joomlaGateway->GetUser();
+        $user = $this->wordPressGateway->GetUser();
 
         $alleWedstrijden = $this->nevoboGateway->GetWedstrijdenForTeam($user->team);
 

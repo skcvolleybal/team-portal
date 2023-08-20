@@ -2,7 +2,7 @@
 
 namespace TeamPortal\RouteObjects;
 
-use TeamPortal\Gateways\JoomlaGateway;
+use TeamPortal\Gateways\WordPressGateway;
 use GuzzleHttp\Psr7\Response;
 use Slim\Routing\RouteCollectorProxy;
 use UnauthorizedException;
@@ -36,9 +36,9 @@ abstract class CrudRoute
         return $result;
     }
 
-    function Authorize(JoomlaGateway $joomlaGateway, ?int $role)
+    function Authorize(WordPressGateway $wordPressGateway, ?int $role)
     {
-        $user = $joomlaGateway->GetUser();
+        $user = $wordPressGateway->GetUser();
         switch ($role) {
             case null;
             case 0:
@@ -48,16 +48,16 @@ abstract class CrudRoute
                 $isAuthorized = $user !== null;
                 break;
             case 2:
-                $isAuthorized = $joomlaGateway->IsBarcie($user);
+                $isAuthorized = $wordPressGateway->IsBarcie($user);
                 break;
             case 3:
-                $isAuthorized =  $joomlaGateway->IsScheidsrechter($user);
+                $isAuthorized =  $wordPressGateway->IsScheidsrechter($user);
                 break;
             case 4:
-                $isAuthorized =  $joomlaGateway->IsTeamcoordinator($user);
+                $isAuthorized =  $wordPressGateway->IsTeamcoordinator($user);
                 break;
             case 5:
-                $isAuthorized =  $joomlaGateway->IsWebcie($user);
+                $isAuthorized =  $wordPressGateway->IsWebcie($user);
                 break;
             default:
                 $isAuthorized = false;

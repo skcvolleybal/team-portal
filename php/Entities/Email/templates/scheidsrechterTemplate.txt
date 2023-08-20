@@ -8,22 +8,13 @@ Beste {{naam}},<br>
 Aanstaande {{datum}} moet je een wedstrijd fluiten om {{tijd}}.<br>
 Je zult de wedstrijd {{teams}} gaan fluiten.<br>
 <br>
-Extra informatie over scheidsen vind je door op onderstaande links te klikken.<br>
-SKC website:<br>
-Hier zijn de volgende documenten te vinden:<br>
-    - De PowerPoint van de scheidsrechtercursus <a href="https://www.skcvolleybal.nl/index.php/informatie/praktische-info/documenten">‘Scheidsrechters cursus 2021’</a><br>
-    - De scheidshulp (deze is ook in de zaal aanwezig) <a href="https://www.skcvolleybal.nl/index.php/informatie/praktische-info/documenten">‘Scheidsrechters hulp 2021-2022’</a><br>
+Extra informatie over scheidsen vind je door op onderstaande links te klikken.<br><br>
+
+    - Het Scheidsrechters Hulpdocument <a href="https://drive.google.com/file/d/1F_sNosIpoSTBVj01Ij89UU3RRr6sJQHQ/view?usp=sharing">‘Scheidsrechters cursus 2021’</a><br>
 <br>
-De Nevobo <a href="https://www.nevobo.nl/cms/download/7231/Spelregels%202021-2022%20-%20Topdivisie%20en%20lager%20-%20mei%202021.pdf">spelregels</a><br>
+- De Nevobo <a href="https://www.nevobo.nl/wedstrijdsport/regelgeving/spelregels/">spelregels</a><br>
 <br>
-DWF <a href="https://www.youtube.com/watch?v=YSYA5cY2r3c&t=1s">instructievideo</a> <br>
-<br>
-<br>
-Agenda's Importeren:
-<a target="_blank" href="https://www.google.com/calendar/render?cid=http%3A%2F%2Fwww.skcvolleybal.nl%2Fteam-portal%2Fapi%2Fcalendar%3Fuserid%3D{{userId}}">Google Calendar: Fluiten & Zaalwacht</a><br>
-<br>
-Als je dit importeert worden alle wedstrijden automatisch in je google calendar gezet en ben je in 1 keer van al jouw diensten op de hoogte.<br>
-(het kan even duren voordat je agenda wordt gesynchroniseerd...)<br>
+- DWF <a href="https://www.youtube.com/watch?v=YSYA5cY2r3c&t=1s">instructievideo</a> <br>
 <br>
 Met vriendelijke groet,<br>
 <br>
@@ -39,22 +30,16 @@ Dear {{naam}},<br>
 Upcoming {{datum}}, you have been assigned as a referee at {{tijd}}.<br>
 You are the referee of the {{teams}} match.<br>
 <br>
-Additional information about being a referee can be found by clicking on the link below.<br>
-SKC website:<br>
-The following documents can be found:<br>
-    - The Referee Course PowerPoint <a href="https://www.skcvolleybal.nl/index.php/informatie/praktische-info/documenten">‘Refereecourse 2021’</a><br>
-    - The Referee help (this is also present in the hall) <a href="https://www.skcvolleybal.nl/index.php/informatie/praktische-info/documenten">‘Referee manual 2021-2022’</a><br>
+Additional information about being a referee can be found by clicking on the link below.<br><br>
+The following documents can be found:<br><br>
+    - The Referee Course Manual <a href="https://drive.google.com/file/d/1b5C5oc37fcXLQnDa_8Yo828i4aglSUwX/view?usp=sharing">‘Refereecourse</a><br>
 <br>
-The Nevobo <a href="https://www.nevobo.nl/cms/download/7231/Spelregels%202021-2022%20-%20Topdivisie%20en%20lager%20-%20mei%202021.pdf">game rules</a><br>
+- The Nevobo <a href="https://www.nevobo.nl/cms/download/7231/Spelregels%202021-2022%20-%20Topdivisie%20en%20lager%20-%20mei%202021.pdf">game rules</a><br>
 <br>
-DWF instruction <a href="https://www.youtube.com/watch?v=YSYA5cY2r3c&t=1s">video</a><br>
+- DWF instruction <a href="https://www.youtube.com/watch?v=YSYA5cY2r3c&t=1s">video</a><br>
 <br>
-<br>
-Agenda's Import: <a target="_blank" href="https://www.google.com/calendar/render?cid=http%3A%2F%2Fwww.skcvolleybal.nl%2Fteam-portal%2Fapi%2Fcalendar%3Fuserid%3D{{userId}}">Google Calendar: Fluiten & Zaalwacht</a><br>
-If you import this, all matches are automatically placed in your google calendar and you are aware of all your services at once.<br>
-(It may take a while for your calendar to sync...)<br>
-<br>
-Kind Regards,<br>
+
+Best Regards,<br>
 <br>
 {{afzender}}<br>
 </body>

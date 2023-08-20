@@ -10,7 +10,7 @@ use TeamPortal\Common\Utilities;
 use TeamPortal\Entities\Persoon;
 use TeamPortal\Entities\Wedstrijd;
 use TeamPortal\Gateways\BarcieGateway;
-use TeamPortal\Gateways\JoomlaGateway;
+use TeamPortal\Gateways\WordPressGateway;
 use TeamPortal\Gateways\NevoboGateway;
 use TeamPortal\Gateways\TelFluitGateway;
 use TeamPortal\Gateways\ZaalwachtGateway;
@@ -19,13 +19,13 @@ class GetCalendar implements Interactor
 {
     public function __construct(
         ZaalwachtGateway $zaalwachtGateway,
-        JoomlaGateway $joomlaGateway,
+        WordPressGateway $wordPressGateway,
         NevoboGateway $nevoboGateway,
         TelFluitGateway $telFluitGateway,
         BarcieGateway $barcieGateway
     ) {
         $this->zaalwachtGateway = $zaalwachtGateway;
-        $this->joomlaGateway = $joomlaGateway;
+        $this->wordPressGateway = $wordPressGateway;
         $this->nevoboGateway = $nevoboGateway;
         $this->telFluitGateway = $telFluitGateway;
         $this->barcieGateway = $barcieGateway;
@@ -37,12 +37,12 @@ class GetCalendar implements Interactor
             throw new InvalidArgumentException("userid is not set");
         }
 
-        $user = $this->joomlaGateway->GetUser($data->userid);
+        $user = $this->wordPressGateway->GetUser($data->userid);
         if ($user === null) {
             return null;
         }
 
-        $isScheidsrechter = $this->joomlaGateway->IsScheidsrechter($user);
+        $isScheidsrechter = $this->wordPressGateway->IsScheidsrechter($user);
         $isTeller = !$isScheidsrechter;
 
         $title = $this->GetTitle($user, $isScheidsrechter);

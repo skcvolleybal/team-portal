@@ -2,13 +2,13 @@
 
 namespace TeamPortal\UseCases;
 
-use TeamPortal\Gateways\JoomlaGateway;
+use TeamPortal\Gateways\WordPressGateway;
 
 class GetUsers implements Interactor
 {
-    public function __construct(JoomlaGateway $joomlaGateway)
+    public function __construct(WordPressGateway $wordPressGateway)
     {
-        $this->joomlaGateway = $joomlaGateway;
+        $this->wordPressGateway = $wordPressGateway;
     }
 
     public function Execute(object $data = null)
@@ -17,7 +17,7 @@ class GetUsers implements Interactor
         $result = [];
 
         if (strlen($name) >= 3) {
-            $result = $this->joomlaGateway->GetUsersWithName($name);
+            $result = $this->wordPressGateway->GetUsersWithName($name);
         }
 
         return $result;
