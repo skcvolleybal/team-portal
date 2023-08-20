@@ -15,6 +15,7 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: 16
+
     - name: Extract branch name
       shell: bash
       run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
@@ -31,7 +32,7 @@ jobs:
         echo "  branch: '${{ steps.extract_branch.outputs.branch }}'," >> ./src/environments/version.ts
         echo "  hash: '${{ steps.extract_hash.outputs.hash }}'," >> ./src/environments/version.ts
         echo "};" >> ./src/environments/version.ts
-        
+
     - name: 🏗️ Installing NPM dependencies
       run: npm i -f
     - name: 🔨 Building Angular
