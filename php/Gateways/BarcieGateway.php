@@ -22,37 +22,43 @@ class BarcieGateway implements IBarcieGateway
 
     public function GetBardagen(): array
     {
+        // WP ready 
+
         $query = 'SELECT 
-                    D.id,
-                    date,
-                    U.id AS userId,
-                    U.name AS naam,
-                    U.email,
-                    shift,
-                    is_bhv AS isBhv
-                  FROM barcie_days D
-                  LEFT JOIN barcie_schedule_map M ON D.id = M.day_id
-                  LEFT JOIN J3_users U ON U.id = M.user_id
-                  WHERE CURRENT_DATE() <= D.date
-                  ORDER BY date, shift, name';
+            D.id,
+            date,
+            U.id AS userId,
+            U.display_name AS naam,
+            U.user_email AS email,
+            shift,
+            is_bhv AS isBhv
+            FROM ' . $_ENV['DBNAME'] . '.barcie_days D
+            LEFT JOIN ' . $_ENV['DBNAME'] . '.barcie_schedule_map M ON D.id = M.day_id
+            LEFT JOIN ' . $_ENV['WPDBNAME'] . '.wp_users U ON U.id = M.user_id
+            WHERE CURRENT_DATE() <= D.date
+            ORDER BY date, shift, naam';
+
+                
         $rows = $this->database->Execute($query);
         return $this->MapToBardagen($rows);
     }
 
     public function GetBardag(DateTime $date): Bardag
     {
+
         $query = 'SELECT 
-                    D.id,
-                    date,
-                    U.id AS userId,
-                    U.name AS naam,
-                    U.email,
-                    shift,
-                    is_bhv AS isBhv
-                  FROM barcie_days D
-                  LEFT JOIN barcie_schedule_map M ON D.id = M.day_id
-                  LEFT JOIN J3_users U ON U.id = M.user_id
-                  WHERE D.date = ?';
+                D.id,
+                date,
+                U.id AS userId,
+                U.display_name AS naam,
+                U.user_email AS email,
+                shift,
+                is_bhv AS isBhv
+            FROM ' . $_ENV['DBNAME'] . '.barcie_days D
+            LEFT JOIN ' . $_ENV['DBNAME'] . '.barcie_schedule_map M ON D.id = M.day_id
+            LEFT JOIN ' . $_ENV['WPDBNAME'] . '.wp_users U ON U.id = M.user_id
+            WHERE D.date = ?';
+ 
         $params = [DateFunctions::GetYmdNotation($date)];
         $rows = $this->database->Execute($query, $params);
         return count($rows) > 0 ? $this->MapToBardagen($rows)[0] : new Bardag(null, $date);
@@ -159,22 +165,24 @@ class BarcieGateway implements IBarcieGateway
 
     public function GetBardienst(Bardag $dag, Persoon $user, int $shift): Bardienst
     {
+        // WP Working
         $query = 'SELECT 
                     M.id,
                     D.id as dayId,
                     D.date,
                     M.day_id AS dayId,
                     U.id AS userId,
-                    U.name AS naam,
-                    U.email,
+                    U.display_name AS naam,
+                    U.user_email AS email,
                     shift,
                     is_bhv AS isBhv
-                  FROM barcie_schedule_map M
-                  INNER JOIN barcie_days D ON M.day_id = D.id
-                  INNER JOIN J3_users U ON M.user_id = U.id
-                  WHERE day_id = ? and
-                        user_id = ? and
-                        shift = ?';
+                FROM ' . $_ENV['DBNAME'] . '.barcie_schedule_map M
+                INNER JOIN ' . $_ENV['DBNAME'] . '.barcie_days D ON M.day_id = D.id
+                INNER JOIN ' . $_ENV['WPDBNAME'] . '.wp_users U ON M.user_id = U.id
+                WHERE day_id = ? and
+                    user_id = ? and
+                    shift = ?';
+
         $params = [$dag->id, $user->id, $shift];
         $rows = $this->database->Execute($query, $params);
 
@@ -228,26 +236,43 @@ class BarcieGateway implements IBarcieGateway
 
     public function GetBarleden(): array
     {
-        $query = 'SELECT
-                    U.id AS userId,
-                    U.name AS naam,
-                    U.email,
-                    count(B.id) AS aantalDiensten
-                  FROM J3_users U
-                  INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
-                  INNER JOIN J3_usergroups G ON G.id = M.group_id
-                  LEFT JOIN barcie_schedule_map B ON B.user_id = U.id
-                  WHERE title = "Barcie"
-                  GROUP BY U.id
-                  ORDER BY count(B.id) ASC';
+        // WP Not yet Ready: should be tested extensively
+        // Seems ready
+
+        // Maps WordPress user ID's on previous barcie_schedule_map Joomla User ID's
+        // ID's are not the same, so either WP users should get Joomla's old ID's, or all barcie_schedule_map user ID's should be wiped. that should happen each season. 
+
+        $args = array(
+            'role'    => 'Barcie');
+        $users = get_users( $args );
+
+        // Map the aantal bardiensten on WordPress user ids
+        $query = 'SELECT B.user_id AS userId, 
+                count(B.id) AS aantalDiensten
+                FROM barcie_schedule_map B
+                GROUP BY B.user_id
+                ORDER BY count(B.id) ASC';
+
         $rows =  $this->database->Execute($query);
+
+        
         $result = [];
-        foreach ($rows as $row) {
+        foreach ($users as $user) {
+            $user->aantalDiensten = 0;
+            foreach ($rows as $bardienst) {
+                if ($user->ID == $bardienst->userId) {
+                    $user->aantalDiensten = $bardienst->aantalDiensten;
+                }
+            }
+        }
+
+        foreach ($users as $user) {
             $barlid = new Barlid(
-                new Persoon($row->userId, $row->naam, $row->email),
-                $row->aantalDiensten
+                new Persoon($user->data->ID, $user->display_name, $user->data->user_email),
+                $user->aantalDiensten
             );
             $result[] = $barlid;
+
         }
         return $result;
     }
@@ -291,18 +316,20 @@ class BarcieGateway implements IBarcieGateway
 
     public function GetBardienstenForUser(Persoon $user): array
     {
+        // WP Working
         $query = 'SELECT 
-                    U.id AS userId, 
-                    U.name AS naam, 
-                    U.email,
-                    D.id as dayId,
-                    D.date, 
-                    M.shift, 
-                    M.is_bhv AS isBhv
-                  FROM J3_users U
-                  INNER JOIN barcie_schedule_map M ON M.user_id = U.id
-                  INNER JOIN barcie_days D ON M.day_id = D.id
-                  WHERE U.id = ? AND D.date >= CURDATE()';
+                U.id AS userId, 
+                U.display_name AS naam, 
+                U.user_email AS email,
+                D.id as dayId,
+                D.date, 
+                M.shift, 
+                M.is_bhv AS isBhv
+            FROM ' . $_ENV['WPDBNAME'] . '.wp_users U
+            INNER JOIN ' . $_ENV['DBNAME'] . '.barcie_schedule_map M ON M.user_id = U.id
+            INNER JOIN ' . $_ENV['DBNAME'] . '.barcie_days D ON M.day_id = D.id
+            WHERE U.id = ? AND D.date >= CURDATE()';
+
         $params = [$user->id];
         $rows = $this->database->Execute($query, $params);
         return $this->MapToBardiensten($rows);
@@ -310,6 +337,7 @@ class BarcieGateway implements IBarcieGateway
 
     public function MapToBardiensten(array $rows): array
     {
+        // WP working
         $diensten = [];
         foreach ($rows as $row) {
             $diensten[] = new Bardienst(

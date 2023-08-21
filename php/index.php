@@ -19,8 +19,14 @@ use DI\ContainerBuilder;
 
 require 'vendor/autoload.php';
 
+// Load WordPress
+
+
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();
+
+$wordpressPath = $_ENV['WORDPRESS_PATH'];
+require_once $wordpressPath . '/wp-load.php';
 
 $containerBuilder  = new ContainerBuilder();
 $containerBuilder->addDefinitions('di-config.php');
@@ -124,13 +130,8 @@ $entryPoint =
             new GetRoute('/daily-tasks', UseCases\DailyTasks::class)
         ], AuthorizationRole::UNREGISTERED),
 
-        new RouteGroup('/website', [
-            new GetRoute('/voorpagina-rooster', UseCases\GetVoorpaginaRooster::class),
-            new GetRoute('/teamoverzicht', UseCases\GetTeamoverzicht::class),
-            new GetRoute('/teamstanden', UseCases\GetTeamstanden::class),
-        ], AuthorizationRole::UNREGISTERED),
 
-        new RouteGroup('/joomla', [
+        new RouteGroup('/wordpress', [
             new GetRoute('/groepen', UseCases\GetGroups::class),
             new GetRoute('/user', UseCases\GetCurrentUser::class),
             new GetRoute('/users', UseCases\GetUsers::class, AuthorizationRole::WEBCIE),

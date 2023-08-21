@@ -27,7 +27,7 @@ export const appRoutes: IToggleRoute[] = [
     path: 'wedstrijd-overzicht',
     component: WedstrijdOverzichtComponent,
     data: { title: '👥 Wedstrijd Beschikbaarheid' },
-    isHidden: false,
+    isHidden: true,
   },
   // Obsolete; due to DWF 2.0 update stats need to be rewritten
   // {
@@ -37,7 +37,7 @@ export const appRoutes: IToggleRoute[] = [
   //     title: 'Statistieken',
   //   },
   //   isHidden: false,
-  // },
+  // }, 
   {
     path: 'fluit-beschikbaarheid',
     component: TelFluitBeschikbaarheidComponent,

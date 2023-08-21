@@ -10,11 +10,11 @@ class UpdateTellers implements Interactor
 {
     public function __construct(
         Gateways\TelFluitGateway $telFluitGateway,
-        Gateways\JoomlaGateway $joomlaGateway,
+        Gateways\WordPressGateway $wordPressGateway,
         Gateways\NevoboGateway $nevoboGateway
     ) {
         $this->telFluitGateway = $telFluitGateway;
-        $this->joomlaGateway = $joomlaGateway;
+        $this->wordPressGateway = $wordPressGateway;
         $this->nevoboGateway = $nevoboGateway;
     }
 
@@ -28,7 +28,7 @@ class UpdateTellers implements Interactor
         }
 
         $wedstrijd = $this->telFluitGateway->GetWedstrijd($data->matchId);
-        $teller = $data->tellerId ? $this->joomlaGateway->GetUser($data->tellerId) : null;
+        $teller = $data->tellerId ? $this->wordPressGateway->GetUser($data->tellerId) : null;
         $wedstrijd->tellers[$data->tellerIndex] = $teller;
 
         $uscWedstrijden = $this->nevoboGateway->GetProgrammaForSporthal();

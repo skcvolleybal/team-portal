@@ -10,10 +10,10 @@ class DeleteBarcieAanwezigheid implements Interactor
 {
     public function __construct(
         Gateways\BarcieGateway $barcieGateway,
-        Gateways\JoomlaGateway $joomlaGateway
+        Gateways\WordPressGateway $wordPressGateway
     ) {
         $this->barcieGateway = $barcieGateway;
-        $this->joomlaGateway = $joomlaGateway;
+        $this->wordPressGateway = $wordPressGateway;
     }
 
     public function Execute(object $data = null): void
@@ -29,7 +29,7 @@ class DeleteBarcieAanwezigheid implements Interactor
         }
 
         $date = DateFunctions::CreateDateTime($data->date);
-        $barlid = $this->joomlaGateway->GetUser($data->barlidId);
+        $barlid = $this->wordPressGateway->GetUser($data->barlidId);
         $bardag = $this->barcieGateway->GetBardag($date);
         if ($bardag->id === null) {
             return;

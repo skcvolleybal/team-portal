@@ -1,7 +1,11 @@
-.tellers {
-  padding: 15px;
+.input-container {
+  display: flex;
+  justify-content: space-between; /* Optional: to give some space between them */
+  align-items: start; /* to make sure they align at the top */
+  gap: 20px; /* Optional: to give some gap between items, not all browsers may support this yet */
 }
 
-.scheidsrechters {
-  padding: 15px;
+/* Optional: if you want both items to be of equal width */
+.input-group.scheidsrechters, .tellers {
+  flex: 1;
 }

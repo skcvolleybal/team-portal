@@ -9,11 +9,11 @@ use UnexpectedValueException;
 class AddBarcieAanwezigheid implements Interactor
 {
     public function __construct(
-        IJoomlaGateway $joomlaGateway,
+        IWordPressGateway $wordPressGateway,
         IBarcieGateway $barcieGateway
     ) {
         $this->barcieGateway = $barcieGateway;
-        $this->joomlaGateway = $joomlaGateway;
+        $this->wordPressGateway = $wordPressGateway;
     }
 
     public function Execute(object $data = null): void
@@ -29,7 +29,7 @@ class AddBarcieAanwezigheid implements Interactor
         }
 
         $date = DateFunctions::CreateDateTime($data->date);
-        $barlid = $this->joomlaGateway->GetUser($data->barlidId);
+        $barlid = $this->wordPressGateway->GetUser($data->barlidId);
 
         $bardag = $this->barcieGateway->GetBardag($date);
         if ($bardag->id === null) {

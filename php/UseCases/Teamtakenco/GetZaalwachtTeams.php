@@ -4,7 +4,7 @@ namespace TeamPortal\UseCases;
 
 use InvalidArgumentException;
 use TeamPortal\Common\DateFunctions;
-use TeamPortal\Gateways\JoomlaGateway;
+use TeamPortal\Gateways\WordPressGateway;
 use TeamPortal\Gateways\NevoboGateway;
 use TeamPortal\Gateways\ZaalwachtGateway;
 
@@ -12,11 +12,11 @@ class GetZaalwachtTeams implements Interactor
 {
     public function __construct(
         ZaalwachtGateway $zaalwachtGateway,
-        JoomlaGateway $joomlaGateway,
+        WordPressGateway $wordPressGateway,
         NevoboGateway $nevoboGateway
     ) {
         $this->zaalwachtGateway = $zaalwachtGateway;
-        $this->joomlaGateway = $joomlaGateway;
+        $this->wordPressGateway = $wordPressGateway;
         $this->nevoboGateway = $nevoboGateway;
     }
 

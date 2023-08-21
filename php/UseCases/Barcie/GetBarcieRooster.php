@@ -8,10 +8,10 @@ class GetBarcieRooster implements Interactor
 {
 
     public function __construct(
-        Gateways\JoomlaGateway $joomlaGateway,
+        Gateways\WordPressGateway $wordPressGateway,
         Gateways\BarcieGateway $barcieGateway
     ) {
-        $this->joomlaGateway = $joomlaGateway;
+        $this->wordPressGateway = $wordPressGateway;
         $this->barcieGateway = $barcieGateway;
     }
 
