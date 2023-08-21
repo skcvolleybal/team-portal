@@ -8,42 +8,45 @@ use TeamPortal\Common\DateFunctions;
 use TeamPortal\Entities\Persoon;
 use TeamPortal\Entities\Team;
 use TeamPortal\Entities\Zaalwacht;
+use TeamPortal\Gateways\WordPressGateway;
 
 class ZaalwachtGateway
 {
-    public function __construct(Database $database)
+    public function __construct(
+        Database $database
+    )
     {
         $this->database = $database;
     }
 
     public function GetZaalwachtenOfUser(Persoon $user): array 
-    {
-        $query = "SELECT 
-        Z.id,
-        Z.date,
-        team1_id AS eersteZaalwachtId,
-        MAX(p1.post_title) AS eersteZaalwacht,
-        team2_id AS tweedeZaalwachtId,
-        MAX(p2.post_title) AS tweedeZaalwacht
-    FROM 
+    { 
+        $wordPressGateway = new WordPressGateway();
+        $user->team = $wordPressGateway->GetTeam($user);
+
+        $query = "
+        SELECT 
+            Z.id,
+            Z.date,
+            Z.team1_id as eersteZaalwachtId,
+            Z.team2_id as tweedeZaalwachtId,
+            WPP1.post_title as eersteZaalwacht,
+            WPP2.post_title as tweedeZaalwacht
+        FROM 
         " . $_ENV['DBNAME'] . ".TeamPortal_zaalwacht Z
-    
-    LEFT JOIN 
-        " . $_ENV['WPDBNAME'] . ".wp_usermeta um1 ON Z.team1_id = um1.meta_value AND um1.meta_key = 'team'
-    LEFT JOIN 
-        " . $_ENV['WPDBNAME'] . ".wp_posts p1 ON um1.user_id = p1.ID AND p1.post_type = 'team'
-    
-    LEFT JOIN 
-        " . $_ENV['WPDBNAME'] . ".wp_usermeta um2 ON Z.team2_id = um2.meta_value AND um2.meta_key = 'team'
-    LEFT JOIN 
-        " . $_ENV['WPDBNAME'] . ".wp_posts p2 ON um2.user_id = p2.ID AND p2.post_type = 'team'
-    
-    WHERE 
-        Z.date >= CURRENT_DATE() 
-        AND (um1.user_id = ? OR um2.user_id = ?)
-    
-    GROUP BY 
-        Z.id"; 
+            
+        LEFT JOIN 
+        " . $_ENV['WPDBNAME'] . ".wp_posts WPP1 ON Z.team1_id = WPP1.ID AND WPP1.post_type = 'team'
+        LEFT JOIN 
+        " . $_ENV['WPDBNAME'] . ".wp_posts WPP2 ON Z.team2_id = WPP2.ID AND WPP2.post_type = 'team'
+
+        WHERE 
+            Z.date >= CURRENT_DATE() 
+            AND (Z.team1_id = ? OR Z.team2_id = ?)
+        GROUP BY 
+        Z.id
+        ";
+
 
 
         // Oude Joomla query
@@ -60,7 +63,8 @@ class ZaalwachtGateway
         //           LEFT JOIN J3_user_usergroup_map M2 on Z.team2_id = M2.group_id
         //           LEFT JOIN J3_usergroups G2 ON Z.team2_id = G2.id
         //           WHERE Z.date >= CURRENT_DATE() AND (M1.user_id = ? OR M2.user_id = ?)';
-        $params = [$user->id, $user->id];
+
+        $params = [$user->team->id, $user->team->id];
         $rows = $this->database->Execute($query, $params);
         $result = [];
         foreach ($rows as $row) {
