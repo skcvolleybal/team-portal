@@ -32,14 +32,11 @@ export class calenderGenerator {
 
       const dates = this.joomalService.GetMijnOverzicht().subscribe(
         (response) => {
-            console.log(response)
             this.dagen = response;
-            // console.log(response)
 
             if (!this.dagen) {
               alert("there are no events to add to your calender.");
             }
-            console.log(this.dagen)
 
             const serializedCalendar = this.CreateCalenderString(this.dagen, calendar);
 
@@ -52,7 +49,6 @@ export class calenderGenerator {
       
 
             // You can use serializedCalendar as needed
-            console.log(serializedCalendar);
 
 
             downloadLink.click();
