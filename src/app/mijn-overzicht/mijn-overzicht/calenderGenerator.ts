@@ -39,32 +39,21 @@ export class calenderGenerator {
             if (!this.dagen) {
               alert("there are no events to add to your calender.");
             }
-
             console.log(this.dagen)
-            this.dagen.forEach(dag => {
-              const event = new ICAL.Component('vevent');
-              const eventStart = ICAL.Time.fromJSDate(new Date (this.toJSDate(dag)));
-              const eventEnd = eventStart.clone();
-              eventEnd.addDuration(ICAL.Duration.fromSeconds(2 * 60 * 60)); // Add 2 hours
-              event.addPropertyWithValue('dtstart', eventStart);
-              event.addPropertyWithValue('dtend', eventEnd);
-              event.addPropertyWithValue('summary', this.GetEventTitle(dag));
-              event.addPropertyWithValue('description', this.GetEventDescription(dag));
-              calendar.addSubcomponent(event);
-            });
 
-            const serializedCalendar = calendar.toString();
-            // You can use serializedCalendar as needed
-            console.log(serializedCalendar);
+            const serializedCalendar = this.CreateCalenderString(this.dagen, calendar);
 
-            const blob = new Blob([serializedCalendar], { type: 'text/calender' });
-
-            const url = URL.createObjectURL(blob);
+            const url = this.CreateDownloadLink(serializedCalendar)
 
             const downloadLink = document.createElement('a');
 
             downloadLink.href = url;
             downloadLink.download = 'SKCVolleyballCalender.ics';
+      
+
+            // You can use serializedCalendar as needed
+            console.log(serializedCalendar);
+
 
             downloadLink.click();
 
@@ -84,22 +73,66 @@ export class calenderGenerator {
     }
 
     toJSDate(dag) {
-      if (dag.speeltijden) {
+      if (dag.speeltijden.length > 0) {
         return dag.date + "T" + dag.speeltijden[0].tijd + ":00"
+      } else if (dag.bardiensten.length > 0) {
+        return dag.bardiensten[0].date + "T" + this.GetTimeFromShiftNumber(dag.bardiensten[0].shift)
       }
       
     }
 
     GetEventTitle(dag) {
-      if (dag.speeltijden) {
+      if (dag.speeltijden.length > 0) {
         return "Volleyball match " + dag.speeltijden[0].wedstrijden[0].teams
+      } else if (dag.bardiensten.length > 0) {
+        return "Bardienst SKC";
       }
     }
 
     GetEventDescription(dag) {
-      if (dag.speeltijden) {
+      if (dag.speeltijden.length > 0) {
         return "Scheidsrechter: " + dag.speeltijden[0].wedstrijden[0].scheidsrechter + '\n' +
                     "Tellers: " + dag.speeltijden[0].wedstrijden[0].tellers[0] + ", " + dag.speeltijden[0].wedstrijden[0].tellers[1];
+      } else {
+        return "";
+      }
+    }
+
+    CreateCalenderString(dagen, calender) {
+      dagen.forEach(dag => {
+        const event = new ICAL.Component('vevent');
+        const eventStart = ICAL.Time.fromJSDate(new Date (this.toJSDate(dag)));
+        const eventEnd = eventStart.clone();
+        eventEnd.addDuration(ICAL.Duration.fromSeconds(2 * 60 * 60)); // Add 2 hours
+        event.addPropertyWithValue('dtstart', eventStart);
+        event.addPropertyWithValue('dtend', eventEnd);
+        event.addPropertyWithValue('summary', this.GetEventTitle(dag));
+        event.addPropertyWithValue('description', this.GetEventDescription(dag));
+        calender.addSubcomponent(event);
+      });
+      return calender.toString();
+    }
+
+    CreateDownloadLink(serializedCalendar) {
+      const blob = new Blob([serializedCalendar], { type: 'text/calender' });
+      const url = URL.createObjectURL(blob);
+      return url;
+    }
+
+    GetTimeFromShiftNumber(shift) {
+      switch(shift) {
+        case 1:
+          return "20:00";
+          break;
+        case 2:
+          return "22:00";
+          break;
+        case 3:
+          return "00:00";
+          break;
+        default:
+          return "";
+          break;
       }
     }
 }
