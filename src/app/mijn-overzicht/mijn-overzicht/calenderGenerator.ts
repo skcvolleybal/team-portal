@@ -92,7 +92,9 @@ export class calenderGenerator {
     GetEventDescription(dag) {
       if (dag.speeltijden.length > 0) {
         return "Scheidsrechter: " + dag.speeltijden[0].wedstrijden[0].scheidsrechter + '\n' +
-                    "Tellers: " + dag.speeltijden[0].wedstrijden[0].tellers[0] + ", " + dag.speeltijden[0].wedstrijden[0].tellers[1];
+                    "Tellers: " + dag.speeltijden[0].wedstrijden[0].tellers[0] + ", " + dag.speeltijden[0].wedstrijden[0].tellers[1] + '\n' +
+                    "1e Zaalwacht " + dag.eersteZaalwachtShortNotation
+                    + ", 2e Zaalwacht " + dag.tweedeZaalwachtShortNotation;
       } else {
         return "";
       }
