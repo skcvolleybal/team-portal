@@ -93,18 +93,33 @@ class BarcieGateway implements IBarcieGateway
 
     public function GetBeschikbaarhedenForDate(DateTime $date): array
     {
-        $query = 'SELECT
-                    A.id,
-                    U.id AS userId,
-                    U.name AS naam,
-                    U.email,
-                    D.id as dagId,
-                    D.date,
-                    A.is_beschikbaar AS isBeschikbaar
-                  FROM barcie_availability A
-                  INNER JOIN J3_users U ON A.user_id = U.id
-                  INNER JOIN barcie_days D on A.day_id = D.id
-                  WHERE D.date = ?';
+        $query = 'SELECT 
+        A.id,
+        U.id AS userId,
+        U.display_name AS naam,
+        U.user_email as email,
+        D.id AS dagId,
+        D.date,
+        A.is_beschikbaar AS isBeschikbaar
+    FROM ' . $_ENV['DBNAME'] . '.barcie_availability A
+    INNER JOIN ' . $_ENV['WPDBNAME'] . '.wp_users U ON A.user_id = U.id
+    INNER JOIN ' . $_ENV['DBNAME'] . '.barcie_days D ON A.day_id = D.id
+    WHERE D.date = ?';
+
+        
+        // Old Joomla query
+        // $query = 'SELECT
+        //             A.id,
+        //             U.id AS userId,
+        //             U.name AS naam,
+        //             U.email,
+        //             D.id as dagId,
+        //             D.date,
+        //             A.is_beschikbaar AS isBeschikbaar
+        //           FROM barcie_availability A
+        //           INNER JOIN J3_users U ON A.user_id = U.id
+        //           INNER JOIN barcie_days D on A.day_id = D.id
+        //           WHERE D.date = ?';
         $params = [DateFunctions::GetYmdNotation($date)];
         $rows = $this->database->Execute($query, $params);
         return $this->MapToBeschikbaarheden($rows);
