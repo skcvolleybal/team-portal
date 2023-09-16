@@ -18,7 +18,7 @@ This installation assumes you have set-up your webserver and WordPress. If you h
 ## Required: 
 1. Install Node.js: https://nodejs.org/en/download/. Make sure it's an even release such as 16, 18. 
 2. Install Composer: https://getcomposer.org/download/. Use Laragons PHP version, likely installed in C:\laragon\bin\php\php-8.2.x-Win32-vs16-x64
-3. Clone the team-portal repository in the root of your webserver in a team-portal directory, likely C:\laragon\www\team-portal. Ensure you emptied the directory first.  
+3. Clone the team-portal repository in the root of your webserver in a team-portal directory, likely C:\laragon\www\team-portal. 
 
 ## Database
 4. Create a new database for Team-Portal using [PhpMyAdmin](http://localhost/phpmyadmin) (or similar application such as DBeaver)
