@@ -64,9 +64,9 @@ class ZaalwachtGateway
         //           LEFT JOIN J3_usergroups G2 ON Z.team2_id = G2.id
         //           WHERE Z.date >= CURRENT_DATE() AND (M1.user_id = ? OR M2.user_id = ?)';
 
-        // if (!isset($user->team->id)) {
-        //     return [];
-        // }
+        if (!isset($user->team->id)) {
+            return [];
+        }
 
         $params = [$user->team->id, $user->team->id];
         $rows = $this->database->Execute($query, $params);
