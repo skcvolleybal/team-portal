@@ -213,6 +213,7 @@ class WordPressGateway implements IWordPressGateway
         // WP Ready
 
         $userMeta = get_user_meta($user->id);
+
         $teamId = $userMeta['team'][0];
 
         $params = array(
