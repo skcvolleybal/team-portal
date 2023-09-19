@@ -51,7 +51,7 @@ export const appRoutes: IToggleRoute[] = [
     path: 'barcie-beschikbaarheid',
     component: BarcieBeschikbaarheidComponent,
     data: {
-      title: 'Barcie Beschikbaarheid',
+      title: '🍺 Barcie Beschikbaarheid',
       groups: ['barcie', 'webcie'],
     },
     isHidden: true,
