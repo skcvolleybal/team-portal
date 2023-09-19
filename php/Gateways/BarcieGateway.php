@@ -66,7 +66,7 @@ class BarcieGateway implements IBarcieGateway
 
     public function AddBardag(DateTime $date)
     {
-        $query = 'INSERT INTO barcie_days (date) VALUES (?)';
+        $query = 'INSERT INTO ' . $_ENV['DBNAME'] . '.barcie_days (date) VALUES (?)';
         $params = [DateFunctions::GetYmdNotation($date)];
         $this->database->Execute($query, $params);
     }
@@ -221,17 +221,17 @@ class BarcieGateway implements IBarcieGateway
                     M.is_bhv AS isBhv,
                     D.date,
                     M.shift
-                  FROM barcie_days D
+                  FROM ' . $_ENV['DBNAME'] . '.barcie_days D
                   LEFT JOIN (
                     SELECT
                         M.day_id,
                         M.shift,
-                        U.id AS userId,                        
-                        U.name AS naam,
-                        U.email,
+                        U.ID AS userId,                        
+                        U.display_name AS naam,
+                        U.user_email,
                         M.is_bhv
-                    FROM barcie_schedule_map M
-                    INNER JOIN J3_users U on U.id = M.user_id
+                    FROM ' . $_ENV['DBNAME'] . '.barcie_schedule_map M
+                    INNER JOIN ' . $_ENV['DBNAME'] . '.wp_users U on U.ID = M.user_id
                   ) M on M.day_id = D.id
                   WHERE D.date >= CURRENT_DATE()
                   ORDER BY date, shift, naam';
@@ -264,7 +264,7 @@ class BarcieGateway implements IBarcieGateway
         // Map the aantal bardiensten on WordPress user ids
         $query = 'SELECT B.user_id AS userId, 
                 count(B.id) AS aantalDiensten
-                FROM barcie_schedule_map B
+                FROM ' . $_ENV['DBNAME'] . '.barcie_schedule_map B
                 GROUP BY B.user_id
                 ORDER BY count(B.id) ASC';
 
@@ -294,7 +294,7 @@ class BarcieGateway implements IBarcieGateway
 
     public function InsertBardienst(Bardienst $dienst): void
     {
-        $query = 'INSERT INTO barcie_schedule_map (day_id, user_id, shift)
+        $query = 'INSERT INTO ' . $_ENV['DBNAME'] . '.barcie_schedule_map (day_id, user_id, shift)
                   VALUES (?, ?, ?)';
         $params = [$dienst->bardag->id, $dienst->persoon->id, $dienst->shift];
 
@@ -303,7 +303,7 @@ class BarcieGateway implements IBarcieGateway
 
     public function DeleteBardienst(Bardienst $bardienst): void
     {
-        $query = 'DELETE FROM barcie_schedule_map
+        $query = 'DELETE FROM ' . $_ENV['DBNAME'] . '.barcie_schedule_map
                   WHERE id = ?';
         $params = [$bardienst->id];
 
@@ -312,7 +312,7 @@ class BarcieGateway implements IBarcieGateway
 
     public function DeleteBardag(Bardag $bardag): void
     {
-        $query = 'DELETE FROM barcie_days
+        $query = 'DELETE FROM ' . $_ENV['DBNAME'] . '.barcie_days
                   WHERE id = ?';
         $params = [$bardag->id];
 
