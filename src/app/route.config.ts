@@ -46,16 +46,16 @@ export const appRoutes: IToggleRoute[] = [
     },
     isHidden: false,
   },
-  // Obsolete; is now barcie
-  // {
-  //   path: 'barcie-beschikbaarheid',
-  //   component: BarcieBeschikbaarheidComponent,
-  //   data: {
-  //     title: 'Barcie Beschikbaarheid',
-  //     groups: ['barcie', 'webcie'],
-  //   },
-  //   isHidden: true,
-  // },
+  //Obsolete; is now barcie
+  {
+    path: 'barcie-beschikbaarheid',
+    component: BarcieBeschikbaarheidComponent,
+    data: {
+      title: '🍺 Barcie Beschikbaarheid',
+      groups: ['barcie', 'webcie'],
+    },
+    isHidden: true,
+  },
   {
     path: 'teamtakenco',
     component: TeamtakencoComponent,

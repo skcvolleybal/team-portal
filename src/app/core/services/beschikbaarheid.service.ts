@@ -20,7 +20,7 @@ export class BeschikbaarheidService {
   }
 
   UpdateBarcieBeschikbaarheid(date: string, isBeschikbaar: boolean) {
-    return this.httpClient.post(environment.baseUrl + 'barcie', {
+    return this.httpClient.post(environment.baseUrl + 'barcie-beschikbaarheid', {
       date,
       isBeschikbaar,
     });
@@ -31,6 +31,6 @@ export class BeschikbaarheidService {
   }
 
   GetBarcieBeschikbaarheid() {
-    return this.httpClient.get<any[]>(environment.baseUrl + 'barcie');
+    return this.httpClient.get<any[]>(environment.baseUrl + 'barcie-beschikbaarheid');
   }
 }
