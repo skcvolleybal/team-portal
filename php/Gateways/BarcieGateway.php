@@ -83,7 +83,7 @@ class BarcieGateway implements IBarcieGateway
                     A.is_beschikbaar AS isBeschikbaar
                   FROM ' . $_ENV['DBNAME'] . '.barcie_availability A
                   INNER JOIN ' . $_ENV['WPDBNAME'] . '.wp_users U ON A.user_id = U.id
-                  INNER JOIN ' . $_ENV['WPDBNAME'] . '.barcie_days D on A.day_id = D.id
+                  INNER JOIN ' . $_ENV['DBNAME'] . '.barcie_days D on A.day_id = D.id
                   WHERE A.user_id = ? and D.date >= CURRENT_DATE()';
         $params = [$persoon->id];
         $rows = $this->database->Execute($query, $params);
