@@ -75,15 +75,15 @@ class BarcieGateway implements IBarcieGateway
     {
         $query = 'SELECT 
                     A.id,
-                    U.id AS userId,
-                    U.name AS naam,
-                    U.email,
+                    U.ID AS userId,
+                    U.display_name AS naam,
+                    U.user_email,
                     D.id as dagId,
                     D.date,
                     A.is_beschikbaar AS isBeschikbaar
-                  FROM barcie_availability A
-                  INNER JOIN J3_users U ON A.user_id = U.id
-                  INNER JOIN barcie_days D on A.day_id = D.id
+                  FROM ' . $_ENV['DBNAME'] . '.barcie_availability A
+                  INNER JOIN ' . $_ENV['WPDBNAME'] . '.wp_users U ON A.user_id = U.id
+                  INNER JOIN ' . $_ENV['WPDBNAME'] . '.barcie_days D on A.day_id = D.id
                   WHERE A.user_id = ? and D.date >= CURRENT_DATE()';
         $params = [$persoon->id];
         $rows = $this->database->Execute($query, $params);
@@ -129,15 +129,15 @@ class BarcieGateway implements IBarcieGateway
     {
         $query = 'SELECT
                     A.id,
-                    U.id AS userId,
-                    U.name AS naam,
-                    U.email,
+                    U.ID AS userId,
+                    U.display_name AS naam,
+                    U.user_email,
                     D.id as dagId,
                     D.date, 
                     A.is_beschikbaar AS isBeschikbaar
-                  FROM barcie_availability A
-                  INNER JOIN barcie_days D ON A.day_id = D.id
-                  INNER JOIN J3_users U ON A.user_id = U.id
+                  FROM ' . $_ENV['DBNAME'] . '.barcie_availability A
+                  INNER JOIN ' . $_ENV['DBNAME'] . '.barcie_days D ON A.day_id = D.id
+                  INNER JOIN ' . $_ENV['WPDBNAME'] . '.wp_users U ON A.user_id = U.id
                   WHERE user_id = ? and day_id = ?';
         $params = [$user->id, $bardag->id];
         $rows = $this->database->Execute($query, $params);
@@ -149,7 +149,7 @@ class BarcieGateway implements IBarcieGateway
 
     public function UpdateBeschikbaarheid(Barbeschikbaarheid $beschikbaarheid): void
     {
-        $query = 'UPDATE barcie_availability
+        $query = 'UPDATE ' . $_ENV['DBNAME'] . '.barcie_availability
                   SET is_beschikbaar = ?
                   WHERE id = ?';
         $params = [
@@ -161,14 +161,14 @@ class BarcieGateway implements IBarcieGateway
 
     public function DeleteBeschikbaarheid(Barbeschikbaarheid $beschikbaarheid): void
     {
-        $query = 'DELETE FROM barcie_availability WHERE id = ?';
+        $query = 'DELETE FROM ' . $_ENV['DBNAME'] . '.barcie_availability WHERE id = ?';
         $params = [$beschikbaarheid->id];
         $this->database->Execute($query, $params);
     }
 
     public function InsertBeschikbaarheid(Barbeschikbaarheid $beschikbaarheid): void
     {
-        $query = 'INSERT INTO barcie_availability (day_id, user_id, is_beschikbaar)
+        $query = 'INSERT INTO ' . $_ENV['DBNAME'] . '.barcie_availability (day_id, user_id, is_beschikbaar)
                   VALUES (?, ?, ?)';
         $params = [
             $beschikbaarheid->bardag->id,
