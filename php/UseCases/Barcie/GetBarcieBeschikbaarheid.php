@@ -53,7 +53,7 @@ class GetBarcieBeschikbaarheid implements Interactor
 
             $barciebeschikbaarheid = new BarbeschikbaarheidModel;
 
-            $barciebeschikbaarheid->datum = DateFunctions::GetDutchDate($bardag->date);
+            $barciebeschikbaarheid->datum = DateFunctions::GetDutchDateLong($bardag->date);
             $barciebeschikbaarheid->date = DateFunctions::GetYmdNotation($bardag->date);
             $barciebeschikbaarheid->beschikbaarheid = $isBeschikbaar;
             $barciebeschikbaarheid->eigenWedstrijden = $this->MapToUsecase($wedstrijden, $user);
