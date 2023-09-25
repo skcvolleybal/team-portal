@@ -313,10 +313,18 @@ class TelFluitGateway
         U.ID NOT IN (
             SELECT user_id
             FROM " . $_ENV['WPDBNAME'] . ".wp_usermeta
-            WHERE meta_key = 'scheidsrechter' AND meta_value <> '' AND meta_value IS NOT NULL
+            WHERE meta_key = 'scheidsrechter_dit_seizoen' AND meta_value = '1'
+        )
+    AND
+        U.ID NOT IN (
+            SELECT user_id
+            FROM " . $_ENV['WPDBNAME'] . ".wp_usermeta
+            WHERE meta_key = 'wp_capabilities' AND meta_value LIKE '%barcie%'
         )
     GROUP BY
         U.ID, U.display_name, U.user_email, P.ID, P.post_title";
+
+        
 
         // Werkende Joomla query: correcte count 
         // $query = 'SELECT
