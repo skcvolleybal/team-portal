@@ -30,9 +30,8 @@ import { appRoutes } from './route.config';
     imports: [
         HttpClientModule,
         RouterModule.forRoot(appRoutes, {
-            useHash: true,
-            relativeLinkResolution: 'legacy',
-        }),
+    useHash: true
+}),
         BrowserModule,
         MijnOverzichtModule,
         WedstrijdOverzichtModule,
