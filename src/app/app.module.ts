@@ -26,53 +26,51 @@ import { WithCredentialsInterceptor } from './core/interceptors/add-credentials.
 import { appRoutes } from './route.config';
 
 @NgModule({
-  entryComponents: [LoginModalComponent],
-  declarations: [AppComponent, LoginModalComponent],
-  imports: [
-    HttpClientModule,
-    RouterModule.forRoot(appRoutes, {
-      useHash: true,
-      relativeLinkResolution: 'legacy',
-    }),
-    BrowserModule,
-    MijnOverzichtModule,
-    WedstrijdOverzichtModule,
-    BarcieModule,
-    BeschikbaarheidModule,
-    CoreModule,
-    TeamtakencoModule,
-    SharedModule,
-    FontAwesomeModule,
-  ],
-  exports: [],
-  providers: [
-    StateService,
-    WordPressService,
-    AanwezigheidService,
-    BarcieService,
-    BeschikbaarheidService,
-    TeamtakencoService,
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: HTTPListener,
-      multi: true,
-    },
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: ImpersonationInterceptor,
-      multi: true,
-    },
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: DefaultHeadersInterceptor,
-      multi: true,
-    },
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: WithCredentialsInterceptor,
-      multi: true,
-    },
-  ],
-  bootstrap: [AppComponent],
+    declarations: [AppComponent, LoginModalComponent],
+    imports: [
+        HttpClientModule,
+        RouterModule.forRoot(appRoutes, {
+    useHash: true
+}),
+        BrowserModule,
+        MijnOverzichtModule,
+        WedstrijdOverzichtModule,
+        BarcieModule,
+        BeschikbaarheidModule,
+        CoreModule,
+        TeamtakencoModule,
+        SharedModule,
+        FontAwesomeModule,
+    ],
+    exports: [],
+    providers: [
+        StateService,
+        WordPressService,
+        AanwezigheidService,
+        BarcieService,
+        BeschikbaarheidService,
+        TeamtakencoService,
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: HTTPListener,
+            multi: true,
+        },
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: ImpersonationInterceptor,
+            multi: true,
+        },
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: DefaultHeadersInterceptor,
+            multi: true,
+        },
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: WithCredentialsInterceptor,
+            multi: true,
+        },
+    ],
+    bootstrap: [AppComponent]
 })
 export class AppModule {}

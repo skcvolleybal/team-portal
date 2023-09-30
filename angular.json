@@ -139,7 +139,6 @@
       }
     }
   },
-  "defaultProject": "team-portal",
   "cli": {
     "analytics": "fcc2d598-a6af-439d-ad35-455ffba2de16"
   }
