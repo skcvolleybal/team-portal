@@ -11,6 +11,7 @@ import { TeamtakencoService } from '../../core/services/teamtakenco.service';
 import { SelecteerScheidsrechterComponent } from '../selecteer-scheidsrechter/selecteer-scheidsrechter.component';
 import { SelecteerTellersComponent } from '../selecteer-tellers/selecteer-tellers.component';
 import { SelecteerZaalwachtComponent } from '../selecteer-zaalwacht/selecteer-zaalwacht.component';
+import { ExportascsvComponent } from '../exportascsv/exportascsv.component';
 import { Speeldag } from 'src/app/models/Speeldag';
 import { Wedstrijd } from 'src/app/models/Wedstrijd';
 
@@ -37,6 +38,10 @@ export class TeamtakencoComponent implements OnInit {
     private teamtakencoService: TeamtakencoService,
     private modalService: NgbModal
   ) {}
+
+  exportAsCSVButton() {
+    console.log("knop hier");
+  }
 
   getTeamtakencoOverzicht() {
     this.overzichtLoading = true;

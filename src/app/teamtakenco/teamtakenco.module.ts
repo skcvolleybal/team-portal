@@ -5,6 +5,7 @@ import { SelecteerScheidsrechterComponent } from './selecteer-scheidsrechter/sel
 import { SelecteerTellersComponent } from './selecteer-tellers/selecteer-tellers.component';
 import { SelecteerZaalwachtComponent } from './selecteer-zaalwacht/selecteer-zaalwacht.component';
 import { SharedModule } from '../shared/shared.module';
+import { ExportascsvComponent } from './exportascsv/exportascsv.component';
 
 @NgModule({
     declarations: [
@@ -12,7 +13,8 @@ import { SharedModule } from '../shared/shared.module';
         SelecteerScheidsrechterComponent,
         SelecteerTellersComponent,
         SelecteerZaalwachtComponent,
+        ExportascsvComponent,
     ],
-    imports: [CommonModule, SharedModule]
+    imports: [CommonModule, SharedModule, ]
 })
 export class TeamtakencoModule {}
