@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { NgbDate, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import {
   faCalendarAlt,
@@ -22,7 +22,7 @@ export class BarcieIndelingComponent implements OnInit {
   geenBhv = heartRegular;
   bhv = heartSolid;
   delete = faTrashAlt;
-  newDate: FormGroup;
+  newDate: UntypedFormGroup;
 
   barciedagen = [];
   isLoading: boolean;
@@ -36,8 +36,8 @@ export class BarcieIndelingComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.newDate = new FormGroup({
-      date: new FormControl(null, [Validators.required]),
+    this.newDate = new UntypedFormGroup({
+      date: new UntypedFormControl(null, [Validators.required]),
     });
     this.GetBarcieRooster();
   }
