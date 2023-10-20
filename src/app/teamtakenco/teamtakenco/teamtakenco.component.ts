@@ -39,10 +39,6 @@ export class TeamtakencoComponent implements OnInit {
     private modalService: NgbModal
   ) {}
 
-  exportAsCSVButton() {
-    console.log("knop hier");
-  }
-
   getTeamtakencoOverzicht() {
     this.overzichtLoading = true;
     this.teamtakencoService.GetTeamtakencoOverzicht().subscribe(

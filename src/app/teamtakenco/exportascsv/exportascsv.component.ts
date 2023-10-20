@@ -1,4 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { WordPressService } from '../../core/services/request.service';
+// import { HttpClient } from '@angular/common/http;
+// import { saveAs } from 'file-saver';
+
 
 @Component({
   selector: 'tp-exportascsv',
@@ -6,14 +10,64 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./exportascsv.component.scss']
 })
 export class ExportascsvComponent implements OnInit {
+  private errorMessage;
+  private data;
+  selectedDate: string; // This will store the selected date
 
-  constructor() { }
+  constructor(
+    private WordPressService: WordPressService,
+  ) { }
 
   ngOnInit(): void {
   }
 
-  exportAsCSVButton() {
-    console.log("dada")
+  onSubmit() { 
+    console.log('Selected Date:', this.selectedDate); // Handle form submission here, e.g., send the selectedDate to a service or perform an action
+    this.WordPressService.GetWeekOverzicht(this.selectedDate).subscribe(
+      (response) => {
+        this.data = response;
+        console.log("data: ")
+        console.log(this.data);
+
+        // const blob = new Blob([this.data], { type: 'text/csv' });
+        // const url = window.URL.createObjectURL(blob);
+        const url = 'http://localhost/team-portal/api/week-overzicht?datum=' + this.selectedDate;
+  
+        // Create a temporary link and trigger the download
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'example.csv';
+        document.body.appendChild(a);
+        a.click();
+  
+        // Clean up
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+
+      },
+      (error) => {
+        console.log("error")
+        console.log(error);
+        if (error.status === 500) {
+          this.errorMessage = error.error.message;
+        }
+      }
+    );
   }
+
+  // downloadExcel() {
+  //   const url = 'http://localhost/team-portal/api/week-overzicht?datum=2023-10-20';
+
+  //   this.http.get(url, { responseType: 'blob' }).subscribe((data) => {
+  //     // Check if the response is a Blob
+  //     if (data instanceof Blob) {
+  //       // Use the 'file-saver' library to trigger the download
+  //       saveAs(data, 'example.xlsx');
+  //     } else {
+  //       // Handle unexpected response type or errors
+  //       console.error('Unexpected response type');
+  //     }
+  //   });
+  // }
 
 }

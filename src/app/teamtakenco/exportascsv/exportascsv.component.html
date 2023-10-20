@@ -1,2 +1,11 @@
-<button class="btn-excel" (click)="exportAsCSVButton()">Export je schema naar een Excel bestand!</button>
+<!-- <button class="button-37" (click)="">Export je schema naar een Excel bestand!</button> -->
 
+<form (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="date">Select a Date:</label>
+      <input type="date" id="date" name="date" [(ngModel)]="selectedDate" class="form-control" required>
+    </div>
+  
+    <button type="submit" class="button-37">Export this date as Excel!</button>
+  </form>
+  

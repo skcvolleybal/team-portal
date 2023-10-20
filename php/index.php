@@ -80,6 +80,11 @@ $entryPoint =
             new PostRoute('/aanwezigheid', UseCases\UpdateAanwezigheid::class),
         ], AuthorizationRole::USER),
 
+        new RouteGroup('/week-overzicht', [
+            new GetRoute('', UseCases\GetWeekOverzicht::class),
+        ], AuthorizationRole::TEAMCOORDINATOR),
+
+
         new RouteGroup('/fluiten', [
             new GetRoute('', UseCases\GetBeschikbaarheid::class),
             new PostRoute('', UseCases\UpdateBeschikbaarheid::class)

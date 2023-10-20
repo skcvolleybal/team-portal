@@ -45,4 +45,13 @@ export class WordPressService {
     const url = environment.baseUrl + 'wordpress/user';
     return this.httpClient.get<any[]>(url);
   }
+  GetWeekOverzicht(datum): Observable<any[]> {
+    const url = environment.baseUrl + 'week-overzicht';
+    return this.httpClient.get<any[]>(url, {
+      responseType: 'blob' as 'json',
+      params: {
+        datum,
+      },
+    });
+  }
 }
