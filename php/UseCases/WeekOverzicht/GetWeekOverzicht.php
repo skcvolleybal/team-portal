@@ -49,26 +49,27 @@ class GetWeekOverzicht implements Interactor
        
         $uscWedstrijden = $this->nevoboGateway->GetProgrammaForVereniging();
 
-        $WedstrijdenOpDag = $this->GetWedstrijdenOpDag($data->datum, $uscWedstrijden);
+        $allMatches = $this->GetWedstrijdenTotEnMetDag($data->datum, $uscWedstrijden);
+        $allScheidsEnTelbeurten = $this->GetScheidsrechtersEnTellersTotEnMetDag($data->datum, $allMatches);
 
-        $TelFluitOpDag = $this->GetScheidsrechtersEnTellersOpDag($data->datum, $WedstrijdenOpDag);
-        
-        $BardienstenEnBHVOpDag = $this->GetBardienstenOpDag($data->datum);
+        $allBardienstenEnBHV = $this->GetBardienstenTotEnMetDag($data->datum);
 
-        $ZaalwachtenOpDag = $this->GetZaalWachtenOpDag($data->datum);
+        $allZaalwachten = $this->GetZaalWachtenTotEnMetDag($data->datum);
 
-        foreach($WedstrijdenOpDag as $index => $wedstrijd) {
-            $wedstrijd->tellers = $TelFluitOpDag[$index]->tellers;
-            $wedstrijd->scheidsrechter = $TelFluitOpDag[$index]->scheidsrechter;
+        foreach($allMatches as $WedstrijdenOpDag) {
+            foreach($WedstrijdenOpDag as $index => $wedstrijd) {
+                $wedstrijd->tellers = $allScheidsEnTelbeurten[$index]->tellers;
+                $wedstrijd->scheidsrechter = $allScheidsEnTelbeurten[$index]->scheidsrechter;
+            }
         }
 
         $excelExport = new ExcelExport(
-            $uscWedstrijden,
-            $WedstrijdenOpDag,
-            $TelFluitOpDag,
-            $BardienstenEnBHVOpDag,
-            $ZaalwachtenOpDag
+            $allMatches,
+            $allBardienstenEnBHV,
+            $allZaalwachten,
 
+            $this->BarcieGateway,
+            $this->ZaalwachtGateway
         );
         $excelExport->GetExcelExport();
         $excelExport->returnExcelExport();
@@ -80,6 +81,7 @@ class GetWeekOverzicht implements Interactor
     }
 
     private function GetWedstrijdenOpDag($datum, $wedstrijden) {
+        $WedstrijdenOpDag = array();
         foreach($wedstrijden as $wedstrijd) {
             if ($wedstrijd->timestamp !== null) {
                 if (preg_match('/' . $datum . '/', $wedstrijd->timestamp->format('Y-m-d H:i:s')) && 
@@ -89,21 +91,23 @@ class GetWeekOverzicht implements Interactor
                 }
             }
         }
-        return $WedstrijdenOpDag;
+        return $WedstrijdenOpDag ? $WedstrijdenOpDag : null;
     }
 
-    private function GetScheidsrechtersEnTellersOpDag($datum, $WedstrijdenOpDag) {
+    private function GetScheidsrechtersEnTellersOpDag($datum, $allMatches) {
         $telfluit = array();
-        foreach ($WedstrijdenOpDag as $wedstrijd) {
-            $telfluit[] = $this->TelFluitGateway->GetWedstrijd($wedstrijd->matchId);
+        foreach ($allMatches as $WedstrijdenOpDag) {
+            foreach ($WedstrijdenOpDag as $wedstrijd) {
+                $telfluit[] = $this->TelFluitGateway->GetWedstrijd($wedstrijd->matchId);
+            }
         }
-        return $telfluit;
+        return $telfluit ? $telfluit : null;;
     }
 
     private function GetBardienstenOpDag($datum) {
         $dateTime = DateTime::createFromFormat("Y-m-d", $datum); //$datum is een string en GetBarDag verwacht een DateTime object
         $BarDagenOpDag = $this->BarcieGateway->GetBardag($dateTime);
-        return $BarDagenOpDag;
+        return $BarDagenOpDag->id != null ? $BarDagenOpDag : null;
     }
 
     private function GetZaalWachtenOpDag($datum) {
@@ -113,4 +117,46 @@ class GetWeekOverzicht implements Interactor
     }
 
 
+    private function GetWedstrijdenTotEnMetDag($datum, $uscWedstrijden) {
+        // datum
+        $startDate = new DateTime();  // Initialize with the current date and time
+        $endDate = new DateTime($datum);  // Replace '2023-12-31' with your desired end date
+        $endDate = $endDate->modify('+1 day');
+        $allGames = array();
+        for ($date = clone $startDate; $date <= $endDate; $date->modify('+1 day')) {
+            $temp = $this->GetWedstrijdenOpDag($date->format('Y-m-d'), $uscWedstrijden);
+            if ($temp) { $allGames[] = $temp; }
+        }
+        return $allGames;
+    }
+
+    private function GetScheidsrechtersEnTellersTotEnMetDag($datum, $allMatches) {
+        $allScheidsEnTelbeurten = $this->GetScheidsrechtersEnTellersOpDag("", $allMatches);
+        return $allScheidsEnTelbeurten;
+    }
+
+    private function GetBardienstenTotEnMetDag($datum) {
+        $startDate = new DateTime();  // Initialize with the current date and time
+        $endDate = new DateTime($datum);  // Replace '2023-12-31' with your desired end date
+        $endDate = $endDate->modify('+1 day');
+        $allBardiensten = array();
+        for ($date = clone $startDate; $date <= $endDate; $date->modify('+1 day')) {
+            $temp = $this->GetBardienstenOpDag($date->format('Y-m-d'));
+            if ($temp) { $allBardiensten[] = $temp; }
+        }
+        return $allBardiensten;
+    }
+
+    private function GetZaalWachtenTotEnMetDag($datum) {
+        $startDate = new DateTime();  // Initialize with the current date and time
+        $endDate = new DateTime($datum);  // Replace '2023-12-31' with your desired end date
+        $endDate = $endDate->modify('+1 day');
+        $allZaalwachten = array();
+        for ($date = clone $startDate; $date <= $endDate; $date->modify('+1 day')) {
+            $temp = $this->GetZaalWachtenOpDag($date->format('Y-m-d'));
+            if ($temp) { $allZaalwachten[] = $temp; }
+        }
+        return $allZaalwachten;
+
+    }
 }
