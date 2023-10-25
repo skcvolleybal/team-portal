@@ -396,7 +396,7 @@ class ExcelExport
        ob_end_clean();
        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
        header('Content-Disposition: attachment; filename="Teamtakenschema '  . date("d-m-Y") .   '.xlsx"');
-       header("Access-Control-Allow-Origin: http://localhost:4200");
+       header("Access-Control-Allow-Origin: ". $_ENV['ACCESSCONTROLALLOWORIGIN']);
        header("Access-Control-Allow-Credentials: true");
        error_log(print_r($this->Spreadsheet, true));
        $writer->save('php://output');
