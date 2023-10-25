@@ -19,7 +19,7 @@ use datetime;
 
 error_reporting(E_ALL ^ E_DEPRECATED); // Suppress warnings on PHP 8.0. Make sure to fix the usort() functions in this file for PHP 8.1. 
 
-
+// Niet heel lekker over dit verhaal nagedacht maar he je leert er wat van
 class GetWeekOverzicht implements Interactor
 {
     public function __construct(
@@ -45,23 +45,14 @@ class GetWeekOverzicht implements Interactor
         if ($data->datum == "undefined" || $data == null) {
             throw new \ValueError(sprintf('Argument #1 (date) must be a valid date'));
         }
-
        
         $uscWedstrijden = $this->nevoboGateway->GetProgrammaForVereniging();
 
         $allMatches = $this->GetWedstrijdenTotEnMetDag($data->datum, $uscWedstrijden);
-        $allScheidsEnTelbeurten = $this->GetScheidsrechtersEnTellersTotEnMetDag($data->datum, $allMatches);
 
         $allBardienstenEnBHV = $this->GetBardienstenTotEnMetDag($data->datum);
 
         $allZaalwachten = $this->GetZaalWachtenTotEnMetDag($data->datum);
-
-        foreach($allMatches as $WedstrijdenOpDag) {
-            foreach($WedstrijdenOpDag as $index => $wedstrijd) {
-                $wedstrijd->tellers = $allScheidsEnTelbeurten[$index]->tellers;
-                $wedstrijd->scheidsrechter = $allScheidsEnTelbeurten[$index]->scheidsrechter;
-            }
-        }
 
         $excelExport = new ExcelExport(
             $allMatches,
@@ -74,10 +65,6 @@ class GetWeekOverzicht implements Interactor
         $excelExport->GetExcelExport();
         $excelExport->returnExcelExport();
 
-    }
-
-    private function GetWedstrijdenVoorWeek() {
-        $uscWedstrijden = $this->nevoboGateway->GetProgrammaForSporthal();
     }
 
     private function GetWedstrijdenOpDag($datum, $wedstrijden) {
@@ -94,14 +81,10 @@ class GetWeekOverzicht implements Interactor
         return $WedstrijdenOpDag ? $WedstrijdenOpDag : null;
     }
 
-    private function GetScheidsrechtersEnTellersOpDag($datum, $allMatches) {
+    private function GetScheidsrechtersEnTellersOpDag($wedstrijd) {
         $telfluit = array();
-        foreach ($allMatches as $WedstrijdenOpDag) {
-            foreach ($WedstrijdenOpDag as $wedstrijd) {
-                $telfluit[] = $this->TelFluitGateway->GetWedstrijd($wedstrijd->matchId);
-            }
-        }
-        return $telfluit ? $telfluit : null;;
+        $telfluit[] = $this->TelFluitGateway->GetWedstrijd($wedstrijd->matchId);
+        return $telfluit ? $telfluit : null;
     }
 
     private function GetBardienstenOpDag($datum) {
@@ -127,12 +110,18 @@ class GetWeekOverzicht implements Interactor
             $temp = $this->GetWedstrijdenOpDag($date->format('Y-m-d'), $uscWedstrijden);
             if ($temp) { $allGames[] = $temp; }
         }
-        return $allGames;
-    }
 
-    private function GetScheidsrechtersEnTellersTotEnMetDag($datum, $allMatches) {
-        $allScheidsEnTelbeurten = $this->GetScheidsrechtersEnTellersOpDag("", $allMatches);
-        return $allScheidsEnTelbeurten;
+        // Zet scheidsrechters en tellers in de $allGames array
+        foreach($allGames as $WedstrijdenOpDag) {
+            foreach($WedstrijdenOpDag as $wedstrijd) {
+                $telfluit = $this->GetScheidsrechtersEnTellersOpDag($wedstrijd);
+                $wedstrijd->tellers = $telfluit[0]->tellers;
+                $wedstrijd->scheidsrechter = $telfluit[0]->scheidsrechter;
+            }
+        }
+
+
+        return $allGames;
     }
 
     private function GetBardienstenTotEnMetDag($datum) {

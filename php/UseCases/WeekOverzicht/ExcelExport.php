@@ -1,7 +1,7 @@
 <?php
 
 namespace TeamPortal\UseCases;
-namespace TeamPortal\Entities\Scheidsrechter;
+use TeamPortal\Entities\Scheidsrechter;
 
 require 'vendor/autoload.php'; // Include Composer's autoloader
 
@@ -116,8 +116,7 @@ class ExcelExport
 
     }
 
-    private function SetCell($cell, $value)
-    {
+    private function SetCell($cell, $value) {
         $this->Spreadsheet->getActiveSheet()->setCellValue($cell, $value);
     }
 
@@ -216,10 +215,6 @@ class ExcelExport
             return;
         }
 
-        //$this->BardienstenEnBHVOpDag->shifts[0/1/2]->isBhv
-        //$this->BardienstenEnBHVOpDag->shifts[0/1/2]->naam
-        //$this->BardienstenEnBHVOpDag->shifts[0/1/2]->shift
-
         foreach($this->BardienstenEnBHVOpDag->shifts as $shifts) {
             foreach($shifts->barleden as $barlid) {
                 if ($barlid->isBhv) {
@@ -250,12 +245,6 @@ class ExcelExport
 
     private function CreateWedstrijdSchema() {
         $yeet = $this->WedstrijdenOpDag;
-        // array of WedstrijdObjecten
-        // Wedstrijd = $this->WedstrijdenOpDag[0/1/2/3]->team1->naam
-        // Wedstrijd = $this->WedstrijdenOpDag[0/1/2/3]->team2->naam
-        // $this->WedstrijdenOpDag[0/1/2/3]->timestamp (Datetime obj)
-        // $this->WedstrijdenOpDag[0/1/2/3]->tellers 
-        // $this->WedstrijdenOpDag[0/1/2/3]->scheidsrechter
         $this->veldNummer = 1;
         $this->kleurNummer = 0;
         $dayNames = array("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday");
@@ -273,11 +262,11 @@ class ExcelExport
             $timestamp = $wedstrijd->timestamp->getTimestamp();
             $formattedTimestamp = $dayNames[date('w', $timestamp)] . " " . date('j', $timestamp) . " " . $monthNames[date('n', $timestamp)];
 
-            if (stripos($wedstrijd->team1->naam, $needle) !== false) {
-                print ("hier");
-                $yeet = $wedstrijd->team1->naam;
-                break;
+            if (strstr($wedstrijd->team1->naam, $needle) !== false) {
+                return;
             }
+
+            $scheidsrechter = 
 
             $this->SetCell('A' . $this->currentRow, $formattedTimestamp);
             $this->PaintCell('A' . $this->currentRow, 'wedstrijd-dag');
@@ -298,13 +287,11 @@ class ExcelExport
             $this->SetCell('F' . $this->currentRow, 'Veld '. $this->veldNummer);
             $this->PaintCell('F' . $this->currentRow, 'wedstrijd');
 
-            $wedstrijd->scheidsrechter->naam = $wedstrijd->scheidsrechter->naam ?? Scheidsrechter;
-            if (is_null($wedstrijd->scheidsrechter->naam !== null)) $this->SetCell('G' . $this->currentRow, $wedstrijd->scheidsrechter->naam);
+            
+            if ($wedstrijd->scheidsrechter !== null) $this->SetCell('G' . $this->currentRow, $wedstrijd->scheidsrechter->naam);
             $this->PaintCell('G' . $this->currentRow, 'wedstrijd');
-
-            $wedstrijd->tellers[0]->naam = $wedstrijd->tellers[0]->naam ?? '';
-            $wedstrijd->tellers[1]->naam = $wedstrijd->tellers[1]->naam ?? '';
-            if (is_null($wedstrijd->tellers[0]->naam !== null || $wedstrijd->tellers[1]->naam)) $this->SetCell('H' . $this->currentRow, $wedstrijd->tellers[0]->naam . ' & '. $wedstrijd->tellers[1]->naam);
+            
+            if ($wedstrijd->tellers[0] !== null || $wedstrijd->tellers[1] !== null) $this->SetCell('H' . $this->currentRow, $wedstrijd->tellers[0]->naam . ' & '. $wedstrijd->tellers[1]->naam);
             $this->PaintCell('H' . $this->currentRow, 'wedstrijd');
 
             $this->veldNummer += 1; // max 3 velden
