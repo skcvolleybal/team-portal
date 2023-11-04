@@ -1,6 +1,7 @@
 <?php
 
 namespace TeamPortal\Entities;
+use TeamPortal\Gateways\WordPressGateway;
 
 use UnexpectedValueException;
 
@@ -120,6 +121,9 @@ class Team
 
     static function LoadAlleSkcTeams(): void
     {
+
+        $wordpressGateway = new WordPressGateway;
+        $string = $wordpressGateway->GetAllTeams();
         $string = file_get_contents("skc-teams.json");
         $teams = json_decode($string);
         foreach ($teams as $team) {

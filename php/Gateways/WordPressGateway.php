@@ -148,6 +148,10 @@ class WordPressGateway implements IWordPressGateway
 
     }
 
+    public function GetAllTeams() {
+        return "OKEE";
+    }
+
 
     public function GetUsersWithName(string $name): array
     {
