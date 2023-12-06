@@ -12,6 +12,7 @@ import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
 import { environment } from '../environments/environment';
 import { version } from '../environments/version';
 
+
 @Component({
   selector: 'teamportal-root',
   templateUrl: './app.component.html',

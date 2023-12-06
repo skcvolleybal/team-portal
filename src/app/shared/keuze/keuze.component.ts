@@ -4,6 +4,9 @@ import {
   faQuestion,
   faTimes,
 } from '@fortawesome/free-solid-svg-icons';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+
+
 
 @Component({
   selector: 'teamportal-keuze',
