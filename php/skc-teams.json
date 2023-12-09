@@ -70,7 +70,7 @@
   {
     "naam": "SKC DS 12",
     "poule": "D4H",
-    "niveau": "4e klasse",
+    "niveau": "3e klasse",
     "trainingstijden": "Di 18:30-20:00"
   },
   {
@@ -94,19 +94,19 @@
   {
     "naam": "SKC HS 1",
     "poule": "HPD",
-    "niveau": "Promotieklasse",
+    "niveau": "3e Divisie",
     "trainingstijden": "Ma 20:00-21:30, Wo 18:30-20:00"
   },
   {
     "naam": "SKC HS 2",
     "poule": "HPD",
-    "niveau": "Promotieklasse",
+    "niveau": "1e Klasse",
     "trainingstijden": "Ma 18:30-20:00, Wo 18:30-20:00"
   },
   {
     "naam": "SKC HS 3",
     "poule": "H2J",
-    "niveau": "2e klasse",
+    "niveau": "1e klasse",
     "trainingstijden": "Ma 17:00-18:30, Wo 21:30-23:00"
   },
   {

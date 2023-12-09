@@ -148,7 +148,6 @@ class WordPressGateway implements IWordPressGateway
 
     }
 
-
     public function GetUsersWithName(string $name): array
     {
 
