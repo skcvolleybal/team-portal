@@ -122,7 +122,7 @@ class Team
     static function LoadAlleSkcTeams(): void
     {
 
-        $wordpressGateway = new WordPressGateway;
+        // $wordpressGateway = new WordPressGateway;
         // $string = $wordpressGateway->GetAllTeams(); Dit is een relic, ooit fixen dat we de teamniveaus uit DB halen
         
         $string = file_get_contents("skc-teams.json");

@@ -148,30 +148,6 @@ class WordPressGateway implements IWordPressGateway
 
     }
 
-    public function GetAllTeams() {
-
-        // So this function is used by class Team to fill in the following info: 
-            // $skcTeam->naam
-            // $skcTeam->poule
-            // $skcTeam->trainingstijden
-            // $skcTeam->facebook = null;
-            // $skcTeam->niveau
-
-        $query = 'SELECT
-                    U.id,
-                    U.name AS naam,
-                    U.email
-                  FROM J3_users U
-                  INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
-                  INNER JOIN J3_usergroups G ON M.group_id = G.id
-                  WHERE G.title = ?';
-        $params = [$groupname];
-        $rows = $this->database->Execute($query, $params);
-
-        return "OKEE";
-    }
-
-
     public function GetUsersWithName(string $name): array
     {
 
