@@ -27,6 +27,10 @@ import { WedstrijdOverzichtModule } from './wedstrijd-overzicht/wedstrijd-overzi
 import { WithCredentialsInterceptor } from './core/interceptors/add-credentials.interceptor';
 import { appRoutes } from './route.config';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
+import { ToastrModule } from 'ngx-toastr';
+
 
 @NgModule({
     declarations: [AppComponent, LoginModalComponent],
@@ -45,6 +49,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
         SharedModule,
         NgbModule,
         FontAwesomeModule,
+        BrowserAnimationsModule, // required animations module
+        ToastrModule.forRoot(), // ToastrModule added
     ],
     exports: [],
     providers: [
@@ -53,7 +59,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
         AanwezigheidService,
         BarcieService,
         BeschikbaarheidService,
-        TeamtakencoService,
+        TeamtakencoService,    
         {
             provide: HTTP_INTERCEPTORS,
             useClass: HTTPListener,
