@@ -1,7 +1,6 @@
 <p>Hier vul je de teams in die zaalwacht hebben, de spelers die moeten tellen en de scheidsrechters per wedstrijd. </p>
 
 
-<tp-exportascsv></tp-exportascsv>
 
 <div *ngIf="speeldagenEmpty; then showInfo else showMijnOverzicht"></div>
 
@@ -11,6 +10,8 @@
 </ng-template>
 
 <ng-template #showMijnOverzicht>
+  <tp-exportascsv></tp-exportascsv>
+
   <table class="table" *ngFor="let speeldag of speeldagen">
     <thead>
       <tr>
