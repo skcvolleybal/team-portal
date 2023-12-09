@@ -1,11 +1,17 @@
 <div style="margin: 5px;">
-  <span class="badge" [ngClass]="{
-      'badge-success': wedstrijd.isTeam1,
-      'badge-primary': wedstrijd.isCoachTeam1
+  <span [ngClass]="{
+      'badge': true,
+      'bg-success': wedstrijd.isTeam1,
+      'bg-primary': wedstrijd.isCoachTeam1,
+      'bg-light': !wedstrijd.isTeam1 && !wedstrijd.isCoachTeam1,
+      'text-dark': !wedstrijd.isTeam1 && !wedstrijd.isCoachTeam1
     }" style="white-space: pre-wrap">{{ wedstrijd.team1 }}</span>
   -
-  <span class="badge" [ngClass]="{
-      'badge-success': wedstrijd.isTeam2,
-      'badge-primary': wedstrijd.isCoachTeam2
+  <span [ngClass]="{
+      'badge': true,
+      'bg-success': wedstrijd.isTeam2,
+      'bg-primary': wedstrijd.isCoachTeam2,
+      'bg-light': !wedstrijd.isTeam2 && !wedstrijd.isCoachTeam2,
+      'text-dark': !wedstrijd.isTeam2 && !wedstrijd.isCoachTeam2
     }" style="white-space: pre-wrap">{{ wedstrijd.team2 }}</span>
 </div>
