@@ -28,7 +28,7 @@ export class KeuzeComponent {
     this.keuze = keuze;
     this.updateKeuze.emit(keuze);
     this.toastr.success(' ', 'Saving..', {
-      timeOut: 1250,
+      timeOut: 750,
       progressBar: true,
       progressAnimation: 'increasing'
       
