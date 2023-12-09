@@ -69,7 +69,7 @@ jobs:
         echo "};" >> ./src/environments/version.ts
 
     - name: 🏗️ Installing NPM dependencies
-      run: npm i -f
+      run: npm i
 
     - name: 🔨 Building Angular
       run: npm run test_deploy
