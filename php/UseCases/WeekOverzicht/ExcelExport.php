@@ -130,7 +130,7 @@ class ExcelExport
             return;
         }
 
-        $this->SetCell('A' . $this->currentRow, "Zaalwachte 1e shift: " . $this->ZaalwachtenOpDag->eersteZaalwacht->naam);
+        $this->SetCell('A' . $this->currentRow, "Zaalwacht 1e shift: " . $this->ZaalwachtenOpDag->eersteZaalwacht->naam);
         $this->PaintCell('A' . $this->currentRow, 'zaalwacht');
         $this->PaintCell('B' . $this->currentRow, 'zaalwacht');
         $this->PaintCell('C' . $this->currentRow, 'zaalwacht');
@@ -142,7 +142,7 @@ class ExcelExport
 
         $bottomRow = $this->currentRow + $aantalWedstrijden + 1;
 
-        $this->SetCell('A' . $bottomRow, "Zaalwachte 2e shift: " . $this->ZaalwachtenOpDag->tweedeZaalwacht->naam);
+        $this->SetCell('A' . $bottomRow, "Zaalwacht 2e shift: " . $this->ZaalwachtenOpDag->tweedeZaalwacht->naam);
         $this->PaintCell('A' . $bottomRow, 'zaalwacht');
         $this->PaintCell('B' . $bottomRow, 'zaalwacht');
         $this->PaintCell('C' . $bottomRow, 'zaalwacht');
@@ -163,7 +163,7 @@ class ExcelExport
         $cellStyle->getFont()->setName('Arial');
         $cellStyle->getFont()->setColor(new \PhpOffice\PhpSpreadsheet\Style\Color(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_BLACK));
         $cellStyle->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('36751F');
-        $cellStyle->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+        // $cellStyle->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
         $cellStyle->getBorders()->getAllBorders()->getColor()->setRGB('000000');
 
     }
@@ -184,10 +184,21 @@ class ExcelExport
             $this->SetStandardStyle($cell);
             $cellStyle = $this->Spreadsheet->getActiveSheet()->getStyle($cell);
             $cellStyle->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('98EF83');
+            
         }
 
         elseif ($type == 'wedstrijd') {
             $this->SetStandardStyle($cell);
+            // Get the style of the cell (A1)
+            // $style = $this->Spreadsheet->getActiveSheet()->getStyle($cell);
+
+            // // Get the border object for the cell
+            // $border = $style->getBorders();
+            // $border->getTop()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_NONE);
+            // $border->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_NONE);
+            // $border->getLeft()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_NONE);
+            // $border->getRight()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_NONE);
+
             $this->chooseFieldColour($cell);
         }
 
@@ -218,12 +229,12 @@ class ExcelExport
         foreach($this->BardienstenEnBHVOpDag->shifts as $shifts) {
             foreach($shifts->barleden as $barlid) {
                 if ($barlid->isBhv) {
-                    $this->SetCell('C' . $this->tweedeZaalwachtRow, "BHV: " . $barlid->naam);
+                    $this->SetCell('C' . $this->tweedeZaalwachtRow + $shifts->shift - 2, "BHV: " . $barlid->naam);
                     $this->PaintCell('C' . $this->tweedeZaalwachtRow, 'zaalwacht');
                 }
                 else {
                     $currentData = substr($this->Spreadsheet->getActiveSheet()->getCell('E' . $this->tweedeZaalwachtRow + $barlid->shift - 1)->getValue(), 11);
-                    $currentData = $currentData ? "& " . $currentData : $currentData; // Super hacky maar als er nog geen shift is ingevuld in de cell dan blijft currentData leeg
+                    $currentData = $currentData ? " & " . $currentData : $currentData; // Super hacky maar als er nog geen shift is ingevuld in de cell dan blijft currentData leeg
                     $this->SetCell('E' . $this->tweedeZaalwachtRow + $barlid->shift - 1, "Barshift " . $barlid->shift . ": " . $barlid->naam . $currentData);
                     $this->PaintCell('E' . $this->tweedeZaalwachtRow + $barlid->shift - 1, 'zaalwacht');
                 }
@@ -281,7 +292,7 @@ class ExcelExport
             $this->PaintCell('D' . $this->currentRow, 'wedstrijd');
 
             
-            $this->SetCell('E' . $this->currentRow, $this->GetNiveau($wedstrijd->team1->niveau, $wedstrijd->team1->naam));
+            $this->SetCell('E' . $this->currentRow, $wedstrijd->team1->niveau);
             $this->PaintCell('E' . $this->currentRow, 'wedstrijd');
 
             $this->SetCell('F' . $this->currentRow, 'Veld '. $this->veldNummer);
