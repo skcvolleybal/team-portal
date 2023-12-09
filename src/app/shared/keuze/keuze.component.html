@@ -1,28 +1,21 @@
-<div
-  class="btn-group btn-group-toggle"
-  ngbRadioGroup
-  name="radioBasic"
-  [ngModel]="keuze"
-> 
-  <label
-    ngbButtonLabel
-    [ngClass]="{ 'btn-success': keuze === true, 'btn-light': keuze !== true }"
-  >
+<div class="d-flex justify-content-start keuze-container">
+  <!-- Ja Button -->
+  <button [ngClass]="{'btn-success': keuze === true, 'btn-light': keuze !== true, 'btn': true}"
+          (click)="onClick(true)"
+          class="me-2">
     <fa-icon [icon]="jaIcon"></fa-icon>
-    <input ngbButton type="radio" value="Ja" (click)="onClick(true)" />
-  </label>
-  <label
-    ngbButtonLabel
-    [ngClass]="{ 'btn-warning': keuze === null, 'btn-light': keuze !== null }"
-  >
+  </button>
+
+  <!-- Onbekend Button -->
+  <button [ngClass]="{'btn-warning': keuze === null, 'btn-light': keuze !== null, 'btn': true}"
+          (click)="onClick(null)"
+          class="me-2">
     <fa-icon [icon]="onbekendIcon"></fa-icon>
-    <input ngbButton type="radio" value="Onbekend" (click)="onClick(null)" />
-  </label>
-  <label
-    ngbButtonLabel
-    [ngClass]="{ 'btn-danger': keuze === false, 'btn-light': keuze !== false }"
-  >
+  </button>
+
+  <!-- Nee Button -->
+  <button [ngClass]="{'btn-danger': keuze === false, 'btn-light': keuze !== false, 'btn': true}"
+          (click)="onClick(false)">
     <fa-icon [icon]="neeIcon"></fa-icon>
-    <input ngbButton type="radio" value="Nee" (click)="onClick(false)" />
-  </label>
+  </button>
 </div>
