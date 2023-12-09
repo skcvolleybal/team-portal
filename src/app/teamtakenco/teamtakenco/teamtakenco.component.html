@@ -10,9 +10,12 @@
 </ng-template>
 
 <ng-template #showMijnOverzicht>
-  <tp-exportascsv></tp-exportascsv>
+  <div>
+    <tp-exportascsv></tp-exportascsv>
+  </div>
 
   <table class="table" *ngFor="let speeldag of speeldagen">
+    
     <thead>
       <tr>
         <th colspan="2">
