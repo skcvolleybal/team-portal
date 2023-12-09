@@ -35,30 +35,30 @@
           }"
           *ngFor="let speeltijd of speeldag.speeltijden"
         >
+
           <div class="form-row">
             <div class="col" style="line-height: 38px;">
               {{ speeltijd.tijd }}
             </div>
-
           </div>
-          <div class="row">
-            <div class="col">
-              <div class="d-flex flex-wrap">
-                <div
-                  class="bg-light d-inline-flex text-dark rounded m-1"
-                  *ngFor="let wedstrijd of speeltijd.wedstrijden"
-                >
-                  <teamportal-wedstrijd [wedstrijd]="wedstrijd"></teamportal-wedstrijd>
+          <div class="container">
+            <div class="row">
+              <!-- First Column for larger screens, takes full width on small screens -->
+              <div class="col-md-8 col-12">
+                <div class="d-flex flex-wrap">
+                  <div class="bg-light d-inline-flex text-dark rounded m-1" *ngFor="let wedstrijd of speeltijd.wedstrijden">
+                    <teamportal-wedstrijd [wedstrijd]="wedstrijd"></teamportal-wedstrijd>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div class="col">
-              <teamportal-keuze
-                (updateKeuze)="
-                  UpdateFluitBeschikbaarheid($event, speeldag.date, speeltijd.tijd)
-                "
-                [keuze]="speeltijd.isBeschikbaar"
-              ></teamportal-keuze>
+          
+              <!-- Second Column, becomes centered text on small screens -->
+              <div class="col-md-4 col-12 text-md-end">
+                <teamportal-keuze
+                  (updateKeuze)="UpdateFluitBeschikbaarheid($event, speeldag.date, speeltijd.tijd)"
+                  [keuze]="speeltijd.isBeschikbaar"
+                ></teamportal-keuze>
+              </div>
             </div>
           </div>
         </li>
