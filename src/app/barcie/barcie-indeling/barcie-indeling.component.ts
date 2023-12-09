@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { NgbDate, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import {
+  faUser,
+  faTrash,
   faCalendarAlt,
   faTrashAlt,
   faHeart as heartSolid,
@@ -19,6 +21,7 @@ import { faHeart as heartRegular } from '@fortawesome/free-regular-svg-icons';
 })
 export class BarcieIndelingComponent implements OnInit {
   calendar = faCalendarAlt;
+  user = faUser;
   geenBhv = heartRegular;
   bhv = heartSolid;
   delete = faTrashAlt;

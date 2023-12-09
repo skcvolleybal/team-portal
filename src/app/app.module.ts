@@ -10,6 +10,8 @@ import { BrowserModule } from '@angular/platform-browser';
 import { CoreModule } from './core/core.module';
 import { DefaultHeadersInterceptor } from './core/interceptors/default-headers.interceptor';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faCoffee } from '@fortawesome/free-solid-svg-icons';
+
 import { HTTPListener } from './core/interceptors/is-authorized.interceptor';
 import { ImpersonationInterceptor } from './core/interceptors/add-impersonation.interceptor';
 import { WordPressService } from './core/services/request.service';
@@ -24,6 +26,7 @@ import { StateService } from './core/services/state.service';
 import { WedstrijdOverzichtModule } from './wedstrijd-overzicht/wedstrijd-overzicht.module';
 import { WithCredentialsInterceptor } from './core/interceptors/add-credentials.interceptor';
 import { appRoutes } from './route.config';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
     declarations: [AppComponent, LoginModalComponent],
@@ -40,6 +43,7 @@ import { appRoutes } from './route.config';
         CoreModule,
         TeamtakencoModule,
         SharedModule,
+        NgbModule,
         FontAwesomeModule,
     ],
     exports: [],
