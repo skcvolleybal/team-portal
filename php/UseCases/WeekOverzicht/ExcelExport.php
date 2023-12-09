@@ -277,8 +277,6 @@ class ExcelExport
                 return;
             }
 
-            $scheidsrechter = 
-
             $this->SetCell('A' . $this->currentRow, $formattedTimestamp);
             $this->PaintCell('A' . $this->currentRow, 'wedstrijd-dag');
 
@@ -292,7 +290,7 @@ class ExcelExport
             $this->PaintCell('D' . $this->currentRow, 'wedstrijd');
 
             
-            $this->SetCell('E' . $this->currentRow, $wedstrijd->team1->niveau);
+            $this->SetCell('E' . $this->currentRow, $this->GetNiveau($wedstrijd->team1->niveau));
             $this->PaintCell('E' . $this->currentRow, 'wedstrijd');
 
             $this->SetCell('F' . $this->currentRow, 'Veld '. $this->veldNummer);
@@ -302,7 +300,9 @@ class ExcelExport
             if ($wedstrijd->scheidsrechter !== null) $this->SetCell('G' . $this->currentRow, $wedstrijd->scheidsrechter->naam);
             $this->PaintCell('G' . $this->currentRow, 'wedstrijd');
             
-            if ($wedstrijd->tellers[0] !== null || $wedstrijd->tellers[1] !== null) $this->SetCell('H' . $this->currentRow, $wedstrijd->tellers[0]->naam . ' & '. $wedstrijd->tellers[1]->naam);
+            if (isset($wedstrijd->tellers)) {
+                if (($wedstrijd->tellers[0] !== null || $wedstrijd->tellers[1] !== null) && ($wedstrijd->tellers[0]->naam !== null || $wedstrijd->tellers[0]->naam !== null)) $this->SetCell('H' . $this->currentRow, $wedstrijd->tellers[0]->naam . ' & '. $wedstrijd->tellers[1]->naam);
+            }
             $this->PaintCell('H' . $this->currentRow, 'wedstrijd');
 
             $this->veldNummer += 1; // max 3 velden
@@ -322,79 +322,33 @@ class ExcelExport
         return $ZaalWachtenOpDag;
     }
     
-    private function GetNiveau($niveau, $naam) {
-        if (substr($naam, 4, 2) == "HS") {
-            switch ($naam) {
-                // Je gaat dit ooit vinden, ik weet niet wat er mis is gegaan maar vanuit de nevobo kregen sommige teams verkeerde
-                // niveaus mee dus voor nu gehardcode, bij de dames werkt het wel dusja get rekt.
-                case "SKC HS 1":
-                    return "3e Divisie";
-                case "SKC HS 3":
-                case "SKC HS 2":
-                    return "1e Klasse";
-                case "SKC HS 4":
-                    return "2e Klasse";
-                case "SKC HS 5":
-                case "SKC HS 6":
-                    return "3e Klasse";
-                case "SKC HS 7":
-                case "SKC HS 8":
-                case "SKC HS 9":
-                    return "4e Klasse";
-    
-                // mannen for some fucking reason
-                // case 0:
-                //     return "Eredivisie"; // lol
-                // case 1:
-                //     return "Superdivisie"; 
-                // case 2:
-                //     return "Topdivisie"; 
-                // case 3:
-                //     return "1e Divisie";
-                // case 4:
-                //     return "2e Divisie";
-                // case 5:
-                //     return "3e Divisie"; 
-                // case 6:
-                //     return "Promotie klasse"; 
-                // case 7:
-                //     return "1e klasse"; 
-                // case 8:
-                //     return "3e klasse";
-                // case 9:
-                //     return "4e klasse";
-                
-                // default:
-                //     return "";
-                }
-            } else {
-                switch ($niveau) {
-                // vrouwen for some fucking reason
-                case 0:
-                    return "Eredivisie"; // lol
-                case 1:
-                    return "Superdivisie"; 
-                case 2:
-                    return "Topdivisie"; 
-                case 3:
-                    return "1e Divisie";
-                case 4:
-                    return "2e Divisie";
-                case 5:
-                    return "Promotie klasse"; 
-                case 6:
-                    return "1e klasse"; 
-                case 7:
-                    return "2e klasse"; 
-                case 8:
-                    return "3e klasse";
-                case 9:
-                    return "4e klasse";    
-                default:
-                    return "";
-                }
-    
-            }
+    private function GetNiveau($niveau) {
+        switch ($niveau) {
+            case 0:
+                return "Eredivisie"; // lol
+            case 1:
+                return "Topdivisie"; 
+            case 2:
+                return "1e Divisie";
+            case 3:
+                return "2e Divisie";
+            case 4:
+                return "3e Divisie"; 
+            case 5:
+                return "Promotie klasse"; 
+            case 6:
+                return "1e klasse"; 
+            case 7:
+                return "2e klasse";
+            case 8:
+                return "3e klasse";
+            case 9:
+                return "4e klasse";
+
+            
+            default:
+                return "";
+        }
     }
 
     public function returnExcelExport()
