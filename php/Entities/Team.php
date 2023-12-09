@@ -123,7 +123,8 @@ class Team
     {
 
         $wordpressGateway = new WordPressGateway;
-        $string = $wordpressGateway->GetAllTeams();
+        // $string = $wordpressGateway->GetAllTeams(); Dit is een relic, ooit fixen dat we de teamniveaus uit DB halen
+        
         $string = file_get_contents("skc-teams.json");
         $teams = json_decode($string);
         foreach ($teams as $team) {
