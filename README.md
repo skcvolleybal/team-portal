@@ -1,6 +1,6 @@
 # TeamPortal
 
-## Beschrijving
+## Description:
 
 TeamPortal supports the Team Task Coordinator of SKC (TeamTakenCo, bestuur) in making schedules for match days. SKC members are scheduled on match days to be emergency responders, referees, scorers, or for setting up and dismantling the hall. To ensure that members are available, members can log in to TeamPortal to provide their availability.
 
