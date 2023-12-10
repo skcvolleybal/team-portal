@@ -79,7 +79,12 @@ class ExcelExport
             $this->CreateWedstrijdSchema($this->currentRow);
 
             $this->CreateBarEnBHVSchema($this->currentRow);
-            $this->currentRow += 2; // Leave some extra room for the board availability
+            if ($this->BardienstenEnBHVOpDag !== null) {
+                $this->currentRow += count($this->BardienstenEnBHVOpDag->shifts);
+            } else {
+                $this->currentRow += 2; // Leave some extra room for the board availability
+            }
+            
 
         }
 
@@ -229,7 +234,7 @@ class ExcelExport
         foreach($this->BardienstenEnBHVOpDag->shifts as $shifts) {
             foreach($shifts->barleden as $barlid) {
                 if ($barlid->isBhv) {
-                    $this->SetCell('C' . $this->tweedeZaalwachtRow + $shifts->shift - 2, "BHV: " . $barlid->naam);
+                    $this->SetCell('C' . $this->tweedeZaalwachtRow + $shifts->shift - 1, "BHV: " . $barlid->naam);
                     $this->PaintCell('C' . $this->tweedeZaalwachtRow, 'zaalwacht');
                 }
                 else {

@@ -28,13 +28,10 @@ export class ExportascsvComponent implements OnInit {
     this.WordPressService.GetWeekOverzicht(this.selectedDate).subscribe(
       (response) => {
         this.data = response;
-        console.log("data: ")
-        console.log(this.data);
         const url = environment.baseUrl + 'week-overzicht?datum=' + this.selectedDate;
 
         // const blob = new Blob([this.data], { type: 'text/csv' });
         // const url = window.URL.createObjectURL(blob);
-        // const url = 'http://localhost/team-portal/api/week-overzicht?datum=' + this.selectedDate;
   
         // Create a temporary link and trigger the download
         const a = document.createElement('a');
