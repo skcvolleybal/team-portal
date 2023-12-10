@@ -46,7 +46,6 @@ jobs:
     - name: Prepare package
       run: |
         mv php/ dist/
-        mv static-pages/ dist/
         cp .htaccess dist/.htaccess
     - name: Curl whitelist Github Runner IP at Antagonist
       run: |
