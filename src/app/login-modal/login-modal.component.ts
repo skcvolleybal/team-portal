@@ -18,7 +18,7 @@ export class LoginModalComponent {
 
   constructor(
     private fb: UntypedFormBuilder,
-    private joomalService: WordPressService,
+    private wordPressService: WordPressService,
     private modelService: NgbModal,
     private stateService: StateService,
     private router: Router
@@ -33,7 +33,7 @@ export class LoginModalComponent {
     this.errorMessage = null;
     const username = this.loginForm.get('username').value;
     const password = this.loginForm.get('password').value;
-    this.joomalService.Login(username, password).subscribe({
+    this.wordPressService.Login(username, password).subscribe({
       next: () => {
         this.stateService.setIsAuthenticated(true);
         this.router.navigate(['/']);
