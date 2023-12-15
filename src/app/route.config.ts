@@ -5,6 +5,7 @@ import { Route } from '@angular/router';
 import { TeamtakencoComponent } from './teamtakenco/teamtakenco/teamtakenco.component';
 import { TelFluitBeschikbaarheidComponent } from './beschikbaarheid/tel-fluit-beschikbaarheid/tel-fluit-beschikbaarheid.component';
 import { WedstrijdOverzichtComponent } from './wedstrijd-overzicht/wedstrijd-overzicht/wedstrijd-overzicht.component';
+import { StatistiekenComponent } from './statistieken/statistieken.component';
 
 interface IToggleRoute extends Route {
   isHidden: boolean;
@@ -29,15 +30,14 @@ export const appRoutes: IToggleRoute[] = [
     data: { title: '👥 Wedstrijd Beschikbaarheid' },
     isHidden: true,
   },
-  // Obsolete; due to DWF 2.0 update stats need to be rewritten
-  // {
-  //   path: 'statistieken',
-  //   component: StatistiekenComponent,
-  //   data: {
-  //     title: 'Statistieken',
-  //   },
-  //   isHidden: false,
-  // }, 
+  {
+    path: 'statistieken',
+    component: StatistiekenComponent,
+    data: {
+      title: '📊 Statistieken',
+    },
+    isHidden: false,
+  }, 
   {
     path: 'fluit-beschikbaarheid',
     component: TelFluitBeschikbaarheidComponent,

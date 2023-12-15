@@ -73,6 +73,7 @@ if (str_contains($_SERVER['REQUEST_URI'], $testUrl)) {
 
 $entryPoint =
     new RouteGroup($baseRoute, [
+          
         new GetRoute('/mijn-overzicht', UseCases\MijnOverzicht::class, AuthorizationRole::USER),
 
         new RouteGroup('/wedstrijd-overzicht', [
@@ -141,7 +142,13 @@ $entryPoint =
             new GetRoute('/user', UseCases\GetCurrentUser::class),
             new GetRoute('/users', UseCases\GetUsers::class, AuthorizationRole::WEBCIE),
             new PostRoute('/inloggen', UseCases\Inloggen::class, AuthorizationRole::UNREGISTERED)
-        ], AuthorizationRole::USER)
+        ], AuthorizationRole::USER),
+        
+        new RouteGroup('/statistics', [
+            new GetRoute('/getskcranking', UseCases\GetSkcRanking::class)
+        ], AuthorizationRole::USER),
+
+
     ]);
 $entryPoint->RegisterRoutes($app);
 
