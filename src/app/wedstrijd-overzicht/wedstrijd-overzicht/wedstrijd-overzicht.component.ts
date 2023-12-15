@@ -19,12 +19,12 @@ export class WedstrijdOverzichtComponent implements OnInit {
 
   constructor(
     private aanwezigheidService: AanwezigheidService,
-    private joomalService: WordPressService
+    private wordPressService: WordPressService
   ) {}
 
   ngOnInit() {
     this.loading = true;
-    this.joomalService.GetWedstrijdOverzicht().subscribe(
+    this.wordPressService.GetWedstrijdOverzicht().subscribe(
       (wedstrijden) => {
         this.wedstrijden = wedstrijden;
         this.loading = false;
@@ -41,7 +41,7 @@ export class WedstrijdOverzichtComponent implements OnInit {
       }
     );
 
-    this.joomalService.GetCurrentUser().subscribe((data) => {
+    this.wordPressService.GetCurrentUser().subscribe((data) => {
       this.user = data;
     });
   }
