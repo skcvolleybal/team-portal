@@ -7,21 +7,33 @@ import { StatisticsService } from '../core/services/statistics.service';
   styleUrls: ['./statistieken.component.scss']
 })
 export class StatistiekenComponent {
-  skcRankingData: any; 
+  skcRankingData: any; // Assuming you will replace 'any' with a more specific type
+  skcFustInformatie: string;
+  loading: boolean;
 
-  constructor (private statisticsService: StatisticsService) {} 
+  constructor(private statisticsService: StatisticsService) {}
 
-  ngOnInit() {
-    this.getSkcRankingData();
+  async ngOnInit() {
+    await this.getSkcRankingData();
+    this.generateSkcFustInformatie();
   }
-
-  getSkcRankingData () {
+  
+  async getSkcRankingData() {
+    this.loading = true;
     this.statisticsService.getSkcRanking().subscribe(data => {
-      this.getSkcRankingData = data;
+      this.loading = false;
+      this.skcRankingData = data; // Store data in skcRankingData property
+      return data;
     }, error => {
       console.error('error getting stats data', error);
-     })
+    })
   }
+  
+  
 
+  
 
+  generateSkcFustInformatie () {
+    console.log("Generating fust" + this.skcRankingData);
+  }
 }

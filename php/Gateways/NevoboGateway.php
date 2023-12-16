@@ -271,14 +271,13 @@ class NevoboGateway implements INevoboGateway
         // Define the new keys
         $newKeys = [
             'Ranking', 'Teamnaam', 'Wedstrijden', 'Punten', 
-            'Sets voor', 'Sets tegen', 'Punten voor', 'Punten tegen', 'Opmerkingen'
+            'Sets_voor', 'Sets_tegen', 'Punten_voor', 'Punten_tegen', 'Opmerkingen'
         ];
 
         // Iterate over each sub-array and assign new keys
         foreach ($teamScores as &$subArray) {
             $subArray = array_combine($newKeys, $subArray);
         }
-
 
         // Array to keep track of unique team names
         $uniqueTeamNames = [];
@@ -295,10 +294,24 @@ class NevoboGateway implements INevoboGateway
             }
         }
 
+        
+        usort($filteredArray, function ($a, $b) {
+            return $a['Ranking'] <=> $b['Ranking'];
+        });
+
+        // Then sort by Punten within each Ranking
+        usort($filteredArray, function($a, $b) {
+            if ($a['Ranking'] == $b['Ranking']) {
+                return $b['Punten'] <=> $a['Punten']; // Note: this sorts in descending order of Punten
+            }
+            return $a['Ranking'] <=> $b['Ranking'];
+        });
+
+        
         // Remove the temporary file
         unlink($tmpfname);
 
-        // $filteredArray now contains associative arrays with unique Teamnaam values
+        // $sortedData now contains associative arrays with unique Teamnaam values
         return $filteredArray;
 
     }

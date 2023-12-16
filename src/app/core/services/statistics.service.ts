@@ -9,6 +9,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class StatisticsService {
+    
   constructor(private http: HttpClient) {}
 
 

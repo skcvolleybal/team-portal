@@ -1,1 +1,40 @@
-<p>statistieken works!</p>
+<div>
+    <!-- Replace below with actual data structure -->
+    <h3>SKC Biercompetitie </h3>
+    <p>Welke teams staan 1e in hun poule en winnen een fust aan het eind van dit competitiejaar? 🍺 
+    <!-- <ng-container *ngFor="let item of skcRankingData"><span *ngIf="item.Ranking === 1">{{item.Teamnaam}}</span></ng-container></p> -->
+
+    <table  *ngIf="skcRankingData; else loading" class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col" sortable="Ranking" (sort)="onSort($event)">Ranking in eigen poule</th>
+                <th scope="col">Teamnaam</th>
+                <th scope="col">Wedstrijden</th>
+                <th scope="col">Punten</th>
+                <th scope="col">Sets voor</th>
+                <th scope="col">Sets tegen</th>
+                <th scope="col">Punten voor</th>
+                <th scope="col">Punten tegen</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let item of skcRankingData">
+                <td class="ranking-{{item.Ranking}}">{{ item.Ranking | number }}e <span *ngIf="item.Ranking === 1">🍺</span></td>
+                <td class="ranking-{{ item.Ranking }}">
+                    {{ item.Teamnaam.replace('SKC DS', 'Dames').replace('SKC HS', 'Heren') }}
+                </td>                
+                <td class="ranking-{{item.Ranking}}">{{ item.Wedstrijden | number  }}</td>
+                <td class="ranking-{{item.Ranking}}">{{ item.Punten | number  }}</td>
+                <td class="ranking-{{item.Ranking}}">{{ item.Sets_voor | number  }}</td>
+                <td class="ranking-{{item.Ranking}}">{{ item.Sets_tegen | number  }}</td>
+                <td class="ranking-{{item.Ranking}}">{{ item.Punten_voor | number  }}</td>
+                <td class="ranking-{{item.Ranking}}">{{ item.Punten_tegen | number  }}</td>
+            </tr>
+        </tbody>
+
+    </table>
+
+  </div>
+  <teamportal-spinner *ngIf="loading"></teamportal-spinner>
+
+  

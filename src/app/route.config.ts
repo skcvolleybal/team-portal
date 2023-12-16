@@ -30,14 +30,7 @@ export const appRoutes: IToggleRoute[] = [
     data: { title: '👥 Wedstrijd Beschikbaarheid' },
     isHidden: true,
   },
-  {
-    path: 'statistieken',
-    component: StatistiekenComponent,
-    data: {
-      title: '📊 Statistieken',
-    },
-    isHidden: false,
-  }, 
+ 
   {
     path: 'fluit-beschikbaarheid',
     component: TelFluitBeschikbaarheidComponent,
@@ -67,5 +60,13 @@ export const appRoutes: IToggleRoute[] = [
     component: BarcieIndelingComponent,
     data: { title: '🍺 Barcie', groups: ['teamcoordinator', 'webcie'] },
     isHidden: true,
+  },
+  {
+    path: 'statistieken',
+    component: StatistiekenComponent,
+    data: {
+      title: '📊 Statistieken',
+    },
+    isHidden: false,
   },
 ];
