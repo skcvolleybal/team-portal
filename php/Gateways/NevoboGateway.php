@@ -212,6 +212,8 @@ class NevoboGateway implements INevoboGateway
  
         $teams = [];
 
+
+
         // Get the teams and poule names
         foreach ($sheet->getRowIterator() as $row) {
             $cellIterator = $row->getCellIterator();
@@ -236,7 +238,7 @@ class NevoboGateway implements INevoboGateway
             }   
         }
 
-        
+         
         // Get the teams scores
         $teamScores = [];
         try {
@@ -279,6 +281,28 @@ class NevoboGateway implements INevoboGateway
             $subArray = array_combine($newKeys, $subArray);
         }
 
+        
+        // Loop through each team in $teamScores
+        foreach ($teamScores as $key => $teamScore) {
+            // Extract the teamname from the current team in $teamScores
+            $teamName = $teamScore['Teamnaam'];
+
+            // Search for the team in the $teams array
+            foreach ($teams as $team) {
+                if ($team[0] == $teamName) {
+                    // Extract the Niveau and perform the required string manipulations
+                    $niveau = $team[1];
+                    $niveau = str_replace('klasse', 'Klasse', $niveau); // Replace "klasse" with "Klasse"
+                    $niveau = preg_replace('/\b(Heren|Dames)\b/', '', $niveau); // Remove "Heren" or "Dames"
+                    $niveau = trim($niveau); // Remove leading and trailing spaces
+                    $niveau = preg_replace('/\s+[A-Za-z]$/','', $niveau); // Remove loose characters at the end
+
+                    // Add the modified "Niveau" key to the $teamScores array
+                    $teamScores[$key]['Niveau'] = $niveau;
+                    break;
+                }
+            }
+        }
         // Array to keep track of unique team names
         $uniqueTeamNames = [];
 
@@ -306,6 +330,8 @@ class NevoboGateway implements INevoboGateway
             }
             return $a['Ranking'] <=> $b['Ranking'];
         });
+
+        
 
         
         // Remove the temporary file
