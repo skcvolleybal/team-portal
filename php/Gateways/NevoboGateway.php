@@ -292,7 +292,7 @@ class NevoboGateway implements INevoboGateway
                 if ($team[0] == $teamName) {
                     // Extract the Niveau and perform the required string manipulations
                     $niveau = $team[1];
-                    $niveau = str_replace('klasse', 'Klasse', $niveau); // Replace "klasse" with "Klasse"
+                    $niveau = str_replace(' klasse', ' Klasse', $niveau); // Replace "klasse" with "Klasse"
                     $niveau = preg_replace('/\b(Heren|Dames)\b/', '', $niveau); // Remove "Heren" or "Dames"
                     $niveau = trim($niveau); // Remove leading and trailing spaces
                     $niveau = preg_replace('/\s+[A-Za-z]$/','', $niveau); // Remove loose characters at the end

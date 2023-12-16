@@ -8,7 +8,7 @@
         <table *ngIf="skcRankingData; else loading" class="table table-sm table-striped">
             <thead>
                 <tr>
-                    <th scope="col" sortable="Ranking" (sort)="onSort($event)">Ranking in eigen poule*</th>
+                    <th scope="col" sortable="Ranking" (sort)="onSort($event)">Ranking in eigen poule</th>
                     <th scope="col">Teamnaam</th>
                     <th scope="col">Niveau</th>
                     <th scope="col">Wedstrijden</th>
@@ -36,7 +36,7 @@
             </tbody>
             <tfoot>
                 <tr>
-                    <td scope="col" sortable="Ranking" (sort)="onSort($event)">Ranking in eigen poule*</td>
+                    <td scope="col" sortable="Ranking" (sort)="onSort($event)">Ranking in eigen poule</td>
                     <td scope="col">Teamnaam</td>
                     <td scope="col">Niveau</td>
                     <td scope="col">Wedstrijden</td>
@@ -50,7 +50,7 @@
 
         </table>
     </div>
-    <p *ngIf="skcRankingData" class="text-center"><i>*Data opgehaald via: <a href="https://www.volleybal.nl/competitie/vereniging/ckl9r53#ranking">https://www.volleybal.nl/competitie/vereniging/ckl9r53#ranking</a></i></p>
+    <p *ngIf="skcRankingData" class="text-center"><i>Data opgehaald via: <a href="https://www.volleybal.nl/competitie/vereniging/ckl9r53#ranking">https://www.volleybal.nl/competitie/vereniging/ckl9r53#ranking</a></i></p>
 
   </div>
   <teamportal-spinner *ngIf="loading"></teamportal-spinner>
