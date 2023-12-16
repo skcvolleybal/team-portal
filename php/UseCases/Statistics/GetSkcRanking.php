@@ -8,23 +8,23 @@ use TeamPortal\Gateways\NevoboGateway;
 
 class GetSkcRanking implements Interactor
 {
+
     
-    public function __construct(NevoboGateway $nevoboGateway)
-    {
-        $this->nevoboGateway = $nevoboGateway;
-    }
+    // public function __construct()
+    // {
+    // }
 
     public function Execute(object $data = null): array
     {
         $result = [];
 
-        // $user = $this->wordPressGateway->GetUser();
-        // if ($user === null) {
-        //     return $result;
-        // }
+        $string = file_get_contents("skc-teams.json");
+        $teams = json_decode($string);
 
-        $result['a'] = 'b'; 
+        $nevoboGateway = new NevoboGateway();
+        $nevoboGateway->GetVerenigingsStanden();
         
+
 
         return $result;
 

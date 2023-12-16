@@ -14,6 +14,8 @@ use TeamPortal\Entities\Wedstrijd;
 use TeamPortal\Entities\Wedstrijddag;
 use TeamPortal\UseCases\INevoboGateway;
 use UnexpectedValueException;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+
 
 error_reporting(E_ALL ^ E_DEPRECATED); // Suppress warnings on PHP 8.0. Make sure to fix the usort() functions in this file for PHP 8.1. 
 
@@ -183,6 +185,44 @@ class NevoboGateway implements INevoboGateway
         curl_close($handle);
 
         return $httpCode == 200;
+    }
+
+    public function GetVerenigingsStanden () {
+        $url = 'https://api.nevobo.nl/export/vereniging/' . $this->verenigingscode . '/stand.xlsx';
+        
+        // Use file_get_contents to download the file
+        $content = file_get_contents($url);
+
+        if ($content === false) {
+            // Handle error, file could not be downloaded
+            die("Error: Unable to download the Excel file.");
+        }
+
+        // Save the content to a temporary file
+        $tmpfname = tempnam(sys_get_temp_dir(), 'excel');
+        echo (sys_get_temp_dir());
+        file_put_contents($tmpfname, $content);
+
+        // Load the Excel file
+        $spreadsheet = IOFactory::load($tmpfname);
+
+        // Now you can work with the spreadsheet, for example, read data
+        $sheet = $spreadsheet->getActiveSheet();
+        $highestRow = $sheet->getHighestRow();
+        $highestColumn = $sheet->getHighestColumn();
+
+        // Loop through the rows and columns
+        for ($row = 1; $row <= $highestRow; ++$row) {
+            for ($column = 'A'; $column <= $highestColumn; ++$column) {
+                $value = $sheet->getCell($column.$row)->getValue();
+                echo $value . "\t";
+            }
+            echo "\n";
+        }
+
+        // Remove the temporary file
+        // unlink($tmpfname);
+
     }
 
     private function GetGender(Team $team): string
