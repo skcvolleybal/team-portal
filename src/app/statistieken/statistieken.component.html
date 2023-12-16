@@ -4,10 +4,10 @@
     <p>Welke teams staan 1e in hun poule en winnen een fust aan het eind van dit competitiejaar? 🍺 
     <!-- <ng-container *ngFor="let item of skcRankingData"><span *ngIf="item.Ranking === 1">{{item.Teamnaam}}</span></ng-container></p> -->
 
-    <table  *ngIf="skcRankingData; else loading" class="table table-striped">
+    <table *ngIf="skcRankingData; else loading" class="table table-striped">
         <thead>
             <tr>
-                <th scope="col" sortable="Ranking" (sort)="onSort($event)">Ranking in eigen poule</th>
+                <th scope="col" sortable="Ranking" (sort)="onSort($event)">Ranking in eigen poule*</th>
                 <th scope="col">Teamnaam</th>
                 <th scope="col">Niveau</th>
                 <th scope="col">Wedstrijden</th>
@@ -35,6 +35,7 @@
         </tbody>
 
     </table>
+    <p *ngIf="skcRankingData" class="text-center"><i>*Data opgehaald via: <a href="https://www.volleybal.nl/competitie/vereniging/ckl9r53#ranking">https://www.volleybal.nl/competitie/vereniging/ckl9r53#ranking</a></i></p>
 
   </div>
   <teamportal-spinner *ngIf="loading"></teamportal-spinner>
