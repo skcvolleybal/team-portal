@@ -10,7 +10,7 @@
 </ng-template>
 
 <ng-template #showMijnOverzicht>
-  <div>
+  <div *ngIf="overzichtLoading === false">
     <tp-exportascsv></tp-exportascsv>
   </div>
 
