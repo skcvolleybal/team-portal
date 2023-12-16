@@ -16,20 +16,13 @@ class GetSkcRanking implements Interactor
 
     public function Execute(object $data = null): array
     {
-        $result = [];
-
         $string = file_get_contents("skc-teams.json");
         $teams = json_decode($string);
 
         $nevoboGateway = new NevoboGateway();
-        $nevoboGateway->GetVerenigingsStanden();
+        $standen = $nevoboGateway->GetVerenigingsStanden();
         
+        return $standen;
 
-
-        return $result;
-
-
-
-        // return $result;
     }
 }

@@ -15,6 +15,7 @@ use TeamPortal\Entities\Wedstrijddag;
 use TeamPortal\UseCases\INevoboGateway;
 use UnexpectedValueException;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Reader\Exception;
 
 
 error_reporting(E_ALL ^ E_DEPRECATED); // Suppress warnings on PHP 8.0. Make sure to fix the usort() functions in this file for PHP 8.1. 
@@ -200,7 +201,7 @@ class NevoboGateway implements INevoboGateway
 
         // Save the content to a temporary file
         $tmpfname = tempnam(sys_get_temp_dir(), 'excel');
-        echo (sys_get_temp_dir());
+        
         file_put_contents($tmpfname, $content);
 
         // Load the Excel file
@@ -208,22 +209,100 @@ class NevoboGateway implements INevoboGateway
 
         // Now you can work with the spreadsheet, for example, read data
         $sheet = $spreadsheet->getActiveSheet();
-        $highestRow = $sheet->getHighestRow();
-        $highestColumn = $sheet->getHighestColumn();
+ 
+        $teams = [];
 
-        // Loop through the rows and columns
-        for ($row = 1; $row <= $highestRow; ++$row) {
-            for ($column = 'A'; $column <= $highestColumn; ++$column) {
-                $value = $sheet->getCell($column.$row)->getValue();
-                echo $value . "\t";
+        // Get the teams and poule names
+        foreach ($sheet->getRowIterator() as $row) {
+            $cellIterator = $row->getCellIterator();
+            $cellIterator->setIterateOnlyExistingCells(true); // Loop only existing cells
+
+            // Get the value of the first cell
+            $firstCellValue = $cellIterator->current()->getValue();
+
+            // Check if the first cell contains 'SKC'
+            if (strpos($firstCellValue, 'SKC') !== false) {
+                // Extract the values of the entire row
+                $rowData = [];
+                foreach ($cellIterator as $cell) {
+                    $rowData[] = $cell->getValue();
+                }
+                // Process the extracted row data (e.g., print, store in an array, etc.)
+                $teams[] = $rowData;
             }
-            echo "\n";
+
+            foreach ($teams as $key => $team) {
+                $teams[$key][1] = str_replace("Seniorencompetitie, ", "", $team[1]);
+            }   
+        }
+
+        
+        // Get the teams scores
+        $teamScores = [];
+        try {
+            $sheet = $spreadsheet->getActiveSheet();
+        
+            // Loop through each team
+            foreach ($teams as $team) {
+                $teamName = $team[0]; // Get the team name
+        
+                // Loop through each row of the sheet
+                foreach ($sheet->getRowIterator() as $row) {
+                    $cellIterator = $row->getCellIterator();
+                    $cellIterator->setIterateOnlyExistingCells(false); // This loops through all cells
+        
+                    $rowData = [];
+                    foreach ($cellIterator as $cell) {
+                        $rowData[] = $cell->getValue();
+                    }
+        
+                    // Check if the team name is in the second column
+                    if (isset($rowData[1]) && $rowData[1] == $teamName) {
+                        // Extract and process the row data as needed
+                        // print_r($rowData); // For demonstration purposes
+                        $teamScores[] = $rowData;
+                    }
+                }
+            }
+        } catch (Exception $e) {
+            echo 'Error loading spreadsheet file: ' . $e->getMessage();
+        }
+
+        // Define the new keys
+        $newKeys = [
+            'Ranking', 'Teamnaam', 'Wedstrijden', 'Punten', 
+            'Sets voor', 'Sets tegen', 'Punten voor', 'Punten tegen', 'Opmerkingen'
+        ];
+
+        // Iterate over each sub-array and assign new keys
+        foreach ($teamScores as &$subArray) {
+            $subArray = array_combine($newKeys, $subArray);
+        }
+
+
+        // Array to keep track of unique team names
+        $uniqueTeamNames = [];
+
+        // Array to hold the final result
+        $filteredArray = [];
+
+        foreach ($teamScores as $teamScore) {
+            // Check if the Teamnaam value is already in the uniqueTeamNames array
+            if (!in_array($teamScore['Teamnaam'], $uniqueTeamNames)) {
+                // If not, add it to uniqueTeamNames and filteredArray
+                $uniqueTeamNames[] = $teamScore['Teamnaam'];
+                $filteredArray[] = $teamScore;
+            }
         }
 
         // Remove the temporary file
-        // unlink($tmpfname);
+        unlink($tmpfname);
+
+        // $filteredArray now contains associative arrays with unique Teamnaam values
+        return $filteredArray;
 
     }
+
 
     private function GetGender(Team $team): string
     {
