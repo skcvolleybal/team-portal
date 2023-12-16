@@ -8,14 +8,12 @@ import { StatisticsService } from '../core/services/statistics.service';
 })
 export class StatistiekenComponent {
   skcRankingData: any; // Assuming you will replace 'any' with a more specific type
-  skcFustInformatie: string;
   loading: boolean;
 
   constructor(private statisticsService: StatisticsService) {}
 
   async ngOnInit() {
-    await this.getSkcRankingData();
-    this.generateSkcFustInformatie();
+    this.getSkcRankingData();
   }
   
   async getSkcRankingData() {
@@ -30,10 +28,4 @@ export class StatistiekenComponent {
   }
   
   
-
-  
-
-  generateSkcFustInformatie () {
-    console.log("Generating fust" + this.skcRankingData);
-  }
 }
