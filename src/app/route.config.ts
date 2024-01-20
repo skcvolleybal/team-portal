@@ -6,6 +6,7 @@ import { TeamtakencoComponent } from './teamtakenco/teamtakenco/teamtakenco.comp
 import { TelFluitBeschikbaarheidComponent } from './beschikbaarheid/tel-fluit-beschikbaarheid/tel-fluit-beschikbaarheid.component';
 import { WedstrijdOverzichtComponent } from './wedstrijd-overzicht/wedstrijd-overzicht/wedstrijd-overzicht.component';
 import { StatistiekenComponent } from './statistieken/statistieken.component';
+import { EmailsComponent } from './emails/emails.component';
 
 interface IToggleRoute extends Route {
   isHidden: boolean;
@@ -66,6 +67,14 @@ export const appRoutes: IToggleRoute[] = [
     component: StatistiekenComponent,
     data: {
       title: '📊 Statistieken',
+    },
+    isHidden: false,
+  },
+  {
+    path: 'emails',
+    component: EmailsComponent,
+    data: {
+      title: 'Emails',
     },
     isHidden: false,
   },

@@ -126,6 +126,12 @@ $entryPoint =
             ])
         ], AuthorizationRole::TEAMCOORDINATOR),
 
+ 
+        new RouteGroup('/emails', [
+            new GetRoute('', UseCases\GetAllEmails::class)
+        ], AuthorizationRole::TEAMCOORDINATOR),
+
+
         new GetRoute('/calendar', UseCases\GetCalendar::class, AuthorizationRole::UNREGISTERED),
         
 

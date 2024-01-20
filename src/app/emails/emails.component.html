@@ -1,0 +1,25 @@
+<p>emails works!</p>
+
+<div class="container mt-5">
+     <table *ngIf="emails; else loading" class="table table-striped">
+        <thead>
+            <tr>
+                <th>Afzender</th>
+                <th>Ontvanger</th>
+                <th>Onderwerp</th>
+                <th>Verzonden</th>
+            </tr>
+        </thead>
+        <tbody>
+                <tr *ngFor="let email of emails">
+                    <td>{{ email.sender_naam }} ({{ email.sender_email }}) </td>
+                    <td>{{ email.receiver_naam }} ({{ email.receiver_email }})</td>
+                    <td>{{ email.titel }} </td>
+                    <td>{{ email.send_date }} </td>
+                </tr>
+        </tbody>
+    </table>
+</div>
+
+
+<teamportal-spinner *ngIf="loading"></teamportal-spinner>
