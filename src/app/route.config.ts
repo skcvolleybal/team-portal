@@ -74,7 +74,7 @@ export const appRoutes: IToggleRoute[] = [
     path: 'emails',
     component: EmailsComponent,
     data: {
-      title: 'Emails',
+      title: '✉️ Emails',
     },
     isHidden: false,
   },
