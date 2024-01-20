@@ -128,7 +128,8 @@ $entryPoint =
 
  
         new RouteGroup('/emails', [
-            new GetRoute('', UseCases\GetAllEmails::class)
+            new GetRoute('', UseCases\GetAllEmails::class),
+            new GetRoute('/{id}', UseCases\GetEmailById::class)
         ], AuthorizationRole::TEAMCOORDINATOR),
 
 
