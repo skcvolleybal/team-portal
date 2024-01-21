@@ -16,7 +16,7 @@
       </tr>
     </thead>
     <tbody>
-      <ng-container *ngIf="dag.eersteZaalwacht">
+      <ng-container *ngIf="dag.eersteZaalwacht == user.team.naam">
         <tr class="gray-background">
           <td></td>
           <td colspan="3">
@@ -27,7 +27,7 @@
         </tr>
       </ng-container>
 
-      <ng-container *ngIf="dag.tweedeZaalwacht">
+      <ng-container *ngIf="dag.tweedeZaalwacht == user.team.naam">
         <tr class="gray-background">
           <td></td>
           <td colspan="3">
