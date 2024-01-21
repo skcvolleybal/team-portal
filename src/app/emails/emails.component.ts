@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { EmailsService } from '../core/services/emails.service';
 import { Router } from '@angular/router';
-import { faChevronCircleRight } from '@fortawesome/free-solid-svg-icons';
+import { faCheckCircle, faCogs, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 
 
 @Component({
@@ -15,8 +15,9 @@ export class EmailsComponent {
   loading: boolean;
   errorMessage: string;
 
-  chevronRight = faChevronCircleRight;
-  
+  check = faCheckCircle;
+  cogs = faCogs;
+  exclamation = faExclamationCircle;
 
   constructor(private emailsService: EmailsService, private router: Router) {}
 
@@ -30,10 +31,9 @@ export class EmailsComponent {
   }
   
   async getEmails() {
-    this.loading = true;
     this.emailsService.getEmails().subscribe(data => {
-      this.loading = false;
       this.emails = data; //  
+      this.loading = false;
       return data;
     }, error => {
       this.errorMessage = error.error.message

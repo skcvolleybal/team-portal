@@ -14,7 +14,7 @@ class GetAllEmails implements Interactor
     }
 
 
-    public function Execute(object $data = null)
+    public function Execute(object $data = null): array
     {
      
         $query = "SELECT id, sender_email, sender_naam, receiver_email, receiver_naam, titel, queue_date, send_date FROM TeamPortal_email ORDER BY id DESC";
@@ -23,7 +23,7 @@ class GetAllEmails implements Interactor
         if (count($emails) > 0) {
             return $emails;
         } else {
-            print("No e-mails found");
+            return [];
         }
 
      }

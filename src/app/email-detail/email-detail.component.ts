@@ -2,8 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Email } from '../models/Email';
 import { EmailsService } from '../core/services/emails.service';
-import { faCheckCircle, faCogs } from '@fortawesome/free-solid-svg-icons';
-
+import { faCheckCircle, faCogs, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'tp-email-detail',
@@ -19,6 +18,7 @@ export class EmailDetailComponent implements OnInit {
 
   check = faCheckCircle;
   cogs = faCogs;
+  exclamation = faExclamationCircle;
 
   constructor(
     private route: ActivatedRoute,

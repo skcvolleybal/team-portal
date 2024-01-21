@@ -1,12 +1,18 @@
 <div *ngIf="!errorMessage && !loading"><p>Team-Portal verzendt automatisch e-mails naar leden met herinneringen om te fluiten, tellen of bardiensten te draaien.</p>
-<p>Zie onderstaand overzicht voor alle verzonden e-mails tot nu toe. </p>
+    <p *ngIf="emails.length > 0; else noEmails">Zie onderstaand overzicht voor alle verzonden e-mails tot nu toe.</p>
+
+    <!-- Display this template when there are no emails -->
+    <ng-template #noEmails>
+        <p>Er zijn momenteel nog geen verzonden e-mails.</p>
+    </ng-template>
+    
 </div>
 
 <div class="alert alert-danger" role="alert" *ngIf="errorMessage">
     {{errorMessage}}
   </div>
 
-      <table *ngIf="emails; else loading" class="table table-striped">
+      <table *ngIf="emails.length > 0; else loading" class="table table-striped">
         <thead>
             <tr>
                 <th>Onderwerp</th>
@@ -18,7 +24,10 @@
                 <tr *ngFor="let email of emails" (click)="onEmailClick(email.id)" class="clickable-row">
                     <td>{{ email.titel }} </td>
                     <td>{{ email.receiver_naam }} ({{ email.receiver_email }})</td>
-                    <td>{{ email.send_date }} </td>
+                    <td *ngIf="email.send_date else inQueue" class="text-success" style="font-weight: 500;"><fa-icon [icon]="check"></fa-icon> {{ email.send_date }} </td>
+                    <ng-template #inQueue>
+                        <td class="text-warning" style="font-weight: 500;"><fa-icon [icon]="exclamation"></fa-icon> In wachtrij</td>
+                    </ng-template>
                 </tr>
         </tbody>
     </table>

@@ -38,10 +38,17 @@
             {{ email.queue_date }}
             </p>
     
-          <p class="text-success" style="font-weight: 500">
+          <p *ngIf="email.send_date; else inQueue" class="text-success" style="font-weight: 500">
             <fa-icon [icon]="check"></fa-icon> Verzonden om
             {{ email.send_date }}
           </p>
+
+          <ng-template #inQueue>
+            <p class="text-warning" style="font-weight: 500"><fa-icon [icon]="exclamation"></fa-icon> In wachtrij voor verzending</p>
+            <p>Als een e-mail langer dan 30 minuten in de wachtrij blijft staan, contacteer de Webcie.</p>
+          </ng-template>
+
+
       </div>
     </div>
 </div>
