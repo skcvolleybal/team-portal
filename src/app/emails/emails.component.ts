@@ -21,7 +21,7 @@ export class EmailsComponent {
   constructor(private emailsService: EmailsService, private router: Router) {}
 
   onEmailClick(emailId: number): void {
-    this.router.navigate(['/email' , emailId]);
+    this.router.navigate(['/emails' , emailId]);
   }
 
 

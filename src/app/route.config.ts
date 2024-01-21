@@ -80,10 +80,12 @@ export const appRoutes: IToggleRoute[] = [
     isHidden: true,
   },
   {
-    path: 'email/:id',
+    // We give this route no groups so that it doesn't show up for anyone, but the route still works. 
+    // Authentication and authorization is done on the back-end. 
+    path: 'emails/:id',
     component: EmailDetailComponent,
     data: {
-      title: '✉️ Email detail', groups: ['teamcoordinator', 'webcie'], 
+      title: '✉️ Email', groups: [], 
     },
     isHidden: true,
   }
