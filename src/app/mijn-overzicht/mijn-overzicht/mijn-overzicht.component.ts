@@ -4,6 +4,7 @@ import {
   faPlusSquare,
   faUser,
   faInfoCircle,
+  faPeopleCarry,
 } from '@fortawesome/free-solid-svg-icons';
 
 import { WordPressService } from '../../core/services/request.service';
@@ -25,6 +26,7 @@ export class MijnOverzichtComponent implements OnInit {
   errorMessage: string;
   dagenEmpty: boolean = false;
   user: any;
+  zaalwacht = faPeopleCarry;
 
   infoIcon = faInfoCircle;
 
