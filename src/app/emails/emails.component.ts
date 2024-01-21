@@ -1,5 +1,8 @@
 import { Component } from '@angular/core';
 import { EmailsService } from '../core/services/emails.service';
+import { Router } from '@angular/router';
+import { faChevronCircleRight } from '@fortawesome/free-solid-svg-icons';
+
 
 @Component({
   selector: 'tp-emails',
@@ -11,9 +14,15 @@ export class EmailsComponent {
   emails: any;
   loading: boolean;
   errorMessage: string;
+
+  chevronRight = faChevronCircleRight;
   
 
-  constructor(private emailsService: EmailsService) {}
+  constructor(private emailsService: EmailsService, private router: Router) {}
+
+  onEmailClick(emailId: number): void {
+    this.router.navigate(['/email' , emailId]);
+  }
 
 
   async ngOnInit() {

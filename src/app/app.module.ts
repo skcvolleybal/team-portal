@@ -32,10 +32,11 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ToastrModule } from 'ngx-toastr';
 import { StatistiekenComponent } from './statistieken/statistieken.component';
 import { EmailsComponent } from './emails/emails.component';
+import { EmailDetailComponent } from './email-detail/email-detail.component';
 
 
 @NgModule({
-    declarations: [AppComponent, LoginModalComponent, StatistiekenComponent, EmailsComponent],
+    declarations: [AppComponent, LoginModalComponent, StatistiekenComponent, EmailsComponent, EmailDetailComponent],
     imports: [
         HttpClientModule,
         RouterModule.forRoot(appRoutes, {

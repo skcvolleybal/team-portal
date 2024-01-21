@@ -1,0 +1,14 @@
+.clickable-row {
+    cursor: pointer; /* Changes the cursor to a pointer to indicate clickability */
+  }
+  
+  .clickable-row:hover {
+    background-color: #9d9d9d; /* Changes the background on hover for visual feedback */
+    /* You can customize the color and style as per your design preferences */
+  }
+  
+  .clickable-row:active {
+    background-color: #8bbbf2;
+    /* other styles */
+  }
+  

@@ -7,6 +7,7 @@ import { TelFluitBeschikbaarheidComponent } from './beschikbaarheid/tel-fluit-be
 import { WedstrijdOverzichtComponent } from './wedstrijd-overzicht/wedstrijd-overzicht/wedstrijd-overzicht.component';
 import { StatistiekenComponent } from './statistieken/statistieken.component';
 import { EmailsComponent } from './emails/emails.component';
+import { EmailDetailComponent } from './email-detail/email-detail.component';
 
 interface IToggleRoute extends Route {
   isHidden: boolean;
@@ -78,4 +79,12 @@ export const appRoutes: IToggleRoute[] = [
     },
     isHidden: true,
   },
+  {
+    path: 'email/:id',
+    component: EmailDetailComponent,
+    data: {
+      title: '✉️ Email detail', groups: ['teamcoordinator', 'webcie'], 
+    },
+    isHidden: true,
+  }
 ];
