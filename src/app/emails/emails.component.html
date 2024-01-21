@@ -1,0 +1,27 @@
+<div *ngIf="!errorMessage && !loading"><p>Team-Portal verzendt automatisch e-mails naar leden met herinneringen om te fluiten, tellen of bardiensten te draaien.</p>
+<p>Zie onderstaand overzicht voor alle verzonden e-mails tot nu toe. </p>
+</div>
+
+<div class="alert alert-danger" role="alert" *ngIf="errorMessage">
+    {{errorMessage}}
+  </div>
+
+      <table *ngIf="emails; else loading" class="table table-striped">
+        <thead>
+            <tr>
+                <th>Onderwerp</th>
+                <th>Ontvanger</th>
+                <th>Verzonden</th>
+            </tr>
+        </thead>
+        <tbody>
+                <tr *ngFor="let email of emails" (click)="onEmailClick(email.id)" class="clickable-row">
+                    <td>{{ email.titel }} </td>
+                    <td>{{ email.receiver_naam }} ({{ email.receiver_email }})</td>
+                    <td>{{ email.send_date }} </td>
+                </tr>
+        </tbody>
+    </table>
+ 
+
+<teamportal-spinner *ngIf="loading"></teamportal-spinner>

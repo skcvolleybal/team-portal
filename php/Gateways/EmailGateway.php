@@ -142,4 +142,5 @@ class EmailGateway
         echo "<b>" . $email->titel . "</b><br>";
         echo $email->body . "<br><hr>";
     }
+
 }

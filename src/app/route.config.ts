@@ -6,6 +6,8 @@ import { TeamtakencoComponent } from './teamtakenco/teamtakenco/teamtakenco.comp
 import { TelFluitBeschikbaarheidComponent } from './beschikbaarheid/tel-fluit-beschikbaarheid/tel-fluit-beschikbaarheid.component';
 import { WedstrijdOverzichtComponent } from './wedstrijd-overzicht/wedstrijd-overzicht/wedstrijd-overzicht.component';
 import { StatistiekenComponent } from './statistieken/statistieken.component';
+import { EmailsComponent } from './emails/emails.component';
+import { EmailDetailComponent } from './email-detail/email-detail.component';
 
 interface IToggleRoute extends Route {
   isHidden: boolean;
@@ -69,4 +71,22 @@ export const appRoutes: IToggleRoute[] = [
     },
     isHidden: false,
   },
+  {
+    path: 'emails',
+    component: EmailsComponent,
+    data: {
+      title: '✉️ Emails', groups: ['teamcoordinator', 'webcie']
+    },
+    isHidden: true,
+  },
+  {
+    // We give this route no groups so that it doesn't show up for anyone, but the route still works. 
+    // Authentication and authorization is done on the back-end. 
+    path: 'emails/:id',
+    component: EmailDetailComponent,
+    data: {
+      title: '✉️ Email', groups: [], 
+    },
+    isHidden: true,
+  }
 ];
