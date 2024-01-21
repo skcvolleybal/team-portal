@@ -27,15 +27,6 @@
         </tr>
       </ng-container>
 
-      <ng-container *ngIf="dag.tweedeZaalwacht == user.team.naam">
-        <tr class="gray-background">
-          <td></td>
-          <td colspan="3">
-            <span *ngIf="dag.tweedeZaalwacht" class="badge rounded-pill bg-primary" style="padding: 10px;margin-top: auto;margin-bottom: auto;"><fa-icon [icon]="zaalwacht"></fa-icon> 2e zaalwacht: {{ dag.tweedeZaalwacht }}</span>
-          </td>
-        </tr>
-      </ng-container>
-
       <ng-container *ngIf="dag.bardiensten.length > 0">
         <tr class="gray-background" *ngFor="let bardienst of dag.bardiensten">
           <td></td>
@@ -77,6 +68,15 @@
           </td>
         </tr>
       </ng-container>
+      <ng-container *ngIf="dag.tweedeZaalwacht == user.team.naam">
+        <tr class="gray-background">
+          <td></td>
+          <td colspan="3">
+            <span *ngIf="dag.tweedeZaalwacht" class="badge rounded-pill bg-primary" style="padding: 10px;margin-top: auto;margin-bottom: auto;"><fa-icon [icon]="zaalwacht"></fa-icon> 2e zaalwacht: {{ dag.tweedeZaalwacht }}</span>
+          </td>
+        </tr>
+      </ng-container>
+
       <tr class="gray-background">
         <td colspan="4"></td>
       </tr>
