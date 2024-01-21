@@ -12,12 +12,13 @@ import { faCheckCircle, faCogs, faExclamationCircle } from '@fortawesome/free-so
 export class EmailsComponent {
 
   emails: any;
-  loading: boolean;
   errorMessage: string;
 
   check = faCheckCircle;
   cogs = faCogs;
   exclamation = faExclamationCircle;
+
+  loading = true;
 
   constructor(private emailsService: EmailsService, private router: Router) {}
 

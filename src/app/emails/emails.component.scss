@@ -1,14 +1,23 @@
-.clickable-row {
+.clickable {
     cursor: pointer; /* Changes the cursor to a pointer to indicate clickability */
   }
+
+.card {
+  margin-bottom: 0.5em;
+}
+
+.card{
+
+  transition: all 0.2s ease;
+  cursor: pointer;
   
-  .clickable-row:hover {
-    background-color: #9d9d9d; /* Changes the background on hover for visual feedback */
-    /* You can customize the color and style as per your design preferences */
-  }
+
+}
   
-  .clickable-row:active {
-    background-color: #8bbbf2;
-    /* other styles */
-  }
-  
+
+
+.card:hover{
+
+  box-shadow: 5px 6px 6px 2px #e9ecef;
+  transform: scale(1.01);
+}

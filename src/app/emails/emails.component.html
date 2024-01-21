@@ -8,11 +8,28 @@
     
 </div>
 
+
+<teamportal-spinner *ngIf="loading"></teamportal-spinner>
+
+
 <div class="alert alert-danger" role="alert" *ngIf="errorMessage">
     {{errorMessage}}
   </div>
 
-      <table *ngIf="emails.length > 0; else loading" class="table table-striped">
+
+  <div *ngFor="let email of emails" class="card clickable">
+    <div class="card-body" (click)="onEmailClick(email.id)">
+        <h5 class="card-title">{{ email.titel }}</h5>
+        <h6 class="card-subtitle mb-2 text-muted">{{ email.receiver_naam }} ({{ email.receiver_email }})</h6>
+        <td *ngIf="email.send_date else inQueue" class="text-success" style="font-weight: 500;"><fa-icon [icon]="check"></fa-icon> Verzonden om {{ email.send_date }} </td>
+        <ng-template #inQueue>
+            <td class="text-warning" style="font-weight: 500;"><fa-icon [icon]="exclamation"></fa-icon> In wachtrij</td>
+        </ng-template>
+        
+  </div>
+</div>
+
+      <!-- <table *ngIf="emails.length > 0" class="table table-striped">
         <thead>
             <tr>
                 <th>Onderwerp</th>
@@ -30,7 +47,5 @@
                     </ng-template>
                 </tr>
         </tbody>
-    </table>
+    </table> -->
  
-
-<teamportal-spinner *ngIf="loading"></teamportal-spinner>
