@@ -10,6 +10,7 @@ export class EmailsComponent {
 
   emails: any;
   loading: boolean;
+  errorMessage: string;
   
 
   constructor(private emailsService: EmailsService) {}
@@ -26,7 +27,9 @@ export class EmailsComponent {
       this.emails = data; //  
       return data;
     }, error => {
-      console.error('error getting emails', error);
+      this.errorMessage = error.error.message
+      console.error('error getting emails', error)
+      this.loading = false
     })
   }
 

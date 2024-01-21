@@ -74,8 +74,8 @@ export const appRoutes: IToggleRoute[] = [
     path: 'emails',
     component: EmailsComponent,
     data: {
-      title: '✉️ Emails',
+      title: '✉️ Emails', groups: ['teamcoordinator', 'webcie']
     },
-    isHidden: false,
+    isHidden: true,
   },
 ];

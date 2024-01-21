@@ -124,7 +124,7 @@ export class BarcieIndelingComponent implements OnInit {
         }
       },
       (response) => {
-        this.isLoading = true;
+        this.isLoading = false;
         this.errorMessage = response.error.message;
       }
     );
