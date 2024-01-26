@@ -329,7 +329,7 @@ class WordPressGateway implements IWordPressGateway
         $credentials = [
             'user_login' => $username,
             'user_password' => $password,
-            'rememberme' => true
+            'remember' => true
          ];
    
         $result = wp_signon($credentials, true); // true - use HTTP only cookie
