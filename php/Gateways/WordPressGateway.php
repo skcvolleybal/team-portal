@@ -16,7 +16,8 @@ class WordPressGateway implements IWordPressGateway
 {
     public $database;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->database = new Database();
     }
 
@@ -24,8 +25,6 @@ class WordPressGateway implements IWordPressGateway
 
     public function GetUser(?int $userId = null): ?Persoon
     {
-        // WP ready 
-
         $user = empty($userId) ? $this->GetLoggedInUser() : $this->GetUserById($userId);
         if (!$user) {
             return null;
@@ -39,47 +38,36 @@ class WordPressGateway implements IWordPressGateway
 
     private function GetUserById(int $userId): Persoon
     {
-        // WP Ready
         $user = get_user_by('ID', $userId);
         $userMeta = get_user_meta($userId);
 
-        if (! $user instanceof \WP_User) {
+        if (!$user instanceof \WP_User) {
             throw new UnexpectedValueException("Gebruiker met id '$userId' bestaat niet");
         }
 
-
         $persoon = new Persoon($user->data->ID, $userMeta['first_name'][0] . ' ' . $userMeta['last_name'][0], $user->data->user_email);
-        // Tot hier werkend
 
         $persoon->rugnummer = isset($userMeta['rugnummer']) ? Utilities::StringToInt($userMeta['rugnummer']) : null;
-
         $persoon->positie = isset($userMeta['positie']) ? $userMeta['positie'][0] : "";
 
-        // $persoon->positie = $userMeta['positie'][0];
         return $persoon;
     }
 
     public function GetLoggedInUser(): ?Persoon
     {
-    // WP ready
-
         $wploggedin = is_user_logged_in();
         $wordPressUser = wp_get_current_user();
-  
+
         if (!$wploggedin) {
             return null;
         }
-        
-        // Construct a TeamPortal Persoon
+
         $user = $this->GetUserById($wordPressUser->id);
-        
-        // Tot hier werkend
+
         if ($this->IsWebcie($user) && isset($_GET['impersonationId'])) {
-            // To-do: ImpersonationID checken
             $impersonationId = $_GET['impersonationId'];
             return $this->GetUserById($impersonationId);
         }
-        // Happy flow WP ready
         return $user;
     }
 
@@ -96,17 +84,6 @@ class WordPressGateway implements IWordPressGateway
         " . $_ENV['WPDBNAME'] . ".wp_usermeta niveau_meta ON u.ID = niveau_meta.user_id AND niveau_meta.meta_key = 'scheidsrechter' AND niveau_meta.meta_value <> '' AND niveau_meta.meta_value IS NOT NULL
         WHERE id = ?";
 
-        // Oude Joomla query
-        // $query = 'SELECT U.id, name, email
-        //           FROM J3_users U
-        //           INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
-        //           INNER JOIN J3_usergroups G ON M.group_id = G.id
-        //           WHERE U.id = ? and
-        //                 G.id in (
-        //                     SELECT id FROM J3_usergroups WHERE title = "Scheidsrechters"
-        //                 )';
-
-        
         $params = [$userId];
         $rows = $this->database->Execute($query, $params);
         if (count($rows) != 1) {
@@ -123,54 +100,46 @@ class WordPressGateway implements IWordPressGateway
         if (empty($naam)) {
             return null;
         }
-        $team = new Team($naam); 
 
+        $team = new Team($naam);
         $query = "SELECT ID as id, post_title as title FROM " . $_ENV['WPDBNAME'] . ".wp_posts where post_title=? and post_type='team'";
 
-        // Oude Joomla query
-        // $query = 'SELECT * FROM J3_usergroups
-                //   WHERE title = ?';
         $params = [$team->GetSkcNaam()];
         $result = $this->database->Execute($query, $params);
+
         if (count($result) != 1) {
             return null;
         }
         return new Team($result[0]->title, $result[0]->id);
     }
 
-    public function GetUserByEmail (string $email): Persoon {
-        
+    public function GetUserByEmail(string $email): Persoon
+    {
+
         $user = get_user_by('email', $email);
         $user = $this->GetUserById($user->data->ID);
-
         return $user;
-
-
     }
 
     public function GetUsersWithName(string $name): array
     {
-
-
         $args = array(
-                'search'         => '*' . $name . '*',
-                'search_columns' => array(
-                    'display_name',
-                ),
-                'orderby'        => 'display_name',
-                'order'          => 'ASC',
-                'number'         => 5,
-            );
-            
+            'search'         => '*' . $name . '*',
+            'search_columns' => array(
+                'display_name',
+            ),
+            'orderby'        => 'display_name',
+            'order'          => 'ASC',
+            'number'         => 5,
+        );
+
         $rows = get_users($args);
-            
 
         return $this->MapToPersonen($rows);
     }
 
     private function IsUserInUsergroup(?Persoon $user, string $usergroup): bool
     {
-        // WP ready
         if ($user === null) {
             return false;
         }
@@ -181,9 +150,8 @@ class WordPressGateway implements IWordPressGateway
         if (in_array(strtolower($usergroup), array_map('strtolower', (array) $user->roles))) {
             return true;
         }
-        
-        return false;
 
+        return false;
     }
 
     public function IsScheidsrechter(?Persoon $user): bool
@@ -209,52 +177,47 @@ class WordPressGateway implements IWordPressGateway
 
     public function GetTeam(Persoon $user): ?Team
     {
-        // WP Ready
 
         $userMeta = get_user_meta($user->id);
 
         $teamId = $userMeta['team'][0];
 
         $params = array(
-            'where'=> "id='" . $teamId .  "'"
+            'where' => "id='" . $teamId .  "'"
         );
 
-        $team = pods('team')->find( $params );
+        $team = pods('team')->find($params);
 
         if ($team->total() != 1) {
             return null;
         }
 
-        while ( $team->fetch() ) {
+        while ($team->fetch()) {
             return new Team($team->display('name'), $team->display('id'));
         }
-
-
     }
 
     public function GetTeamgenoten(?Team $team): array
     {
-        // WP ready
         if ($team === null) {
             return [];
         }
 
-        $team = pods( 'team', $team->id );
-        $teamGenoten =  $team->field( 'leden' );
-        if ( ! empty( $teamGenoten ) ) {
-            foreach ( $teamGenoten as $teamGenoot ) {
+        $team = pods('team', $team->id);
+        $teamGenoten =  $team->field('leden');
+        if (!empty($teamGenoten)) {
+            foreach ($teamGenoten as $teamGenoot) {
                 // Cast array of arrays to array of objects
                 $object = (object)$teamGenoot;
                 $teamObjects[] = $object;
             }
             return $this->MapToPersonen($teamObjects);
         }
-        return array();          
+        return array();
     }
 
     public function GetCoachteams(Persoon $user): array
     {
-        // WP Working
         $userMeta = get_user_meta($user->id);
 
         $result = [];
@@ -264,13 +227,12 @@ class WordPressGateway implements IWordPressGateway
         }
 
         foreach ($userMeta['coach_van'] as $teamId) {
-            $params = array('where'=> "id='" . $teamId .  "'");
-            $team = pods('team')->find( $params );
-            while ( $team->fetch() ) {
+            $params = array('where' => "id='" . $teamId .  "'");
+            $team = pods('team')->find($params);
+            while ($team->fetch()) {
                 $newTeam = new Team($team->display('name'), $team->display('id'));
                 $newTeam->teamgenoten = $this->GetTeamgenoten($newTeam);
                 $result[] = $newTeam;
-                // Tot hier werkend
             }
         }
 
@@ -288,48 +250,12 @@ class WordPressGateway implements IWordPressGateway
         return $this->GetUsersInGroup('Trainer ' . $team->GetSkcNaam());
     }
 
-    public function GetUsersInGroup(string $groupname): array
-    {
-        $query = 'SELECT
-                    U.id,
-                    U.name AS naam,
-                    U.email
-                  FROM J3_users U
-                  INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
-                  INNER JOIN J3_usergroups G ON M.group_id = G.id
-                  WHERE G.title = ?';
-        $params = [$groupname];
-        $rows = $this->database->Execute($query, $params);
-        $result = [];
-        foreach ($rows as $row) {
-            $result[]  = new Persoon($row->id, $row->naam, $row->email);
-        }
-        return $result;
-    }
-
-    public function InitWordPress(): void
-    {
-        if (defined('_JEXEC')) {
-            return;
-        }
-
-        define('JPATH_BASE', $_ENV['JPATHBASE']);
-        define('_JEXEC', 1);
-
-        require_once JPATH_BASE . '/includes/defines.php';
-        require_once JPATH_BASE . '/includes/framework.php';
-
-        $mainframe = \JFactory::getApplication('site');
-        $mainframe->initialise();
-    }
-
     public function Login(string $username, string $password): bool
     {
-        // WP ready
         $credentials = [
             'user_login' => $username,
             'user_password' => $password,
-            'rememberme' => true
+            'remember' => true
          ];
    
         $result = wp_signon($credentials, true); // true - use HTTP only cookie
@@ -340,22 +266,19 @@ class WordPressGateway implements IWordPressGateway
                 SimpleLogger()->warning("User $username could not login into Team-portal");
             }
             return false;
-         } 
-         else {
+        } else {
             $user_nicename = $result->data->user_nicename;
             // SimpleLogger: https://wordpress.org/plugins/simple-history/
             if (function_exists("SimpleLogger")) {
                 SimpleLogger()->info("User $user_nicename logged into Team-portal");
             }
-            return true;   
-         }
-         return false;
-
+            return true;
+        }
+        return false;
     }
 
     private function MapToPersonen(array $rows): array
     {
-        // WP Ready
         $result = [];
         foreach ($rows as $row) {
             $result[] = $this->MapToPersoon($row);
@@ -365,8 +288,6 @@ class WordPressGateway implements IWordPressGateway
 
     private function MapToPersoon(object $row): Persoon
     {
-        // WP Ready
-
         // WP Pods returns WP Users with ID's, not id's, so we add the id.
         if (!isset($row->id)) {
             if (isset($row->ID)) {
@@ -381,47 +302,11 @@ class WordPressGateway implements IWordPressGateway
         $persoon->rugnummer = isset($userMeta['rugnummer']) ? Utilities::StringToInt($userMeta['rugnummer']) : null;
         $persoon->positie = isset($userMeta['positie']) ? $userMeta['positie'][0] : "";
 
-        // Relatiecode seems not to be in use 
-        // $persoon->relatiecode = $metaObjects->relatiecode;
         $result[] = $persoon;
 
         return $persoon;
     }
 
-    public function GetSpelerByRugnummer(int $rugnummer, Team $team): ?Persoon
-    {
-        $query = "SELECT 
-                    U.id, 
-                    name AS naam,
-                    email,
-                    cb_positie as positie,
-                    cb_rugnummer as rugnummer,
-                    cb_nevobocode as relatiecode
-                  FROM J3_users U
-                  INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
-                  INNER JOIN J3_usergroups G ON M.group_id = G.id
-                  LEFT JOIN J3_comprofiler C ON U.id = C.id
-                  WHERE cb_rugnummer = ? AND G.title LIKE ?
-                  ORDER BY ABS(CAST(SUBSTR(G.title, 6) AS INT) - ?)"; // Order by om het dichtst bijzijnde team te verkrijgen
-        $params = [
-            $rugnummer,
-            substr($team->GetSkcNaam(), 0, 5) . " %",
-            Utilities::StringToInt(substr($team->GetSkcNaam(), 6))
-        ];
-        $rows = $this->database->Execute($query, $params);
-        return $rows != null ? $this->MapToPersoon($rows[0]) : null;
-    }
-
-    public function GetRugnummerOfPersoon(Persoon $user)
-    {
-        $query = "SELECT 
-                    cb_rugnummer as rugnummer
-                  FROM J3_comprofiler C
-                  WHERE user_id = ?";
-        $params = [$user->id];
-        $rows = $this->database->Execute($query, $params);
-        return empty($rows) ? null : Utilities::StringToInt($rows[0]->rugnummer);
-    }
 
     public function GetAllSpelers()
     {
