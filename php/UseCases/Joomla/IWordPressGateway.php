@@ -23,9 +23,6 @@ interface IWordPressGateway
     function GetCoaches(Team $team): array;
     function GetTrainers(Team $team): array;
     function GetUsersInGroup(string $groupname): array;
-    function InitWordPress(): void;
     function Login(string $username, string $password): bool;
-    function GetSpelerByRugnummer(int $rugnummer, Team $team): ?Persoon;
-    function GetRugnummerOfPersoon(Persoon $user);
     function GetAllSpelers();
 }
