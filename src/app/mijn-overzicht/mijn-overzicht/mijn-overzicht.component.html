@@ -9,47 +9,74 @@
 </ng-template>
 
 <ng-template #showMijnOverzicht>
-    <div *ngFor="let dag of dagen" class="card mb-3">
+    <!-- <div class="container">
+  <div class="row">
+    <div class="col-md-6" *ngFor="let card of cards | filterBy:{isSplit:true}">
+      <div class="card">
         <div class="card-body">
-            <h5 class="card-title">{{ dag.datum_long }}</h5>
-            
-            <ng-container *ngIf="dag.eersteZaalwacht == user.team.naam">
-                <p class="card-text badge rounded-pill bg-primary d-block">
-                    <fa-icon [icon]="zaalwacht"></fa-icon> 1e zaalwacht: {{ dag.eersteZaalwacht }}
-                </p>
-            </ng-container>
+          <h5 class="card-title">{{ card.title }}</h5>
+          <p class="card-text">{{ card.content }}</p>
+        </div>
+      </div>
+    </div>
 
-            <ng-container *ngIf="dag.bardiensten.length > 0">
-                <div *ngFor="let bardienst of dag.bardiensten">
-                    <p class="card-text badge rounded-pill bg-primary d-block">
-                        <fa-icon [icon]="taskIcon"></fa-icon> Bardienst Shift {{ bardienst.shift }}
-                        {{ bardienst.isBhv ? " (BHV)" : "" }}
-                    </p>
+    <div class="col-md-6" *ngFor="let card of cards | filterBy:{isSplit:false}">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">{{ card.title }}</h5>
+          <p class="card-text">{{ card.content }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      -->
+    <div class="container">
+        <div class="row">
+            <div *ngFor="let dag of dagen" class="col-md-3 card border">
+                
+                <div class="card-body">
+                    <h5 class="card-title">{{ dag.datum_long }}</h5>
+                    
+                    <ng-container *ngIf="dag.eersteZaalwacht == user.team.naam">
+                        <p class="card-text badge rounded-pill bg-primary d-block">
+                            <fa-icon [icon]="zaalwacht"></fa-icon> 1e zaalwacht: {{ dag.eersteZaalwacht }}
+                        </p>
+                    </ng-container>
+
+                    <ng-container *ngIf="dag.bardiensten.length > 0">
+                        <div *ngFor="let bardienst of dag.bardiensten">
+                            <p class="card-text badge rounded-pill bg-primary d-block">
+                                <fa-icon [icon]="taskIcon"></fa-icon> Bardienst Shift {{ bardienst.shift }}
+                                {{ bardienst.isBhv ? " (BHV)" : "" }}
+                            </p>
+                        </div>
+                    </ng-container>
+
+                    <ng-container *ngFor="let speeltijd of dag.speeltijden">
+                    <div *ngFor="let wedstrijd of speeltijd.wedstrijden" class="d-flex align-items-center mb-2">
+                        <div class="me-2">
+                            {{ speeltijd.tijd }}
+                        </div>
+                        <teamportal-wedstrijd [wedstrijd]="wedstrijd"></teamportal-wedstrijd>
+                        <span *ngIf="wedstrijd.scheidsrechter == user.naam" class="badge rounded-pill bg-primary d-sm-block d-md-inline mt-1 mt-md-0 ms-md-2">
+                            <fa-icon [icon]="taskIcon"></fa-icon> Scheidsrechter
+                        </span>
+                        <span *ngIf="wedstrijd.tellers[0] == user.naam || wedstrijd.tellers[1] == user.naam" class="badge rounded-pill bg-primary d-sm-block d-md-inline mt-1 mt-md-0 ms-md-2">
+                            <fa-icon [icon]="taskIcon"></fa-icon> Je bent teller deze wedstrijd
+                        </span>
+                        <teamportal-tellers *ngIf="wedstrijd.isTellers" [tellers]="wedstrijd.tellers" [isTellers]="wedstrijd.isTellers" class="mt-1 mt-md-0">
+                        </teamportal-tellers>
+                    </div>
+                </ng-container>
+
+                <ng-container *ngIf="dag.tweedeZaalwacht == user.team.naam">
+                        <p class="card-text badge rounded-pill bg-primary d-block">
+                            <fa-icon [icon]="zaalwacht"></fa-icon> 2e zaalwacht: {{ dag.tweedeZaalwacht }}
+                        </p>
+                    </ng-container>
                 </div>
-            </ng-container>
-
-            <ng-container *ngFor="let speeltijd of dag.speeltijden">
-              <div *ngFor="let wedstrijd of speeltijd.wedstrijden" class="d-flex align-items-center mb-2">
-                  <div class="me-2">
-                      {{ speeltijd.tijd }}
-                  </div>
-                  <teamportal-wedstrijd [wedstrijd]="wedstrijd"></teamportal-wedstrijd>
-                  <span *ngIf="wedstrijd.scheidsrechter == user.naam" class="badge rounded-pill bg-primary d-sm-block d-md-inline mt-1 mt-md-0 ms-md-2">
-                      <fa-icon [icon]="taskIcon"></fa-icon> Scheidsrechter
-                  </span>
-                  <span *ngIf="wedstrijd.tellers[0] == user.naam || wedstrijd.tellers[1] == user.naam" class="badge rounded-pill bg-primary d-sm-block d-md-inline mt-1 mt-md-0 ms-md-2">
-                      <fa-icon [icon]="taskIcon"></fa-icon> Je bent teller deze wedstrijd
-                  </span>
-                  <teamportal-tellers *ngIf="wedstrijd.isTellers" [tellers]="wedstrijd.tellers" [isTellers]="wedstrijd.isTellers" class="mt-1 mt-md-0">
-                  </teamportal-tellers>
-              </div>
-          </ng-container>
-
-          <ng-container *ngIf="dag.tweedeZaalwacht == user.team.naam">
-                <p class="card-text badge rounded-pill bg-primary d-block">
-                    <fa-icon [icon]="zaalwacht"></fa-icon> 2e zaalwacht: {{ dag.tweedeZaalwacht }}
-                </p>
-            </ng-container>
+            </div>
         </div>
     </div>
 </ng-template>

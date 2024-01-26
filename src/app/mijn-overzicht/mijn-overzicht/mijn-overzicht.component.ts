@@ -23,6 +23,9 @@ export class MijnOverzichtComponent implements OnInit {
   tellersIcon = faCalendarCheck;
   openIcon = faPlusSquare;
   dagen: any[];
+  bardiensten: any[];
+  eigenWedstrijden: any[];
+  speeltijden: any[];
   errorMessage: string;
   dagenEmpty: boolean = false;
   user: any;
@@ -41,6 +44,7 @@ export class MijnOverzichtComponent implements OnInit {
       (response) => {
         console.log(response)
         this.dagen = response;
+        this.unTangleDagen()
         this.loading = false;
         if (this.dagen.length == 0) {
           this.dagenEmpty = true;
@@ -65,4 +69,31 @@ export class MijnOverzichtComponent implements OnInit {
       this.user = data;
     });
   }
+
+  // The dagen[] is zeer fucked up met deze functie wil ik dat ding uitelkaar trekken en iets logischer opslaan
+
+  unTangleDagen() {
+    if (!this.dagen) {
+      return;
+    }
+
+    this.bardiensten = this.getBarDiensten()
+    // console.log(this.bardiensten)
+
+    this.speeltijden = this.getSpeeltijden()
+    console.log(this.speeltijden)
+  }
+
+  getBarDiensten() {
+    return this.dagen
+    .filter(dag => dag.bardiensten.length > 0)  // Filter out objects with empty bardiensten arrays
+    .map(dag => dag.bardiensten);
+  }
+
+  getSpeeltijden() {
+    return this.dagen
+    .filter(dag => dag.speeltijden.length > 0)  // Filter out objects with empty bardiensten arrays
+    .map(dag => dag.speeltijden[0]);
+  }
+
 }

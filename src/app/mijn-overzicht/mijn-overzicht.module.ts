@@ -3,6 +3,7 @@ import { MijnOverzichtComponent } from './mijn-overzicht/mijn-overzicht.componen
 import { NgModule } from '@angular/core';
 import { SharedModule } from '../shared/shared.module';
 
+
 @NgModule({
   declarations: [MijnOverzichtComponent],
   imports: [CommonModule, SharedModule],
