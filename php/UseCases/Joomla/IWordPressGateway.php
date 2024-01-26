@@ -22,7 +22,6 @@ interface IWordPressGateway
     function GetCoachteams(Persoon $user): array;
     function GetCoaches(Team $team): array;
     function GetTrainers(Team $team): array;
-    function GetUsersInGroup(string $groupname): array;
     function Login(string $username, string $password): bool;
     function GetAllSpelers();
 }

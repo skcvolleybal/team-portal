@@ -250,26 +250,6 @@ class WordPressGateway implements IWordPressGateway
         return $this->GetUsersInGroup('Trainer ' . $team->GetSkcNaam());
     }
 
-    public function GetUsersInGroup(string $groupname): array
-    {
-        $query = 'SELECT
-                    U.id,
-                    U.name AS naam,
-                    U.email
-                  FROM J3_users U
-                  INNER JOIN J3_user_usergroup_map M ON U.id = M.user_id
-                  INNER JOIN J3_usergroups G ON M.group_id = G.id
-                  WHERE G.title = ?';
-        $params = [$groupname];
-        $rows = $this->database->Execute($query, $params);
-        $result = [];
-        foreach ($rows as $row) {
-            $result[]  = new Persoon($row->id, $row->naam, $row->email);
-        }
-        return $result;
-    }
-
-
     public function Login(string $username, string $password): bool
     {
         $credentials = [
