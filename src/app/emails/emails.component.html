@@ -16,36 +16,31 @@
     {{errorMessage}}
   </div>
 
-
-  <div *ngFor="let email of emails" class="card clickable">
-    <div class="card-body" (click)="onEmailClick(email.id)">
-        <h5 class="card-title">{{ email.titel }}</h5>
-        <h6 class="card-subtitle mb-2 text-muted">{{ email.receiver_naam }} ({{ email.receiver_email }})</h6>
-        <td *ngIf="email.send_date else inQueue" class="text-success" style="font-weight: 500;"><fa-icon [icon]="check"></fa-icon> Verzonden om {{ email.send_date }} </td>
-        <ng-template #inQueue>
-            <td class="text-warning" style="font-weight: 500;"><fa-icon [icon]="exclamation"></fa-icon> In wachtrij</td>
-        </ng-template>
-        
+  <div class="container">
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+      <ng-container *ngFor="let email of emails; let i = index">
+        <!-- Insert empty spacer if the day differs from the previous email -->
+        <div *ngIf="email.isNewDay" class="w-100"> 
+            <h5>{{ email.send_date | date:'fullDate' }}</h5>
+        </div>
+  
+        <div class="col">
+          <div class="card clickable">
+            <div class="card-body" (click)="onEmailClick(email.id)">
+              <h6 class="card-title">{{ email.titel }}</h6>
+              <h6 class="card-subtitle mb-2 text-muted">{{ email.receiver_naam }} ({{ email.receiver_email }})</h6>
+              <div *ngIf="email.send_date; else inQueue" class="text-success" style="font-weight: 500;">
+                <fa-icon [icon]="check"></fa-icon> Verzonden om {{ email.send_date | date:'shortDate' }}
+              </div>
+              <ng-template #inQueue>
+                <div class="text-warning" style="font-weight: 500;">
+                  <fa-icon [icon]="exclamation"></fa-icon> In wachtrij
+                </div>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
   </div>
-</div>
-
-      <!-- <table *ngIf="emails.length > 0" class="table table-striped">
-        <thead>
-            <tr>
-                <th>Onderwerp</th>
-                <th>Ontvanger</th>
-                <th>Verzonden</th>
-            </tr>
-        </thead>
-        <tbody>
-                <tr *ngFor="let email of emails" (click)="onEmailClick(email.id)" class="clickable-row">
-                    <td>{{ email.titel }} </td>
-                    <td>{{ email.receiver_naam }} ({{ email.receiver_email }})</td>
-                    <td *ngIf="email.send_date else inQueue" class="text-success" style="font-weight: 500;"><fa-icon [icon]="check"></fa-icon> {{ email.send_date }} </td>
-                    <ng-template #inQueue>
-                        <td class="text-warning" style="font-weight: 500;"><fa-icon [icon]="exclamation"></fa-icon> In wachtrij</td>
-                    </ng-template>
-                </tr>
-        </tbody>
-    </table> -->
- 
+  
