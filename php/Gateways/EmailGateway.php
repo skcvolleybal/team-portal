@@ -6,6 +6,7 @@ use PHPMailer\PHPMailer\PHPMailer;
 use TeamPortal\Common\Database;
 use TeamPortal\Entities\Email;
 use TeamPortal\Entities\Persoon;
+use Exception; 
 
 class EmailGateway
 {
@@ -115,14 +116,44 @@ class EmailGateway
             echo "Foute email: '" . $email->sender->email . "' of '" . $email->receiver->email . "'<hr>";
             return false;
         }
+       
+        // We want to send mails from a specific account, to keep track of how many emails are sent, and to be able to use an alternative SMTP server in the future.
+        // Server settings 
+        
+        
+        if (empty ($_ENV['MAILSERVER_SMTP_HOST'])) {
+            throw new Exception("Can't send emails. Make sure variable mailserver_smtp_host is set in .env file!");            
+        }
+        elseif (empty ($_ENV['MAILSERVER_SMTP_USERNAME'])) {
+            throw new Exception("Can't send emails. Make sure variable mailserver_smtp_usesrname is set in .env file!");            
+        }
+        elseif (empty($_ENV['MAILSERVER_SMTP_PASSWORD'])) {
+            throw new Exception("Can't send emails. Make sure variable mailserver_smtp_password is set in .env file!");            
 
-        $PHPMailer = new PHPMailer();
-        $PHPMailer->CharSet = 'UTF-8';
+        }
+
+        $PHPMailer = new PHPMailer(true); // Passing `true` enables exceptions
+
+
+        $PHPMailer->isSMTP();                                      // Set mailer to use SMTP
+        $PHPMailer->Host = $_ENV['MAILSERVER_SMTP_HOST'];                 // Specify main and backup SMTP servers
+        $PHPMailer->SMTPAuth = true;                               // Enable SMTP authentication
+        $PHPMailer->Username = $_ENV['MAILSERVER_SMTP_USERNAME'];               // SMTP username
+        $PHPMailer->Password = $_ENV['MAILSERVER_SMTP_PASSWORD'];               // SMTP password
+        $PHPMailer->SMTPSecure = 'tls';                            // Enable TLS encryption, `ssl` also accepted
+        $PHPMailer->Port = 587;                                    // TCP port to connect to
+
+        //Recipients
         $PHPMailer->setFrom($email->sender->email, $email->sender->naam);
-        $PHPMailer->addAddress($email->receiver->email, $email->receiver->naam);
+        $PHPMailer->addAddress($email->receiver->email, $email->receiver->naam);     // Add a recipient
+
+        //Content
+        $PHPMailer->isHTML(true);                                  // Set email format to HTML
         $PHPMailer->Subject = $email->titel;
         $PHPMailer->msgHTML($email->body);
-        $PHPMailer->addCustomHeader("List-Unsubscribe", '<unsubscribe@skcvolleybal.nl>');
+
+        // Optionally add unsubscribe header
+        $PHPMailer->addCustomHeader("List-Unsubscribe", '<mailto:unsubscribe@skcvolleybal.nl>', '<http://www.skcvolleybal.nl/unsubscribe>');
 
 
         $this->PrintEmail($email);
