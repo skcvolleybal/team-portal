@@ -122,13 +122,13 @@ class EmailGateway
         
         
         if (empty ($_ENV['MAILSERVER_SMTP_HOST'])) {
-            throw new Exception("Can't send emails. Make sure variable mailserver_smtp_host is set in .env file!");            
+            throw new Exception("Can't send emails. Make sure variable mailserver_smtp_host is set in .env file! For Test and Dev: use a free Mailtrap account.");            
         }
         elseif (empty ($_ENV['MAILSERVER_SMTP_USERNAME'])) {
-            throw new Exception("Can't send emails. Make sure variable mailserver_smtp_usesrname is set in .env file!");            
+            throw new Exception("Can't send emails. Make sure variable mailserver_smtp_usesrname is set in .env file! For Test and Dev: use a free Mailtrap account.");            
         }
         elseif (empty($_ENV['MAILSERVER_SMTP_PASSWORD'])) {
-            throw new Exception("Can't send emails. Make sure variable mailserver_smtp_password is set in .env file!");            
+            throw new Exception("Can't send emails. Make sure variable mailserver_smtp_password is set in .env file! For Test and Dev: use a free Mailtrap account.");            
 
         }
 
