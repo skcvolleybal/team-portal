@@ -138,9 +138,10 @@ $entryPoint =
 
         new RouteGroup('/tasks', [
             new GetRoute('/sync-matches', UseCases\SynchronizeWedstrijden::class),
-            new GetRoute('/queue-weekly-emails', UseCases\QueueWeeklyEmails::class),
-            new GetRoute('/send-emails', UseCases\SendQueuedEmails::class),
-            new GetRoute('/daily-tasks', UseCases\DailyTasks::class)
+            new GetRoute('/queue-weekly-notifications', UseCases\QueueWeeklyNotifications::class),
+            new GetRoute('/send-notifications', UseCases\SendQueuedNotifications::class),
+            new GetRoute('/daily-tasks', UseCases\DailyTasks::class),
+            new GetRoute('/send-whatsapp-notifications', UseCases\SendWhatsappNotifications::class)
         ], AuthorizationRole::UNREGISTERED),
 
 
