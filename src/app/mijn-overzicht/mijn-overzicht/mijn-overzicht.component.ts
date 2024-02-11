@@ -68,6 +68,7 @@ export class MijnOverzichtComponent implements OnInit {
         this.teamtaken = response;
         this.loading = false;
         this.sortTasks();
+        this.removeFutureTasks();
       },
       (error) => {
         console.log(error);
@@ -90,12 +91,20 @@ export class MijnOverzichtComponent implements OnInit {
     });
   }
 
+  removeFutureTasks() {
+    const today = new Date();
+    this.teamtaken = this.teamtaken.filter(task => new Date(task.date) <= today);  }
+
   sortTasks() {
     this.teamtaken.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   }
 
   isPast(taskDate: string): boolean {
     return new Date(taskDate) < new Date();
+  }
+
+  isFuture(taskDate: string): boolean {
+    return new Date(taskDate) > new Date();
   }
 
   formatDate(date: string): string {

@@ -12,7 +12,7 @@
   <div class="row">
     <div class="col-md-8">
 
-      <h5>Mijn wedstrijden</h5>
+      <h5>Mijn planning</h5>
 
       <div *ngFor="let dag of dagen">
               <b>{{ dag.datum_long }} </b>
@@ -72,11 +72,11 @@
     </div>
     <div class="col-md-4">
 
-      <h5>Mijn teamtaken</h5>
+      <h5>Voltooide teamtaken</h5>
       <ul>
         <li *ngFor="let teamtaak of teamtaken" [ngClass]="{'past-task': isPast(teamtaak.date)}">
           {{ teamtaak.type }}. <span>{{ formatDate(teamtaak.date) }}</span>
-          <span *ngIf="!isPast(teamtaak.date)" class="badge rounded-pill bg-primary" style="padding: 5px; margin-top: auto; margin-bottom: auto;">Aankomend</span>
+          <span *ngIf="!isPast(teamtaak.date)" class="badge rounded-pill bg-primary" style="margin-left: 5px; padding: 5px; margin-top: auto; margin-bottom: auto;">Gepland</span>
         </li>
       </ul>
 
