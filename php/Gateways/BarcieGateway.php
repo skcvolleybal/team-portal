@@ -329,9 +329,12 @@ class BarcieGateway implements IBarcieGateway
         $this->database->Execute($query, $params);
     }
 
-    public function GetBardienstenForUser(Persoon $user): array
+    public function GetBardienstenForUser(Persoon $user, bool $includeHistoric = false): array
     {
-        // WP Working
+        // Conditionally set the date filter based on $includeHistoric
+        $dateCondition = $includeHistoric ? '' : 'AND D.date >= CURDATE()';
+        
+        // Updated SQL query to include or exclude historic data based on the new parameter
         $query = 'SELECT 
                 U.id AS userId, 
                 U.display_name AS naam, 
@@ -343,13 +346,13 @@ class BarcieGateway implements IBarcieGateway
             FROM ' . $_ENV['WPDBNAME'] . '.wp_users U
             INNER JOIN ' . $_ENV['DBNAME'] . '.barcie_schedule_map M ON M.user_id = U.id
             INNER JOIN ' . $_ENV['DBNAME'] . '.barcie_days D ON M.day_id = D.id
-            WHERE U.id = ? AND D.date >= CURDATE()';
-
+            WHERE U.id = ? ' . $dateCondition;
+    
         $params = [$user->id];
         $rows = $this->database->Execute($query, $params);
         return $this->MapToBardiensten($rows);
     }
-
+    
     public function MapToBardiensten(array $rows): array
     {
         // WP working

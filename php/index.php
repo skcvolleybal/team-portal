@@ -75,6 +75,7 @@ $entryPoint =
     new RouteGroup($baseRoute, [
           
         new GetRoute('/mijn-overzicht', UseCases\MijnOverzicht::class, AuthorizationRole::USER),
+        new GetRoute('/mijn-teamtaken', UseCases\MijnTeamtaken::class, AuthorizationRole::USER),
 
         new RouteGroup('/wedstrijd-overzicht', [
             new GetRoute('', UseCases\GetWedstrijdOverzicht::class),

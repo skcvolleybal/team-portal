@@ -36,6 +36,11 @@ export class WordPressService {
     return this.httpClient.get<any>(url);
   }
 
+  GetMijnTeamtaken () {
+    const url = environment.baseUrl + 'mijn-teamtaken';
+    return this.httpClient.get<any>(url);
+  }
+
   GetWedstrijdOverzicht(): Observable<any[]> {
     const url = environment.baseUrl + 'wedstrijd-overzicht';
     return this.httpClient.get<any[]>(url);
