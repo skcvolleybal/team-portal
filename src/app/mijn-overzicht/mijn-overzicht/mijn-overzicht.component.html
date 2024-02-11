@@ -14,12 +14,93 @@
 
       <h5>Mijn planning</h5>
 
+
       <div *ngFor="let dag of dagen">
+        <div *ngFor="let speeltijd of dag.speeltijden">
+          <div *ngFor="let wedstrijd of speeltijd.wedstrijden">
+
+
+            <div class="row">
+              <div class="card clickable">
+                <div class="card-body">
+                  <h6 class="card-title">{{ dag.datum_long }}</h6>
+                  <h6 class="card-subtitle mb-2 text-muted"> {{ speeltijd.tijd }}</h6>
+                  
+                  <div class="row">
+                  <div class="col-md-8">
+                    <teamportal-wedstrijd [wedstrijd]="wedstrijd"></teamportal-wedstrijd>
+
+                  </div>
+                  <div class="col-md-4">
+                    <p>Mijn taken:</p>
+
+                    <!-- Zaalwacht -->
+                    <p *ngIf="dag.eersteZaalwacht == user.team.naam">
+                      <span *ngIf="dag.eersteZaalwacht" class="badge rounded-pill bg-primary" style="padding: 10px;margin-top: auto;margin-bottom: auto;"><fa-icon [icon]="zaalwacht"></fa-icon> 1e zaalwacht: {{ dag.eersteZaalwacht }}</span>
+                   </p>
+                   <div *ngIf="dag.tweedeZaalwacht == user.team.naam">
+                        <span *ngIf="dag.tweedeZaalwacht" class="badge rounded-pill bg-primary" style="padding: 10px;margin-top: auto;margin-bottom: auto;"><fa-icon [icon]="zaalwacht"></fa-icon> 2e zaalwacht: {{ dag.tweedeZaalwacht }}</span>
+                    </div>
+
+                    <!-- Scheidsrechter -->
+                    <span *ngIf="wedstrijd.scheidsrechter == user.naam" class="badge rounded-pill bg-primary" style="padding: 10px;margin-top: auto;margin-bottom: auto;"><fa-icon [icon]="taskIcon"></fa-icon> Je bent scheidsrechter deze wedstrijd</span>
+
+                    <!-- Teller -->
+                    <span *ngIf="wedstrijd.tellers[0] == user.naam || wedstrijd.tellers[1] == user.naam" class="badge rounded-pill bg-primary" style="padding: 10px;margin-top: auto;margin-bottom: auto;"><fa-icon [icon]="taskIcon"></fa-icon> Je bent teller deze wedstrijd</span>
+                    
+                   <div style="padding: 10px;margin-top: auto;margin-bottom: auto;" *ngIf="wedstrijd.isTellers"> 
+                     <teamportal-tellers
+                       [tellers]="wedstrijd.tellers"
+                       [isTellers]="wedstrijd.isTellers"
+                     >
+                     </teamportal-tellers>
+                   </div>
+
+                   <!-- Bardiensten -->
+                   <div *ngIf="dag.bardiensten.length > 0">
+                    <div class="gray-background" *ngFor="let bardienst of dag.bardiensten">
+                      <div></div>
+                      <div>
+                        <span class="badge rounded-pill bg-primary" style="padding: 10px;margin-top: auto;margin-bottom: auto;">
+                          <fa-icon [icon]="taskIcon"></fa-icon> Bardienst Shift {{ bardienst.shift }}
+                          {{ bardienst.isBhv ? " (BHV)" : "" }}</span
+                        >
+            
+                      </div>
+                    </div>
+                  </div>
+
+                  <div *ngIf="!dag.bardiensten.length && dag.eersteZaalwacht != user.team.naam && dag.tweedeZaalwacht != user.team.naam && wedstrijd.scheidsrechter != user.naam && wedstrijd.tellers[0] != user.naam && wedstrijd.tellers[1] != user.naam">
+                    Je hebt geen teamtaken deze dag!
+                  </div>
+                  
+      
+
+
+            
+
+
+
+
+                  </div>
+
+                </div>
+              </div>
+
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+
+      <!-- <div *ngFor="let dag of dagen">
               <b>{{ dag.datum_long }} </b>
             <p *ngIf="dag.eersteZaalwacht == user.team.naam">
-        
-                  <span *ngIf="dag.eersteZaalwacht" class="badge rounded-pill bg-primary" style="padding: 10px;margin-top: auto;margin-bottom: auto;"><fa-icon [icon]="zaalwacht"></fa-icon> 1e zaalwacht: {{ dag.eersteZaalwacht }}</span>
-      
+                <span *ngIf="dag.eersteZaalwacht" class="badge rounded-pill bg-primary" style="padding: 10px;margin-top: auto;margin-bottom: auto;"><fa-icon [icon]="zaalwacht"></fa-icon> 1e zaalwacht: {{ dag.eersteZaalwacht }}</span>
              </p>
       
             <div *ngIf="dag.bardiensten.length > 0">
@@ -68,7 +149,7 @@
             </div>
       
        
-    </div>
+    </div> -->
     </div>
     <div class="col-md-4">
 
