@@ -111,4 +111,9 @@ export class MijnOverzichtComponent implements OnInit {
     return this.datePipe.transform(date, 'EEE, MMM d, y') || '';
   }
 
+  isTeamtaak(wedstrijd: any): boolean {
+    return wedstrijd.team1 !== this.user.team.naam && wedstrijd.team2 !== this.user.team.naam;
+  }
+  
+
 }
