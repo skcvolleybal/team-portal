@@ -26,7 +26,7 @@ class WordPressGateway implements IWordPressGateway
             require_once $wordpressPath . '/wp-load.php';
         } catch (\Throwable $e) {
             // Handle the error
-            error_log($e->getMessage());
+            throw new UnexpectedValueException("Can not load WordPress files. Is WordPress installed at " . $_ENV['WORDPRESS_PATH'] . "?");
         }
 
         $this->database = new Database();
