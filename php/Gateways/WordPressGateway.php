@@ -20,13 +20,17 @@ class WordPressGateway implements IWordPressGateway
     {
         if (!isset($_ENV['WORDPRESS_PATH']) || strlen($_ENV['WORDPRESS_PATH']) == 0) {
             throw new UnexpectedValueException('WORDPRESS_PATH environment variable is not set or is empty');
-        } else {
+        } else
             $wordpressPath = $_ENV['WORDPRESS_PATH'];
+        try {
             require_once $wordpressPath . '/wp-load.php';
+        } catch (\Throwable $e) {
+            // Handle the error
+            error_log($e->getMessage());
+            echo "An error occurred. Please try again later.";
         }
 
         $this->database = new Database();
-
     }
 
     private static $allSkcSpelers = null;
@@ -264,8 +268,8 @@ class WordPressGateway implements IWordPressGateway
             'user_login' => $username,
             'user_password' => $password,
             'remember' => true
-         ];
-   
+        ];
+
         $result = wp_signon($credentials, true); // true - use HTTP only cookie
 
         if ($result instanceof \WP_Error) {
