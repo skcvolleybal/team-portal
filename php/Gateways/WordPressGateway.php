@@ -19,7 +19,7 @@ class WordPressGateway implements IWordPressGateway
     public function __construct()
     {
         if (!isset($_ENV['WORDPRESS_PATH']) || strlen($_ENV['WORDPRESS_PATH']) == 0) {
-            throw new UnexpectedValueException("WORDPRESS_PATH environment variable is not set or is empty. Make sure it's in your .env file.");
+            throw new UnexpectedValueException("WORDPRESS_PATH environment variable is not set or is empty. Check your .env file.");
         } else
             $wordpressPath = $_ENV['WORDPRESS_PATH'];
         try {
