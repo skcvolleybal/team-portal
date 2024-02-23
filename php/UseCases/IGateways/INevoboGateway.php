@@ -12,7 +12,4 @@ interface INevoboGateway
     function GetWedstrijddagenForSporthal(string $sporthal = 'LDNUN', int $dagen = 7): array;
     function GetProgrammaForVereniging(): array;
     function GetWedstrijdenForTeam(?Team $team): array;
-    function GetUitslagenForTeam(?Team $team): array;
-    function GetUitslagenForVereniging(): array;
-    function DoesTeamExist(string $vereniging, string $gender, int $sequence): bool;
 }

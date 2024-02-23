@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:nevobo="https://www.api.nevobo.nl/rss/">
+  <channel>
+    <title>RSS feed Nederlandse Volleybalbond</title>
+    <link>https://api.nevobo.nl/export/team/CKL9R53/heren/7/programma.rss</link>
+    <description>Wedstrijdprogramma van de Nederlandse volleybalcompetitie, georganiseerd door de Nederlandse Volleybalbond</description>
+    <lastBuildDate>Fri, 23 Feb 2024 22:45:14 +0100</lastBuildDate>
+    <atom:link href="https://api.nevobo.nl/export/team/CKL9R53/heren/7/programma.rss" rel="self" type="text/xml"/>
+    <item>
+      <title><![CDATA[24 feb. 12:00: Punch HS 13 - SKC HS 7]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1447798</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1447798</guid>
+      <description><![CDATA[Wedstrijd: 3000H4H   GC, Datum: zaterdag 24 februari, 12:00, Speellocatie: TU-Sportcentrum, Mekelweg 8, 2628CD  Delft]]></description>
+      <pubDate>Sat, 24 Feb 2024 12:00:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[16 mrt. 17:30: SKC HS 7 - Sovicos HS 4]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1510539</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1510539</guid>
+      <description><![CDATA[Wedstrijd: 3000H4H   CB, Datum: zaterdag 16 maart, 17:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Sat, 16 Mar 2024 17:30:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[22 mrt. 20:00: GGV HS 4 - SKC HS 7]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1447731</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1447731</guid>
+      <description><![CDATA[Wedstrijd: 3000H4H   AC, Datum: vrijdag 22 maart, 20:00, Speellocatie: Sportcomplex 1574, Telderskade 399, 2321TR  Leiden]]></description>
+      <pubDate>Fri, 22 Mar 2024 20:00:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[28 mrt. 21:15: In Up Go HS 2 - SKC HS 7]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1447809</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1447809</guid>
+      <description><![CDATA[Wedstrijd: 3000H4H   HC, Datum: donderdag 28 maart, 21:15, Speellocatie: De Tweesprong, Lucas van Leydenlaan 2, 2371RW  Roelofarendsveen]]></description>
+      <pubDate>Thu, 28 Mar 2024 21:15:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[5 apr. 19:30: SKC HS 7 - VCS HS 4]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1447761</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1447761</guid>
+      <description><![CDATA[Wedstrijd: 3000H4H   CK, Datum: vrijdag 5 april, 19:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Fri, 05 Apr 2024 19:30:00 +0200</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+  </channel>
+</rss>

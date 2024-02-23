@@ -21,8 +21,6 @@ use PhpOffice\PhpSpreadsheet\Reader\Exception;
 error_reporting(E_ALL ^ E_DEPRECATED); // Suppress warnings on PHP 8.0. Make sure to fix the usort() functions in this file for PHP 8.1. 
 
 
-
-
 class NevoboGateway implements INevoboGateway
 {
     public $cacheDuration = 3600 * 24; // 24 uur
@@ -39,6 +37,8 @@ class NevoboGateway implements INevoboGateway
 
     private $verenigingscode;
     private $regio;
+
+    private $useMockData;
 
     private $exportType = 'rss';
     private $monthTranslations = [
@@ -60,10 +60,15 @@ class NevoboGateway implements INevoboGateway
     {
         $this->verenigingscode = $verenigingscode;
         $this->regio = $regio;
+        $this->useMockData = ($_ENV['USEMOCKDATA'] == 'true') ? true : false;
     }
 
     public function GetStandForPoule(string $poule): array
     {
+        if ($this->useMockData) {
+            return $this->loadMockData('standForPoule.rss');
+        }
+
         $url = sprintf($this->poulestandUrl, $this->regio, $poule, $this->exportType);
 
         $feed = $this->CreateSimplePieFeed($url);
@@ -99,6 +104,10 @@ class NevoboGateway implements INevoboGateway
 
     public function GetProgrammaForPoule(string $poule): array
     {
+        if ($this->useMockData) {
+            return $this->loadMockData('programmaForPoule.rss');
+        }
+
         $url = sprintf($this->pouleprogrammaUrl, $this->regio, $poule, $this->exportType);
         return $this->GetProgramma($url);
     }
@@ -106,11 +115,17 @@ class NevoboGateway implements INevoboGateway
     public function GetProgrammaForSporthal(string $sporthal = 'LDNUN'): array
     {
         $url = sprintf($this->sporthalprogrammaUrl, $sporthal, $this->exportType);
+        
+        if ($this->useMockData) {
+            $url = $this->getMockDataPath('programmaForSporthal.rss');
+        
+        }   
         return $this->GetProgramma($url);
     }
 
     public function GetWedstrijddagenForSporthal(string $sporthal = 'LDNUN', int $dagen = 7): array
     {
+
         $endDate = new DateTime("+$dagen days");
         $wedstrijden = $this->GetProgrammaForSporthal($sporthal);
         usort($wedstrijden, [Wedstrijd::class, "Compare"]);
@@ -140,55 +155,30 @@ class NevoboGateway implements INevoboGateway
 
     public function GetProgrammaForVereniging(): array
     {
+        if ($this->useMockData) {
+            return $this->loadMockData('programmaForVereniging.rss');
+        }
+
         $url = sprintf($this->verenigingsprogrammaUrl, $this->verenigingscode, $this->exportType);
         return $this->GetProgramma($url);
     }
 
     public function GetWedstrijdenForTeam(?Team $team): array
     {
-        if (!$team) {
-            return [];
-        }
         $gender = $this->GetGender($team);
         $sequence = $this->GetSequence($team);
         $url = sprintf($this->teamprogrammaUrl, $this->verenigingscode, $gender, $sequence, $this->exportType);
+
+        if ($this->useMockData) {
+            $url = $this->getMockDataPath('wedstrijdenForTeam.rss');
+
+        }
         return $this->GetProgramma($url);
     }
 
-    public function GetUitslagenForTeam(?Team $team): array
-    {
-        if (!$team) {
-            return [];
-        }
-        $gender = $this->GetGender($team);
-        $sequence = $this->GetSequence($team);
-        $url = sprintf($this->teamresultatenUrl, $this->verenigingscode, $gender, $sequence, $this->exportType);
-        return $this->GetUitslagen($url);
-    }
-
-    public function GetUitslagenForVereniging(): array
-    {
-        $url = sprintf($this->verenigingsuitslagenUrl, $this->verenigingscode, $this->exportType);
-        return $this->GetUitslagen($url);
-    }
-
-    public function DoesTeamExist(string $vereniging, string $gender, int $sequence): bool
-    {
-        $url = sprintf($this->teamprogrammaUrl, $vereniging, $gender, $sequence, $this->exportType);
-        $handle = curl_init($url);
-        curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
-
-        /* Get the HTML or whatever is linked in $url. */
-        curl_exec($handle);
-
-        /* Check for 404 (file not found). */
-        $httpCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
-        curl_close($handle);
-
-        return $httpCode == 200;
-    }
 
     public function GetVerenigingsStanden () {
+
         $url = 'https://api.nevobo.nl/export/vereniging/' . $this->verenigingscode . '/stand.xlsx';
         
         // Use file_get_contents to download the file
@@ -499,25 +489,39 @@ class NevoboGateway implements INevoboGateway
         return DateTime::createFromFormat('d F Y H:i', "$day $month $year $hours:$minutes");
     }
 
-    private function CreateSimplePieFeed(string $url): SimplePie
-    {
+    private function isLocalFile($path): bool {
+        // Check if the path is a local file path by looking for the presence of 'http'
+        return strpos($path, 'http') === false;
+    }
+    
+
+    private function CreateSimplePieFeed(string $url): SimplePie {
         $feed = new SimplePie();
-        $feed->set_feed_url($url);
-        $feed->enable_order_by_date(false);
-        $feed->handle_content_type();
-        $feed->set_cache_duration($this->cacheDuration);
-        if (!file_exists($this->cacheLocation)) {
-            mkdir($this->cacheLocation);
+        
+        if ($this->isLocalFile($url)) {
+            // If it's a local file, read its contents and use set_raw_data
+            if (file_exists($url)) {
+                $fileContents = file_get_contents($url);
+                $feed->set_raw_data($fileContents);
+            } else {
+                // Handle error: file not found
+                throw new Exception("File not found: $url");
+            }
+        } else {
+            // If it's a URL, set it directly
+            $feed->set_feed_url($url);
         }
-        $feed->set_cache_location($this->cacheLocation);
+    
         $feed->init();
+        $feed->handle_content_type();
+        
         return $feed;
     }
+    
 
-    private function ParseFeed(string $url): array
-    {
+    private function ParseFeed(string $url): array {
         $feed = $this->CreateSimplePieFeed($url);
-
+    
         $result = [];
         for ($i = 0; $i < $feed->get_item_quantity(); $i++) {
             $rssFeedItem = new RssFeedItem;
@@ -529,4 +533,22 @@ class NevoboGateway implements INevoboGateway
         
         return $result;
     }
+    
+    private function getMockDataPath($filename) : string {
+        $path = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'mocks' . DIRECTORY_SEPARATOR . $filename;
+        // Normalize the file path for URL
+        $normalizedFilePath = str_replace('\\', '/', $path); // Convert backslashes to forward slashes
+    
+        // Detect if running on Windows and adjust the file URL protocol accordingly
+        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+            // Windows paths need an extra '/' if they start with a drive letter, and we don't trim the initial slash
+            $feedUrl = 'file:///' . $normalizedFilePath;
+        } else {
+            // For Unix/Linux, use two slashes
+            $feedUrl = 'file://' . $normalizedFilePath;
+        }
+    
+        return $feedUrl;
+    }
+    
 }
