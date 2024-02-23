@@ -18,7 +18,11 @@ class WordPressGateway implements IWordPressGateway
 
     public function __construct()
     {
+        $wordpressPath = $_ENV['WORDPRESS_PATH'];
+        require_once $wordpressPath . '/wp-load.php';
+
         $this->database = new Database();
+
     }
 
     private static $allSkcSpelers = null;
