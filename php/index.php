@@ -17,6 +17,8 @@ use TeamPortal\RouteObjects\PostRoute;
 use TeamPortal\RouteObjects\RouteGroup;
 use DI\ContainerBuilder;
 
+
+
 require 'vendor/autoload.php';
 
 // Load WordPress
@@ -25,8 +27,6 @@ require 'vendor/autoload.php';
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 
-$wordpressPath = $_ENV['WORDPRESS_PATH'];
-require_once $wordpressPath . '/wp-load.php';
 
 $containerBuilder  = new ContainerBuilder();
 $containerBuilder->addDefinitions('di-config.php');
