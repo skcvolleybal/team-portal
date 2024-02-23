@@ -1,0 +1,554 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:nevobo="https://www.api.nevobo.nl/rss/">
+  <channel>
+    <title>RSS feed Nederlandse Volleybalbond</title>
+    <link>https://api.nevobo.nl/export/sporthal/universitair-sc/programma.rss</link>
+    <description>Wedstrijdprogramma van de Nederlandse volleybalcompetitie, georganiseerd door de Nederlandse Volleybalbond</description>
+    <lastBuildDate>Fri, 23 Feb 2024 23:15:50 +0100</lastBuildDate>
+    <atom:link href="https://api.nevobo.nl/export/sporthal/universitair-sc/programma.rss" rel="self" type="text/xml"/>
+    <item>
+      <title><![CDATA[SKC DS 6 - VSTS DS 3, Uitslag: 4-0]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1490281</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1490281</guid>
+      <description><![CDATA[Wedstrijd: SKC DS 6 - VSTS DS 3, Uitslag: 4-0, Setstanden: 25-15, 25-19, 25-21, 25-9]]></description>
+      <pubDate>Fri, 23 Feb 2024 19:30:00 +0100</pubDate>
+      <nevobo:status>gespeeld</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[SKC HS 6 - VCH HS 3, Uitslag: 1-3]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1446642</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1446642</guid>
+      <description><![CDATA[Wedstrijd: SKC HS 6 - VCH HS 3, Uitslag: 1-3, Setstanden: 15-25, 16-25, 12-25, 25-22]]></description>
+      <pubDate>Fri, 23 Feb 2024 19:30:00 +0100</pubDate>
+      <nevobo:status>gespeeld</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[SKC HS 1 - Thor HS 1, Uitslag: 1-3]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1437588</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1437588</guid>
+      <description><![CDATA[Wedstrijd: SKC HS 1 - Thor HS 1, Uitslag: 1-3, Setstanden: 17-25, 25-17, 22-25, 22-25]]></description>
+      <pubDate>Fri, 23 Feb 2024 19:30:00 +0100</pubDate>
+      <nevobo:status>gespeeld</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[1 mrt. 19:30: SKC DS 3 - VCH DS 2]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1439218</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1439218</guid>
+      <description><![CDATA[Wedstrijd: 3000D1N   FI, Datum: vrijdag 1 maart, 19:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Fri, 01 Mar 2024 19:30:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[1 mrt. 19:30: SKC HS 8 - Zovoc HS 5]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1447693</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1447693</guid>
+      <description><![CDATA[Wedstrijd: 3000H4G   HD, Datum: vrijdag 1 maart, 19:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Fri, 01 Mar 2024 19:30:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[1 mrt. 19:30: SKC DS 11 - Scarabee DS 3]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1490346</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1490346</guid>
+      <description><![CDATA[Wedstrijd: 3000D3N   HJ, Datum: vrijdag 1 maart, 19:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Fri, 01 Mar 2024 19:30:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[1 mrt. 21:30: SKC DS 10 - Gemini-Kangeroes DS 2]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1490321</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1490321</guid>
+      <description><![CDATA[Wedstrijd: 3000D3O   EB, Datum: vrijdag 1 maart, 21:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Fri, 01 Mar 2024 21:30:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[1 mrt. 21:30: SKC DS 6 - VTC Woerden DS 6]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1490276</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1490276</guid>
+      <description><![CDATA[Wedstrijd: 3000D2P   FA, Datum: vrijdag 1 maart, 21:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Fri, 01 Mar 2024 21:30:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[1 mrt. 21:30: SKC DS 12 - Monza DS 2]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1442605</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1442605</guid>
+      <description><![CDATA[Wedstrijd: 3000D3N   LI, Datum: vrijdag 1 maart, 21:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Fri, 01 Mar 2024 21:30:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[2 mrt. 11:00: SKC HS 9 - VOLEVO HS 6]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1447689</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1447689</guid>
+      <description><![CDATA[Wedstrijd: 3000H4G   GK, Datum: zaterdag 2 maart, 11:00, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Sat, 02 Mar 2024 11:00:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[2 mrt. 13:00: SKC HS 6 - VHZ HS 4]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1446652</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1446652</guid>
+      <description><![CDATA[Wedstrijd: 3000H3C   GK, Datum: zaterdag 2 maart, 13:00, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Sat, 02 Mar 2024 13:00:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[8 mrt. 19:30: SKC DS 14 - Kalinko DS 9]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1448811</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1448811</guid>
+      <description><![CDATA[Wedstrijd: 3000D4H   CL, Datum: vrijdag 8 maart, 19:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Fri, 08 Mar 2024 19:30:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[8 mrt. 19:30: SKC DS 2 - Kalinko DS 5]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1505143</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1505143</guid>
+      <description><![CDATA[Wedstrijd: 3000D1M   CL, Datum: vrijdag 8 maart, 19:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Fri, 08 Mar 2024 19:30:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[8 mrt. 21:30: SKC DS 5 - Dosko DS 3]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1440951</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1440951</guid>
+      <description><![CDATA[Wedstrijd: 3000D2P   BC, Datum: vrijdag 8 maart, 21:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Fri, 08 Mar 2024 21:30:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[8 mrt. 21:30: SKC DS 9 - GGV DS 5]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1442727</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1442727</guid>
+      <description><![CDATA[Wedstrijd: 3000D3P   IH, Datum: vrijdag 8 maart, 21:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Fri, 08 Mar 2024 21:30:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[8 mrt. 21:30: SKC HS 1 - Sovicos HS 1]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1437615</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1437615</guid>
+      <description><![CDATA[Wedstrijd: 30003BH   JG, Datum: vrijdag 8 maart, 21:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Fri, 08 Mar 2024 21:30:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[15 mrt. 19:30: SKC HS 2 - VELO HS 3]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1511542</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1511542</guid>
+      <description><![CDATA[Wedstrijd: 3000H1J   DE-1, Datum: vrijdag 15 maart, 19:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Fri, 15 Mar 2024 19:30:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[15 mrt. 19:30: SKC DS 3 - Waterlanders DS 2]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1439200</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1439200</guid>
+      <description><![CDATA[Wedstrijd: 3000D1N   FC, Datum: vrijdag 15 maart, 19:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Fri, 15 Mar 2024 19:30:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[15 mrt. 19:30: SKC DS 11 - Kratos '08 DS 5]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1490339</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1490339</guid>
+      <description><![CDATA[Wedstrijd: 3000D3N   HE, Datum: vrijdag 15 maart, 19:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Fri, 15 Mar 2024 19:30:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[15 mrt. 21:30: SKC DS 2 - Sovicos DS 1]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1505174</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1505174</guid>
+      <description><![CDATA[Wedstrijd: 3000D1M   CB, Datum: vrijdag 15 maart, 21:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Fri, 15 Mar 2024 21:30:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[15 mrt. 21:30: SKC DS 1 - Kalinko DS 2]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1443578</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1443578</guid>
+      <description><![CDATA[Wedstrijd: 3000DPD   FJ, Datum: vrijdag 15 maart, 21:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Fri, 15 Mar 2024 21:30:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[15 mrt. 21:30: SKC DS 4 - VHZ DS 2]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1505138</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1505138</guid>
+      <description><![CDATA[Wedstrijd: 3000D1N   LH, Datum: vrijdag 15 maart, 21:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Fri, 15 Mar 2024 21:30:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[16 mrt. 15:30: SKC DS 6 - Jupiter DS 4]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1490284</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1490284</guid>
+      <description><![CDATA[Wedstrijd: 3000D2P   FJ, Datum: zaterdag 16 maart, 15:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Sat, 16 Mar 2024 15:30:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[16 mrt. 15:30: SKC HS 9 - Kalinko HS 7]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1447687</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1447687</guid>
+      <description><![CDATA[Wedstrijd: 3000H4G   GI, Datum: zaterdag 16 maart, 15:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Sat, 16 Mar 2024 15:30:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[16 mrt. 15:30: SKC HS 6 - Smashing Velsen '96 HS 1]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1446648</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1446648</guid>
+      <description><![CDATA[Wedstrijd: 3000H3C   GI, Datum: zaterdag 16 maart, 15:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Sat, 16 Mar 2024 15:30:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[16 mrt. 17:30: SKC HS 7 - Sovicos HS 4]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1510539</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1510539</guid>
+      <description><![CDATA[Wedstrijd: 3000H4H   CB, Datum: zaterdag 16 maart, 17:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Sat, 16 Mar 2024 17:30:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[16 mrt. 17:30: SKC DS 14 - Punch DS 10]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1442923</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1442923</guid>
+      <description><![CDATA[Wedstrijd: 3000D4H   CB, Datum: zaterdag 16 maart, 17:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Sat, 16 Mar 2024 17:30:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[16 mrt. 17:30: SKC DS 10 - VOLEVO DS 9]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1490342</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1490342</guid>
+      <description><![CDATA[Wedstrijd: 3000D3O   EK, Datum: zaterdag 16 maart, 17:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Sat, 16 Mar 2024 17:30:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[22 mrt. 19:30: SKC DS 13 - Waterlanders DS 7]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1443070</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1443070</guid>
+      <description><![CDATA[Wedstrijd: 3000D4I   BL, Datum: vrijdag 22 maart, 19:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Fri, 22 Mar 2024 19:30:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[22 mrt. 19:30: SKC DS 5 - VollinGo DS 5]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1440975</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1440975</guid>
+      <description><![CDATA[Wedstrijd: 3000D2P   BL, Datum: vrijdag 22 maart, 19:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Fri, 22 Mar 2024 19:30:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[22 mrt. 19:30: SKC DS 7 - VELO DS 1]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1490262</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1490262</guid>
+      <description><![CDATA[Wedstrijd: 3000D2N   JE, Datum: vrijdag 22 maart, 19:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Fri, 22 Mar 2024 19:30:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[22 mrt. 21:30: SKC DS 10 - In Up Go DS 2]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1490323</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1490323</guid>
+      <description><![CDATA[Wedstrijd: 3000D3O   EC, Datum: vrijdag 22 maart, 21:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Fri, 22 Mar 2024 21:30:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[22 mrt. 21:30: SKC DS 15 - Sovicos DS 6]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1510462</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1510462</guid>
+      <description><![CDATA[Wedstrijd: 3000D4H   HG, Datum: vrijdag 22 maart, 21:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Fri, 22 Mar 2024 21:30:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[22 mrt. 21:30: SKC HS 5 - In Up Go HS 1]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1447439</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1447439</guid>
+      <description><![CDATA[Wedstrijd: 3000H3O   KD, Datum: vrijdag 22 maart, 21:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Fri, 22 Mar 2024 21:30:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[23 mrt. 11:00: SKC DS 9 - Liusna DS 2]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1442725</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1442725</guid>
+      <description><![CDATA[Wedstrijd: 3000D3P   IF, Datum: zaterdag 23 maart, 11:00, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Sat, 23 Mar 2024 11:00:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[23 mrt. 11:00: SKC HS 1 - Inter Rijswijk HS 3]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1437607</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1437607</guid>
+      <description><![CDATA[Wedstrijd: 30003BH   JE, Datum: zaterdag 23 maart, 11:00, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Sat, 23 Mar 2024 11:00:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[23 mrt. 13:00: SKC DS 11 - Sovicos DS 5]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1510429</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1510429</guid>
+      <description><![CDATA[Wedstrijd: 3000D3N   HG, Datum: zaterdag 23 maart, 13:00, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Sat, 23 Mar 2024 13:00:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[23 mrt. 13:00: SKC HS 8 - Kalinko HS 7]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1447697</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1447697</guid>
+      <description><![CDATA[Wedstrijd: 3000H4G   HI, Datum: zaterdag 23 maart, 13:00, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Sat, 23 Mar 2024 13:00:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[29 mrt. 19:30: SKC DS 13 - Sporting/OSS DS 2]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1443064</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1443064</guid>
+      <description><![CDATA[Wedstrijd: 3000D4I   BI, Datum: vrijdag 29 maart, 19:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Fri, 29 Mar 2024 19:30:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[29 mrt. 19:30: SKC DS 3 - Kalinko DS 3]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1439193</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1439193</guid>
+      <description><![CDATA[Wedstrijd: 3000D1N   FA, Datum: vrijdag 29 maart, 19:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Fri, 29 Mar 2024 19:30:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[29 mrt. 19:30: SKC DS 15 - VCO DS 5]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1473905</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1473905</guid>
+      <description><![CDATA[Wedstrijd: 3000D4H   HF, Datum: vrijdag 29 maart, 19:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Fri, 29 Mar 2024 19:30:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[29 mrt. 21:30: SKC DS 2 - Castellum DS 1]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1505133</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1505133</guid>
+      <description><![CDATA[Wedstrijd: 3000D1M   CG, Datum: vrijdag 29 maart, 21:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Fri, 29 Mar 2024 21:30:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[29 mrt. 21:30: SKC DS 6 - Zovoc DS 5]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1490280</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1490280</guid>
+      <description><![CDATA[Wedstrijd: 3000D2P   FE, Datum: vrijdag 29 maart, 21:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Fri, 29 Mar 2024 21:30:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[29 mrt. 21:30: SKC DS 12 - Scarabee DS 3]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1442607</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1442607</guid>
+      <description><![CDATA[Wedstrijd: 3000D3N   LJ, Datum: vrijdag 29 maart, 21:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Fri, 29 Mar 2024 21:30:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[30 mrt. 13:30: SKC DS 8 - Taurus DR 1]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1555738</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1555738</guid>
+      <description><![CDATA[Wedstrijd: 3000BD5C  01, Datum: zaterdag 30 maart, 13:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Sat, 30 Mar 2024 13:30:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[30 mrt. 15:30: SKC DS 1 - Punch DS 1]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1443570</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1443570</guid>
+      <description><![CDATA[Wedstrijd: 3000DPD   FE, Datum: zaterdag 30 maart, 15:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Sat, 30 Mar 2024 15:30:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[30 mrt. 15:30: SKC HS 8 - Punch HS 11]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1447698</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1447698</guid>
+      <description><![CDATA[Wedstrijd: 3000H4G   HJ, Datum: zaterdag 30 maart, 15:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Sat, 30 Mar 2024 15:30:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[30 mrt. 15:30: SKC HS 5 - Castellum HS 3]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1447437</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1447437</guid>
+      <description><![CDATA[Wedstrijd: 3000H3O   KB, Datum: zaterdag 30 maart, 15:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Sat, 30 Mar 2024 15:30:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[30 mrt. 17:30: SKC HS 6 - Liusna HS 2]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1446644</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1446644</guid>
+      <description><![CDATA[Wedstrijd: 3000H3C   GF, Datum: zaterdag 30 maart, 17:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Sat, 30 Mar 2024 17:30:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[30 mrt. 17:30: SKC HS 1 - VV Utrecht HS 4]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1437594</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1437594</guid>
+      <description><![CDATA[Wedstrijd: 30003BH   JB, Datum: zaterdag 30 maart, 17:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Sat, 30 Mar 2024 17:30:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[30 mrt. 17:30: SKC DS 7 - GGV DS 2]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1490260</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1490260</guid>
+      <description><![CDATA[Wedstrijd: 3000D2N   JC, Datum: zaterdag 30 maart, 17:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Sat, 30 Mar 2024 17:30:00 +0100</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[5 apr. 19:30: SKC HS 7 - VCS HS 4]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1447761</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1447761</guid>
+      <description><![CDATA[Wedstrijd: 3000H4H   CK, Datum: vrijdag 5 april, 19:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Fri, 05 Apr 2024 19:30:00 +0200</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[5 apr. 19:30: SKC DS 1 - VSTS DS 1]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1443574</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1443574</guid>
+      <description><![CDATA[Wedstrijd: 3000DPD   FH, Datum: vrijdag 5 april, 19:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Fri, 05 Apr 2024 19:30:00 +0200</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[5 apr. 19:30: SKC DS 4 - Leython DC DS 5]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1505136</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1505136</guid>
+      <description><![CDATA[Wedstrijd: 3000D1N   LG, Datum: vrijdag 5 april, 19:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Fri, 05 Apr 2024 19:30:00 +0200</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[5 apr. 21:30: SKC DS 13 - VCO DS 4]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1473918</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1473918</guid>
+      <description><![CDATA[Wedstrijd: 3000D4I   BA, Datum: vrijdag 5 april, 21:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Fri, 05 Apr 2024 21:30:00 +0200</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[5 apr. 21:30: SKC DS 2 - VOLEVO DS 5]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1505142</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1505142</guid>
+      <description><![CDATA[Wedstrijd: 3000D1M   CK, Datum: vrijdag 5 april, 21:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Fri, 05 Apr 2024 21:30:00 +0200</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[5 apr. 21:30: SKC DS 14 - VOLEVO DS 10]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1442932</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1442932</guid>
+      <description><![CDATA[Wedstrijd: 3000D4H   CK, Datum: vrijdag 5 april, 21:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Fri, 05 Apr 2024 21:30:00 +0200</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[6 apr. 15:30: SKC DS 6 - DOS DS 2]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1490282</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1490282</guid>
+      <description><![CDATA[Wedstrijd: 3000D2P   FH, Datum: zaterdag 6 april, 15:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Sat, 06 Apr 2024 15:30:00 +0200</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[6 apr. 15:30: SKC DS 9 - VHZ DS 5]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1442723</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1442723</guid>
+      <description><![CDATA[Wedstrijd: 3000D3P   ID, Datum: zaterdag 6 april, 15:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Sat, 06 Apr 2024 15:30:00 +0200</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[6 apr. 17:30: SKC DS 5 - VTC Woerden DS 6]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1440948</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1440948</guid>
+      <description><![CDATA[Wedstrijd: 3000D2P   BA, Datum: zaterdag 6 april, 17:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Sat, 06 Apr 2024 17:30:00 +0200</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[6 apr. 17:30: SKC HS 2 - VCH HS 2]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1444853</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1444853</guid>
+      <description><![CDATA[Wedstrijd: 3000H1J   DJ, Datum: zaterdag 6 april, 17:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Sat, 06 Apr 2024 17:30:00 +0200</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[6 apr. 17:30: SKC DS 12 - Sovicos DS 5]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1510427</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1510427</guid>
+      <description><![CDATA[Wedstrijd: 3000D3N   LG, Datum: zaterdag 6 april, 17:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Sat, 06 Apr 2024 17:30:00 +0200</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[12 apr. 19:30: SKC DS 8 - GGV DS 4]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1442466</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1442466</guid>
+      <description><![CDATA[Wedstrijd: 3000D3O   AL, Datum: vrijdag 12 april, 19:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Fri, 12 Apr 2024 19:30:00 +0200</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[12 apr. 19:30: SKC HS 9 - DEO HS 3]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1447685</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1447685</guid>
+      <description><![CDATA[Wedstrijd: 3000H4G   GF, Datum: vrijdag 12 april, 19:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Fri, 12 Apr 2024 19:30:00 +0200</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[12 apr. 19:39: SKC DS 3 - Castellum DS 2]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1439196</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1439196</guid>
+      <description><![CDATA[Wedstrijd: 3000D1N   FB, Datum: vrijdag 12 april, 19:39, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Fri, 12 Apr 2024 19:39:00 +0200</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[12 apr. 21:30: SKC HS 4 - Donar HS 1]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1446080</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1446080</guid>
+      <description><![CDATA[Wedstrijd: 3000H2M   GJ, Datum: vrijdag 12 april, 21:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Fri, 12 Apr 2024 21:30:00 +0200</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[12 apr. 21:30: SKC HS 8 - VELO HS 6]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1447694</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1447694</guid>
+      <description><![CDATA[Wedstrijd: 3000H4G   HE, Datum: vrijdag 12 april, 21:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Fri, 12 Apr 2024 21:30:00 +0200</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+    <item>
+      <title><![CDATA[12 apr. 21:30: SKC HS 5 - Leython DC HS 6]]></title>
+      <link>https://api.nevobo.nl/permalink/wedstrijd/1447438</link>
+      <guid>https://api.nevobo.nl/permalink/wedstrijd/1447438</guid>
+      <description><![CDATA[Wedstrijd: 3000H3O   KC, Datum: vrijdag 12 april, 21:30, Speellocatie: Universitair SC, Einsteinweg 6, 2333CC  Leiden]]></description>
+      <pubDate>Fri, 12 Apr 2024 21:30:00 +0200</pubDate>
+      <nevobo:status>gepland</nevobo:status>
+    </item>
+  </channel>
+</rss>
