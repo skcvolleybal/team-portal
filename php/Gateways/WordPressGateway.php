@@ -16,7 +16,7 @@ class WordPressGateway implements IWordPressGateway
 {
     public $database;
 
-    public function __construct()
+public function __construct()
     {
         if (!isset($_ENV['WORDPRESS_PATH']) || strlen($_ENV['WORDPRESS_PATH']) == 0) {
             throw new UnexpectedValueException("WORDPRESS_PATH environment variable is not set or is empty. Check your .env file.");
@@ -26,7 +26,7 @@ class WordPressGateway implements IWordPressGateway
             require_once $wordpressPath . '/wp-load.php';
         } catch (\Throwable $e) {
             // Handle the error
-            throw new UnexpectedValueException("Error laoding WordPress. Make sure WordPress is installed at the WORDPRESS_PATH location you specified in your .env file.");
+            throw new UnexpectedValueException("Error loading WordPress. Make sure WordPress is installed at the WORDPRESS_PATH location you specified in your .env file.");
         }
 
         $this->database = new Database();
@@ -42,6 +42,9 @@ class WordPressGateway implements IWordPressGateway
         }
 
         $user->team = $this->GetTeam($user);
+        if (!isset($user->team) || $user->team == null) {
+            throw new UnexpectedValueException("User $user->naam has no team. Assign a team to this user in WordPress to make Team-Portal work properly.");
+        }
         $user->coachteams = $this->GetCoachteams($user);
 
         return $user;
@@ -191,6 +194,7 @@ class WordPressGateway implements IWordPressGateway
 
         $userMeta = get_user_meta($user->id);
 
+        
         $teamId = $userMeta['team'][0];
 
         $params = array(
