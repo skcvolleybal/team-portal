@@ -27,7 +27,6 @@ class WordPressGateway implements IWordPressGateway
         } catch (\Throwable $e) {
             // Handle the error
             error_log($e->getMessage());
-            echo "An error occurred. Please try again later.";
         }
 
         $this->database = new Database();
