@@ -18,8 +18,12 @@ class WordPressGateway implements IWordPressGateway
 
     public function __construct()
     {
-        $wordpressPath = $_ENV['WORDPRESS_PATH'];
-        require_once $wordpressPath . '/wp-load.php';
+        if (!isset($_ENV['WORDPRESS_PATH']) || strlen($_ENV['WORDPRESS_PATH']) == 0) {
+            throw new UnexpectedValueException('WORDPRESS_PATH environment variable is not set or is empty');
+        } else {
+            $wordpressPath = $_ENV['WORDPRESS_PATH'];
+            require_once $wordpressPath . '/wp-load.php';
+        }
 
         $this->database = new Database();
 
