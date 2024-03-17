@@ -14,10 +14,11 @@ use TeamPortal\Entities\Wedstrijd;
 use TeamPortal\Entities\Wedstrijddag;
 use TeamPortal\UseCases\INevoboGateway;
 use UnexpectedValueException;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Reader\Exception;
+
 
 error_reporting(E_ALL ^ E_DEPRECATED); // Suppress warnings on PHP 8.0. Make sure to fix the usort() functions in this file for PHP 8.1. 
-
-
 
 
 class NevoboGateway implements INevoboGateway
@@ -36,6 +37,8 @@ class NevoboGateway implements INevoboGateway
 
     private $verenigingscode;
     private $regio;
+
+    private $useMockData;
 
     private $exportType = 'rss';
     private $monthTranslations = [
@@ -57,10 +60,15 @@ class NevoboGateway implements INevoboGateway
     {
         $this->verenigingscode = $verenigingscode;
         $this->regio = $regio;
+        $this->useMockData = ($_ENV['USEMOCKDATA'] == 'true') ? true : false;
     }
 
     public function GetStandForPoule(string $poule): array
     {
+        if ($this->useMockData) {
+            return $this->loadMockData('standForPoule.rss');
+        }
+
         $url = sprintf($this->poulestandUrl, $this->regio, $poule, $this->exportType);
 
         $feed = $this->CreateSimplePieFeed($url);
@@ -96,6 +104,10 @@ class NevoboGateway implements INevoboGateway
 
     public function GetProgrammaForPoule(string $poule): array
     {
+        if ($this->useMockData) {
+            return $this->loadMockData('programmaForPoule.rss');
+        }
+
         $url = sprintf($this->pouleprogrammaUrl, $this->regio, $poule, $this->exportType);
         return $this->GetProgramma($url);
     }
@@ -103,11 +115,17 @@ class NevoboGateway implements INevoboGateway
     public function GetProgrammaForSporthal(string $sporthal = 'LDNUN'): array
     {
         $url = sprintf($this->sporthalprogrammaUrl, $sporthal, $this->exportType);
+        
+        if ($this->useMockData) {
+            $url = $this->getMockDataPath('programmaForSporthal.rss');
+        
+        }   
         return $this->GetProgramma($url);
     }
 
     public function GetWedstrijddagenForSporthal(string $sporthal = 'LDNUN', int $dagen = 7): array
     {
+
         $endDate = new DateTime("+$dagen days");
         $wedstrijden = $this->GetProgrammaForSporthal($sporthal);
         usort($wedstrijden, [Wedstrijd::class, "Compare"]);
@@ -137,53 +155,183 @@ class NevoboGateway implements INevoboGateway
 
     public function GetProgrammaForVereniging(): array
     {
+        if ($this->useMockData) {
+            return $this->loadMockData('programmaForVereniging.rss');
+        }
+
         $url = sprintf($this->verenigingsprogrammaUrl, $this->verenigingscode, $this->exportType);
         return $this->GetProgramma($url);
     }
 
     public function GetWedstrijdenForTeam(?Team $team): array
     {
-        if (!$team) {
-            return [];
-        }
         $gender = $this->GetGender($team);
         $sequence = $this->GetSequence($team);
         $url = sprintf($this->teamprogrammaUrl, $this->verenigingscode, $gender, $sequence, $this->exportType);
+
+        if ($this->useMockData) {
+            $url = $this->getMockDataPath('wedstrijdenForTeam.rss');
+
+        }
         return $this->GetProgramma($url);
     }
 
-    public function GetUitslagenForTeam(?Team $team): array
-    {
-        if (!$team) {
-            return [];
+
+    public function GetVerenigingsStanden () {
+
+        $url = 'https://api.nevobo.nl/export/vereniging/' . $this->verenigingscode . '/stand.xlsx';
+        
+        // Use file_get_contents to download the file
+        $content = file_get_contents($url);
+
+        if ($content === false) {
+            // Handle error, file could not be downloaded
+            die("Error: Unable to download the Excel file.");
         }
-        $gender = $this->GetGender($team);
-        $sequence = $this->GetSequence($team);
-        $url = sprintf($this->teamresultatenUrl, $this->verenigingscode, $gender, $sequence, $this->exportType);
-        return $this->GetUitslagen($url);
+
+        // Save the content to a temporary file
+        $tmpfname = tempnam(sys_get_temp_dir(), 'excel');
+        
+        file_put_contents($tmpfname, $content);
+
+        // Load the Excel file
+        $spreadsheet = IOFactory::load($tmpfname);
+
+        // Now you can work with the spreadsheet, for example, read data
+        $sheet = $spreadsheet->getActiveSheet();
+ 
+        $teams = [];
+
+
+
+        // Get the teams and poule names
+        foreach ($sheet->getRowIterator() as $row) {
+            $cellIterator = $row->getCellIterator();
+            $cellIterator->setIterateOnlyExistingCells(true); // Loop only existing cells
+
+            // Get the value of the first cell
+            $firstCellValue = $cellIterator->current()->getValue();
+
+            // Check if the first cell contains 'SKC'
+            if (strpos($firstCellValue, 'SKC') !== false) {
+                // Extract the values of the entire row
+                $rowData = [];
+                foreach ($cellIterator as $cell) {
+                    $rowData[] = $cell->getValue();
+                }
+                // Process the extracted row data (e.g., print, store in an array, etc.)
+                $teams[] = $rowData;
+            }
+
+            foreach ($teams as $key => $team) {
+                $teams[$key][1] = str_replace("Seniorencompetitie, ", "", $team[1]);
+            }   
+        }
+
+         
+        // Get the teams scores
+        $teamScores = [];
+        try {
+            $sheet = $spreadsheet->getActiveSheet();
+        
+            // Loop through each team
+            foreach ($teams as $team) {
+                $teamName = $team[0]; // Get the team name
+        
+                // Loop through each row of the sheet
+                foreach ($sheet->getRowIterator() as $row) {
+                    $cellIterator = $row->getCellIterator();
+                    $cellIterator->setIterateOnlyExistingCells(false); // This loops through all cells
+        
+                    $rowData = [];
+                    foreach ($cellIterator as $cell) {
+                        $rowData[] = $cell->getValue();
+                    }
+        
+                    // Check if the team name is in the second column
+                    if (isset($rowData[1]) && $rowData[1] == $teamName) {
+                        // Extract and process the row data as needed
+                        // print_r($rowData); // For demonstration purposes
+                        $teamScores[] = $rowData;
+                    }
+                }
+            }
+        } catch (Exception $e) {
+            echo 'Error loading spreadsheet file: ' . $e->getMessage();
+        }
+
+        // Define the new keys
+        $newKeys = [
+            'Ranking', 'Teamnaam', 'Wedstrijden', 'Punten', 
+            'Sets_voor', 'Sets_tegen', 'Punten_voor', 'Punten_tegen', 'Opmerkingen'
+        ];
+
+        // Iterate over each sub-array and assign new keys
+        foreach ($teamScores as &$subArray) {
+            $subArray = array_combine($newKeys, $subArray);
+        }
+
+        
+        // Loop through each team in $teamScores
+        foreach ($teamScores as $key => $teamScore) {
+            // Extract the teamname from the current team in $teamScores
+            $teamName = $teamScore['Teamnaam'];
+
+            // Search for the team in the $teams array
+            foreach ($teams as $team) {
+                if ($team[0] == $teamName) {
+                    // Extract the Niveau and perform the required string manipulations
+                    $niveau = $team[1];
+                    $niveau = str_replace(' klasse', ' Klasse', $niveau); // Replace "klasse" with "Klasse"
+                    $niveau = preg_replace('/\b(Heren|Dames)\b/', '', $niveau); // Remove "Heren" or "Dames"
+                    $niveau = trim($niveau); // Remove leading and trailing spaces
+                    $niveau = preg_replace('/\s+[A-Za-z]$/','', $niveau); // Remove loose characters at the end
+
+                    // Add the modified "Niveau" key to the $teamScores array
+                    $teamScores[$key]['Niveau'] = $niveau;
+                    break;
+                }
+            }
+        }
+        // Array to keep track of unique team names
+        $uniqueTeamNames = [];
+
+        // Array to hold the final result
+        $filteredArray = [];
+
+        foreach ($teamScores as $teamScore) {
+            // Check if the Teamnaam value is already in the uniqueTeamNames array
+            if (!in_array($teamScore['Teamnaam'], $uniqueTeamNames)) {
+                // If not, add it to uniqueTeamNames and filteredArray
+                $uniqueTeamNames[] = $teamScore['Teamnaam'];
+                $filteredArray[] = $teamScore;
+            }
+        }
+
+        
+        usort($filteredArray, function ($a, $b) {
+            return $a['Ranking'] <=> $b['Ranking'];
+        });
+
+        // Then sort by Punten within each Ranking
+        usort($filteredArray, function($a, $b) {
+            if ($a['Ranking'] == $b['Ranking']) {
+                return $b['Punten'] <=> $a['Punten']; // Note: this sorts in descending order of Punten
+            }
+            return $a['Ranking'] <=> $b['Ranking'];
+        });
+
+        
+
+        
+        // Remove the temporary file
+        unlink($tmpfname);
+
+        // $sortedData now contains associative arrays with unique Teamnaam values
+        return $filteredArray;
+
     }
 
-    public function GetUitslagenForVereniging(): array
-    {
-        $url = sprintf($this->verenigingsuitslagenUrl, $this->verenigingscode, $this->exportType);
-        return $this->GetUitslagen($url);
-    }
-
-    public function DoesTeamExist(string $vereniging, string $gender, int $sequence): bool
-    {
-        $url = sprintf($this->teamprogrammaUrl, $vereniging, $gender, $sequence, $this->exportType);
-        $handle = curl_init($url);
-        curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
-
-        /* Get the HTML or whatever is linked in $url. */
-        curl_exec($handle);
-
-        /* Check for 404 (file not found). */
-        $httpCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
-        curl_close($handle);
-
-        return $httpCode == 200;
-    }
 
     private function GetGender(Team $team): string
     {
@@ -341,25 +489,39 @@ class NevoboGateway implements INevoboGateway
         return DateTime::createFromFormat('d F Y H:i', "$day $month $year $hours:$minutes");
     }
 
-    private function CreateSimplePieFeed(string $url): SimplePie
-    {
+    private function isLocalFile($path): bool {
+        // Check if the path is a local file path by looking for the presence of 'http'
+        return strpos($path, 'http') === false;
+    }
+    
+
+    private function CreateSimplePieFeed(string $url): SimplePie {
         $feed = new SimplePie();
-        $feed->set_feed_url($url);
-        $feed->enable_order_by_date(false);
-        $feed->handle_content_type();
-        $feed->set_cache_duration($this->cacheDuration);
-        if (!file_exists($this->cacheLocation)) {
-            mkdir($this->cacheLocation);
+        
+        if ($this->isLocalFile($url)) {
+            // If it's a local file, read its contents and use set_raw_data
+            if (file_exists($url)) {
+                $fileContents = file_get_contents($url);
+                $feed->set_raw_data($fileContents);
+            } else {
+                // Handle error: file not found
+                throw new Exception("File not found: $url");
+            }
+        } else {
+            // If it's a URL, set it directly
+            $feed->set_feed_url($url);
         }
-        $feed->set_cache_location($this->cacheLocation);
+    
         $feed->init();
+        $feed->handle_content_type();
+        
         return $feed;
     }
+    
 
-    private function ParseFeed(string $url): array
-    {
+    private function ParseFeed(string $url): array {
         $feed = $this->CreateSimplePieFeed($url);
-
+    
         $result = [];
         for ($i = 0; $i < $feed->get_item_quantity(); $i++) {
             $rssFeedItem = new RssFeedItem;
@@ -371,4 +533,22 @@ class NevoboGateway implements INevoboGateway
         
         return $result;
     }
+    
+    private function getMockDataPath($filename) : string {
+        $path = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'mocks' . DIRECTORY_SEPARATOR . $filename;
+        // Normalize the file path for URL
+        $normalizedFilePath = str_replace('\\', '/', $path); // Convert backslashes to forward slashes
+    
+        // Detect if running on Windows and adjust the file URL protocol accordingly
+        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+            // Windows paths need an extra '/' if they start with a drive letter, and we don't trim the initial slash
+            $feedUrl = 'file:///' . $normalizedFilePath;
+        } else {
+            // For Unix/Linux, use two slashes
+            $feedUrl = 'file://' . $normalizedFilePath;
+        }
+    
+        return $feedUrl;
+    }
+    
 }

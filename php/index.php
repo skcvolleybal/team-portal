@@ -17,6 +17,8 @@ use TeamPortal\RouteObjects\PostRoute;
 use TeamPortal\RouteObjects\RouteGroup;
 use DI\ContainerBuilder;
 
+
+
 require 'vendor/autoload.php';
 
 // Load WordPress
@@ -25,8 +27,6 @@ require 'vendor/autoload.php';
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 
-$wordpressPath = $_ENV['WORDPRESS_PATH'];
-require_once $wordpressPath . '/wp-load.php';
 
 $containerBuilder  = new ContainerBuilder();
 $containerBuilder->addDefinitions('di-config.php');
@@ -73,6 +73,7 @@ if (str_contains($_SERVER['REQUEST_URI'], $testUrl)) {
 
 $entryPoint =
     new RouteGroup($baseRoute, [
+          
         new GetRoute('/mijn-overzicht', UseCases\MijnOverzicht::class, AuthorizationRole::USER),
 
         new RouteGroup('/wedstrijd-overzicht', [
@@ -80,12 +81,17 @@ $entryPoint =
             new PostRoute('/aanwezigheid', UseCases\UpdateAanwezigheid::class),
         ], AuthorizationRole::USER),
 
+        new RouteGroup('/week-overzicht', [
+            new GetRoute('', UseCases\GetWeekOverzicht::class),
+        ], AuthorizationRole::TEAMCOORDINATOR),
+
+
         new RouteGroup('/fluiten', [
             new GetRoute('', UseCases\GetBeschikbaarheid::class),
             new PostRoute('', UseCases\UpdateBeschikbaarheid::class)
         ], AuthorizationRole::USER),
 
-        new RouteGroup('/barcie', [
+        new RouteGroup('/barcie-beschikbaarheid', [
             new GetRoute('', UseCases\GetBarcieBeschikbaarheid::class),
             new PostRoute('', UseCases\UpdateBarcieBeschikbaarheid::class)
         ], AuthorizationRole::BARCIE),
@@ -120,6 +126,13 @@ $entryPoint =
             ])
         ], AuthorizationRole::TEAMCOORDINATOR),
 
+ 
+        new RouteGroup('/emails', [
+            new GetRoute('', UseCases\GetAllEmails::class),
+            new GetRoute('/{id}', UseCases\GetEmailById::class)
+        ], AuthorizationRole::TEAMCOORDINATOR),
+
+
         new GetRoute('/calendar', UseCases\GetCalendar::class, AuthorizationRole::UNREGISTERED),
         
 
@@ -136,7 +149,13 @@ $entryPoint =
             new GetRoute('/user', UseCases\GetCurrentUser::class),
             new GetRoute('/users', UseCases\GetUsers::class, AuthorizationRole::WEBCIE),
             new PostRoute('/inloggen', UseCases\Inloggen::class, AuthorizationRole::UNREGISTERED)
-        ], AuthorizationRole::USER)
+        ], AuthorizationRole::USER),
+        
+        new RouteGroup('/statistics', [
+            new GetRoute('/getskcranking', UseCases\GetSkcRanking::class)
+        ], AuthorizationRole::USER),
+
+
     ]);
 $entryPoint->RegisterRoutes($app);
 

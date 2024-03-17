@@ -1,9 +1,9 @@
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+<nav class="navbar navbar-expand-lg navbar-dark">
 
   <div class="left">
-    <a class="navbar-brand" (click)="toggleNavbar()" style="color: white">
-      <div style="display: flex">
+    <a class="navbar-brand" (click)="toggleNavbar()" style="color: white; display: flex!important; flex-basis: auto;">
+      <div style="display: flex; margin-left: 5px!important;">
         SKC TeamPortal
         <div
           style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden"
@@ -75,7 +75,7 @@
         </div>
       </li>
     </ul>
-    <span *ngIf="!isProd" class="badge badge-warning">You're on Test or Localhost 🔧 <br>
+    <span style="margin-left: 5px;" *ngIf="!isProd" class="badge bg-warning">You're on Test or Localhost 🔧 <br>
       <span *ngIf="gitVersion.branch !== 'unknown'" style="font-weight: 500;">Branch: {{ gitVersion.branch }}. Commit: {{ gitVersion.hash | slice:0:7 }} </span>
     </span>
 

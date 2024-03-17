@@ -9,8 +9,7 @@
       {{ wedstrijd.tijd }}, {{ wedstrijd.locatie }}
     </div>
     <p class="card-text" *ngIf="wedstrijd.isScheidsrechter">
-      <teamportal-scheidsrechter [isScheidsrechter]="wedstrijd.isScheidsrechter"
-        [scheidsrechter]="wedstrijd.scheidsrechter"></teamportal-scheidsrechter>
+      <teamportal-scheidsrechter [isScheidsrechter]="wedstrijd.isScheidsrechter" [scheidsrechter]="wedstrijd.scheidsrechter"></teamportal-scheidsrechter>
       <teamportal-tellers [isTellers]="wedstrijd.isTellers" [tellers]="wedstrijd.tellers"></teamportal-tellers>
       {{ wedstrijd.tellers }}
     </p>

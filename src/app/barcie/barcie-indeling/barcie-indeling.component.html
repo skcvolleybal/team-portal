@@ -1,11 +1,5 @@
-<!-- <div *ngIf="bardiedagenEmpty; then showInfo else showMijnOverzicht"></div>
 
-<ng-template #showInfo>
-  <p>Hier kun je barleden aan een bardienst koppelen.</p>
-  <p><em>Er zijn nog geen bardiensten ingepland</em></p>
-<br>
-</ng-template> -->
-  <p>Hier vul je bardiensten, barkeepers en BHV'ers in.</p>
+<p>Hier vul je bardiensten, barkeepers en BHV'ers in.</p>
 <br>
 
 <div class="alert alert-danger" role="alert" *ngIf="errorMessage">
@@ -38,7 +32,7 @@
   </thead>
   <tbody>
     <tr>
-      <ul class="list-group">
+      <ul class="list-group barcielist">
         <li class="list-group-item" *ngFor="let barshift of barciedag.shifts">
           <h5 class="card-title">Shift {{barshift.shift}}</h5>
           <div class="row m-1" *ngFor="let barcielid of barshift.barleden">
@@ -60,14 +54,15 @@
               </div>
             </div>
           </div>
-          <button type="button" class="btn btn-primary btn-block" (click)="SelecteerBarcieLid(barciedag, barshift.shift)">Barcielid
+          <button type="button" class="btn btn-primary btn-block" (click)="SelecteerBarcieLid(barciedag, barshift.shift)">
+            <fa-icon [icon]="user"></fa-icon> Barcielid
             Toevoegen</button>
         </li>
         <li style="padding: 10px;">
-          <button type="button" class="btn btn-primary btn-block" (click)="AddShift(barciedag.date)">Shift toevoegen</button>
+          <button type="button" class="btn btn-primary btn-block" (click)="AddShift(barciedag.date)"><fa-icon [icon]="calendar"></fa-icon> Shift toevoegen</button>
         </li>
         <li style="padding: 10px;">
-          <button type="button" class="btn btn-danger btn-block" (click)="DeleteBarcieDate(barciedag.date)">Dag
+          <button type="button" class="btn btn-danger btn-block" (click)="DeleteBarcieDate(barciedag.date)"><fa-icon [icon]="delete"></fa-icon> Dag
             verwijderen</button>
         </li>
       </ul>

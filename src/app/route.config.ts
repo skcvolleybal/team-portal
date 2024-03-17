@@ -5,6 +5,9 @@ import { Route } from '@angular/router';
 import { TeamtakencoComponent } from './teamtakenco/teamtakenco/teamtakenco.component';
 import { TelFluitBeschikbaarheidComponent } from './beschikbaarheid/tel-fluit-beschikbaarheid/tel-fluit-beschikbaarheid.component';
 import { WedstrijdOverzichtComponent } from './wedstrijd-overzicht/wedstrijd-overzicht/wedstrijd-overzicht.component';
+import { StatistiekenComponent } from './statistieken/statistieken.component';
+import { EmailsComponent } from './emails/emails.component';
+import { EmailDetailComponent } from './email-detail/email-detail.component';
 
 interface IToggleRoute extends Route {
   isHidden: boolean;
@@ -29,15 +32,7 @@ export const appRoutes: IToggleRoute[] = [
     data: { title: '👥 Wedstrijd Beschikbaarheid' },
     isHidden: true,
   },
-  // Obsolete; due to DWF 2.0 update stats need to be rewritten
-  // {
-  //   path: 'statistieken',
-  //   component: StatistiekenComponent,
-  //   data: {
-  //     title: 'Statistieken',
-  //   },
-  //   isHidden: false,
-  // }, 
+ 
   {
     path: 'fluit-beschikbaarheid',
     component: TelFluitBeschikbaarheidComponent,
@@ -46,16 +41,16 @@ export const appRoutes: IToggleRoute[] = [
     },
     isHidden: false,
   },
-  // Obsolete; is now barcie
-  // {
-  //   path: 'barcie-beschikbaarheid',
-  //   component: BarcieBeschikbaarheidComponent,
-  //   data: {
-  //     title: 'Barcie Beschikbaarheid',
-  //     groups: ['barcie', 'webcie'],
-  //   },
-  //   isHidden: true,
-  // },
+  //Obsolete; is now barcie
+  {
+    path: 'barcie-beschikbaarheid',
+    component: BarcieBeschikbaarheidComponent,
+    data: {
+      title: '🍺 Barcie Beschikbaarheid',
+      groups: ['barcie', 'webcie'],
+    },
+    isHidden: true,
+  },
   {
     path: 'teamtakenco',
     component: TeamtakencoComponent,
@@ -68,4 +63,30 @@ export const appRoutes: IToggleRoute[] = [
     data: { title: '🍺 Barcie', groups: ['teamcoordinator', 'webcie'] },
     isHidden: true,
   },
+  {
+    path: 'statistieken',
+    component: StatistiekenComponent,
+    data: {
+      title: '📊 Statistieken',
+    },
+    isHidden: false,
+  },
+  {
+    path: 'emails',
+    component: EmailsComponent,
+    data: {
+      title: '✉️ Emails', groups: ['teamcoordinator', 'webcie']
+    },
+    isHidden: true,
+  },
+  {
+    // We give this route no groups so that it doesn't show up for anyone, but the route still works. 
+    // Authentication and authorization is done on the back-end. 
+    path: 'emails/:id',
+    component: EmailDetailComponent,
+    data: {
+      title: '✉️ Email', groups: [], 
+    },
+    isHidden: true,
+  }
 ];

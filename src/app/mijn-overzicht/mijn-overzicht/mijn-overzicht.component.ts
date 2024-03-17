@@ -3,21 +3,22 @@ import {
   faCalendarCheck,
   faPlusSquare,
   faUser,
+  faInfoCircle,
+  faPeopleCarry,
 } from '@fortawesome/free-solid-svg-icons';
 
 import { WordPressService } from '../../core/services/request.service';
 import { StateService } from 'src/app/core/services/state.service';
-import { calenderGenerator } from './calenderGenerator';
 
 @Component({
   selector: 'teamportal-mijn-overzicht',
   templateUrl: './mijn-overzicht.component.html',
   styleUrls: ['./mijn-overzicht.component.scss'],
-  providers: [calenderGenerator]
 })
 
 export class MijnOverzichtComponent implements OnInit {
   loading: boolean;
+  taskIcon = faUser;
   scheidsrechterIcon = faUser;
   tellersIcon = faCalendarCheck;
   openIcon = faPlusSquare;
@@ -25,16 +26,18 @@ export class MijnOverzichtComponent implements OnInit {
   errorMessage: string;
   dagenEmpty: boolean = false;
   user: any;
+  zaalwacht = faPeopleCarry;
+
+  infoIcon = faInfoCircle;
 
   constructor(
-    private joomalService: WordPressService,
-    private stateService: StateService,
-    private CalendarService: calenderGenerator
+    private wordPressService: WordPressService,
+    private stateService: StateService
   ) {}
 
   ngOnInit() {
     this.loading = true;
-    this.joomalService.GetMijnOverzicht().subscribe(
+    this.wordPressService.GetMijnOverzicht().subscribe(
       (response) => {
         console.log(response)
         this.dagen = response;
@@ -58,12 +61,8 @@ export class MijnOverzichtComponent implements OnInit {
       }
     });
 
-    this.joomalService.GetCurrentUser().subscribe((data) => {
+    this.wordPressService.GetCurrentUser().subscribe((data) => {
       this.user = data;
     });
-  }
-
-  generateCalender() {
-    this.CalendarService.generateICalendar();
   }
 }

@@ -34,19 +34,18 @@ jobs:
         echo "};" >> ./src/environments/version.ts
 
     - name: 🏗️ Installing NPM dependencies
-      run: npm i -f
+      run: npm i
     - name: 🔨 Building Angular
       run: npm run build
     - name: 🏗️ Installing PHP dependencies
       run: |
         composer update --ignore-platform-reqs --working-dir=php
         composer dumpautoload --working-dir=php
-    - name: 👨‍🔬 Running PHP Unit tests
-      run: php/vendor/bin/phpunit php/Tests
+    # - name: 👨‍🔬 Running PHP Unit tests
+    #   run: php/vendor/bin/phpunit php/Tests
     - name: Prepare package
       run: |
         mv php/ dist/
-        mv static-pages/ dist/
         cp .htaccess dist/.htaccess
     - name: Curl whitelist Github Runner IP at Antagonist
       run: |

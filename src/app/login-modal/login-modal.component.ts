@@ -1,4 +1,4 @@
-import { FormBuilder, Validators } from '@angular/forms';
+import { UntypedFormBuilder, Validators } from '@angular/forms';
 import { NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
 
 import { Component } from '@angular/core';
@@ -17,8 +17,8 @@ export class LoginModalComponent {
   errorMessage: string;
 
   constructor(
-    private fb: FormBuilder,
-    private joomalService: WordPressService,
+    private fb: UntypedFormBuilder,
+    private wordPressService: WordPressService,
     private modelService: NgbModal,
     private stateService: StateService,
     private router: Router
@@ -33,7 +33,7 @@ export class LoginModalComponent {
     this.errorMessage = null;
     const username = this.loginForm.get('username').value;
     const password = this.loginForm.get('password').value;
-    this.joomalService.Login(username, password).subscribe({
+    this.wordPressService.Login(username, password).subscribe({
       next: () => {
         this.stateService.setIsAuthenticated(true);
         this.router.navigate(['/']);

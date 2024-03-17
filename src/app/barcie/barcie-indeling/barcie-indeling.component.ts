@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { NgbDate, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import {
+  faUser,
+  faTrash,
   faCalendarAlt,
   faTrashAlt,
   faHeart as heartSolid,
@@ -19,10 +21,11 @@ import { faHeart as heartRegular } from '@fortawesome/free-regular-svg-icons';
 })
 export class BarcieIndelingComponent implements OnInit {
   calendar = faCalendarAlt;
+  user = faUser;
   geenBhv = heartRegular;
   bhv = heartSolid;
   delete = faTrashAlt;
-  newDate: FormGroup;
+  newDate: UntypedFormGroup;
 
   barciedagen = [];
   isLoading: boolean;
@@ -36,8 +39,8 @@ export class BarcieIndelingComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.newDate = new FormGroup({
-      date: new FormControl(null, [Validators.required]),
+    this.newDate = new UntypedFormGroup({
+      date: new UntypedFormControl(null, [Validators.required]),
     });
     this.GetBarcieRooster();
   }
@@ -121,7 +124,7 @@ export class BarcieIndelingComponent implements OnInit {
         }
       },
       (response) => {
-        this.isLoading = true;
+        this.isLoading = false;
         this.errorMessage = response.error.message;
       }
     );

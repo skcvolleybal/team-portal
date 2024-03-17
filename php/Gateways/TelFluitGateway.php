@@ -163,29 +163,62 @@ class TelFluitGateway
     {
         // Working WordPress query.
 
-        $query = "SELECT 
-            u.ID as id, 
-            u.display_name as naam, 
-            u.user_email as email,
-            MAX(p.ID) as teamId, 
-            MAX(p.post_title) as teamnaam,
-            COALESCE(COUNT(w.scheidsrechter_id), 0) as gefloten,
-            MAX(niveau_meta.meta_value) as niveau
+        $query = 'SELECT 
+        u.ID as id, 
+        u.display_name as naam, 
+        u.user_email as email,
+        MAX(p.ID) as teamId, 
+        MAX(p.post_title) as teamnaam,
+        COALESCE(COUNT(w.scheidsrechter_id), 0) as gefloten,
+        MAX(niveau_meta.meta_value) as niveau,
+        MAX(scheidsrechter_dit_seizoen_meta.meta_value) as scheidsrechter_dit_seizoen
         FROM 
-            " . $_ENV['WPDBNAME'] . ".wp_users u
+        ' . $_ENV['WPDBNAME'] . '.wp_users u
         INNER JOIN 
-        " . $_ENV['WPDBNAME'] . ".wp_usermeta um ON u.ID = um.user_id AND um.meta_key = 'team' 
-        INNER JOIN 
-        " . $_ENV['WPDBNAME'] . ".wp_posts p ON p.ID = um.meta_value
-        LEFT JOIN
-        " . $_ENV['DBNAME'] . ".TeamPortal_wedstrijden w ON u.ID = w.scheidsrechter_id        
+        ' . $_ENV['WPDBNAME'] . '.wp_usermeta um ON u.ID = um.user_id AND um.meta_key = "team"
         INNER JOIN
-        " . $_ENV['WPDBNAME'] . ".wp_usermeta niveau_meta ON u.ID = niveau_meta.user_id AND niveau_meta.meta_key = 'scheidsrechter' AND niveau_meta.meta_value <> '' AND niveau_meta.meta_value IS NOT NULL
+        ' . $_ENV['WPDBNAME'] . '.wp_posts p ON p.ID = um.meta_value
+        LEFT JOIN
+        ' . $_ENV['DBNAME'] . '.TeamPortal_wedstrijden w ON u.ID = w.scheidsrechter_id        
+        INNER JOIN
+        ' . $_ENV['WPDBNAME'] . '.wp_usermeta niveau_meta ON u.ID = niveau_meta.user_id AND niveau_meta.meta_key = "scheidsrechter" AND niveau_meta.meta_value <> "" AND niveau_meta.meta_value IS NOT NULL
+        INNER JOIN
+        ' . $_ENV['WPDBNAME'] . '.wp_usermeta scheidsrechter_dit_seizoen_meta ON u.ID = scheidsrechter_dit_seizoen_meta.user_id AND scheidsrechter_dit_seizoen_meta.meta_key = "scheidsrechter_dit_seizoen" AND scheidsrechter_dit_seizoen_meta.meta_value = "1"
         WHERE 
-            p.post_type = 'team'
+            p.post_type = "team"
         GROUP BY 
             u.ID  
-        ORDER BY 'gefloten' DESC";
+        ORDER BY gefloten DESC';
+
+
+    //     "SELECT 
+    //     u.ID as id, 
+    //     u.display_name as naam, 
+    //     u.user_email as email,
+    //     MAX(p.ID) as teamId, 
+    //     MAX(p.post_title) as teamnaam,
+    //     COALESCE(COUNT(w.scheidsrechter_id), 0) as gefloten,
+    //     MAX(niveau_meta.meta_value) as niveau,
+    //     MAX(scheids_meta.meta_value) as scheids_value
+    // FROM 
+    //     localhost_test.wp_users u
+    // INNER JOIN 
+    //     localhost_test.wp_usermeta um ON u.ID = um.user_id AND um.meta_key = 'team' 
+    // INNER JOIN 
+    //     localhost_test.wp_posts p ON p.ID = um.meta_value
+    // LEFT JOIN
+    //     localhost_test.TeamPortal_wedstrijden w ON u.ID = w.scheidsrechter_id        
+    // INNER JOIN
+    //     localhost_test.wp_usermeta niveau_meta ON u.ID = niveau_meta.user_id AND niveau_meta.meta_key = 'scheidsrechter' AND niveau_meta.meta_value <> '' AND niveau_meta.meta_value IS NOT NULL
+    // -- Add the following INNER JOIN to filter users with 'scheids' checkbox value equal to 1
+    // INNER JOIN
+    //     localhost_test.wp_usermeta scheids_meta ON u.ID = scheids_meta.user_id AND scheids_meta.meta_key = 'scheids' AND scheids_meta.meta_value = '1'
+    // WHERE 
+    //     p.post_type = 'team'
+    // GROUP BY 
+    //     u.ID  
+    // ORDER BY gefloten DESC;
+    // "
 
             // Oude Joomla versie
             // $query = 'SELECT

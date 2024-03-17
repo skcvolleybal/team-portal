@@ -10,6 +10,8 @@ import { BrowserModule } from '@angular/platform-browser';
 import { CoreModule } from './core/core.module';
 import { DefaultHeadersInterceptor } from './core/interceptors/default-headers.interceptor';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faCoffee } from '@fortawesome/free-solid-svg-icons';
+
 import { HTTPListener } from './core/interceptors/is-authorized.interceptor';
 import { ImpersonationInterceptor } from './core/interceptors/add-impersonation.interceptor';
 import { WordPressService } from './core/services/request.service';
@@ -24,55 +26,64 @@ import { StateService } from './core/services/state.service';
 import { WedstrijdOverzichtModule } from './wedstrijd-overzicht/wedstrijd-overzicht.module';
 import { WithCredentialsInterceptor } from './core/interceptors/add-credentials.interceptor';
 import { appRoutes } from './route.config';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
+import { ToastrModule } from 'ngx-toastr';
+import { StatistiekenComponent } from './statistieken/statistieken.component';
+import { EmailsComponent } from './emails/emails.component';
+import { EmailDetailComponent } from './email-detail/email-detail.component';
+
 
 @NgModule({
-  entryComponents: [LoginModalComponent],
-  declarations: [AppComponent, LoginModalComponent],
-  imports: [
-    HttpClientModule,
-    RouterModule.forRoot(appRoutes, {
-      useHash: true,
-      relativeLinkResolution: 'legacy',
-    }),
-    BrowserModule,
-    MijnOverzichtModule,
-    WedstrijdOverzichtModule,
-    BarcieModule,
-    BeschikbaarheidModule,
-    CoreModule,
-    TeamtakencoModule,
-    SharedModule,
-    FontAwesomeModule,
-  ],
-  exports: [],
-  providers: [
-    StateService,
-    WordPressService,
-    AanwezigheidService,
-    BarcieService,
-    BeschikbaarheidService,
-    TeamtakencoService,
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: HTTPListener,
-      multi: true,
-    },
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: ImpersonationInterceptor,
-      multi: true,
-    },
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: DefaultHeadersInterceptor,
-      multi: true,
-    },
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: WithCredentialsInterceptor,
-      multi: true,
-    },
-  ],
-  bootstrap: [AppComponent],
+    declarations: [AppComponent, LoginModalComponent, StatistiekenComponent, EmailsComponent, EmailDetailComponent],
+    imports: [
+        HttpClientModule,
+        RouterModule.forRoot(appRoutes, {
+    useHash: true
+}),
+        BrowserModule,
+        MijnOverzichtModule,
+        WedstrijdOverzichtModule,
+        BarcieModule,
+        BeschikbaarheidModule,
+        CoreModule,
+        TeamtakencoModule,
+        SharedModule,
+        NgbModule,
+        FontAwesomeModule,
+        BrowserAnimationsModule, // required animations module
+        ToastrModule.forRoot(), // ToastrModule added
+    ],
+    exports: [],
+    providers: [
+        StateService,
+        WordPressService,
+        AanwezigheidService,
+        BarcieService,
+        BeschikbaarheidService,
+        TeamtakencoService,    
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: HTTPListener,
+            multi: true,
+        },
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: ImpersonationInterceptor,
+            multi: true,
+        },
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: DefaultHeadersInterceptor,
+            multi: true,
+        },
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: WithCredentialsInterceptor,
+            multi: true,
+        },
+    ],
+    bootstrap: [AppComponent]
 })
 export class AppModule {}

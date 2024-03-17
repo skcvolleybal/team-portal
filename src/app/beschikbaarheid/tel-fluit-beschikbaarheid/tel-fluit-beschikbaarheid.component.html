@@ -35,40 +35,35 @@
           }"
           *ngFor="let speeltijd of speeldag.speeltijden"
         >
-          <form>
-            <div class="form-row">
-              <div class="col" style="line-height: 38px;">
-                {{ speeltijd.tijd }}
+
+          <div class="form-row">
+            <div class="col" style="line-height: 38px;">
+              {{ speeltijd.tijd }}
+            </div>
+          </div>
+          <div class="container">
+            <div class="row">
+              <!-- First Column for larger screens, takes full width on small screens -->
+              <div class="col-md-8 col-12">
+                <div class="d-flex flex-wrap">
+                  <div class="bg-light d-inline-flex text-dark rounded m-1" *ngFor="let wedstrijd of speeltijd.wedstrijden">
+                    <teamportal-wedstrijd [wedstrijd]="wedstrijd"></teamportal-wedstrijd>
+                  </div>
+                </div>
               </div>
-              <div class="col" style="max-width:115px;">
+          
+              <!-- Second Column, becomes centered text on small screens -->
+              <div class="col-md-4 col-12 text-md-end">
                 <teamportal-keuze
-                  (updateKeuze)="
-                    UpdateFluitBeschikbaarheid(
-                      $event,
-                      speeldag.date,
-                      speeltijd.tijd
-                    )
-                  "
+                  (updateKeuze)="UpdateFluitBeschikbaarheid($event, speeldag.date, speeltijd.tijd)"
                   [keuze]="speeltijd.isBeschikbaar"
                 ></teamportal-keuze>
               </div>
             </div>
-            <div>
-              <table>
-                <tbody>
-                  <tr *ngFor="let wedstrijd of speeltijd.wedstrijden">
-                    <td class="bg-light d-inline-flex text-dark rounded m-1">
-                      <teamportal-wedstrijd
-                        [wedstrijd]="wedstrijd"
-                      ></teamportal-wedstrijd>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </form>
+          </div>
         </li>
       </ul>
+      
     </tr>
     <tr class="gray-background">
       <td colspan="3"></td>

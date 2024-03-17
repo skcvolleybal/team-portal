@@ -4,6 +4,8 @@ import {
   faQuestion,
   faTimes,
 } from '@fortawesome/free-solid-svg-icons';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'teamportal-keuze',
@@ -11,6 +13,8 @@ import {
   styleUrls: ['./keuze.component.scss'],
 })
 export class KeuzeComponent {
+  constructor(private toastr: ToastrService) {}
+
   @Input()
   keuze;
   @Output()
@@ -23,5 +27,11 @@ export class KeuzeComponent {
   onClick(keuze) {
     this.keuze = keuze;
     this.updateKeuze.emit(keuze);
+    this.toastr.success(' ', 'Saving..', {
+      timeOut: 750,
+      progressBar: true,
+      progressAnimation: 'increasing'
+      
+    });
   }
 }

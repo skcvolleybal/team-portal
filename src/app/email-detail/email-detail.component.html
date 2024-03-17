@@ -1,0 +1,53 @@
+<teamportal-spinner *ngIf="loading"></teamportal-spinner>
+
+<div class="alert alert-danger" role="alert" *ngIf="errorMessage">
+    {{errorMessage}}
+  </div>
+
+<div *ngIf="!errorMessage" class="container">
+    <div class="row">
+    <div *ngIf="!loading" class="col-md-8">
+      <div class="card">
+        <div class="card-body">
+            <h4>{{ email.titel }}</h4>
+            <br>
+          <p>
+            <strong>Van:</strong> {{ email.sender_naam }} <{{ email.sender_email }}>
+            <span class="fa fa-envelope"></span>
+          </p>
+          <p>
+            <strong>Aan:</strong> {{ email.receiver_naam }} <{{email.receiver_email }}>
+            <span class="fa fa-user"></span>
+          </p>
+          <div [innerHTML]="email.body" class="email-body"></div>
+        </div>
+      </div>
+    </div>
+
+  <div *ngIf="!loading" class="col-md-4">
+    <div class="card">
+        <div class="card-header">
+            <h4 class="card-title">Verzendinformatie</h4>
+        </div>
+        <div class="card-body">
+
+        <p class="text-info" style="font-weight: 500">
+            <fa-icon [icon]="cogs"></fa-icon> Gegenereerd om
+            {{ email.queue_date }}
+            </p>
+    
+          <p *ngIf="email.send_date; else inQueue" class="text-success" style="font-weight: 500">
+            <fa-icon [icon]="check"></fa-icon> Verzonden om
+            {{ email.send_date }}
+          </p>
+
+          <ng-template #inQueue>
+            <p class="text-warning" style="font-weight: 500"><fa-icon [icon]="exclamation"></fa-icon> In wachtrij voor verzending</p>
+            <p>Als een e-mail langer dan 30 minuten in de wachtrij blijft staan, contacteer de Webcie.</p>
+          </ng-template>
+
+
+      </div>
+    </div>
+</div>
+</div>

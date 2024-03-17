@@ -76,9 +76,10 @@ class MijnOverzicht implements Interactor
         }
 
         usort($overzicht, [Wedstrijddag::class, "Compare"]);
-        foreach ($overzicht as $dag) {
-            usort($dag->speeltijden, [Speeltijd::class, "Compare"]);
-        }
+        // foreach ($overzicht as $dag) {
+        //     usort($dag->speeltijden, [Speeltijd::class, "Compare"]);
+        // }
+        // When enabled, speeltijd 17:30 comes before 15:30... So disabled for now. 
 
 
 

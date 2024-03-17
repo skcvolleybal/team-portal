@@ -27,7 +27,10 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.scss"
+              "src/styles.scss",
+          "node_modules/bootstrap/dist/css/bootstrap.min.css",
+          "node_modules/ngx-toastr/toastr.css"
+
             ],
             "scripts": [],
             "vendorChunk": true,
@@ -109,7 +112,10 @@
             "tsConfig": "src/tsconfig.spec.json",
             "karmaConfig": "src/karma.conf.js",
             "styles": [
-              "src/styles.scss"
+              "src/styles.scss",
+          "node_modules/bootstrap/dist/css/bootstrap.min.css",
+          "node_modules/ngx-toastr/toastr.css"
+
             ],
             "scripts": [],
             "assets": [
@@ -139,7 +145,6 @@
       }
     }
   },
-  "defaultProject": "team-portal",
   "cli": {
     "analytics": "fcc2d598-a6af-439d-ad35-455ffba2de16"
   }

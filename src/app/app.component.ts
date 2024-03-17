@@ -12,6 +12,7 @@ import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
 import { environment } from '../environments/environment';
 import { version } from '../environments/version';
 
+
 @Component({
   selector: 'teamportal-root',
   templateUrl: './app.component.html',
@@ -34,7 +35,7 @@ export class AppComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private modalService: NgbModal,
     private stateService: StateService,
-    private joomalService: WordPressService,
+    private wordPressService: WordPressService,
     config: NgbModalConfig
   ) {
     config.backdrop = 'static';
@@ -71,7 +72,7 @@ export class AppComponent implements OnInit {
       this.modalService.open(LoginModalComponent, { centered: true });
     });
 
-    this.joomalService.GetGroupsOfUser().subscribe((response) => {
+    this.wordPressService.GetGroupsOfUser().subscribe((response) => {
       this.ShowMenuItems(response);
       this.isWebcie = response.findIndex((group) => group === 'webcie') !== -1;
       this.stateService.isWebcie = this.isWebcie;
@@ -109,7 +110,7 @@ export class AppComponent implements OnInit {
     text.pipe(
       debounceTime(300),
       distinctUntilChanged(),
-      switchMap((term) => this.joomalService.GetUsers(term))
+      switchMap((term) => this.wordPressService.GetUsers(term))
       // tslint:disable-next-line:semicolon
     );
 
