@@ -39,7 +39,8 @@ class Email
 
     function Build()
     {
-        $this->sender = $this->sender ?? new Persoon(-1, "SKC Studentenvolleybal", "info@skcvolleybal.nl");
+        // $this->sender = $this->sender ?? new Persoon(-1, "SKC Studentenvolleybal", "info@skcvolleybal.nl");
+        $this->sender = new Persoon(-1, "SKC Volleybal TeamTaken", "teamtakenco@skcvolleybal.nl");
         $this->CalculateSignature();
     }
 
