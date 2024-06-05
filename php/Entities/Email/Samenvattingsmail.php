@@ -11,7 +11,7 @@ class Samenvattingsmail extends Email
         Emailsamenvatting $samenvatting,
         Persoon $receiver
     ) {
-        $barcieContent = $this->GetBoldHeader(count($samenvatting->barleden) > 0 ? "Barleden" : "Geen barleden");
+        $barcieContent = $this->GetBoldHeader(count($samenvatting->barleden) > 0 ? "Barleden en BHV'ers" : "Geen barleden/BHV'ers");
         $scheidsrechtersContent = $this->GetBoldHeader(count($samenvatting->scheidsrechters) > 0 ? "Scheidsrechters" : "Geen scheidsrechters");
         $tellersContent = $this->GetBoldHeader(count($samenvatting->tellers) > 0 ? "Tellers" : "Geen tellers");
         $zaalwachtersContent = $this->GetBoldHeader(count($samenvatting->zaalwachtteams) > 0 ? "Zaalwacht" : "Geen zaalwacht");
