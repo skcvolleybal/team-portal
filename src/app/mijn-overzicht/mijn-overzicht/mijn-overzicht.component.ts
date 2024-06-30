@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { calenderGenerator } from './calenderGenerator';
+import { calenderGenerator } from '../../core/services/calenderGenerator';
 import {
   faCalendarCheck,
   faPlusSquare,
@@ -42,7 +42,6 @@ export class MijnOverzichtComponent implements OnInit {
     this.loading = true;
     this.wordPressService.GetMijnOverzicht().subscribe(
       (response) => {
-        console.log(response)
         this.dagen = response;
         this.loading = false;
         if (this.dagen.length == 0) {
@@ -70,6 +69,6 @@ export class MijnOverzichtComponent implements OnInit {
   }
 
   generateCalender() {
-    this.CalendarService.generateICalendar();
+    this.CalendarService.generateICalendar(this.user);
   }
 }
