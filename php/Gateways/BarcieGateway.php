@@ -379,7 +379,7 @@ class BarcieGateway implements IBarcieGateway
                 new Persoon(
                     $row->userId,
                     $row->naam,
-                    $row->email
+                    $row->user_email
                 ),
                 $row->isBeschikbaar == "Ja",
                 $row->id

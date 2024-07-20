@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { calenderGenerator } from '../../core/services/calenderGenerator';
 import {
   faCalendarCheck,
   faPlusSquare,
@@ -14,6 +15,7 @@ import { StateService } from 'src/app/core/services/state.service';
   selector: 'teamportal-mijn-overzicht',
   templateUrl: './mijn-overzicht.component.html',
   styleUrls: ['./mijn-overzicht.component.scss'],
+  providers: [calenderGenerator]
 })
 
 export class MijnOverzichtComponent implements OnInit {
@@ -32,14 +34,14 @@ export class MijnOverzichtComponent implements OnInit {
 
   constructor(
     private wordPressService: WordPressService,
-    private stateService: StateService
+    private stateService: StateService,
+    private CalendarService: calenderGenerator
   ) {}
 
   ngOnInit() {
     this.loading = true;
     this.wordPressService.GetMijnOverzicht().subscribe(
       (response) => {
-        console.log(response)
         this.dagen = response;
         this.loading = false;
         if (this.dagen.length == 0) {
@@ -64,5 +66,9 @@ export class MijnOverzichtComponent implements OnInit {
     this.wordPressService.GetCurrentUser().subscribe((data) => {
       this.user = data;
     });
+  }
+
+  generateCalender() {
+    this.CalendarService.generateICalendar(this.user);
   }
 }
