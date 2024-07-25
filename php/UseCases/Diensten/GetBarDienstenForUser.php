@@ -22,14 +22,10 @@ class GetBarDienstenForUser implements Interactor
 
     public function Execute(object $data = null) {
 
-        if ($data->id === null) {
-            throw new InvalidArgumentException("ID is niet set");
-        }
-
-        $user = get_user_by('ID', $data->id);
+        $user = $this->wordPressGateway->GetUser();
 
         $barlid = new Barlid(
-            new Persoon($user->ID, $user->display_name, $user->user_email),
+            new Persoon($user->id, $user->naam, $user->email),
             0
         );
 

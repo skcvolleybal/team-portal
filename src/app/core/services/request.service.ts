@@ -43,27 +43,19 @@ export class WordPressService {
     return this.httpClient.get<any[]>(url);
   }
 
-  GetBarDienstenForUser(id: string): Observable<any[]> {
+  GetBarDienstenForUser(): Observable<any[]> {
     const url = environment.baseUrl + 'diensten/bar';
-    return this.httpClient.get<any[]>(url, 
-      {
-        params: { id },
-      }
-    );
+    return this.httpClient.get<any[]>(url);
   }
 
-  GetTelScheidsDienstenForUser(id: string): Observable<any[]> {
+  GetTelScheidsDienstenForUser(): Observable<any[]> {
     const url = environment.baseUrl + 'diensten/scheids';
-    return this.httpClient.get<any[]>(url, 
-      {
-        params: { id },
-      }
-    );
+    return this.httpClient.get<any[]>(url);
   }
 
-  GetDienstenForUser(id: string): Observable<any[]> {
-    const bar = this.GetBarDienstenForUser(id).pipe(share());
-    const telfluit = this.GetTelScheidsDienstenForUser(id).pipe(share());
+  GetDienstenForUser(): Observable<any[]> {
+    const bar = this.GetBarDienstenForUser().pipe(share());
+    const telfluit = this.GetTelScheidsDienstenForUser().pipe(share());
     return forkJoin([bar, telfluit ]);
   }
 

@@ -22,15 +22,9 @@ class GetTelDienstenForUser implements Interactor
 
     public function Execute(object $data = null) {
 
-        if ($data->id === null) {
-            throw new InvalidArgumentException("ID is niet set");
-        }
+        $user = $this->wordPressGateway->GetUser();
 
-        $user = get_user_by('ID', $data->id);
-
-        
-
-        $TelFluitLid = new Persoon($user->ID, $user->display_name, $user->user_email);
+        $TelFluitLid = new Persoon($user->id, $user->naam, $user->email);
         // GetFluitEnTelbeurtenFor
         return $this->TelFluitGateway->GetFluitEnTelbeurtenForCalender($TelFluitLid);
     }

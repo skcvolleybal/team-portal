@@ -1,15 +1,21 @@
-<p>Welkom<span *ngIf="user"> {{user.voornaam}}</span>! Hier zie je welke dagen je zaalwacht hebt, wanneer je wedstrijden zijn, wanneer je moet tellen, of je bardiensten hebt en wanneer je moet scheidsen.</p>
+<div style="display: flex; align-items: center; justify-content: space-between;">
+  <p style="margin: 0;">
+    Welkom<span *ngIf="user"> {{user.voornaam}}</span>! Hier zie je welke dagen je zaalwacht hebt, wanneer je wedstrijden zijn, wanneer je moet tellen, of je bardiensten hebt en wanneer je moet scheidsen.
+  </p>
+  <button id="IcalenderExportLink" class="CalenderButton" style="border-radius: 5px; margin-left: 10px;" (click)="generateCalender()">
+    <fa-icon [icon]="calenderIcon"></fa-icon> Export my teamtasks
+  </button>
+</div>
 
 <div *ngIf="dagenEmpty; then showInfo else showMijnOverzicht"></div>
 
 <ng-template #showInfo>
-<br>
-<p><em>Je hebt geen aankomende wedstrijden of diensten.</em></p>
-<br>
+  <br>
+  <p><em>Je hebt geen aankomende wedstrijden of diensten.</em></p>
+  <br>
 </ng-template>
 
 <ng-template #showMijnOverzicht>
-  <button id="IcalenderExportLink" class="CalenderButton" (click)="generateCalender()">Export teamtaken to calender!</button>
   <table class="table table-sm mb-0" *ngFor="let dag of dagen">
     <thead>
       <tr>

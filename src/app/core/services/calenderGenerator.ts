@@ -32,10 +32,9 @@ export class calenderGenerator {
 
     generateICalendar(user: any) {
       const calendar = new ICAL.Component(['vcalendar', [], []]);
-      this.user = user
       
 
-      const dates = this.WordPressService.GetDienstenForUser(this.user.id).subscribe(
+      const dates = this.WordPressService.GetDienstenForUser().subscribe(
         (response) => {
             this.bardiensten = response[0];
             this.telfluitdiensten = response[1];

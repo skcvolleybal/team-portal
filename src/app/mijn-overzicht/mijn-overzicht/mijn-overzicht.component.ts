@@ -7,6 +7,7 @@ import {
   faUser,
   faInfoCircle,
   faPeopleCarry,
+  faCalendar,
 } from '@fortawesome/free-solid-svg-icons';
 
 import { WordPressService } from '../../core/services/request.service';
@@ -24,6 +25,7 @@ export class MijnOverzichtComponent implements OnInit {
   taskIcon = faUser;
   scheidsrechterIcon = faUser;
   tellersIcon = faCalendarCheck;
+  calenderIcon = faCalendar;
   openIcon = faPlusSquare;
   dagen: any[];
   errorMessage: string;
