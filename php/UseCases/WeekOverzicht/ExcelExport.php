@@ -261,6 +261,12 @@ class ExcelExport
 
     private function CreateWedstrijdSchema() {
         $yeet = $this->WedstrijdenOpDag;
+
+        # Make sure first matches come first in the schedule
+        usort($this->WedstrijdenOpDag, function ($a, $b) {
+            return $a->timestamp <=> $b->timestamp;
+        });
+
         $this->veldNummer = 1;
         $this->kleurNummer = 0;
         $dayNames = array("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday");
