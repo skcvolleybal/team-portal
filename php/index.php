@@ -85,6 +85,10 @@ $entryPoint =
             new GetRoute('', UseCases\GetWeekOverzicht::class),
         ], AuthorizationRole::TEAMCOORDINATOR),
 
+        new RouteGroup('/diensten', [
+            new GetRoute('/bar', UseCases\GetBarDienstenForUser::class),
+            new GetRoute('/scheids', UseCases\GetTelDienstenForUser::class),
+        ], AuthorizationRole::USER),
 
         new RouteGroup('/fluiten', [
             new GetRoute('', UseCases\GetBeschikbaarheid::class),

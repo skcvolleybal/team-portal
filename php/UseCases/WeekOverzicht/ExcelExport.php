@@ -84,7 +84,6 @@ class ExcelExport
             } else {
                 $this->currentRow += 2; // Leave some extra room for the board availability
             }
-            
 
         }
 
@@ -92,34 +91,17 @@ class ExcelExport
 
     // Creates the first row that is always the same: has Wedstrijd, Tijd, Team A, Team B, Niveau, Veldnummer, Scheidrechter en Tellers als text
     private function CreateFirstRow() {
-        $this->SetCell('A'. $this->currentRow, 'Wedstrijd');
-        $this->SetCell('B'. $this->currentRow , 'Tijd');
-        $this->SetCell('C'. $this->currentRow, 'Team A');
-        $this->SetCell('D'. $this->currentRow, 'Team B');
-        $this->SetCell('E'. $this->currentRow, 'Niveau');
-        $this->SetCell('F'. $this->currentRow, 'Veldnummer');
-        $this->SetCell('G'. $this->currentRow, 'Scheidsrechter');
-        $this->SetCell('H'. $this->currentRow, 'Tellers');
-
-        $this->PaintCell('B'. $this->currentRow, 'firstrow');
-        $this->PaintCell('C'. $this->currentRow, 'firstrow');
-        $this->PaintCell('A'. $this->currentRow, 'firstrow');
-        $this->PaintCell('D'. $this->currentRow, 'firstrow');
-        $this->PaintCell('E'. $this->currentRow, 'firstrow');
-        $this->PaintCell('F'. $this->currentRow, 'firstrow');
-        $this->PaintCell('G'. $this->currentRow, 'firstrow');
-        $this->PaintCell('H'. $this->currentRow, 'firstrow');
-
-        $this->Spreadsheet->getActiveSheet()->getColumnDimension('A')->setWidth(20);
-        $this->Spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(15);
-        $this->Spreadsheet->getActiveSheet()->getColumnDimension('C')->setWidth(15);
-        $this->Spreadsheet->getActiveSheet()->getColumnDimension('D')->setWidth(15);
-        $this->Spreadsheet->getActiveSheet()->getColumnDimension('E')->setWidth(15);
-        $this->Spreadsheet->getActiveSheet()->getColumnDimension('F')->setWidth(15);
-        $this->Spreadsheet->getActiveSheet()->getColumnDimension('G')->setWidth(20);
-        $this->Spreadsheet->getActiveSheet()->getColumnDimension('H')->setWidth(35);
-
+        $headers = ['Wedstrijd', 'Tijd', 'Team A', 'Team B', 'Niveau', 'Veldnummer', 'Scheidsrechter', 'Tellers'];
+        $widths = [20, 15, 15, 15, 15, 15, 20, 35];
+    
+        foreach ($headers as $index => $header) {
+            $col = chr(65 + $index) . $this->currentRow;
+            $this->SetCell($col, $header);
+            $this->PaintCell($col, 'firstrow');
+            $this->Spreadsheet->getActiveSheet()->getColumnDimension(chr(65 + $index))->setWidth($widths[$index]);
+        }
     }
+    
 
     private function SetCell($cell, $value) {
         $this->Spreadsheet->getActiveSheet()->setCellValue($cell, $value);
@@ -162,7 +144,7 @@ class ExcelExport
  
     // Do you think God stays in heaven because he too lives in fear of what he has created? 
     private function SetStandardStyle($cell) {
-        $this->Spreadsheet->getActiveSheet()->getRowDimension($cell[1])->setRowHeight(18);
+        $this->Spreadsheet->getActiveSheet()->getRowDimension(substr($cell, 1))->setRowHeight(18);
         $cellStyle = $this->Spreadsheet->getActiveSheet()->getStyle($cell);
         $cellStyle->getFont()->setSize(10);
         $cellStyle->getFont()->setName('Arial');
@@ -261,6 +243,12 @@ class ExcelExport
 
     private function CreateWedstrijdSchema() {
         $yeet = $this->WedstrijdenOpDag;
+
+        # Make sure first matches come first in the schedule
+        usort($this->WedstrijdenOpDag, function ($a, $b) {
+            return $a->timestamp <=> $b->timestamp;
+        });
+
         $this->veldNummer = 1;
         $this->kleurNummer = 0;
         $dayNames = array("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday");

@@ -74,8 +74,8 @@ class TelFluitGateway
     
     WHERE 
         (W.scheidsrechter_id = ? OR W.teller1_id = ? OR W.teller2_id = ?) 
-        AND W.timestamp >= CURRENT_TIMESTAMP()
-    ";
+        
+    "; // AND W.timestamp >= CURRENT_TIMESTAMP()
 
         // Oude Joomla query
         // $query = 'SELECT
@@ -103,6 +103,21 @@ class TelFluitGateway
         ];
         $rows = $this->database->Execute($query, $params);
         return $this->MapToWedstrijden($rows);
+    }
+
+    public function GetFluitEnTelbeurtenForCalender(Persoon $user): array
+    {
+        $query = 'SELECT W.timestamp,
+                         W.scheidsrechter_id,
+                         W.teller1_id,
+                         W.teller2_id
+                    FROM ' . $_ENV['DBNAME'] . '. teamportal_wedstrijden W
+                    WHERE scheidsrechter_id = ? OR teller1_id = ? OR teller2_id = ?';
+        $params = [
+            $user->id, $user->id, $user->id
+        ];
+
+        return $this->database->Execute($query, $params);
     }
 
     public function GetFluitbeurten(Persoon $user): array
