@@ -84,7 +84,6 @@ class ExcelExport
             } else {
                 $this->currentRow += 2; // Leave some extra room for the board availability
             }
-            
 
         }
 
@@ -145,7 +144,7 @@ class ExcelExport
  
     // Do you think God stays in heaven because he too lives in fear of what he has created? 
     private function SetStandardStyle($cell) {
-        $this->Spreadsheet->getActiveSheet()->getRowDimension($cell[1])->setRowHeight(18);
+        $this->Spreadsheet->getActiveSheet()->getRowDimension(substr($cell, 1))->setRowHeight(18);
         $cellStyle = $this->Spreadsheet->getActiveSheet()->getStyle($cell);
         $cellStyle->getFont()->setSize(10);
         $cellStyle->getFont()->setName('Arial');
