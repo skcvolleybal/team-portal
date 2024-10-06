@@ -8,8 +8,14 @@ The schedules are sent to relevant people weekly via a Cron job.
 
 TeamPortal uses the Nevobo RSS feed to retrieve matches relevant to SKC. Furthermore, it uses the internal WordPress database of the SKC website to link teams and members.
 
+# Screenshots
+![Mijn Overzicht](/.github/screenshots/mijn-overzicht.png "Mijn Overzicht")
+![Tel/Fluit Beschikbaarheid](/.github/screenshots/tel-fluit-beschikbaarheid.png "Tel/Fluit Beschikbaarheid Opgeven")
+![Barcie Planner](/.github/screenshots/barcie.png "Barcie Planner")
+![Verzonden E-mails](/.github/screenshots/emails.png "Verzonden E-mails")
+
 ## Requirements:
-- PHP 8.1
+- PHP 8.1 / 8.2
 - Node.js v18
 
 # Pre-installation:
