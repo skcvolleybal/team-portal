@@ -3,7 +3,8 @@
 <body>
 Beste {{naam}},<br>
 <br>
-Aanstaande {{datum}} heb jij de {{shift}}e bardienst.<br>
+Aanstaande {{datum}} ben jij BHV'er. Check het excel overzicht voor de tijden!<br>
+<br>
 <br>
 Met vriendelijke groet,<br>
 <br>
