@@ -19,6 +19,7 @@ CREATE TABLE barcie_days (
     UNIQUE KEY date (date)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
+
 CREATE TABLE barcie_availability (
     id INT(11) NOT NULL AUTO_INCREMENT,
     day_id INT(11) NOT NULL,
@@ -105,29 +106,3 @@ CREATE TABLE TeamPortal_zaalwacht (
     KEY team1 (team1_id),
     KEY team2 (team2_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
-
--- Insert initial data
-INSERT INTO barcie_days (date, remarks) VALUES
-    ('2024-10-01', NULL),
-    ('2024-10-02', NULL);
-
-INSERT INTO barcie_availability (day_id, user_id, is_beschikbaar, remarks) VALUES
-    (1, 1, 'Ja', 'Available for duty'),
-    (2, 2, 'Nee', 'Not available');
-
-INSERT INTO TeamPortal_aanwezigheden (match_id, user_id, is_aanwezig, rol) VALUES
-    ('match_001', 1, 'Ja', 'speler'),
-    ('match_002', 2, 'Nee', 'coach');
-
-INSERT INTO TeamPortal_email (sender_email, sender_naam, receiver_email, receiver_naam, titel, body, signature) VALUES
-    ('example@domain.com', 'John Doe', 'receiver@domain.com', 'Jane Doe', 'Welcome!', 'Hello, this is a test email.', 'john_doe_signature');
-
-INSERT INTO TeamPortal_fluitbeschikbaarheid (user_id, date, time, is_beschikbaar) VALUES
-    (1, '2024-10-01', '10:00:00', 'Ja'),
-    (2, '2024-10-02', '14:00:00', 'Nee');
-
-INSERT INTO TeamPortal_wedstrijden (match_id, timestamp, is_veranderd, scheidsrechter_id, teller1_id, teller2_id) VALUES
-    ('match_001', '2024-10-01 10:00:00', 0, NULL, NULL, NULL);
-
-INSERT INTO TeamPortal_zaalwacht (date, team1_id, team2_id) VALUES
-    ('2024-10-01', NULL, NULL);
