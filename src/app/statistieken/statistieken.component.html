@@ -47,15 +47,15 @@
     </div>
     <p *ngIf="skcRankingData" class="text-center"><i>Data opgehaald via: <a href="https://www.volleybal.nl/competitie/vereniging/ckl9r53#ranking">https://www.volleybal.nl/competitie/vereniging/ckl9r53#ranking</a></i></p>
 
-    <h3>🏆SKC Teamtaken competitie </h3>
+    <h3>🏆SKC Teamtaken competitie top 10</h3>
     <p>Welke SKC'er is een echte teamtaken strijder?</p>
 
     <!-- Wrap the columns inside a row -->
     <div class="row">
         <div class="col-md-6">
-            <h4>🍺Bar</h4>
+            <h4>🍺 Bar</h4>
             <div class="table-responsive">
-                <table *ngIf="skcRankingData; else loading" class="table table-sm table-striped">
+                <table *ngIf="skcRankingData" class="table table-sm table-striped">
                     <thead>
                         <tr>
                             <th scope="col">Naam</th>
@@ -68,20 +68,14 @@
                             <td>{{ item.shift_count | number  }}</td>
                         </tr>
                     </tbody>
-                    <tfoot>
-                        <tr>
-                            <td scope="col">Naam</td>
-                            <td scope="col">Aantal barshifts</td>
-                        </tr>
-                    </tfoot>
                 </table>
             </div>
         </div>
 
         <div class="col-md-6">
-            <h4>🏁Scheidsrechters</h4>
+            <h4>🏁 Scheidsrechters</h4>
             <div class="table-responsive">
-                <table *ngIf="skcRankingData; else loading" class="table table-sm table-striped">
+                <table *ngIf="skcRankingData" class="table table-sm table-striped">
                     <thead>
                         <tr>
                             <th scope="col">Naam</th>
@@ -94,12 +88,6 @@
                             <td>{{ item.shift_count | number  }}</td>
                         </tr>
                     </tbody>
-                    <tfoot>
-                        <tr>
-                            <td scope="col">Naam</td>
-                            <td scope="col">Aantal fluitbeurten</td>
-                        </tr>
-                    </tfoot>
                 </table>
             </div>
         </div>
@@ -108,9 +96,9 @@
     <!-- Another row for the next two columns -->
     <div class="row">
         <div class="col-md-6">
-            <h4>🔢Tellers</h4>
+            <h4>🔢 Tellers</h4>
             <div class="table-responsive">
-                <table *ngIf="skcRankingData; else loading" class="table table-sm table-striped">
+                <table *ngIf="skcRankingData" class="table table-sm table-striped">
                     <thead>
                         <tr>
                             <th scope="col">Naam</th>
@@ -123,20 +111,14 @@
                             <td>{{ item.shift_count | number  }}</td>
                         </tr>
                     </tbody>
-                    <tfoot>
-                        <tr>
-                            <td scope="col">Naam</td>
-                            <td scope="col">Aantal telbeurten</td>
-                        </tr>
-                    </tfoot>
                 </table>
             </div>
         </div>
 
         <div class="col-md-6">
-            <h4>🚑BHV</h4>
+            <h4>🚑 BHV</h4>
             <div class="table-responsive">
-                <table *ngIf="skcRankingData; else loading" class="table table-sm table-striped">
+                <table *ngIf="skcRankingData" class="table table-sm table-striped">
                     <thead>
                         <tr>
                             <th scope="col">Naam</th>
@@ -149,12 +131,6 @@
                             <td>{{ item.shift_count | number  }}</td>
                         </tr>
                     </tbody>
-                    <tfoot>
-                        <tr>
-                            <td scope="col">Naam</td>
-                            <td scope="col">Aantal BHV diensten</td>
-                        </tr>
-                    </tfoot>
                 </table>
             </div>
         </div>
