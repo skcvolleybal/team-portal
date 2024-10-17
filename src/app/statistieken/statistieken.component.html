@@ -1,9 +1,7 @@
 <div>
     <!-- Replace below with actual data structure -->
-    <h3>SKC Fustcompetitie </h3>
+    <h3>🍺SKC Fustcompetitie </h3>
     <p>Welke teams staan 1e in hun poule en winnen een fust aan het eind van dit competitiejaar? 🍺 </p>
-    <!-- <ng-container *ngFor="let item of skcRankingData"><span *ngIf="item.Ranking === 1">{{item.Teamnaam}}</span></ng-container></p> -->
-
     <div class="table-responsive">
         <table *ngIf="skcRankingData; else loading" class="table table-sm table-striped">
             <thead>
@@ -45,110 +43,121 @@
                     <td scope="col">Punten tegen</td>
                 </tr>
               </tfoot>
-
         </table>
     </div>
     <p *ngIf="skcRankingData" class="text-center"><i>Data opgehaald via: <a href="https://www.volleybal.nl/competitie/vereniging/ckl9r53#ranking">https://www.volleybal.nl/competitie/vereniging/ckl9r53#ranking</a></i></p>
 
-    <h3>SKC Teamtaken competitie </h3>
+    <h3>🏆SKC Teamtaken competitie </h3>
     <p>Welke SKC'er is een echte teamtaken strijder?</p>
 
-    <h4>Bar</h4>
-    <div class="table-responsive">
-        <table *ngIf="skcRankingData; else loading" class="table table-sm table-striped">
-            <thead>
-                <tr>
-                    <th scope="col">Naam</th>
-                    <th scope="col">Aantal barshifts</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let item of skcRankingData['bar_personnel_shifts']">
-                    <td>{{ item.display_name }}</td>
-                    <td>{{ item.shift_count | number  }}</td>
-                </tr>
-            </tbody>
-            <tfoot>
-                <tr>
-                    <td scope="col">Naam</td>
-                    <td scope="col">Aantal barshifts</td>
-                </tr>
-              </tfoot>
-        </table>
+    <!-- Wrap the columns inside a row -->
+    <div class="row">
+        <div class="col-md-6">
+            <h4>🍺Bar</h4>
+            <div class="table-responsive">
+                <table *ngIf="skcRankingData; else loading" class="table table-sm table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Naam</th>
+                            <th scope="col">Aantal barshifts</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of skcRankingData['bar_personnel_shifts']">
+                            <td>{{ item.display_name }}</td>
+                            <td>{{ item.shift_count | number  }}</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td scope="col">Naam</td>
+                            <td scope="col">Aantal barshifts</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <h4>🏁Scheidsrechters</h4>
+            <div class="table-responsive">
+                <table *ngIf="skcRankingData; else loading" class="table table-sm table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Naam</th>
+                            <th scope="col">Aantal fluitbeurten</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of skcRankingData['scheidsrechter_shifts']">
+                            <td>{{ item.display_name }}</td>
+                            <td>{{ item.shift_count | number  }}</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td scope="col">Naam</td>
+                            <td scope="col">Aantal fluitbeurten</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
     </div>
 
-    <h4>Scheidsrechters</h4>
-    <div class="table-responsive">
-        <table *ngIf="skcRankingData; else loading" class="table table-sm table-striped">
-            <thead>
-                <tr>
-                    <th scope="col">Naam</th>
-                    <th scope="col">Aantal fluitbeurten</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let item of skcRankingData['scheidsrechter_shifts']">
-                    <td>{{ item.display_name }}</td>
-                    <td>{{ item.shift_count | number  }}</td>
-                </tr>
-            </tbody>
-            <tfoot>
-                <tr>
-                    <td scope="col">Naam</td>
-                    <td scope="col">Aantal fluitbeurten</td>
-                </tr>
-              </tfoot>
-        </table>
-    </div>
+    <!-- Another row for the next two columns -->
+    <div class="row">
+        <div class="col-md-6">
+            <h4>🔢Tellers</h4>
+            <div class="table-responsive">
+                <table *ngIf="skcRankingData; else loading" class="table table-sm table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Naam</th>
+                            <th scope="col">Aantal telbeurten</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of skcRankingData['teller_shifts']">
+                            <td>{{ item.display_name }}</td>
+                            <td>{{ item.shift_count | number  }}</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td scope="col">Naam</td>
+                            <td scope="col">Aantal telbeurten</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
 
-    <h4>Tellers</h4>
-    <div class="table-responsive">
-        <table *ngIf="skcRankingData; else loading" class="table table-sm table-striped">
-            <thead>
-                <tr>
-                    <th scope="col">Naam</th>
-                    <th scope="col">Aantal telbeurten</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let item of skcRankingData['teller_shifts']">
-                    <td>{{ item.display_name }}</td>
-                    <td>{{ item.shift_count | number  }}</td>
-                </tr>
-            </tbody>
-            <tfoot>
-                <tr>
-                    <td scope="col">Naam</td>
-                    <td scope="col">Aantal telbeurten</td>
-                </tr>
-              </tfoot>
-        </table>
-    </div>
-
-    <h4>BHV</h4>
-    <div class="table-responsive">
-        <table *ngIf="skcRankingData; else loading" class="table table-sm table-striped">
-            <thead>
-                <tr>
-                    <th scope="col">Naam</th>
-                    <th scope="col">Aantal BHV diensten</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let item of skcRankingData['bhv_shifts']">
-                    <td>{{ item.display_name }}</td>
-                    <td>{{ item.shift_count | number  }}</td>
-                </tr>
-            </tbody>
-            <tfoot>
-                <tr>
-                    <td scope="col">Naam</td>
-                    <td scope="col">Aantal teamtaken</td>
-                </tr>
-              </tfoot>
-        </table>
+        <div class="col-md-6">
+            <h4>🚑BHV</h4>
+            <div class="table-responsive">
+                <table *ngIf="skcRankingData; else loading" class="table table-sm table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Naam</th>
+                            <th scope="col">Aantal BHV diensten</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of skcRankingData['bhv_shifts']">
+                            <td>{{ item.display_name }}</td>
+                            <td>{{ item.shift_count | number  }}</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td scope="col">Naam</td>
+                            <td scope="col">Aantal BHV diensten</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
 <teamportal-spinner *ngIf="loading"></teamportal-spinner>
-
-  
