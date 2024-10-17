@@ -158,4 +158,114 @@ class BeschikbaarheidGateway
 
         $this->database->Execute($query, $params);
     }
+
+    private function FormatShifts(array $rows): array
+    {
+        $result = [];
+        foreach ($rows as $row) {
+            $result[] = [
+                'shift_count' => $row->shift_count,
+                'display_name' => $row->display_name
+            ];
+        }
+        return $result;
+    }
+
+    public function GetScheidsrechterShifts(): array
+    {
+        $query = '
+            WITH scheidsrechter_shifts AS (
+                SELECT scheidsrechter_id AS id, COUNT(match_id) AS shift_count
+                FROM ' . $_ENV['DBNAME'] . '.TeamPortal_wedstrijden
+                WHERE timestamp < NOW()
+                GROUP BY scheidsrechter_id
+            )
+            SELECT ss.shift_count, wu.display_name
+            FROM scheidsrechter_shifts ss
+            JOIN ' . $_ENV['WPDBNAME'] . '.wp_users wu
+            ON ss.id = wu.id
+            ORDER BY shift_count DESC
+            LIMIT 10
+        ';
+
+        $rows = $this->database->Execute($query);
+        return $this->FormatShifts($rows);
+    }
+
+    public function GetTellerShifts(): array
+    {
+        $query = '
+            WITH teller_shifts AS (
+                SELECT teller1_id AS id, COUNT(match_id) AS shift_count
+                FROM ' . $_ENV['DBNAME'] . '.TeamPortal_wedstrijden
+                WHERE timestamp < NOW()
+                GROUP BY teller1_id
+                UNION ALL
+                SELECT teller2_id AS id, COUNT(match_id) AS shift_count
+                FROM ' . $_ENV['DBNAME'] . '.TeamPortal_wedstrijden
+                WHERE timestamp < NOW()
+                GROUP BY teller2_id
+            ),
+            total_teller_shifts AS (
+                SELECT id, SUM(shift_count) AS total_shift_count
+                FROM teller_shifts
+                GROUP BY id
+            )
+            SELECT ts.total_shift_count AS shift_count, wu.display_name
+            FROM total_teller_shifts ts
+            JOIN ' . $_ENV['WPDBNAME'] . '.wp_users wu
+            ON ts.id = wu.id
+            ORDER BY shift_count DESC
+            LIMIT 10
+        ';
+
+        $rows = $this->database->Execute($query);
+        return $this->FormatShifts($rows);
+    }
+
+    public function GetBHVShifts(): array
+    {
+        $query = '
+            WITH bar_shifts AS (
+                SELECT bs.user_id AS id, COUNT(bs.id) AS shift_count
+                FROM ' . $_ENV['DBNAME'] . '.barcie_schedule_map bs
+                JOIN ' . $_ENV['DBNAME'] . '.barcie_days bd
+                ON bs.day_id = bd.id
+                WHERE bd.date < NOW() AND bs.is_bhv
+                GROUP BY user_id
+            )
+            SELECT bs.shift_count, wu.display_name
+            FROM bar_shifts bs
+            JOIN ' . $_ENV['WPDBNAME'] . '.wp_users wu
+            ON bs.id = wu.id
+            ORDER BY shift_count DESC
+            LIMIT 10
+        ';
+
+        $rows = $this->database->Execute($query);
+        return $this->FormatShifts($rows);
+    }
+
+    public function GetBarPersonnelShifts(): array
+    {
+        $query = '
+            WITH bar_shifts AS (
+                SELECT bs.user_id AS id, COUNT(bs.id) AS shift_count
+                FROM ' . $_ENV['DBNAME'] . '.barcie_schedule_map bs
+                JOIN ' . $_ENV['DBNAME'] . '.barcie_days bd
+                ON bs.day_id = bd.id
+                WHERE bd.date < NOW() AND bs.is_bhv IS NULL
+                GROUP BY user_id
+            )
+            SELECT bs.shift_count, wu.display_name
+            FROM bar_shifts bs
+            JOIN ' . $_ENV['WPDBNAME'] . '.wp_users wu
+            ON bs.id = wu.id
+            ORDER BY shift_count DESC
+            LIMIT 10
+        ';
+
+        $rows = $this->database->Execute($query);
+        return $this->FormatShifts($rows);
+    }
 }
