@@ -1,0 +1,5 @@
+# Stage 1: Build Angular frontend
+FROM webdevops/php-apache-dev:8.1
+
+COPY php /app
+RUN composer install /app
