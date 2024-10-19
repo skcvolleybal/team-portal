@@ -21,12 +21,16 @@ use DI\ContainerBuilder;
 
 require 'vendor/autoload.php';
 
-// Load WordPress
 
 
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
-$dotenv->load();
 
+try {
+    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+    $dotenv->load();
+}
+catch (Exception $e) {
+    echo $e->getMessage();
+}
 
 $containerBuilder  = new ContainerBuilder();
 $containerBuilder->addDefinitions('di-config.php');
