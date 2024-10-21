@@ -25,27 +25,26 @@ class ZaalwachtGateway
         $user->team = $wordPressGateway->GetTeam($user);
 
         $query = "
-        SELECT 
-            Z.id,
-            Z.date,
-            Z.team1_id as eersteZaalwachtId,
-            Z.team2_id as tweedeZaalwachtId,
-            WPP1.post_title as eersteZaalwacht,
-            WPP2.post_title as tweedeZaalwacht
-        FROM 
-        " . $_ENV['DBNAME'] . ".TeamPortal_zaalwacht Z
-            
-        LEFT JOIN 
-        " . $_ENV['WPDBNAME'] . ".wp_posts WPP1 ON Z.team1_id = WPP1.ID AND WPP1.post_type = 'team'
-        LEFT JOIN 
-        " . $_ENV['WPDBNAME'] . ".wp_posts WPP2 ON Z.team2_id = WPP2.ID AND WPP2.post_type = 'team'
+            SELECT 
+                Z.id,
+                Z.date,
+                Z.team1_id as eersteZaalwachtId,
+                Z.team2_id as tweedeZaalwachtId,
+                WPP1.post_title as eersteZaalwacht,
+                WPP2.post_title as tweedeZaalwacht
+            FROM 
+                " . $_ENV['DBNAME'] . ".TeamPortal_zaalwacht Z
+            LEFT JOIN 
+                " . $_ENV['WPDBNAME'] . ".wp_posts WPP1 ON Z.team1_id = WPP1.ID AND WPP1.post_type = 'team'
+            LEFT JOIN 
+                " . $_ENV['WPDBNAME'] . ".wp_posts WPP2 ON Z.team2_id = WPP2.ID AND WPP2.post_type = 'team'
+            WHERE 
+                Z.date >= CURRENT_DATE() 
+                AND (Z.team1_id = ? OR Z.team2_id = ?)
+            GROUP BY 
+                Z.id, Z.date, Z.team1_id, Z.team2_id, WPP1.post_title, WPP2.post_title
+            ";
 
-        WHERE 
-            Z.date >= CURRENT_DATE() 
-            AND (Z.team1_id = ? OR Z.team2_id = ?)
-        GROUP BY 
-        Z.id
-        ";
 
 
 
