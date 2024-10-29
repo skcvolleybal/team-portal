@@ -75,7 +75,7 @@ class TelFluitGateway
     WHERE 
         (W.scheidsrechter_id = ? OR W.teller1_id = ? OR W.teller2_id = ?) 
         
-    "; // AND W.timestamp >= CURRENT_TIMESTAMP()
+    AND W.timestamp >= CURRENT_TIMESTAMP()";
 
         // Oude Joomla query
         // $query = 'SELECT
