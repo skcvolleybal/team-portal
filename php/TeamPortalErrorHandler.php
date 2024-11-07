@@ -22,7 +22,8 @@ class TeamPortalErrorHandler implements ErrorHandlerInterface
         $message = $exception->getMessage() ?? 'Een dikke error...';
 
         $error = [
-            'message' => $message
+            'message' => $message,
+            'statuscode' => $statusCode
         ];
 
         $payload = json_encode($error, JSON_PRETTY_PRINT);
