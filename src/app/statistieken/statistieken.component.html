@@ -1,7 +1,12 @@
 <div>
+    
     <!-- Replace below with actual data structure -->
     <h3>🍺SKC Fustcompetitie </h3>
     <p>Welke teams staan 1e in hun poule en winnen een fust aan het eind van dit competitiejaar? 🍺 </p>
+    <div class="alert alert-danger" role="alert" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+    
     <div class="table-responsive">
         <table *ngIf="skcRankingData; else loading" class="table table-sm table-striped">
             <thead>
@@ -136,4 +141,5 @@
         </div>
     </div>
 </div>
+
 <teamportal-spinner *ngIf="loading"></teamportal-spinner>
