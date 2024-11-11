@@ -30,7 +30,7 @@ class TeamPortalErrorHandler implements ErrorHandlerInterface
         $response = $this->app
             ->getResponseFactory()
             ->createResponse()
-            ->withStatus((int)$statusCode);
+            ->withStatus($statusCode);
         $response->getBody()
             ->write($payload);
 

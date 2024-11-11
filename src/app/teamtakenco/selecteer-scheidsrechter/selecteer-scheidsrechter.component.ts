@@ -42,7 +42,6 @@ export class SelecteerScheidsrechterComponent implements OnInit {
 
     this.teamtakencoService.GetScheidsrechtersForMatch(matchId).subscribe(
       (result) => {
-        console.log(result);
         this.scheidsrechters = result;
         this.scheidsrechterOptiesLoading = false;
       },
@@ -50,7 +49,6 @@ export class SelecteerScheidsrechterComponent implements OnInit {
         if (error.status === 500) {
           this.errorMessage = error.error.message;
           this.scheidsrechterOptiesLoading = false;
-          console.log(error);
         }
       }
     );
