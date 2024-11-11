@@ -179,31 +179,31 @@ class TelFluitGateway
         // Working WordPress query.
 
         $query = 'SELECT 
-            u.ID as id, 
-            MAX(u.display_name) as naam, 
-            MAX(u.user_email) as email,
-            MAX(p.ID) as teamId, 
-            MAX(p.post_title) as teamnaam,
-            COALESCE(COUNT(w.scheidsrechter_id), 0) as gefloten,
-            MAX(niveau_meta.meta_value) as niveau,
-            MAX(scheidsrechter_dit_seizoen_meta.meta_value) as scheidsrechter_dit_seizoen
-            FROM 
-                '. $_ENV['DBNAME'] . '.wp_users u
-            INNER JOIN 
-                '. $_ENV['DBNAME'] . '.wp_usermeta um ON u.ID = um.user_id AND um.meta_key = "team"
-            INNER JOIN
-                '. $_ENV['DBNAME'] . '.wp_posts p ON p.ID = um.meta_value
-            LEFT JOIN
-                '. $_ENV['DBNAME'] . '.TeamPortal_wedstrijden w ON u.ID = w.scheidsrechter_id        
-            INNER JOIN
-                '. $_ENV['DBNAME'] . '.wp_usermeta niveau_meta ON u.ID = niveau_meta.user_id AND niveau_meta.meta_key = "scheidsrechter" AND niveau_meta.meta_value <> "" AND niveau_meta.meta_value IS NOT NULL
-            INNER JOIN
-                '. $_ENV['DBNAME'] . '.wp_usermeta scheidsrechter_dit_seizoen_meta ON u.ID = scheidsrechter_dit_seizoen_meta.user_id AND scheidsrechter_dit_seizoen_meta.meta_key = "scheidsrechter_dit_seizoen" AND scheidsrechter_dit_seizoen_meta.meta_value = "1"
-            WHERE 
-                p.post_type = "team"
-            GROUP BY 
-                u.ID  
-            ORDER BY gefloten DESC';
+        u.ID as id, 
+        u.display_name as naam, 
+        u.user_email as email,
+        MAX(p.ID) as teamId, 
+        MAX(p.post_title) as teamnaam,
+        COALESCE(COUNT(w.scheidsrechter_id), 0) as gefloten,
+        MAX(niveau_meta.meta_value) as niveau,
+        MAX(scheidsrechter_dit_seizoen_meta.meta_value) as scheidsrechter_dit_seizoen
+        FROM 
+        ' . $_ENV['WPDBNAME'] . '.wp_users u
+        INNER JOIN 
+        ' . $_ENV['WPDBNAME'] . '.wp_usermeta um ON u.ID = um.user_id AND um.meta_key = "team"
+        INNER JOIN
+        ' . $_ENV['WPDBNAME'] . '.wp_posts p ON p.ID = um.meta_value
+        LEFT JOIN
+        ' . $_ENV['DBNAME'] . '.TeamPortal_wedstrijden w ON u.ID = w.scheidsrechter_id        
+        INNER JOIN
+        ' . $_ENV['WPDBNAME'] . '.wp_usermeta niveau_meta ON u.ID = niveau_meta.user_id AND niveau_meta.meta_key = "scheidsrechter" AND niveau_meta.meta_value <> "" AND niveau_meta.meta_value IS NOT NULL
+        INNER JOIN
+        ' . $_ENV['WPDBNAME'] . '.wp_usermeta scheidsrechter_dit_seizoen_meta ON u.ID = scheidsrechter_dit_seizoen_meta.user_id AND scheidsrechter_dit_seizoen_meta.meta_key = "scheidsrechter_dit_seizoen" AND scheidsrechter_dit_seizoen_meta.meta_value = "1"
+        WHERE 
+            p.post_type = "team"
+        GROUP BY 
+            u.ID  
+        ORDER BY gefloten DESC';
 
 
     //     "SELECT 
