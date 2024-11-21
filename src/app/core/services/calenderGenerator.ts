@@ -32,14 +32,12 @@ export class calenderGenerator {
 
     generateICalendar(user: any) {
       const calendar = new ICAL.Component(['vcalendar', [], []]);
-      
+      this.user = user;
 
       const dates = this.WordPressService.GetDienstenForUser().subscribe(
         (response) => {
             this.bardiensten = response[0];
             this.telfluitdiensten = response[1];
-            console.log(this.bardiensten);
-            console.log(this.telfluitdiensten);
             if (!this.diensten && !this.telfluitdiensten) {
               alert("there are no events to add to your calender.");
             }
@@ -76,12 +74,10 @@ export class calenderGenerator {
 
     AddEvents(calender) {
       this.bardiensten.forEach(bardienst => {
-          console.log(bardienst);
           calender.addSubcomponent(this.createBarEntry(bardienst));
       });
 
       this.telfluitdiensten.forEach(telfluitdienst => {
-        console.log(telfluitdienst);
         calender.addSubcomponent(this.createTelFluitEntry(telfluitdienst));
       });
 
@@ -135,7 +131,7 @@ export class calenderGenerator {
 
     GetTelFluitTitle(dienst) {
       if (dienst.scheidsrechter_id == this.user.id) {
-        return "Fluiten SKC";
+        return "Scheidsen SKC";
       } else {
         return "Tellen SKC";
       }
