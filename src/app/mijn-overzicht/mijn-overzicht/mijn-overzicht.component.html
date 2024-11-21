@@ -2,9 +2,9 @@
   <p style="margin: 0;">
     Welkom<span *ngIf="user"> {{user.voornaam}}</span>! Hier zie je welke dagen je zaalwacht hebt, wanneer je wedstrijden zijn, wanneer je moet tellen, of je bardiensten hebt en wanneer je moet scheidsen.
   </p>
-<!--   <button id="IcalenderExportLink" class="CalenderButton" style="border-radius: 5px; margin-left: 10px;" (click)="generateCalender()">
+  <button id="IcalenderExportLink" class="CalenderButton" style="border-radius: 5px; margin-left: 10px;" (click)="generateCalender()">
     <fa-icon [icon]="calenderIcon"></fa-icon> Export my teamtasks
-  </button>  -->
+  </button>
 </div>
 
 <div *ngIf="dagenEmpty; then showInfo else showMijnOverzicht"></div>
