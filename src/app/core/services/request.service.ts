@@ -53,10 +53,16 @@ export class WordPressService {
     return this.httpClient.get<any[]>(url);
   }
 
+  GetZaalwachtDienstenForUser(): Observable<any[]> {
+    const url = environment.baseUrl + 'diensten/zaalwacht';
+    return this.httpClient.get<any[]>(url);
+  }
+
   GetDienstenForUser(): Observable<any[]> {
     const bar = this.GetBarDienstenForUser().pipe(share());
     const telfluit = this.GetTelScheidsDienstenForUser().pipe(share());
-    return forkJoin([bar, telfluit ]);
+    const zaalwacht = this.GetZaalwachtDienstenForUser().pipe(share());
+    return forkJoin([bar, telfluit, zaalwacht]);
   }
 
 

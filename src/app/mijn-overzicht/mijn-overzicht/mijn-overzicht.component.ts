@@ -71,7 +71,13 @@ export class MijnOverzichtComponent implements OnInit {
     });
   }
 
+  // For ICAL file this one
   generateCalender() {
     this.CalendarService.generateICalendar(this.user);
   }
+
+  // async generateCalender(): Promise<void> {
+  //   await this.CalendarService.initializeCalendar();
+  // }
+
 }

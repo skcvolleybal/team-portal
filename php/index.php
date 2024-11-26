@@ -92,6 +92,7 @@ $entryPoint =
         new RouteGroup('/diensten', [
             new GetRoute('/bar', UseCases\GetBarDienstenForUser::class),
             new GetRoute('/scheids', UseCases\GetTelDienstenForUser::class),
+            new GetRoute('/zaalwacht', UseCases\GetZaalwachtDienstenForUser::class),
         ], AuthorizationRole::USER),
 
         new RouteGroup('/fluiten', [

@@ -12,7 +12,7 @@ import { StateService } from 'src/app/core/services/state.service';
 //     styleUrls: ['./calendar.component.css']
 // })
 
-@Injectable({
+@Injectable({ 
   providedIn: 'root' // This configures the service to be provided at the root level
 })
 
@@ -23,6 +23,7 @@ export class calenderGenerator {
     user: any;
     bardiensten: any[];
     telfluitdiensten: any[];
+    zaalwachtdiensten: any[];
 
 
     constructor(
@@ -38,7 +39,8 @@ export class calenderGenerator {
         (response) => {
             this.bardiensten = response[0];
             this.telfluitdiensten = response[1];
-            if (!this.diensten && !this.telfluitdiensten) {
+            this.zaalwachtdiensten = response[2];
+            if (!this.diensten && !this.telfluitdiensten && !this.zaalwachtdiensten) {
               alert("there are no events to add to your calender.");
             }
 
@@ -81,6 +83,10 @@ export class calenderGenerator {
         calender.addSubcomponent(this.createTelFluitEntry(telfluitdienst));
       });
 
+      this.zaalwachtdiensten.forEach(zaalwachtdienst => {
+        calender.addSubcomponent(this.createZaalwachtEntry(zaalwachtdienst));
+      });
+
       return calender
     }
 
@@ -106,6 +112,17 @@ export class calenderGenerator {
       event.addPropertyWithValue('summary', this.GetTelFluitTitle(dienst));
       return event;
 
+    }
+
+    createZaalwachtEntry(dienst) {
+      const event = new ICAL.Component('vevent');
+      const eventStart = ICAL.Time.fromJSDate(new Date (dienst.date));
+      const eventEnd = eventStart.clone();
+      eventEnd.addDuration(ICAL.Duration.fromSeconds(1800)); // Add 30 minutes
+      event.addPropertyWithValue('dtstart', eventStart);
+      event.addPropertyWithValue('dtend', eventEnd);
+      event.addPropertyWithValue('summary', "SKC Zaalwacht");
+      return event;
     }
 
     toJSDate(dienst) {

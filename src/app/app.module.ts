@@ -21,6 +21,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { TeamtakencoModule } from './teamtakenco/teamtakenco.module';
 import { TeamtakencoService } from './core/services/teamtakenco.service';
+import { calenderGenerator } from './core/services/calenderGenerator';
 import { SharedModule } from './shared/shared.module';
 import { StateService } from './core/services/state.service';
 import { WedstrijdOverzichtModule } from './wedstrijd-overzicht/wedstrijd-overzicht.module';
@@ -62,7 +63,8 @@ import { EmailDetailComponent } from './email-detail/email-detail.component';
         AanwezigheidService,
         BarcieService,
         BeschikbaarheidService,
-        TeamtakencoService,    
+        TeamtakencoService,
+        calenderGenerator,
         {
             provide: HTTP_INTERCEPTORS,
             useClass: HTTPListener,
