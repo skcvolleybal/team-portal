@@ -91,7 +91,7 @@ class TelFluitGateway
                          W.scheidsrechter_id,
                          W.teller1_id,
                          W.teller2_id
-                    FROM ' . $_ENV['DBNAME'] . '. teamportal_wedstrijden W
+                    FROM ' . $_ENV['DBNAME'] . '.TeamPortal_wedstrijden W
                     WHERE scheidsrechter_id = ? OR teller1_id = ? OR teller2_id = ?';
         $params = [
             $user->id, $user->id, $user->id
