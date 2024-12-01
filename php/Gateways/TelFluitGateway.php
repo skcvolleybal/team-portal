@@ -77,27 +77,7 @@ class TelFluitGateway
         
     AND W.timestamp >= CURRENT_TIMESTAMP()";
 
-        // Oude Joomla query
-        // $query = 'SELECT
-        //             W.id,
-        //             W.match_id AS matchId,
-        //             W.timestamp,
-        //             W.is_veranderd as isVeranderd,
-        //             U1.id AS scheidsrechterId,
-        //             U1.name AS scheidsrechter,
-        //             U1.email emailScheidsrechter,
-        //             U2.id AS idTeller1,
-        //             U2.name AS naamTeller1,
-        //             U2.email AS emailTeller1,
-        //             U3.id AS idTeller2,
-        //             U3.name AS naamTeller2,
-        //             U3.email emailTeller2
-        //           FROM TeamPortal_wedstrijden W
-        //           LEFT JOIN J3_users U1 on U1.id = W.scheidsrechter_id
-        //           LEFT JOIN J3_users U2 on U2.id = W.teller1_id
-        //           LEFT JOIN J3_users U3 on U3.id = W.teller2_id
-        //           WHERE (W.scheidsrechter_id = ? OR W.teller1_id = ? OR W.teller2_id = ?) AND
-        //                 W.timestamp >= CURRENT_TIMESTAMP()';
+
         $params = [
             $user->id, $user->id, $user->id
         ];
