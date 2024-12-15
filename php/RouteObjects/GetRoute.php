@@ -10,6 +10,11 @@ use TeamPortal\RouteObjects\CrudRoute;
 
 class GetRoute extends CrudRoute
 {
+
+    public string $route;
+    public string $interactor;
+    public ?int $role;
+
     public function __construct(string $route, string $interactor, int $role = null)
     {
         $this->route = $route;
@@ -17,7 +22,7 @@ class GetRoute extends CrudRoute
         $this->role = $role;
     }
 
-    public function RegisterAction(RouteCollectorProxy $group)
+ollectorProxy $group)
     {
         $interactor = $this->interactor;
         $route = $this;

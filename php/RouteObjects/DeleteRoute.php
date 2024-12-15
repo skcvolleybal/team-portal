@@ -10,6 +10,11 @@ use TeamPortal\RouteObjects\CrudRoute;
 
 class DeleteRoute extends CrudRoute
 {
+
+    public string $route;
+    public string $interactor;
+    public ?int $role;
+
     public function __construct(string $route, string $interactor, int $role = null)
     {
         $this->route = $route;

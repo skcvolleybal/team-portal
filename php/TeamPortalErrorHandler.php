@@ -6,6 +6,8 @@ use Psr\Http\Message\ServerRequestInterface;
 
 class TeamPortalErrorHandler implements ErrorHandlerInterface
 {
+    public Slim\App $app;
+
     public function  __construct($app)
     {
         $this->app = $app;
