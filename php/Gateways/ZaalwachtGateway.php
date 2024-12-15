@@ -33,11 +33,11 @@ class ZaalwachtGateway
                 WPP1.post_title as eersteZaalwacht,
                 WPP2.post_title as tweedeZaalwacht
             FROM 
-                " . $_ENV['DBNAME'] . ".TeamPortal_zaalwacht Z
+                TeamPortal_zaalwacht Z
             LEFT JOIN 
-                " . $_ENV['WPDBNAME'] . ".wp_posts WPP1 ON Z.team1_id = WPP1.ID AND WPP1.post_type = 'team'
+                wp_posts WPP1 ON Z.team1_id = WPP1.ID AND WPP1.post_type = 'team'
             LEFT JOIN 
-                " . $_ENV['WPDBNAME'] . ".wp_posts WPP2 ON Z.team2_id = WPP2.ID AND WPP2.post_type = 'team'
+                wp_posts WPP2 ON Z.team2_id = WPP2.ID AND WPP2.post_type = 'team'
             WHERE 
                 Z.date >= CURRENT_DATE() 
                 AND (Z.team1_id = ? OR Z.team2_id = ?)
@@ -83,14 +83,14 @@ class ZaalwachtGateway
         p.post_title AS teamnaam,
         count(Z.id) AS aantal
         FROM 
-            " . $_ENV['WPDBNAME'] . ".wp_posts p
+            wp_posts p
             
         LEFT JOIN (
             SELECT id, date, team1_id AS team_id
-            FROM " . $_ENV['DBNAME'] . ".TeamPortal_zaalwacht WHERE team1_id IS NOT NULL
+            FROM TeamPortal_zaalwacht WHERE team1_id IS NOT NULL
             UNION
             SELECT id, date, team2_id AS team_id
-            FROM " . $_ENV['DBNAME'] . ".TeamPortal_zaalwacht WHERE team2_id IS NOT NULL
+            FROM TeamPortal_zaalwacht WHERE team2_id IS NOT NULL
         ) Z ON Z.team_id = p.ID
         
         WHERE 
@@ -149,10 +149,10 @@ class ZaalwachtGateway
             P2.post_title AS tweedeZaalwacht
                 
             FROM 
-            " . $_ENV['DBNAME'] . ".TeamPortal_zaalwacht Z
+            TeamPortal_zaalwacht Z
                 
-            left join " . $_ENV['WPDBNAME'] . ".wp_posts P1 on Z.team1_id = P1.id
-            left join " . $_ENV['WPDBNAME'] . ".wp_posts P2 on Z.team2_id = P2.id
+            left join wp_posts P1 on Z.team1_id = P1.id
+            left join wp_posts P2 on Z.team2_id = P2.id
 
             WHERE 
                 date = ?";

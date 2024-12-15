@@ -93,9 +93,9 @@ public function __construct()
         u.display_name as name, 
         u.user_email as email
         FROM 
-        " . $_ENV['WPDBNAME'] . ".wp_users u      
+        wp_users u      
         INNER JOIN
-        " . $_ENV['WPDBNAME'] . ".wp_usermeta niveau_meta ON u.ID = niveau_meta.user_id AND niveau_meta.meta_key = 'scheidsrechter' AND niveau_meta.meta_value <> '' AND niveau_meta.meta_value IS NOT NULL
+        wp_usermeta niveau_meta ON u.ID = niveau_meta.user_id AND niveau_meta.meta_key = 'scheidsrechter' AND niveau_meta.meta_value <> '' AND niveau_meta.meta_value IS NOT NULL
         WHERE id = ?";
 
         $params = [$userId];
@@ -116,7 +116,7 @@ public function __construct()
         }
 
         $team = new Team($naam);
-        $query = "SELECT ID as id, post_title as title FROM " . $_ENV['WPDBNAME'] . ".wp_posts where post_title=? and post_type='team'";
+        $query = "SELECT ID as id, post_title as title FROM wp_posts where post_title=? and post_type='team'";
 
         $params = [$team->GetSkcNaam()];
         $result = $this->database->Execute($query, $params);

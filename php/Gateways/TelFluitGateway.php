@@ -61,16 +61,16 @@ class TelFluitGateway
         U3.user_email AS emailTeller2
         
     FROM 
-        " . $_ENV['DBNAME'] . ".TeamPortal_wedstrijden W
+        TeamPortal_wedstrijden W
     
     LEFT JOIN 
-        " . $_ENV['WPDBNAME'] . ".wp_users U1 on U1.ID = W.scheidsrechter_id
+        wp_users U1 on U1.ID = W.scheidsrechter_id
     
     LEFT JOIN 
-        " . $_ENV['WPDBNAME'] . ".wp_users U2 on U2.ID = W.teller1_id
+        wp_users U2 on U2.ID = W.teller1_id
     
     LEFT JOIN 
-        " . $_ENV['WPDBNAME'] . ".wp_users U3 on U3.ID = W.teller2_id
+        wp_users U3 on U3.ID = W.teller2_id
     
     WHERE 
         (W.scheidsrechter_id = ? OR W.teller1_id = ? OR W.teller2_id = ?) 
@@ -111,7 +111,7 @@ class TelFluitGateway
                          W.scheidsrechter_id,
                          W.teller1_id,
                          W.teller2_id
-                    FROM ' . $_ENV['DBNAME'] . '. teamportal_wedstrijden W
+                    FROM  teamportal_wedstrijden W
                     WHERE scheidsrechter_id = ? OR teller1_id = ? OR teller2_id = ?';
         $params = [
             $user->id, $user->id, $user->id
@@ -188,17 +188,17 @@ class TelFluitGateway
         MAX(niveau_meta.meta_value) as niveau,
         MAX(scheidsrechter_dit_seizoen_meta.meta_value) as scheidsrechter_dit_seizoen
         FROM 
-        ' . $_ENV['WPDBNAME'] . '.wp_users u
+        wp_users u
         INNER JOIN 
-        ' . $_ENV['WPDBNAME'] . '.wp_usermeta um ON u.ID = um.user_id AND um.meta_key = "team"
+        wp_usermeta um ON u.ID = um.user_id AND um.meta_key = "team"
         INNER JOIN
-        ' . $_ENV['WPDBNAME'] . '.wp_posts p ON p.ID = um.meta_value
+        wp_posts p ON p.ID = um.meta_value
         LEFT JOIN
-        ' . $_ENV['DBNAME'] . '.TeamPortal_wedstrijden w ON u.ID = w.scheidsrechter_id        
+        TeamPortal_wedstrijden w ON u.ID = w.scheidsrechter_id        
         INNER JOIN
-        ' . $_ENV['WPDBNAME'] . '.wp_usermeta niveau_meta ON u.ID = niveau_meta.user_id AND niveau_meta.meta_key = "scheidsrechter" AND niveau_meta.meta_value <> "" AND niveau_meta.meta_value IS NOT NULL
+        wp_usermeta niveau_meta ON u.ID = niveau_meta.user_id AND niveau_meta.meta_key = "scheidsrechter" AND niveau_meta.meta_value <> "" AND niveau_meta.meta_value IS NOT NULL
         INNER JOIN
-        ' . $_ENV['WPDBNAME'] . '.wp_usermeta scheidsrechter_dit_seizoen_meta ON u.ID = scheidsrechter_dit_seizoen_meta.user_id AND scheidsrechter_dit_seizoen_meta.meta_key = "scheidsrechter_dit_seizoen" AND scheidsrechter_dit_seizoen_meta.meta_value = "1"
+        wp_usermeta scheidsrechter_dit_seizoen_meta ON u.ID = scheidsrechter_dit_seizoen_meta.user_id AND scheidsrechter_dit_seizoen_meta.meta_key = "scheidsrechter_dit_seizoen" AND scheidsrechter_dit_seizoen_meta.meta_value = "1"
         WHERE 
             p.post_type = "team"
         GROUP BY 
@@ -292,10 +292,10 @@ class TelFluitGateway
                     U3.id AS idTeller2,
                     U3.display_name AS naamTeller2,
                     U3.user_email emailTeller2
-                  FROM ' . $_ENV['DBNAME'] . '.TeamPortal_wedstrijden W
-                  LEFT JOIN ' . $_ENV['WPDBNAME'] . '.wp_users U1 on U1.id = W.scheidsrechter_id
-                  LEFT JOIN ' . $_ENV['WPDBNAME'] . '.wp_users U2 on U2.id = W.teller1_id
-                  LEFT JOIN ' . $_ENV['WPDBNAME'] . '.wp_users U3 on U3.id = W.teller2_id
+                  FROM TeamPortal_wedstrijden W
+                  LEFT JOIN wp_users U1 on U1.id = W.scheidsrechter_id
+                  LEFT JOIN wp_users U2 on U2.id = W.teller1_id
+                  LEFT JOIN wp_users U3 on U3.id = W.teller2_id
                   WHERE W.match_id = ?';
         $params = [$matchId];
         $rows = $this->database->Execute($query, $params);
@@ -313,21 +313,21 @@ class TelFluitGateway
         U.user_email AS email,
         (
             SELECT COUNT(*)
-            FROM " . $_ENV['DBNAME'] . ".TeamPortal_wedstrijden W
+            FROM TeamPortal_wedstrijden W
             WHERE W.teller1_id = U.ID OR W.teller2_id = U.ID
         ) AS geteld,
         P.ID AS teamId,
         P.post_title AS teamnaam
     FROM
-        " . $_ENV['WPDBNAME'] . ".wp_users U
+        wp_users U
     INNER JOIN
-        " . $_ENV['WPDBNAME'] . ".wp_usermeta UM ON U.ID = UM.user_id AND UM.meta_key = 'team'
+        wp_usermeta UM ON U.ID = UM.user_id AND UM.meta_key = 'team'
     INNER JOIN
-        " . $_ENV['WPDBNAME'] . ".wp_posts P ON UM.meta_value = P.ID AND P.post_type = 'team'
+        wp_posts P ON UM.meta_value = P.ID AND P.post_type = 'team'
     WHERE
         U.ID NOT IN (
             SELECT user_id
-            FROM " . $_ENV['WPDBNAME'] . ".wp_usermeta
+            FROM wp_usermeta
             WHERE meta_key = 'scheidsrechter' AND meta_value <> '' AND meta_value IS NOT NULL
         )
     GROUP BY
