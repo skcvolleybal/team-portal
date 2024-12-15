@@ -147,8 +147,7 @@ $entryPoint =
         new RouteGroup('/tasks', [
             new GetRoute('/sync-matches', UseCases\SynchronizeWedstrijden::class),
             new GetRoute('/queue-weekly-emails', UseCases\QueueWeeklyEmails::class),
-            new GetRoute('/send-emails', UseCases\SendQueuedEmails::class),
-            new GetRoute('/daily-tasks', UseCases\DailyTasks::class)
+            new GetRoute('/send-emails', UseCases\SendQueuedEmails::class)
         ], AuthorizationRole::UNREGISTERED),
 
 
