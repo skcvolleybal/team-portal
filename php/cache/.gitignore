@@ -1,0 +1,4 @@
+# Ignore all files in this directory. However we need the directory itself to exist, otherwise SimplePie can't write cache to it. So that's why we are here. 
+*
+# Except this file
+!.gitignore
