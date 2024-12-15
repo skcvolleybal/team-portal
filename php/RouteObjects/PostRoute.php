@@ -10,6 +10,12 @@ use TeamPortal\RouteObjects\CrudRoute;
 
 class PostRoute extends CrudRoute
 {
+
+    public string $route;
+    public string $interactor;
+    public ?int $role;
+
+    
     public function __construct($route, $interactor, int $role = null)
     {
         $this->role = $role;
