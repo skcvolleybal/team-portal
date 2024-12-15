@@ -22,7 +22,7 @@ class GetRoute extends CrudRoute
         $this->role = $role;
     }
 
-ollectorProxy $group)
+    public function RegisterAction(RouteCollectorProxy $group)
     {
         $interactor = $this->interactor;
         $route = $this;
