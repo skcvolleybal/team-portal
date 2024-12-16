@@ -11,6 +11,7 @@ export class BarcieBeschikbaarheidComponent implements OnInit {
   loading: boolean;
   speeldagen: any[];
   errorMessage: string;
+  speeldagenEmpty: boolean;
 
   constructor(private beschikbaarheidService: BeschikbaarheidService) {}
 
@@ -30,6 +31,9 @@ export class BarcieBeschikbaarheidComponent implements OnInit {
       (speeldagen) => {
         this.speeldagen = speeldagen;
         this.loading = false;
+        if (this.speeldagen.length == 0) {
+          this.speeldagenEmpty = true;
+        }
       },
       (error) => {
         if (error.status === 500) {

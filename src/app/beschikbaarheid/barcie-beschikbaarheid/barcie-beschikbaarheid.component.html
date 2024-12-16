@@ -1,3 +1,15 @@
+
+
+<div *ngIf="speeldagenEmpty; then showInfo else showMijnOverzicht"></div>
+
+<ng-template #showInfo>
+<p><em>Er zijn nog geen barcie shifts om je beschikbaarheid voor op te geven.</em></p>
+<br>
+</ng-template>
+
+<ng-template #showMijnOverzicht>
+<p>Geef hier je beschikbaarheid op voor aankomende barcie shifts.</p>
+
 <table
   class="table table-sm"
   *ngFor="let dag of speeldagen"
