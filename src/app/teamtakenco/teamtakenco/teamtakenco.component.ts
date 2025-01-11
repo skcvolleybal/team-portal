@@ -3,7 +3,7 @@ import {
   faCalendarCheck,
   faPeopleCarry,
   faTrashAlt,
-  faUser,
+  faUserTie as scheidsIcon,
 } from '@fortawesome/free-solid-svg-icons';
 
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -22,7 +22,7 @@ import { Wedstrijd } from 'src/app/models/Wedstrijd';
 })
 export class TeamtakencoComponent implements OnInit {
   icons = {
-    scheidsrechter: faUser,
+    scheidsrechter: scheidsIcon,
     tellers: faCalendarCheck,
     zaalwacht: faPeopleCarry,
     verwijderen: faTrashAlt,
