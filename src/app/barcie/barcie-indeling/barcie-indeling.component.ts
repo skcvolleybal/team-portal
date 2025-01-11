@@ -13,7 +13,7 @@ import { AanwezigheidService } from '../../core/services/aanwezigheid.service';
 import { BarcieService } from '../../core/services/barcie.service';
 import { SelecteerBarcielidComponent } from '../selecteer-barcie-lid/selecteer-barcie-lid.component';
 // import { faHeart as heartRegular } from '@fortawesome/free-regular-svg-icons';
-import { faHospital as noBHV } from '@fortawesome/free-regular-svg-icons';
+import { faBeer as noBHV } from '@fortawesome/free-solid-svg-icons';
 import { faHospitalUser as BHV } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
