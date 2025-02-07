@@ -1,0 +1,173 @@
+
+<div class="d-flex justify-content-between">
+  <div class="d-flex justify-content-center mx-3">
+    <h2 mat-dialog-title>Swap list</h2>
+  </div>
+
+</div>
+
+<!-- Show spinner when loading -->
+<div *ngIf="isLoading" class="d-flex justify-content-center">
+    <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div>
+
+<!-- Show list when data is loaded -->
+<div *ngIf="!isLoading">
+  <mat-dialog-content>
+    <nav class="navbar navbar-light">
+      <button class="btn btn-outline-primary my-2 my-sm-0" mat-button (click)="currentPage = 'page1'">Propose a swap</button>
+      <button class="btn btn-outline-primary my-2 my-sm-0" mat-button (click)="currentPage = 'page2'">Proposed to me</button>
+    </nav>
+    <div *ngIf="currentPage === 'page1'">
+      <div class="d-flex align-items-start justify-content-center">
+        <!-- Left Column: My Tasks -->
+        <div class="flex-fill d-flex flex-column">
+          <mat-tab-group>
+            <mat-tab label="My tasks">
+              <div class="p-3">
+                <h3>My tasks</h3>
+                <div class="list-group overflow-auto" style="max-height: 200px">
+                  <button 
+                    class="list-group-item list-group-item-action" 
+                    *ngFor="let task of myTasks; let i = index"
+                    [class.selected]="selectedIndexStyle === i"
+                    [disabled]="selectedIndexStyle !== null && selectedIndexStyle !== i"
+                    (click)="selectButton(i, task)">
+                    
+                    <h5>Bardienst</h5> {{ task.bardag.date.date | date: 'd' }} {{ task.bardag.date.date | date: 'MMMM' }} {{ task.bardag.date.date | date: 'yyyy' }} <br>Shift: {{ task.shift ? task.shift : '' }}
+                  </button>
+                </div>
+              </div>
+            </mat-tab>
+          </mat-tab-group>
+        </div>
+      
+        <!-- Swap Icon in the Middle -->
+        <div class="d-flex justify-content-center mx-3" style="align-self: center; margin-top:50px">
+          <fa-icon [icon]="swapIcon" size="2x"></fa-icon>
+        </div>
+      
+        <!-- Right Column: Other Tasks -->
+        <div class="flex-fill d-flex flex-column">
+          <mat-tab-group>
+            <mat-tab label="Other tasks">
+              <div class="p-3">
+                <h3>Other's tasks</h3>
+                <div class="list-group overflow-auto" style="max-height: 200px">
+                  <button 
+                    class="list-group-item list-group-item-action" 
+                    *ngFor="let task of otherTasks; let i = index"
+                    [class.selected]="selectedTasksStyle[i]"
+                    (click)="selectTaskButton(i, task)">
+                    <h5>Bardienst</h5> {{ task.bardag.date.date | date: 'd' }} {{ task.bardag.date.date | date: 'MMMM' }} {{ task.bardag.date.date | date: 'yyyy' }} <br>Shift: {{ task.shift ? task.shift : '' }}
+                  </button>
+                </div>
+              </div>
+            </mat-tab>
+          </mat-tab-group>
+        </div>
+      </div>
+    </div>
+      <div *ngIf="currentPage === 'page2'">
+
+        <div class="d-flex align-items-start justify-content">
+          <!-- Left Column: My Tasks -->
+          <div class="d-flex flex-fill flex-column">
+            <!-- List Group (Tasks) -->
+             <div class="d-flex justify-content-start align-items-center ms-3">
+              <h3 class="me-5">They get</h3>
+              <h3 class="ms-5">I get</h3>
+             </div>
+            
+            <div class="list-group overflow-auto" style="max-height: 200px">
+              <div *ngFor="let task of swapsProposedToMe; let i = index">
+                <!-- Flex container for list item and button -->
+                <div class="d-flex justify-content-start align-items-center">
+                  
+                  <div class="list-group-item w-auto">
+                    <h5>Bardienst</h5><br>
+                    {{task.dateToSwap}} <br>
+                    Shift {{task.shiftToSwap}}
+                  </div>
+                  
+                  <!-- Icon aligned to the right -->
+                  <div class="d-flex align-items-center mx-3">
+                    <fa-icon [icon]="swapIcon" size="2x"></fa-icon>
+                  </div>
+                  
+                  <div class="list-group-item w-auto">
+                    <h5>Bardienst</h5><br>
+                    {{task.swapForDate}} <br>
+                    Shift {{task.swapForShift}}
+                  </div>
+
+                  <button class="btn btn-success mx-4" (click)="handleAcceptSwap(task)">Accept</button>
+                  <button class="btn btn-danger mx-4" (click)="handleRejectSwap(task)">Reject</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </mat-dialog-content>
+
+          <!-- Swap Icon Outside the List
+          <div class="d-flex align-items-center mx-3">
+            <fa-icon [icon]="swapIcon" size="2x"></fa-icon>
+          </div>
+
+          <div class="list-group overflow-auto" style="max-height: 200px">
+            <div
+              class="list-group-item w-auto"
+              *ngFor="let task of swapsProposedToMe; let i = index"
+            >
+              <h5>Bardienst</h5><br>
+              {{task.swapForDate}} <br>
+              Shift {{task.swapForShift}}
+            </div>
+  
+          </div> -->
+
+
+        <!-- Swap Icon in the Middle -->
+        <!-- <div class="d-flex justify-content-center mx-3" style="align-self: center; margin-top:50px">
+          <fa-icon [icon]="swapIcon" size="2x"></fa-icon>
+        </div> -->
+              
+
+      
+        <!-- Right Column: Other Tasks -->
+        <!-- <div class="flex-fill d-flex flex-column">
+          <mat-tab-group>
+            <mat-tab label="Other tasks">
+              <div class="p-3">
+                <h3>Other's tasks</h3>
+                <div class="list-group overflow-auto" style="max-height: 200px">
+                  <div
+                    class="list-group-item" 
+                    *ngFor="let task of swapsProposedToMe; let i = index"
+                    > 
+                    (click)="selectButton(i, task)" 
+                    <h5>Here2</h5> 
+                </div>
+                </div>
+              </div>
+            </mat-tab>
+          </mat-tab-group>
+        </div> -->
+
+      <!-- </div> -->
+    <!-- </div> -->
+
+  
+  
+</div>
+<div class="d-flex justify-content-between mx-3">
+  <button class="btn btn-danger" (click)="closeModal()">Close</button>
+
+  <div *ngIf="currentPage === 'page1'">
+    <button class="btn btn-success" (click)="addProposals()">Add proposal</button>
+  </div>
+</div>

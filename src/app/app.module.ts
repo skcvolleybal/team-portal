@@ -28,7 +28,7 @@ import { WithCredentialsInterceptor } from './core/interceptors/add-credentials.
 import { appRoutes } from './route.config';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-
+import { MatDialogModule } from '@angular/material/dialog';
 import { ToastrModule } from 'ngx-toastr';
 import { StatistiekenComponent } from './statistieken/statistieken.component';
 import { EmailsComponent } from './emails/emails.component';
@@ -53,6 +53,7 @@ import { EmailDetailComponent } from './email-detail/email-detail.component';
         NgbModule,
         FontAwesomeModule,
         BrowserAnimationsModule, // required animations module
+        MatDialogModule,
         ToastrModule.forRoot(), // ToastrModule added
     ],
     exports: [],

@@ -90,7 +90,8 @@ $entryPoint =
         ], AuthorizationRole::TEAMCOORDINATOR),
 
         new RouteGroup('/diensten', [
-            new GetRoute('/bar', UseCases\GetBarDienstenForUser::class),
+            new GetRoute('/bar/{id}', UseCases\GetBarDienstenForUser::class),
+            new GetRoute('/bar', UseCases\GetAllBarDiensten::class),
             new GetRoute('/scheids', UseCases\GetTelDienstenForUser::class),
         ], AuthorizationRole::USER),
 
@@ -142,6 +143,13 @@ $entryPoint =
 
 
         new GetRoute('/calendar', UseCases\GetCalendar::class, AuthorizationRole::UNREGISTERED),
+
+        new RouteGroup('/swaps', [
+            new GetRoute('', UseCases\GetSwaps::class),
+            new GetRoute('/proposed', UseCases\GetProposedSwaps::class),
+            new GetRoute('/{id}', UseCases\GetSwapsById::class),
+            new PostRoute('', UseCases\UpdateSwaps::class),
+        ], AuthorizationRole::UNREGISTERED),
         
 
         new RouteGroup('/tasks', [
