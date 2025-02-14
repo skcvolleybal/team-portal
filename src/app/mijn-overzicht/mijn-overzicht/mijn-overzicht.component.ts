@@ -19,7 +19,7 @@ import {
 import { WordPressService } from '../../core/services/request.service';
 import { StateService } from 'src/app/core/services/state.service';
 import { teamTask } from './teamTask';
-import { wedstrijd } from './Wedstrijd';
+import { wedstrijd } from './wedstrijd';
 
 @Component({
   selector: 'teamportal-mijn-overzicht',
