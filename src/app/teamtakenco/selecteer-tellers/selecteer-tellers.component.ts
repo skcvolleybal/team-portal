@@ -58,8 +58,9 @@ export class SelecteerTellersComponent implements OnInit {
     const $this = this;
     this.teamtakencoService
       .UpdateTellers(this.wedstrijd.matchId, teller.id, this.tellerIndex)
-      .subscribe(() =>
+      .subscribe(() =>{
+        console.log('success')
         this.modal.close({ teller, tellerIndex: $this.tellerIndex })
-      );
+      });
   }
 }

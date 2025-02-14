@@ -24,11 +24,76 @@
     background-color: green;
     color: black;
     margin: 50px;
+}
+
+.pressed {
+background-color: blue;
+color: white;
+}
+
+.card {
+    border: none; /* Light gray border */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Soft shadow */
   }
 
-  .pressed {
-    background-color: blue;
-    color: white;
+
+  .list-group-item {
+    position: relative;
+    overflow: hidden;
+    padding: 15px;
+    background: white; /* Default background */
+    border: 1px solid #ddd;
+  }
+  
+  .list-group-item::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: green;
+    transform: skewY(-30deg);
+    transform-origin: top left;
+    z-index: 0;
   }
 
+  /* Bottom-right diagonal green */
+.list-group-item::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    background: green;
+    transform: skewY(-30deg);
+    transform-origin: bottom right;
+    z-index: 0;
+  }
+  
+  .list-group-item > * {
+    position: relative;
+    z-index: 1;
+    color: black; /* Ensure readability */
+  }
+  
+  .card-title {
+    display: inline-block;
+    color: white; /* Ensure contrast */
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+  }
 
+  .task-icon {
+    margin-left: 10px;
+    color: gray; /* Adjust color */
+  }
+
+  .vs-text {
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: green; /* Or any highlight color */
+  }

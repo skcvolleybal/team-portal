@@ -10,12 +10,16 @@ import {
   faInfoCircle,
   faPeopleCarry,
   faCalendar,
+  faGavel,
+  faAmbulance,
+  faCalculator
   
 } from '@fortawesome/free-solid-svg-icons';
 
 import { WordPressService } from '../../core/services/request.service';
 import { StateService } from 'src/app/core/services/state.service';
-import { SwapService } from 'src/app/core/services/swap.service';
+import { teamTask } from './teamTask';
+import { wedstrijd } from './Wedstrijd';
 
 @Component({
   selector: 'teamportal-mijn-overzicht',
@@ -28,14 +32,18 @@ export class MijnOverzichtComponent implements OnInit {
   loading: boolean;
   taskIcon = faUser;
   scheidsrechterIcon = faUser;
-  tellersIcon = faCalendarCheck;
+  bhvIcon = faAmbulance;
+  tellersIcon = faCalculator;
   calenderIcon = faCalendar;
   openIcon = faPlusSquare;
-  dagen: any[];
+  refIcon = faGavel;
+  wedstrijden: wedstrijd[];
+  diensten: any[];
   errorMessage: string;
   dagenEmpty: boolean = false;
   user: any;
   zaalwacht = faPeopleCarry;
+  teamTasks: teamTask[] = [];
 
   showRuilLijst = false;
 
@@ -48,7 +56,6 @@ export class MijnOverzichtComponent implements OnInit {
     private wordPressService: WordPressService,
     private stateService: StateService,
     // private CalendarService: calenderGenerator,
-    private SwapService: SwapService,
     private dialog: MatDialog
   ) {}
 
@@ -56,10 +63,10 @@ export class MijnOverzichtComponent implements OnInit {
     this.loading = true;
     this.wordPressService.GetMijnOverzicht().subscribe(
       (response) => {
-        console.log(response)
-        this.dagen = response;
+        console.log("Wedstrijden", response)
+        this.mapToWedstrijden(response)
         this.loading = false;
-        if (this.dagen.length == 0) {
+        if (this.wedstrijden.length == 0) {
           this.dagenEmpty = true;
         }
       },
@@ -72,15 +79,97 @@ export class MijnOverzichtComponent implements OnInit {
       }
     );
 
+    this.wordPressService.GetZaalwachtenForUser().subscribe((response) => {
+      console.log("Zaalwachten: ", response)
+    })
+
     this.stateService.isAuthenticated.subscribe((isAuthenticated) => {
       if (isAuthenticated) {
         this.ngOnInit();
       }
+
     });
 
-    this.wordPressService.GetCurrentUser().subscribe((data) => {
-      this.user = data;
-    });
+    this.wordPressService.GetCoachWedstrijden().subscribe((response) => {
+      console.log("GetCoachWedstrijden", response)
+    })
+
+    this.loadUserAndDiensten();
+  }
+
+  async loadUserAndDiensten() {
+    try {
+      this.user = await this.wordPressService.GetCurrentUser().toPromise();
+      this.diensten = await this.wordPressService.GetDienstenForUser(this.user.id).toPromise()
+      this.mapToTeamTasks(this.diensten)
+      console.log('Diensten: ', this.diensten);
+    } catch (err) {
+      console.log('Error loading data', err)
+    }
+  }
+
+  mapToTeamTasks(diensten) {
+    const barShifts = diensten[0];
+    const telShifts = diensten[1];
+    const scheidsShifts = diensten[2];
+
+    console.log(barShifts);
+    console.log(scheidsShifts);
+    console.log(telShifts);
+
+
+    if (barShifts) {
+      this.teamTasks = this.teamTasks.concat(barShifts.map(shift => ({
+        id: shift.id,
+        user_id: shift.persoon.id,
+        type: shift.isBhv ? "BHV" : "Bardienst",
+        timestamp: new Date(shift.bardag.date.date.replace(" ", "T")),
+        shift: shift.shift,
+        isBhv: shift.isBhv ? true : false
+      })))
+    }
+
+    if (scheidsShifts) {
+      this.teamTasks = this.teamTasks.concat(scheidsShifts.map(shift => ({
+        id: shift.id,
+        user_id: shift.scheidsrechterId,
+        type: "Scheidsdienst",
+        timestamp: new Date(shift.timestamp.replace(" ", "T")),
+        // shift: shift.shift,
+        // isBhv: shift.isBhv ? true : false
+      })))
+    }
+
+    if (telShifts) {
+      this.teamTasks = this.teamTasks.concat(telShifts.map(shift => ({
+        id: shift.id,
+        user_id: this.user.id,
+        type: "Teldienst",
+        timestamp: new Date(shift.timestamp.replace(" ", "T")),
+        // shift: shift.shift,
+        // isBhv: shift.isBhv ? true : false
+      })))
+    }
+
+    this.teamTasks = this.teamTasks.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
+    console.log(this.teamTasks);
+
+
+  }
+
+  mapToWedstrijden(wedstrijden) {
+    this.wedstrijden = wedstrijden.map(wedstrijd => ({
+      id: wedstrijd.id,
+      locatie: wedstrijd.locatie,
+      matchId: wedstrijd.matchId,
+      timestamp: new Date(wedstrijd.timestamp.date.replace(" ", "T")),
+      thuisTeam: wedstrijd.team1.naam,
+      uitTeam: wedstrijd.team2.naam,
+      thuisWedstrijd: wedstrijd.team1.naam.startsWith("SKC") ? true : false
+    }))
+    this.wedstrijden = this.wedstrijden.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
+
+    console.log(this.wedstrijden)
   }
 
   openModal() {
@@ -89,6 +178,16 @@ export class MijnOverzichtComponent implements OnInit {
       panelClass: 'custom-modal',
       data: { userid: this.user.id },
     });
+  }
+
+  getIconClass(type: string) {
+    switch (type) {
+      case 'BHV': return this.bhvIcon; // Calendar icon
+      case 'Bardienst': return this.taskIcon; // Task icon
+      case 'Scheidsdienst': return this.refIcon; // Phone icon
+      case 'Teldienst': return this.tellersIcon;
+      default: return 'fas fa-info-circle'; // Default info icon
+    }
   }
 
   // setProposed() {

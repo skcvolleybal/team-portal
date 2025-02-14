@@ -77,8 +77,12 @@ if (str_contains($_SERVER['REQUEST_URI'], $testUrl)) {
 
 $entryPoint =
     new RouteGroup($baseRoute, [
-          
-        new GetRoute('/mijn-overzicht', UseCases\MijnOverzicht::class, AuthorizationRole::USER),
+
+        new RouteGroup('/mijn-overzicht' , [
+            new GetRoute('', UseCases\MijnOverzicht::class, AuthorizationRole::USER),
+            new GetRoute('/coachwedstrijden', UseCases\GetCoachWedstrijden::class, AuthorizationRole::USER),
+        ], AuthorizationRole::USER),
+        
 
         new RouteGroup('/wedstrijd-overzicht', [
             new GetRoute('', UseCases\GetWedstrijdOverzicht::class),
@@ -92,7 +96,9 @@ $entryPoint =
         new RouteGroup('/diensten', [
             new GetRoute('/bar/{id}', UseCases\GetBarDienstenForUser::class),
             new GetRoute('/bar', UseCases\GetAllBarDiensten::class),
-            new GetRoute('/scheids', UseCases\GetTelDienstenForUser::class),
+            new GetRoute('/tel/{id}', UseCases\GetTelDienstenForUser::class),
+            new GetRoute('/scheids/{id}', UseCases\GetFluitDienstenForUser::class),
+            new GetRoute('/zaalwacht', UseCases\GetZaalwachtDienstenForUser::class),
         ], AuthorizationRole::USER),
 
         new RouteGroup('/fluiten', [

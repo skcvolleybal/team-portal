@@ -109,10 +109,15 @@ class TelFluitGateway
     {
         $query = 'SELECT W.timestamp,
                          W.scheidsrechter_id,
+                         U.display_name,
                          W.teller1_id,
                          W.teller2_id
                     FROM ' . $_ENV['DBNAME'] . '. teamportal_wedstrijden W
-                    WHERE scheidsrechter_id = ? OR teller1_id = ? OR teller2_id = ?';
+                    LEFT JOIN ' . $_ENV['DBNAME'] . '. wp_users U on U.ID = W.scheidsrechter_id
+
+                    WHERE scheidsrechter_id = ? OR teller1_id = ? OR teller2_id = ?
+                    AND W.timestamp >= CURRENT_TIMESTAMP()
+                    ';
         $params = [
             $user->id, $user->id, $user->id
         ];
@@ -126,25 +131,15 @@ class TelFluitGateway
                     W.id,
                     W.match_id AS matchId,
                     W.timestamp,
-                    W.is_veranderd as isVeranderd,
                     U1.id AS scheidsrechterId,
-                    U1.name AS scheidsrechter,
-                    U1.email emailScheidsrechter,
-                    U2.id AS idTeller1,
-                    U2.name AS naamTeller1,
-                    U2.email AS emailTeller1,
-                    U3.id AS idTeller2,
-                    U3.name AS naamTeller2,
-                    U3.email emailTeller2
+                    U1.display_name AS scheidsrechter
                   FROM TeamPortal_wedstrijden W
-                  LEFT JOIN J3_users U1 on U1.id = W.scheidsrechter_id
-                  LEFT JOIN J3_users U2 on U2.id = W.teller1_id
-                  LEFT JOIN J3_users U3 on U3.id = W.teller2_id
+                  LEFT JOIN ' . $_ENV['DBNAME'] . '. wp_users U1 on U1.ID = W.scheidsrechter_id
                   WHERE W.scheidsrechter_id = ? AND
                         W.timestamp >= CURRENT_TIMESTAMP()';
         $params = [$user->id];
         $rows = $this->database->Execute($query, $params);
-        return $this->MapToWedstrijden($rows);
+        return $rows;
     }
 
     public function GetTelbeurten(Persoon $user): array
@@ -153,25 +148,18 @@ class TelFluitGateway
                     W.id,
                     W.match_id AS matchId,
                     W.timestamp,
-                    W.is_veranderd as isVeranderd,
-                    U1.id AS scheidsrechterId,
-                    U1.name AS scheidsrechter,
-                    U1.email emailScheidsrechter,
                     U2.id AS idTeller1,
-                    U2.name AS naamTeller1,
-                    U2.email AS emailTeller1,
+                    U2.display_name AS naamTeller1,
                     U3.id AS idTeller2,
-                    U3.name AS naamTeller2,
-                    U3.email emailTeller2
+                    U3.display_name AS naamTeller2
                   FROM TeamPortal_wedstrijden W
-                  LEFT JOIN J3_users U1 on U1.id = W.scheidsrechter_id
-                  LEFT JOIN J3_users U2 on U2.id = W.teller1_id
-                  LEFT JOIN J3_users U3 on U3.id = W.teller2_id
+                  LEFT JOIN ' . $_ENV['DBNAME'] . '. wp_users U2 on U2.ID = W.teller1_id
+                  LEFT JOIN ' . $_ENV['DBNAME'] . '. wp_users U3 on U3.ID = W.teller2_id
                   WHERE (W.teller1_id = ? OR W.teller2_id = ?) AND
                         W.timestamp >= CURRENT_TIMESTAMP()';
         $params = [$user->id, $user->id];
         $rows = $this->database->Execute($query, $params);
-        return $this->MapToWedstrijden($rows);
+        return $rows;
     }
 
     public function GetScheidsrechters(): array
@@ -396,7 +384,7 @@ class TelFluitGateway
 
     public function Insert(Wedstrijd $wedstrijd): void
     {
-        $query = 'INSERT INTO TeamPortal_wedstrijden (match_id, scheidsrechter_id, teller1_id, teller2_id)
+        $query = 'INSERT INTO teamportal_wedstrijden (match_id, scheidsrechter_id, teller1_id, teller2_id)
                   VALUES (?, ?, ?, ?)';
         $params = [
             $wedstrijd->matchId,

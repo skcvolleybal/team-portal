@@ -10,7 +10,7 @@ use TeamPortal\Gateways\TelFluitGateway;
 use TeamPortal\Entities\Barlid;
 use TeamPortal\Entities\Persoon;
 
-class GetTelDienstenForUser implements Interactor
+class GetFluitDienstenForUser implements Interactor
 {
     public function __construct(
         WordPressGateway $wordPressGateway,
@@ -22,9 +22,9 @@ class GetTelDienstenForUser implements Interactor
 
     public function Execute(object $data = null) {
 
-        $TelLid = new Persoon($data->id, '', null);
+        $FluitLid = new Persoon($data->id, '', null);
         // GetFluitEnTelbeurtenFor
-        return $this->TelFluitGateway->GetTelbeurten($TelLid);
+        return $this->TelFluitGateway->GetFluitbeurten($FluitLid);
     }
 
 }

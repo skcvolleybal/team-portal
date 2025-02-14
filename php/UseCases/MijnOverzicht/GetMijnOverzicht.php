@@ -31,59 +31,16 @@ class MijnOverzicht implements Interactor
 
     public function Execute(object $data = null)
     {
-        $overzicht = [];
-
         $user = $this->wordPressGateway->GetUser();
-
-        $zaalwachten = $this->zaalwachtGateway->GetZaalwachtenOfUser($user);
-        foreach ($zaalwachten as $zaalwacht) {
-            $this->AddZaalwachtToOverzicht($overzicht, $zaalwacht, $user);
-        }
-
-        $uscWedstrijden = $this->nevoboGateway->GetProgrammaForSporthal();
-        $wedstrijden = $this->telFluitGateway->GetFluitEnTelbeurtenFor($user);
-        foreach ($wedstrijden as $wedstrijd) {
-            $uscMatch = Wedstrijd::GetWedstrijdWithMatchId($uscWedstrijden, $wedstrijd->matchId);
-            $wedstrijd->AppendInformation($uscMatch);
-            $this->AddWedstrijdToOverzicht($overzicht, $wedstrijd);
-        }
-
-        $bardiensten = $this->barcieGateway->GetBardienstenForUser($user);
-        foreach ($bardiensten as $bardienst) {
-            $this->AddBardienstToOverzicht($overzicht, $bardienst);
-        }
-
         $team = $this->wordPressGateway->GetTeam($user);
         $speelWedstrijden = $this->nevoboGateway->GetWedstrijdenForTeam($team);
-        foreach ($speelWedstrijden as $wedstrijd) {
-            if ($wedstrijd->timestamp === null) {
-                continue;
-            }
-            $fluitEnTelWedstrijd = $this->telFluitGateway->GetWedstrijd($wedstrijd->matchId);
-            $wedstrijd->AppendInformation($fluitEnTelWedstrijd);
-
-            $this->AddWedstrijdToOverzicht($overzicht, $wedstrijd);
-        }
-
-        foreach ($user->coachteams as $team) {
-            $wedstrijden = $this->nevoboGateway->GetWedstrijdenForTeam($team);
-            foreach ($wedstrijden as $wedstrijd) {
-                if ($wedstrijd->timestamp === null) {
-                    continue;
-                }
-                $this->AddWedstrijdToOverzicht($overzicht, $wedstrijd);
-            }
-        }
-
-        usort($overzicht, [Wedstrijddag::class, "Compare"]);
+        // usort($overzicht, [Wedstrijddag::class, "Compare"]);
         // foreach ($overzicht as $dag) {
         //     usort($dag->speeltijden, [Speeltijd::class, "Compare"]);
         // }
         // When enabled, speeltijd 17:30 comes before 15:30... So disabled for now. 
 
-
-
-        return $this->MapToUseCaseModel($overzicht, $user);
+        return $speelWedstrijden;
     }
 
     private function MapToUseCaseModel(array $wedstrijddagen, Persoon $persoon): array

@@ -38,6 +38,11 @@ export class WordPressService {
     return this.httpClient.get<any>(url);
   }
 
+  GetCoachWedstrijden() {
+    const url = environment.baseUrl + 'mijn-overzicht/coachwedstrijden';
+    return this.httpClient.get<any>(url);
+  }
+
   GetWedstrijdOverzicht(): Observable<any[]> {
     const url = environment.baseUrl + 'wedstrijd-overzicht';
     return this.httpClient.get<any[]>(url);
@@ -53,15 +58,27 @@ export class WordPressService {
     return this.httpClient.get<any[]>(url);
   }
 
-  GetTelScheidsDienstenForUser(): Observable<any[]> {
-    const url = environment.baseUrl + 'diensten/scheids';
+  GetTelDienstenForUser(id: string): Observable<any[]> {
+    const url = environment.baseUrl + `diensten/tel/${id}`;
     return this.httpClient.get<any[]>(url);
   }
 
+  GetScheidsDienstenForUser(id: string): Observable<any[]> {
+    const url = environment.baseUrl + `diensten/scheids/${id}`;
+    return this.httpClient.get<any[]>(url);
+  }
+
+  GetZaalwachtenForUser(): Observable<any[]> {
+    const url = environment.baseUrl + `diensten/zaalwacht`;
+    return this.httpClient.get<any[]>(url);
+  }
+  
+
   GetDienstenForUser(id: string): Observable<any[]> {
     const bar = this.GetBarDienstenForUser(id).pipe(share());
-    const telfluit = this.GetTelScheidsDienstenForUser().pipe(share());
-    return forkJoin([bar, telfluit ]);
+    const tel = this.GetTelDienstenForUser(id).pipe(share());
+    const scheids = this.GetScheidsDienstenForUser(id).pipe(share())
+    return forkJoin([ bar, tel, scheids ]);
   }
 
   GetCurrentUser(): Observable<any[]> {
