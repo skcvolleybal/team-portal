@@ -4,7 +4,6 @@ import { StateService } from 'src/app/core/services/state.service';
 import { WordPressService } from 'src/app/core/services/request.service';
 import { SwapService } from 'src/app/core/services/swap.service';
 import { switchMap } from 'rxjs/operators';
-import { NotificationService } from 'src/app/core/services/notifications.service';
 
 import { Task } from './Task';
 
@@ -42,14 +41,15 @@ export class RuilLijstComponent implements OnInit {
 
   constructor(
     private wordPressService: WordPressService,
+    private stateService: StateService,
     private swapService: SwapService,
     private dialogRef: MatDialogRef<RuilLijstComponent>,
-    private notificationService: NotificationService,
     @Inject(MAT_DIALOG_DATA) public data: any // Receive data from parent
   ) {}
 
   ngOnInit(): void {
       this.wordPressService.GetBarDienstenForUser(this.data.userid).subscribe((response) => {
+        console.log(response)
         this.myTasks = response.filter(obj => obj.persoon.id === this.data.userid)
         }, (error) => {
         console.log(error)
@@ -58,6 +58,7 @@ export class RuilLijstComponent implements OnInit {
 
       this.wordPressService.GetAllBardiensten().subscribe((response) => {
         this.otherTasks = response.filter(obj => obj.persoon.id !== this.data.userid)
+        console.log(response)
         this.isLoading = false;
       }, (error) => {
         this.isLoading = false;
@@ -65,7 +66,9 @@ export class RuilLijstComponent implements OnInit {
       })
 
       this.swapService.GetProposedSwaps().subscribe((response) => {
+        console.log("Allproposed", response)
         this.swapsProposedToMe = response.filter(obj => obj.otherUserId === this.data.userid)
+        console.log("this.swapsProposedToMe", this.swapsProposedToMe)
       })
   }
 
@@ -76,16 +79,17 @@ export class RuilLijstComponent implements OnInit {
 
   addProposals() {
     if (Object.keys(this.mySelectedTask).length === 0) {
-      this.notificationService.showWarning("Select 1 of your own tasks")
+      alert('Select one of your own tasks')
       return;
     }
 
     if (Object.keys(this.tasks).length === 0) {
-      this.notificationService.showWarning("Select 1 or more of someone elses task")
+      alert('Select someone elses task')
       return;
     }
 
     for (const [key, value] of Object.entries(this.tasks)) {
+      console.log(value)
       const newSwap = {
         taskToSwapId: this.mySelectedTask.id,
         userWhoProposedId: this.mySelectedTask.persoon.id,
@@ -97,10 +101,10 @@ export class RuilLijstComponent implements OnInit {
       this.swapService.ProposeSwap(newSwap).subscribe((response) => {
         this.selectedTasksStyle[key] = !this.selectedTasksStyle[key]
         this.selectedIndexStyle = null;
-        this.notificationService.showSuccess("Proposal made")
+
         this.mySelectedTask = {} as Task
+        console.log("success")
       }, (error) => {
-        this.notificationService.showError("1 proposal failed, they might be proposed already.")
         console.log('Error occurred while sending swap proposal:', error)
         this.selectedTasksStyle[key] = !this.selectedTasksStyle[key]
         this.selectedIndexStyle = null;
@@ -125,6 +129,8 @@ export class RuilLijstComponent implements OnInit {
   }
 
   handleAcceptSwap(taskToAccept: any) {
+    console.log('accept')
+    console.log(taskToAccept)
 
     const acceptSwap = {
       swapForTaskId: taskToAccept.swapForTaskId,
@@ -139,10 +145,9 @@ export class RuilLijstComponent implements OnInit {
     ).subscribe({
       next: () => {
         this.swapsProposedToMe = this.swapsProposedToMe.filter(task => task.id !== taskToAccept.id);
-        this.notificationService.showSuccess("Swap accepted")
+        console.log("Success");
       },
       error: (error) => {
-        this.notificationService.showError("Swap not accepted, please reload the page")
         console.log("Error in accept or delete swap", error);
       }
     });
@@ -153,7 +158,6 @@ export class RuilLijstComponent implements OnInit {
     this.swapService.DeleteSwap(taskToDelete.id).subscribe((response) => {
       this.swapsProposedToMe = this.swapsProposedToMe.filter(task => task.id !== taskToDelete.id)
     }, (error) => {
-      this.notificationService.showError("Error in rejecting the swap, please reload the page")
       console.log("Error in DeleteSwap", error)
     })
   }
