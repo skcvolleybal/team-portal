@@ -32,16 +32,4 @@ export class SwapService {
         newSwap
     });
   }
-
-  DeleteSwap(id: string) {
-    return this.httpClient.delete<any>(environment.baseUrl + `swaps/${id}`, {
-    });
-  }
-
-  AcceptSwap(acceptSwap: any) {
-    return this.httpClient.post<any>(environment.baseUrl + `swaps/swaptaak`, {
-      acceptSwap
-    });
-  }
-
 }
