@@ -16,7 +16,6 @@
 </ng-template>
 
 <ng-template #showMijnOverzicht>
-  <button class="btn btn-primary" (click)="openModal()">Swap teamtaken</button>
   <table class="table table-sm mb-0" *ngFor="let dag of dagen">
     <thead>
       <tr>
@@ -29,9 +28,8 @@
           <td></td>
           <td colspan="3">
  
-            <span *ngIf="dag.eersteZaalwacht" class="badge rounded-pill bg-primary" style="padding: 10px;margin-top: auto;margin-bottom: auto;"><fa-icon [icon]="zaalwacht"></fa-icon> 1e zaalwacht: {{ dag.eersteZaalwacht }}
-            
-            </span>
+            <span *ngIf="dag.eersteZaalwacht" class="badge rounded-pill bg-primary" style="padding: 10px;margin-top: auto;margin-bottom: auto;"><fa-icon [icon]="zaalwacht"></fa-icon> 1e zaalwacht: {{ dag.eersteZaalwacht }}</span>
+
           </td>
         </tr>
       </ng-container>
@@ -40,18 +38,14 @@
         <tr class="gray-background" *ngFor="let bardienst of dag.bardiensten">
           <td></td>
           <td colspan="3">
-            <!-- <span>
-              <button (click)="proposeSwap(bardienst)" [ngClass]="isPressed[bardienst.id] ? 'badge bg-success' : 'badge bg-danger'" style="padding: 10px">{{proposed[bardienst.id]}}</button>
-            </span> -->
-            
             <span class="badge rounded-pill bg-primary" style="padding: 10px;margin-top: auto;margin-bottom: auto;">
-                <fa-icon [icon]="taskIcon"></fa-icon> Bardienst Shift {{ bardienst.shift }}
-                {{ bardienst.isBhv ? " (BHV)" : "" }}
-            </span>
+              <fa-icon [icon]="taskIcon"></fa-icon> Bardienst Shift {{ bardienst.shift }}
+              {{ bardienst.isBhv ? " (BHV)" : "" }}</span
+            >
+
           </td>
         </tr>
       </ng-container>
-
       <ng-container *ngFor="let speeltijd of dag.speeltijden">
         <tr *ngFor="let wedstrijd of speeltijd.wedstrijden">
           <td colspan="4">

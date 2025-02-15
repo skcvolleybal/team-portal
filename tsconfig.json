@@ -14,8 +14,7 @@
     ],
     "lib": [
       "es2017",
-      "dom",
-      "es2019" // Added to use flat()
+      "dom"
     ],
     "useDefineForClassFields": false
   }

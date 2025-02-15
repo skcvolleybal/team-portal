@@ -212,32 +212,12 @@ class BarcieGateway implements IBarcieGateway
             new Bardienst($dag, $user, $shift, false);
     }
 
-    public function GetAllBardiensten() {
-        $query = 'SELECT 
-                U.id AS userId, 
-                U.display_name AS naam, 
-                U.user_email AS email,
-                D.id as dayId,
-                D.date, 
-                M.shift, 
-                M.is_bhv AS isBhv,
-                M.id
-            FROM ' . $_ENV['WPDBNAME'] . '.wp_users U
-            INNER JOIN ' . $_ENV['DBNAME'] . '.barcie_schedule_map M ON M.user_id = U.id
-            INNER JOIN ' . $_ENV['DBNAME'] . '.barcie_days D ON M.day_id = D.id
-            WHERE D.date >= CURDATE()';
-
-        $rows = $this->database->Execute($query);
-        return $this->MapToBardiensten($rows);
-    }
-
     public function GetBardiensten(): array
     {
-        //                     M.email,
-
         $query = 'SELECT
                     M.userId,
                     M.naam,
+                    M.email,
                     M.is_bhv AS isBhv,
                     D.date,
                     M.shift
@@ -359,8 +339,7 @@ class BarcieGateway implements IBarcieGateway
                 D.id as dayId,
                 D.date, 
                 M.shift, 
-                M.is_bhv AS isBhv,
-                M.id
+                M.is_bhv AS isBhv
             FROM ' . $_ENV['WPDBNAME'] . '.wp_users U
             INNER JOIN ' . $_ENV['DBNAME'] . '.barcie_schedule_map M ON M.user_id = U.id
             INNER JOIN ' . $_ENV['DBNAME'] . '.barcie_days D ON M.day_id = D.id
@@ -384,8 +363,7 @@ class BarcieGateway implements IBarcieGateway
                     $row->email
                 ),
                 $row->shift,
-                $row->isBhv,
-                $row->id
+                $row->isBhv
             );
         }
 

@@ -22,8 +22,14 @@ class GetBarDienstenForUser implements Interactor
 
     public function Execute(object $data = null) {
 
-        $user = $this->wordPressGateway->GetUser($data->id);
-        return $this->BarcieGateway->GetBardienstenForUser($user);
+        $user = $this->wordPressGateway->GetUser();
+
+        $barlid = new Barlid(
+            new Persoon($user->id, $user->naam, $user->email),
+            0
+        );
+
+        return $this->BarcieGateway->GetBardienstenForUser($barlid);
     }
 
 }

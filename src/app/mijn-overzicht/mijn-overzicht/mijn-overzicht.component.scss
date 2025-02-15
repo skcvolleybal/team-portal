@@ -1,11 +1,5 @@
-
-
 .big-badge{
     font-size: 16px;
-}
-
-.badge {
-    --bs-badge-font-weight: 400 !important; /* Change this value to the desired font-weight */
 }
 
 .CalenderButton {
@@ -14,21 +8,3 @@
     padding: 10px;
     margin: 5px;
 }
-
-.btn {
-    color: white;
-    padding: 5px
-}
-
-.notPressed {
-    background-color: green;
-    color: black;
-    margin: 50px;
-  }
-
-  .pressed {
-    background-color: blue;
-    color: white;
-  }
-
-
