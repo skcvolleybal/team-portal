@@ -149,6 +149,8 @@ $entryPoint =
             new GetRoute('/proposed', UseCases\GetProposedSwaps::class),
             new GetRoute('/{id}', UseCases\GetSwapsById::class),
             new PostRoute('', UseCases\UpdateSwaps::class),
+            new PostRoute('/swaptaak', UseCases\AcceptSwaps::class),
+            new DeleteRoute('/{id}', UseCases\DeleteSwaps::class)
         ], AuthorizationRole::UNREGISTERED),
         
 

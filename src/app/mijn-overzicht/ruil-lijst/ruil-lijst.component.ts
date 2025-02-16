@@ -3,6 +3,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { StateService } from 'src/app/core/services/state.service';
 import { WordPressService } from 'src/app/core/services/request.service';
 import { SwapService } from 'src/app/core/services/swap.service';
+import { switchMap } from 'rxjs/operators';
 
 import { Task } from './Task';
 
@@ -35,7 +36,7 @@ export class RuilLijstComponent implements OnInit {
 
   tasks: Record<number, Task> = {};
 
-  swapsProposedToMe: any[] = [];
+  swapsProposedToMe: any[] = []; // This element is used for rendering the second page
 
 
   constructor(
@@ -65,11 +66,9 @@ export class RuilLijstComponent implements OnInit {
       })
 
       this.swapService.GetProposedSwaps().subscribe((response) => {
-        console.log(response)
-        console.log(this.data.userid)
+        console.log("Allproposed", response)
         this.swapsProposedToMe = response.filter(obj => obj.otherUserId === this.data.userid)
-        console.log("getallswap")
-        console.log(this.swapsProposedToMe)
+        console.log("this.swapsProposedToMe", this.swapsProposedToMe)
       })
   }
 
@@ -88,9 +87,6 @@ export class RuilLijstComponent implements OnInit {
       alert('Select someone elses task')
       return;
     }
-
-    // i want to POST 
-    // my own thingy in conjunction with the other thingys
 
     for (const [key, value] of Object.entries(this.tasks)) {
       console.log(value)
@@ -132,14 +128,37 @@ export class RuilLijstComponent implements OnInit {
     }
   }
 
-  handleAcceptSwap(task: Task) {
+  handleAcceptSwap(taskToAccept: any) {
     console.log('accept')
-    console.log(task)
+    console.log(taskToAccept)
+
+    const acceptSwap = {
+      swapForTaskId: taskToAccept.swapForTaskId,
+      otherUserId: taskToAccept.otherUserId, // Current user's task
+
+      userWhoProposedId: taskToAccept.userWhoProposedId,
+      taskToSwapId: taskToAccept.taskToSwapId // User that wants to swap their task
+    }
+
+    this.swapService.AcceptSwap(acceptSwap).pipe(
+      switchMap(() => this.swapService.DeleteSwap(taskToAccept.id))
+    ).subscribe({
+      next: () => {
+        this.swapsProposedToMe = this.swapsProposedToMe.filter(task => task.id !== taskToAccept.id);
+        console.log("Success");
+      },
+      error: (error) => {
+        console.log("Error in accept or delete swap", error);
+      }
+    });
 
   }
 
-  handleRejectSwap(task: Task) {
-    console.log('reject')
-    console.log(task)
+  handleRejectSwap(taskToDelete: any) {
+    this.swapService.DeleteSwap(taskToDelete.id).subscribe((response) => {
+      this.swapsProposedToMe = this.swapsProposedToMe.filter(task => task.id !== taskToDelete.id)
+    }, (error) => {
+      console.log("Error in DeleteSwap", error)
+    })
   }
 }
