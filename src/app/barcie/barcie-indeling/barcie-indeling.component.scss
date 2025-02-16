@@ -1,11 +1,8 @@
-.barcielist {
-    list-style-type: none;
-}
-
-.list-group-item {
-    border: var(--bs-list-group-border-width) solid #ffffff;
-}
-
 .btn {
     width: 100%;
+}
+
+.shift-table {
+    border-collapse: separate;
+    border-spacing: 10px;
 }

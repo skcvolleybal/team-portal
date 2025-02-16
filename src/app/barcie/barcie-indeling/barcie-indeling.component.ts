@@ -145,6 +145,14 @@ export class BarcieIndelingComponent implements OnInit {
     });
   }
 
+  getShiftRows(shifts: any[]): any[][] {
+    const rows = [];
+    for (let i = 0; i < shifts.length; i += 3) {
+      rows.push(shifts.slice(i, i + 3));
+    }
+    return rows;
+  }
+
   SelecteerBarcieLid(geselecteerdeBarcieDag, shift: number) {
     const component = SelecteerBarcielidComponent;
     component.date = geselecteerdeBarcieDag.date;
