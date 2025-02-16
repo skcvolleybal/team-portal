@@ -106,3 +106,15 @@ CREATE TABLE TeamPortal_zaalwacht (
     KEY team1 (team1_id),
     KEY team2 (team2_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+CREATE TABLE teamtaken_swaps (
+  id int NOT NULL AUTO_INCREMENT,
+  taskToSwapId int NOT NULL,
+  swapForTaskId int NOT NULL,
+  userWhoProposedId int NOT NULL,
+  otherUserId int NOT NULL,
+  date date NOT NULL,
+  shift int NOT NULL,
+  PRIMARY KEY (id),
+  UNIQUE KEY unique_swap_id (taskToSwapId,swapForTaskId)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
