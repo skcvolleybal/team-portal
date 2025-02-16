@@ -43,8 +43,13 @@ export class WordPressService {
     return this.httpClient.get<any[]>(url);
   }
 
-  GetBarDienstenForUser(): Observable<any[]> {
+  GetAllBardiensten(): Observable<any[]> {
     const url = environment.baseUrl + 'diensten/bar';
+    return this.httpClient.get<any[]>(url);
+  }
+
+  GetBarDienstenForUser(id: string): Observable<any[]> {
+    const url = environment.baseUrl + `diensten/bar/${id}`;
     return this.httpClient.get<any[]>(url);
   }
 
@@ -53,13 +58,11 @@ export class WordPressService {
     return this.httpClient.get<any[]>(url);
   }
 
-  GetDienstenForUser(): Observable<any[]> {
-    const bar = this.GetBarDienstenForUser().pipe(share());
+  GetDienstenForUser(id: string): Observable<any[]> {
+    const bar = this.GetBarDienstenForUser(id).pipe(share());
     const telfluit = this.GetTelScheidsDienstenForUser().pipe(share());
     return forkJoin([bar, telfluit ]);
   }
-
-
 
   GetCurrentUser(): Observable<any[]> {
     const url = environment.baseUrl + 'wordpress/user';
