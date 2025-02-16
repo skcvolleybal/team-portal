@@ -22,7 +22,7 @@ class SwapGateway
                     W.date,
                     W.shift
                   FROM
-                    " . $_ENV['WPDBNAME'] . ".teamtaken_swaps W";
+                    " . $_ENV['DBNAME'] . ".teamtaken_swaps W";
         $rows = $this->database->Execute($query);
         return $this->MapToSwaps($rows);
     }
@@ -38,11 +38,11 @@ class SwapGateway
                 B1.shift AS shiftToSwap,     -- Shift for taskToSwapId
                 BD2.date AS swapForDate,     -- Date for swapForTaskId
                 B2.shift AS swapForShift     -- Shift for swapForTaskId
-            FROM " . $_ENV['WPDBNAME'] . ".teamtaken_swaps W
-            INNER JOIN " . $_ENV['WPDBNAME'] . ".barcie_schedule_map B1 ON W.taskToSwapId = B1.id
-            JOIN " . $_ENV['WPDBNAME'] . ".barcie_days BD1 ON B1.day_id = BD1.id
-            JOIN " . $_ENV['WPDBNAME'] . ".barcie_schedule_map B2 ON W.swapForTaskId = B2.id
-            JOIN " . $_ENV['WPDBNAME'] . ".barcie_days BD2 ON B2.day_id = BD2.id";
+            FROM " . $_ENV['DBNAME'] . ".teamtaken_swaps W
+            INNER JOIN " . $_ENV['DBNAME'] . ".barcie_schedule_map B1 ON W.taskToSwapId = B1.id
+            JOIN " . $_ENV['DBNAME'] . ".barcie_days BD1 ON B1.day_id = BD1.id
+            JOIN " . $_ENV['DBNAME'] . ".barcie_schedule_map B2 ON W.swapForTaskId = B2.id
+            JOIN " . $_ENV['DBNAME'] . ".barcie_days BD2 ON B2.day_id = BD2.id";
 
         $rows = $this->database->Execute($query);
         return $this->MapToSwaps($rows);
@@ -53,7 +53,7 @@ class SwapGateway
                     W.scheduleid,
                     W.userid
                   FROM
-                    " . $_ENV['WPDBNAME'] . ".teamtaken_swaps W
+                    " . $_ENV['DBNAME'] . ".teamtaken_swaps W
                   WHERE W.userid = (?)
                     ";
         $params = [
