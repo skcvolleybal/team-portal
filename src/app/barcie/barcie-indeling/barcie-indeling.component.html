@@ -24,27 +24,27 @@
   </tr>
 </table>
 
-<table class="table table-sm" *ngFor="let barciedag of barciedagen" style="margin-bottom: 0px;">
+<table class="table table-sm shift-table" *ngFor="let barciedag of barciedagen" style="margin-bottom: 0px;">
   <thead>
     <tr>
       <th scope="col" colspan="3" style="border-bottom: 0px;">{{barciedag.datum_long}}</th>
     </tr>
   </thead>
   <tbody>
-    <tr>
-      <ul class="list-group barcielist">
-        <li class="list-group-item" *ngFor="let barshift of barciedag.shifts">
-          <h5 class="card-title">Shift {{barshift.shift}}</h5>
+    <ng-container *ngFor="let row of getShiftRows(barciedag.shifts)">
+      <tr>
+        <td *ngFor="let barshift of row" style="width: 33%; vertical-align: top; background-color: #d4edda; padding: 10px; margin-bottom: 10px;">
+          <h5 class="card-title">Shift {{ barshift.shift }}</h5>
           <div class="row m-1" *ngFor="let barcielid of barshift.barleden">
             <div class="input-group">
               <div class="input-group-prepend">
                 <button class="input-group-text" (click)="ToggleBhv(barciedag, barcielid, barshift.shift)">
-                  <fa-icon [icon]="barcielid.isBhv ? bhv: geenBhv"></fa-icon>
+                  <fa-icon [icon]="barcielid.isBhv ? bhv : geenBhv"></fa-icon>
                 </button>
               </div>
               <div class="input-group-append">
                 <button class="btn btn-success" type="button">
-                  {{barcielid.naam}}
+                  {{ barcielid.naam }}
                 </button>
               </div>
               <div class="input-group-append">
@@ -55,20 +55,23 @@
             </div>
           </div>
           <button type="button" class="btn btn-primary btn-block" (click)="SelecteerBarcieLid(barciedag, barshift.shift)">
-            <fa-icon [icon]="user"></fa-icon> Barcielid
-            Toevoegen</button>
-        </li>
-        <li style="padding: 10px;">
-          <button type="button" class="btn btn-primary btn-block" (click)="AddShift(barciedag.date)"><fa-icon [icon]="calendar"></fa-icon> Shift toevoegen</button>
-        </li>
-        <li style="padding: 10px;">
-          <button type="button" class="btn btn-danger btn-block" (click)="DeleteBarcieDate(barciedag.date)"><fa-icon [icon]="delete"></fa-icon> Dag
-            verwijderen</button>
-        </li>
-      </ul>
-    </tr>
+            <fa-icon [icon]="user"></fa-icon> Barcielid Toevoegen
+          </button>
+        </td>
+      </tr>
+    </ng-container>
+    <td colspan="3">
+      <div class="d-flex flex-wrap">
+        <button type="button" class="btn btn-primary btn-block m-2" (click)="AddShift(barciedag.date)">
+          <fa-icon [icon]="calendar"></fa-icon> Shift toevoegen
+        </button>
+        <button type="button" class="btn btn-danger btn-block m-2" (click)="DeleteBarcieDate(barciedag.date)">
+          <fa-icon [icon]="delete"></fa-icon> Dag verwijderen
+        </button>
+      </div>
+    </td>
     <tr class="gray-background">
-      <td></td>
+      <td colspan="3"></td>
     </tr>
   </tbody>
 </table>
