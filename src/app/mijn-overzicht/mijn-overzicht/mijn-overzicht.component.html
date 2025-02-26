@@ -1,18 +1,20 @@
-<div style="display: flex; align-items: center; justify-content: space-between;">
-  <p style="margin: 0;">
-    Welkom<span *ngIf="user"> {{user.voornaam}}</span>! Hier zie je welke dagen je zaalwacht hebt, wanneer je wedstrijden zijn, wanneer je moet tellen, of je bardiensten hebt en wanneer je moet scheidsen.
+<div style="display: flex; align-items: center; justify-content: space-between">
+  <p style="margin: 0">
+    Welkom<span *ngIf="user"> {{ user.voornaam }}</span
+    >! Hier zie je welke dagen je zaalwacht hebt, wanneer je wedstrijden zijn,
+    wanneer je moet tellen, of je bardiensten hebt en wanneer je moet scheidsen.
   </p>
-<!--   <button id="IcalenderExportLink" class="CalenderButton" style="border-radius: 5px; margin-left: 10px;" (click)="generateCalender()">
+  <!--   <button id="IcalenderExportLink" class="CalenderButton" style="border-radius: 5px; margin-left: 10px;" (click)="generateCalender()">
     <fa-icon [icon]="calenderIcon"></fa-icon> Export my teamtasks
   </button>  -->
 </div>
 
-<div *ngIf="dagenEmpty; then showInfo else showMijnOverzicht"></div>
+<div *ngIf="dagenEmpty; then showInfo; else showMijnOverzicht"></div>
 
 <ng-template #showInfo>
-  <br>
+  <br />
   <p><em>Je hebt geen aankomende wedstrijden of diensten.</em></p>
-  <br>
+  <br />
 </ng-template>
 
 <ng-template #showMijnOverzicht>
@@ -26,57 +28,56 @@
             <h4>Wedstrijden</h4>
             <ol class="list-group" *ngFor="let wedstrijd of wedstrijden">
               <div class="list-group-item mb-1">
-                <div class="card-title d-flex align-items-center justify-content-center gap-2">
-                  {{wedstrijd.locatie}}
-                  <!-- <fa-icon [icon]="getIconClass(task.type)"></fa-icon> -->
-                </div>
-                <p class="card-text d-flex align-items-center justify-content-center gap-2">
-                  {{wedstrijd.timestamp | date: 'EEEE d MMMM, HH.mm a' }}
+                <p
+                  class="card-text d-flex align-items-center justify-content-center gap-2"
+                >
+                  {{ wedstrijd.timestamp | date : "EEEE d MMMM, HH.mm a" }}
                 </p>
-                <div class="d-flex align-items-center justify-content-center gap-2">
+                <div
+                  class="d-flex align-items-center justify-content-center gap-2"
+                >
                   <div>
-                    {{wedstrijd.thuisTeam}}
+                    {{ wedstrijd.thuisTeam }}
                   </div>
                   <div class="vs-text">VS</div>
                   <div>
-                    {{wedstrijd.uitTeam}}
+                    {{ wedstrijd.uitTeam }}
                   </div>
+                </div>
+                <div
+                  class="card-title d-flex align-items-center justify-content-center gap-2"
+                >
+                  {{ wedstrijd.locatie }}
+                  <!-- <fa-icon [icon]="getIconClass(task.type)"></fa-icon> -->
                 </div>
               </div>
             </ol>
           </div>
-          
+
           <!-- Column 2 -->
           <div class="flex-fill me-3">
             <h4>Teamtaken</h4>
             <ol class="list-group" *ngFor="let task of teamTasks">
-
               <div class="list-group-item mb-1">
-                <div class="card-title ">
-                  {{task.type}}
+                <div class="card-title">
+                  {{ task.type }}
                   <fa-icon [icon]="getIconClass(task.type)"></fa-icon>
                 </div>
                 <p class="card-text">
-                  {{task.timestamp | date: 'EEEE d MMMM, h a' }}
+                  {{ task.timestamp | date : "EEEE d MMMM, h a" }}
                 </p>
                 <div *ngIf="task.shift">
-                  <p>Shift: {{task.shift}}</p>
+                  <p>Shift: {{ task.shift }}</p>
                 </div>
-                
               </div>
-
             </ol>
           </div>
         </div>
       </div>
     </div>
   </div>
-  
-  
-
-
 </ng-template>
-  <div class="alert alert-danger" role="alert" *ngIf="errorMessage">
-    {{ errorMessage }}
-  </div>
-  <teamportal-spinner *ngIf="loading"></teamportal-spinner>
+<div class="alert alert-danger" role="alert" *ngIf="errorMessage">
+  {{ errorMessage }}
+</div>
+<teamportal-spinner *ngIf="loading"></teamportal-spinner>
