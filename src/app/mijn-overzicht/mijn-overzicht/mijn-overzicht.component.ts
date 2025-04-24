@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { calenderGenerator } from '../../core/services/calenderGenerator';
 import { RuilLijstComponent } from '../ruil-lijst/ruil-lijst.component';
 import { MatDialog } from '@angular/material/dialog';
+import { faExchangeAlt } from '@fortawesome/free-solid-svg-icons';
 
 import {
   faCalendarCheck,
@@ -36,6 +37,7 @@ export class MijnOverzichtComponent implements OnInit {
   dagenEmpty: boolean = false;
   user: any;
   zaalwacht = faPeopleCarry;
+  pendingProposals: number = 0;
 
   showRuilLijst = false;
 
@@ -43,6 +45,8 @@ export class MijnOverzichtComponent implements OnInit {
   isPressed: { [key: number]: boolean } = {};
 
   infoIcon = faInfoCircle;
+
+  swapIcon = faExchangeAlt;
 
   constructor(
     private wordPressService: WordPressService,
@@ -80,14 +84,27 @@ export class MijnOverzichtComponent implements OnInit {
 
     this.wordPressService.GetCurrentUser().subscribe((data) => {
       this.user = data;
+      this.getPendingProposals();
     });
   }
 
+  getPendingProposals() {
+    if (this.user) {
+      this.SwapService.GetProposedSwaps().subscribe((response) => {
+        this.pendingProposals = response.filter(obj => obj.otherUserId === this.user.id).length;
+      });
+    }
+  }
+
   openModal() {
-    this.dialog.open(RuilLijstComponent, {
-      width: '600px', // Adjust size
+    const dialogRef = this.dialog.open(RuilLijstComponent, {
+      width: '900px',
       panelClass: 'custom-modal',
       data: { userid: this.user.id },
+    });
+
+    dialogRef.afterClosed().subscribe(() => {
+      this.getPendingProposals();
     });
   }
 

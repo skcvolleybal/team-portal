@@ -10,7 +10,11 @@ import { Task } from './Task';
 
 import {
   faExchangeAlt,
-  
+  faTimes,
+  faCheck,
+  faTimes as faClose,
+  faUser,
+  faInfoCircle
 } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
@@ -28,6 +32,11 @@ export class RuilLijstComponent implements OnInit {
   myTasks: any[];
   isLoading: boolean = true;
   swapIcon = faExchangeAlt;
+  timesIcon = faTimes;
+  checkIcon = faCheck;
+  closeIcon = faClose;
+  userIcon = faUser;
+  infoIcon = faInfoCircle;
 
   selectedIndexStyle: number | null = null;
   mySelectedTask: Task = {} as Task;
@@ -38,7 +47,11 @@ export class RuilLijstComponent implements OnInit {
   tasks: Record<number, Task> = {};
 
   swapsProposedToMe: any[] = []; // This element is used for rendering the second page
-
+  myProposedSwaps: any[] = []; // Track swaps proposed by the current user
+  isAccepting: { [key: string]: boolean } = {};
+  isRejecting: { [key: string]: boolean } = {};
+  isDeleting: { [key: string]: boolean } = {};
+  proposedShifts: Set<string> = new Set();
 
   constructor(
     private wordPressService: WordPressService,
@@ -65,7 +78,12 @@ export class RuilLijstComponent implements OnInit {
       })
 
       this.swapService.GetProposedSwaps().subscribe((response) => {
-        this.swapsProposedToMe = response.filter(obj => obj.otherUserId === this.data.userid)
+        this.swapsProposedToMe = response.filter(obj => obj.otherUserId === this.data.userid);
+        this.myProposedSwaps = response.filter(obj => obj.userWhoProposedId === this.data.userid);
+        // Initialize proposed shifts from existing proposals
+        this.myProposedSwaps.forEach(swap => {
+          this.proposedShifts.add(swap.swapForTaskId);
+        });
       })
   }
 
@@ -99,6 +117,8 @@ export class RuilLijstComponent implements OnInit {
         this.selectedIndexStyle = null;
         this.notificationService.showSuccess("Proposal made")
         this.mySelectedTask = {} as Task
+        // Add to proposed shifts
+        this.proposedShifts.add(value.id);
       }, (error) => {
         this.notificationService.showError("1 proposal failed, they might be proposed already.")
         console.log('Error occurred while sending swap proposal:', error)
@@ -125,11 +145,10 @@ export class RuilLijstComponent implements OnInit {
   }
 
   handleAcceptSwap(taskToAccept: any) {
-
+    this.isAccepting[taskToAccept.id] = true;
     const acceptSwap = {
       swapForTaskId: taskToAccept.swapForTaskId,
       otherUserId: taskToAccept.otherUserId, // Current user's task
-
       userWhoProposedId: taskToAccept.userWhoProposedId,
       taskToSwapId: taskToAccept.taskToSwapId // User that wants to swap their task
     }
@@ -139,22 +158,62 @@ export class RuilLijstComponent implements OnInit {
     ).subscribe({
       next: () => {
         this.swapsProposedToMe = this.swapsProposedToMe.filter(task => task.id !== taskToAccept.id);
-        this.notificationService.showSuccess("Swap accepted")
+        this.notificationService.showSuccess("Swap accepted");
+        this.isAccepting[taskToAccept.id] = false;
       },
       error: (error) => {
-        this.notificationService.showError("Swap not accepted, please reload the page")
+        this.notificationService.showError("Swap not accepted, please reload the page");
         console.log("Error in accept or delete swap", error);
+        this.isAccepting[taskToAccept.id] = false;
       }
     });
-
   }
 
   handleRejectSwap(taskToDelete: any) {
-    this.swapService.DeleteSwap(taskToDelete.id).subscribe((response) => {
-      this.swapsProposedToMe = this.swapsProposedToMe.filter(task => task.id !== taskToDelete.id)
-    }, (error) => {
-      this.notificationService.showError("Error in rejecting the swap, please reload the page")
-      console.log("Error in DeleteSwap", error)
-    })
+    this.isRejecting[taskToDelete.id] = true;
+    this.swapService.DeleteSwap(taskToDelete.id).subscribe({
+      next: () => {
+        this.swapsProposedToMe = this.swapsProposedToMe.filter(task => task.id !== taskToDelete.id);
+        this.isRejecting[taskToDelete.id] = false;
+      },
+      error: (error) => {
+        this.notificationService.showError("Error in rejecting the swap, please reload the page");
+        console.log("Error in DeleteSwap", error);
+        this.isRejecting[taskToDelete.id] = false;
+      }
+    });
+  }
+
+  handleDeleteProposal(proposal: any) {
+    this.isDeleting[proposal.id] = true;
+    this.swapService.DeleteSwap(proposal.id).subscribe({
+      next: () => {
+        this.myProposedSwaps = this.myProposedSwaps.filter(swap => swap.id !== proposal.id);
+        this.proposedShifts.delete(proposal.swapForTaskId);
+        this.notificationService.showSuccess("Proposal deleted");
+        this.isDeleting[proposal.id] = false;
+      },
+      error: (error) => {
+        this.notificationService.showError("Error deleting proposal, please try again");
+        console.log("Error in DeleteSwap", error);
+        this.isDeleting[proposal.id] = false;
+      }
+    });
+  }
+
+  canProposeSwap(): boolean {
+    return this.selectedIndexStyle !== null && Object.values(this.selectedTasksStyle).some(value => value);
+  }
+
+  hasSelectedOtherTasks(): boolean {
+    return Object.values(this.selectedTasksStyle).some(value => value);
+  }
+
+  hasSelectedMyTask(): boolean {
+    return this.selectedIndexStyle !== null;
+  }
+
+  isShiftProposed(shiftId: string): boolean {
+    return this.proposedShifts.has(shiftId);
   }
 }

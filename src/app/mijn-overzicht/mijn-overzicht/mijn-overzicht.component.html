@@ -16,7 +16,17 @@
 </ng-template>
 
 <ng-template #showMijnOverzicht>
-  <button class="btn btn-primary" (click)="openModal()">Ruil barshifts</button>
+  <div class="d-flex justify-content-end mb-3">
+    <button class="btn btn-primary d-flex align-items-center position-relative" (click)="openModal()">
+      <fa-icon [icon]="swapIcon" class="me-2"></fa-icon>
+      Ruil barshifts
+      <span *ngIf="pendingProposals > 0" 
+            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger text-white"
+            style="font-size: 0.75rem; transform: translate(-50%, -50%) !important;">
+        {{pendingProposals}}
+      </span>
+    </button>
+  </div>
   <table class="table table-sm mb-0" *ngFor="let dag of dagen">
     <thead>
       <tr>
