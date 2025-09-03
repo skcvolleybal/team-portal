@@ -423,7 +423,7 @@ class BarcieGateway implements IBarcieGateway
             }
             $i = count($result) - 1;
 
-            if ($row->shift == null) {
+            if ($row->shift == null || $row->userId == null) {
                 $currentShift = null;
                 continue;
             }
