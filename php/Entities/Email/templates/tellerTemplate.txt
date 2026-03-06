@@ -6,7 +6,7 @@ Beste {{naam}},<br>
 For the English version, scroll down.<br>
 <br>
 Aanstaande {{datum}} moet jouw team een wedstrijd tellen om {{tijd}}.<br>
-Jullie zullen de wedstrijd {{teams}} gaan tellen.<br>
+Jullie zullen de wedstrijd {{teams}} gaan tellen. Hiervoor moet je om {{tijd_aanwezig}} aanwezig zijn.<br>
 <br>
 Extra informatie over tellen vind je door op onderstaande links te klikken.<br>
 SKC website:<br>
@@ -29,7 +29,7 @@ Met vriendelijke groet,<br>
 Dear {{naam}},<br>
 <br>
 Upcoming {{datum}}, you have been assigned as a scorekeeper at {{tijd}}.<br>
-You are the scorekeeper of the {{teams}} match.<br>
+You are the scorekeeper of the {{teams}} match. For this your need to be present at {{tijd_aanwezig}}.<br>
 <br>
 Additional information about scorekeeping can be found by clicking on the link below.<br>
 SKC website:<br>

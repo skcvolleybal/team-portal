@@ -7,6 +7,7 @@ class Placeholder
     public const NAAM = "{{naam}}";
     public const DATUM = "{{datum}}";
     public const TIJD = "{{tijd}}";
+    public const TIJD_AANWEZIG = "{{tijd_aanwezig}}";
     public const USER_ID = "{{userId}}";
     public const TEAM = "{{team}}";
     public const TEAMS = "{{teams}}";

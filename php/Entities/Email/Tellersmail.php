@@ -16,15 +16,17 @@ class Tellersmail extends Email
         $spelendeTeams = $wedstrijd->team1->naam . " - " . $wedstrijd->team2->naam;
 
         $template = file_get_contents("./Entities/Email/templates/tellerTemplate.txt");
+        $tijdAanwezig = DateFunctions::AddMinutes($wedstrijd->timestamp, -15, true);
+
         $placeholders = [
             Placeholder::DATUM => $datum,
             Placeholder::TIJD => $tijd,
+            Placeholder::TIJD_AANWEZIG => $tijdAanwezig,
             Placeholder::NAAM => $naam,
             Placeholder::USER_ID => $userId,
             Placeholder::TEAMS => $spelendeTeams,
             Placeholder::AFZENDER => $sender->naam
         ];
-        $tijdAanwezig = DateFunctions::AddMinutes($wedstrijd->timestamp, -15, true);
 
         $this->body = Utilities::FillTemplate($template, $placeholders);
         $this->titel = "Tellen $spelendeTeams ($tijdAanwezig aanwezig)";
