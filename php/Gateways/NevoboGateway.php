@@ -181,8 +181,18 @@ class NevoboGateway implements INevoboGateway
 
         $url = 'https://api.nevobo.nl/export/vereniging/' . $this->verenigingscode . '/stand.xlsx';
         
-        // Use file_get_contents to download the file
-        $content = file_get_contents($url);
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_USERAGENT => 'TeamPortal/1.0 (+https://www.skcvolleybal.nl)',
+        ]);
+        $content = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlError = curl_error($ch);
+        curl_close($ch);
 
         if ($content === false) {
             // Handle error, file could not be downloaded
