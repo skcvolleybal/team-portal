@@ -9,11 +9,11 @@ class ShiftModel
     public int $userWhoProposedId;
     public int $otherUserId;
     // public string $type;
-    public string $date;
-    public int $shift;
+    public ?string $date = null;
+    public ?int $shift = null;
 
-
-    public function __construct(array $data) {
+    public function __construct(array $data)
+    {
         foreach ($data as $key => $value) {
             if (property_exists($this, $key)) {
                 $this->$key = $value;

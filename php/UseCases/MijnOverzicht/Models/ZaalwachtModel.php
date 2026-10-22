@@ -10,7 +10,10 @@ class ZaalwachtModel extends Overzichtsitem
 
     public function __construct(Zaalwacht $zaalwacht)
     {
-        $this->team = $zaalwacht->team->GetSkcNaam();
+        $this->team =
+            $zaalwacht->eersteZaalwacht !== null
+                ? $zaalwacht->eersteZaalwacht->GetSkcNaam()
+                : "";
         parent::__construct("zaalwacht", $zaalwacht->date);
     }
 }

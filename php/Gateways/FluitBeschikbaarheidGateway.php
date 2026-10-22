@@ -17,9 +17,9 @@ class BeschikbaarheidGateway
 
     public function GetBeschikbaarheden(Persoon $user): array
     {
-
         // Working in WP
-        $query = 'SELECT 
+        $query =
+            'SELECT
                     B.id,
                     U.id AS userId,
                     U.display_name AS naam,
@@ -27,12 +27,16 @@ class BeschikbaarheidGateway
                     B.date,
                     SUBSTRING(B.`time`, 1, 5) AS time,
                     B.is_beschikbaar AS isBeschikbaar
-                  FROM ' . $_ENV['DBNAME'] . '.TeamPortal_fluitbeschikbaarheid B
-                  INNER JOIN ' . $_ENV['WPDBNAME'] . '.wp_users U ON U.id = B.user_id
+                  FROM ' .
+            $_ENV["DBNAME"] .
+            '.TeamPortal_fluitbeschikbaarheid B
+                  INNER JOIN ' .
+            $_ENV["WPDBNAME"] .
+            '.wp_users U ON U.id = B.user_id
                   WHERE user_id = ?';
 
         // Old Joomla query
-        // $query = 'SELECT 
+        // $query = 'SELECT
         //             B.id,
         //             U.id AS userId,
         //             U.name AS naam,
@@ -52,16 +56,19 @@ class BeschikbaarheidGateway
                 $row->id,
                 new Persoon($row->userId, $row->naam, $row->email),
                 DateFunctions::CreateDateTime($row->date, $row->time),
-                $row->isBeschikbaar === "Ja"
+                $row->isBeschikbaar === "Ja",
             );
         }
         return $result;
     }
 
-    public function GetBeschikbaarheid(Persoon $user, DateTime $date): Beschikbaarheid
-    {
-        // Todo: test edited query 
-        $query = 'SELECT 
+    public function GetBeschikbaarheid(
+        Persoon $user,
+        DateTime $date,
+    ): Beschikbaarheid {
+        // Todo: test edited query
+        $query =
+            'SELECT
                     B.id,
                     U.id AS userId,
                     U.display_name AS naam,
@@ -69,13 +76,17 @@ class BeschikbaarheidGateway
                     date,
                     time,
                     is_beschikbaar AS isBeschikbaar
-                  FROM ' . $_ENV['DBNAME'] . '.TeamPortal_fluitbeschikbaarheid B
-                  INNER JOIN ' . $_ENV['WPDBNAME'] . '.wp_users U on B.user_id = U.id
+                  FROM ' .
+            $_ENV["DBNAME"] .
+            '.TeamPortal_fluitbeschikbaarheid B
+                  INNER JOIN ' .
+            $_ENV["WPDBNAME"] .
+            '.wp_users U on B.user_id = U.id
                   WHERE user_id = ? and date = ? and time = ?';
         $params = [
             $user->id,
             DateFunctions::GetYmdNotation($date),
-            DateFunctions::GetTime($date)
+            DateFunctions::GetTime($date),
         ];
 
         $rows = $this->database->Execute($query, $params);
@@ -84,15 +95,16 @@ class BeschikbaarheidGateway
         }
         return new Beschikbaarheid(
             $rows[0]->id,
-            new Persoon($rows[0]->id, $rows[0]->naam, $rows[0]->email),
-            DateFunctions::CreateDateTime($rows[0]->date),
-            $rows[0]->isBeschikbaar === "Ja"
+            new Persoon($rows[0]->userId, $rows[0]->naam, $rows[0]->email),
+            DateFunctions::CreateDateTime($rows[0]->date, $rows[0]->time),
+            $rows[0]->isBeschikbaar === "Ja",
         );
     }
 
     public function GetAllBeschikbaarheden(DateTime $date): array
     {
-        $query = 'SELECT         
+        $query =
+            'SELECT
                     F.id,
                     U.id AS userId,
                     U.display_name AS naam,
@@ -100,12 +112,16 @@ class BeschikbaarheidGateway
                     date,
                     time,
                     is_beschikbaar AS isBeschikbaar
-                  FROM ' . $_ENV['DBNAME'] . '.TeamPortal_fluitbeschikbaarheid F
-                  INNER JOIN ' . $_ENV['WPDBNAME'] . '.wp_users U on F.user_id = U.id
+                  FROM ' .
+            $_ENV["DBNAME"] .
+            '.TeamPortal_fluitbeschikbaarheid F
+                  INNER JOIN ' .
+            $_ENV["WPDBNAME"] .
+            '.wp_users U on F.user_id = U.id
                   WHERE date = ? and time = ?';
         $params = [
             DateFunctions::GetYmdNotation($date),
-            DateFunctions::GetTime($date)
+            DateFunctions::GetTime($date),
         ];
 
         $rows = $this->database->Execute($query, $params);
@@ -115,8 +131,11 @@ class BeschikbaarheidGateway
             $result[] = new Beschikbaarheid(
                 $row->id,
                 $persoon,
-                DateTime::createFromFormat('Y-m-d H:i:s', $row->date . ' ' . $row->time),
-                $row->isBeschikbaar === "Ja"
+                DateTime::createFromFormat(
+                    "Y-m-d H:i:s",
+                    $row->date . " " . $row->time,
+                ),
+                $row->isBeschikbaar === "Ja",
             );
         }
         return $result;
@@ -124,7 +143,7 @@ class BeschikbaarheidGateway
 
     public function Insert(Beschikbaarheid $beschikbaarheid): void
     {
-        $query = 'INSERT INTO TeamPortal_fluitbeschikbaarheid (user_id, date, time, is_beschikbaar) 
+        $query = 'INSERT INTO TeamPortal_fluitbeschikbaarheid (user_id, date, time, is_beschikbaar)
                   VALUES (?, ?, ?, ?)';
         $params = [
             $beschikbaarheid->persoon->id,
@@ -143,8 +162,12 @@ class BeschikbaarheidGateway
                   WHERE id = ?';
 
         $params = [
-            $beschikbaarheid->isBeschikbaar,
-            $beschikbaarheid->id
+            $beschikbaarheid->isBeschikbaar === null
+                ? "Onbekend"
+                : ($beschikbaarheid->isBeschikbaar
+                    ? "Ja"
+                    : "Nee"),
+            $beschikbaarheid->id,
         ];
 
         $this->database->Execute($query, $params);
@@ -164,8 +187,8 @@ class BeschikbaarheidGateway
         $result = [];
         foreach ($rows as $row) {
             $result[] = [
-                'shift_count' => $row->shift_count,
-                'display_name' => $row->display_name
+                "shift_count" => $row->shift_count,
+                "display_name" => $row->display_name,
             ];
         }
         return $result;
@@ -173,16 +196,21 @@ class BeschikbaarheidGateway
 
     public function GetScheidsrechterShifts(): array
     {
-        $query = '
+        $query =
+            '
             WITH scheidsrechter_shifts AS (
                 SELECT scheidsrechter_id AS id, COUNT(match_id) AS shift_count
-                FROM ' . $_ENV['DBNAME'] . '.TeamPortal_wedstrijden
+                FROM ' .
+            $_ENV["DBNAME"] .
+            '.TeamPortal_wedstrijden
                 WHERE timestamp < NOW()
                 GROUP BY scheidsrechter_id
             )
             SELECT ss.shift_count, wu.display_name
             FROM scheidsrechter_shifts ss
-            JOIN ' . $_ENV['WPDBNAME'] . '.wp_users wu
+            JOIN ' .
+            $_ENV["WPDBNAME"] .
+            '.wp_users wu
             ON ss.id = wu.id
             ORDER BY shift_count DESC
             LIMIT 10
@@ -194,15 +222,20 @@ class BeschikbaarheidGateway
 
     public function GetTellerShifts(): array
     {
-        $query = '
+        $query =
+            '
             WITH teller_shifts AS (
                 SELECT teller1_id AS id, COUNT(match_id) AS shift_count
-                FROM ' . $_ENV['DBNAME'] . '.TeamPortal_wedstrijden
+                FROM ' .
+            $_ENV["DBNAME"] .
+            '.TeamPortal_wedstrijden
                 WHERE timestamp < NOW()
                 GROUP BY teller1_id
                 UNION ALL
                 SELECT teller2_id AS id, COUNT(match_id) AS shift_count
-                FROM ' . $_ENV['DBNAME'] . '.TeamPortal_wedstrijden
+                FROM ' .
+            $_ENV["DBNAME"] .
+            '.TeamPortal_wedstrijden
                 WHERE timestamp < NOW()
                 GROUP BY teller2_id
             ),
@@ -213,7 +246,9 @@ class BeschikbaarheidGateway
             )
             SELECT ts.total_shift_count AS shift_count, wu.display_name
             FROM total_teller_shifts ts
-            JOIN ' . $_ENV['WPDBNAME'] . '.wp_users wu
+            JOIN ' .
+            $_ENV["WPDBNAME"] .
+            '.wp_users wu
             ON ts.id = wu.id
             ORDER BY shift_count DESC
             LIMIT 10
@@ -225,18 +260,25 @@ class BeschikbaarheidGateway
 
     public function GetBHVShifts(): array
     {
-        $query = '
+        $query =
+            '
             WITH bar_shifts AS (
                 SELECT bs.user_id AS id, COUNT(bs.id) AS shift_count
-                FROM ' . $_ENV['DBNAME'] . '.barcie_schedule_map bs
-                JOIN ' . $_ENV['DBNAME'] . '.barcie_days bd
+                FROM ' .
+            $_ENV["DBNAME"] .
+            '.barcie_schedule_map bs
+                JOIN ' .
+            $_ENV["DBNAME"] .
+            '.barcie_days bd
                 ON bs.day_id = bd.id
                 WHERE bd.date < NOW() AND bs.is_bhv
                 GROUP BY user_id
             )
             SELECT bs.shift_count, wu.display_name
             FROM bar_shifts bs
-            JOIN ' . $_ENV['WPDBNAME'] . '.wp_users wu
+            JOIN ' .
+            $_ENV["WPDBNAME"] .
+            '.wp_users wu
             ON bs.id = wu.id
             ORDER BY shift_count DESC
             LIMIT 10
@@ -248,18 +290,25 @@ class BeschikbaarheidGateway
 
     public function GetBarPersonnelShifts(): array
     {
-        $query = '
+        $query =
+            '
             WITH bar_shifts AS (
                 SELECT bs.user_id AS id, COUNT(bs.id) AS shift_count
-                FROM ' . $_ENV['DBNAME'] . '.barcie_schedule_map bs
-                JOIN ' . $_ENV['DBNAME'] . '.barcie_days bd
+                FROM ' .
+            $_ENV["DBNAME"] .
+            '.barcie_schedule_map bs
+                JOIN ' .
+            $_ENV["DBNAME"] .
+            '.barcie_days bd
                 ON bs.day_id = bd.id
                 WHERE bd.date < NOW() AND bs.is_bhv IS NULL
                 GROUP BY user_id
             )
             SELECT bs.shift_count, wu.display_name
             FROM bar_shifts bs
-            JOIN ' . $_ENV['WPDBNAME'] . '.wp_users wu
+            JOIN ' .
+            $_ENV["WPDBNAME"] .
+            '.wp_users wu
             ON bs.id = wu.id
             ORDER BY shift_count DESC
             LIMIT 10

@@ -13,10 +13,10 @@ class GetUsers implements Interactor
 
     public function Execute(object $data = null)
     {
-        $name = $data->naam ?? null;
+        $name = $data->naam ?? "";
         $result = [];
 
-        if (strlen($name) >= 3) {
+        if (strlen((string) $name) >= 3) {
             $result = $this->wordPressGateway->GetUsersWithName($name);
         }
 

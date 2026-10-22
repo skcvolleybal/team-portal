@@ -14,27 +14,96 @@ class BarcieTest extends TestCase
     /** @test */
     public function TestWhenBarlidIdIsNullThrowException()
     {
-        
         // Arrange
         $gatewayMocks = new GatewayMocks();
         $wordPressGateway = $gatewayMocks->GetWordPressGateway();
         $barcieGateway = $gatewayMocks->GetBarcieGateway();
 
-        $interactor = new AddBarcieAanwezigheid($wordPressGateway, $barcieGateway);
+        $interactor = new AddBarcieAanwezigheid(
+            $wordPressGateway,
+            $barcieGateway,
+        );
 
-    // Half work; commented out for now
-        // $data = new AddBarcieRequestModel();
-        // $data->date = (new DateTime())->format("Y-m-d");
-        // $data->shift = 1;
+        $data = new \stdClass();
+        $data->barlidId = null;
+        $data->date = new DateTime()->format("Y-m-d");
+        $data->shift = 1;
 
-        // $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
 
-        // act
-        // $response = $interactor->Execute($data);
+        // Act
+        $interactor->Execute($data);
+    }
 
-        // assert
-        $response = null; // This line should be removed; only here for testing purposes
-        $this->assertNull($response);
-    // commented out until here
+    /** @test */
+    public function TestWhenDateIsNullThrowException()
+    {
+        // Arrange
+        $gatewayMocks = new GatewayMocks();
+        $wordPressGateway = $gatewayMocks->GetWordPressGateway();
+        $barcieGateway = $gatewayMocks->GetBarcieGateway();
+
+        $interactor = new AddBarcieAanwezigheid(
+            $wordPressGateway,
+            $barcieGateway,
+        );
+
+        $data = new \stdClass();
+        $data->barlidId = 1;
+        $data->date = null;
+        $data->shift = 1;
+
+        $this->expectException(\InvalidArgumentException::class);
+
+        // Act
+        $interactor->Execute($data);
+    }
+
+    /** @test */
+    public function TestWhenShiftIsNullThrowException()
+    {
+        // Arrange
+        $gatewayMocks = new GatewayMocks();
+        $wordPressGateway = $gatewayMocks->GetWordPressGateway();
+        $barcieGateway = $gatewayMocks->GetBarcieGateway();
+
+        $interactor = new AddBarcieAanwezigheid(
+            $wordPressGateway,
+            $barcieGateway,
+        );
+
+        $data = new \stdClass();
+        $data->barlidId = 1;
+        $data->date = new DateTime()->format("Y-m-d");
+        $data->shift = null;
+
+        $this->expectException(\InvalidArgumentException::class);
+
+        // Act
+        $interactor->Execute($data);
+    }
+
+    /** @test */
+    public function TestWhenEverythingIsFilledTheDienstIsStored()
+    {
+        // Arrange
+        $gatewayMocks = new GatewayMocks();
+        $wordPressGateway = $gatewayMocks->GetWordPressGateway();
+        $barcieGateway = $gatewayMocks->GetBarcieGateway();
+
+        $barcieGateway->expects($this->once())->method("InsertBardienst");
+
+        $interactor = new AddBarcieAanwezigheid(
+            $wordPressGateway,
+            $barcieGateway,
+        );
+
+        $data = new \stdClass();
+        $data->barlidId = 1;
+        $data->date = new DateTime()->format("Y-m-d");
+        $data->shift = 1;
+
+        // Act
+        $interactor->Execute($data);
     }
 }

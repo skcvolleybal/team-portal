@@ -13,7 +13,7 @@ class GetZaalwachtTeams implements Interactor
     public function __construct(
         ZaalwachtGateway $zaalwachtGateway,
         WordPressGateway $wordPressGateway,
-        NevoboGateway $nevoboGateway
+        NevoboGateway $nevoboGateway,
     ) {
         $this->zaalwachtGateway = $zaalwachtGateway;
         $this->wordPressGateway = $wordPressGateway;
@@ -33,8 +33,9 @@ class GetZaalwachtTeams implements Interactor
 
         $result = new Teamsamenvatting();
         foreach ($zaalwachtteams as $team) {
-            $newTeam = new TeamModel;
+            $newTeam = new TeamModel();
             $newTeam->naam = $team->GetSkcNaam();
+            $newTeam->aantalZaalwachten = $team->aantalZaalwachten;
             $newTeam->aantal = $team->aantalZaalwachten;
 
             if (in_array($team->GetSkcNaam(), $spelendeTeams)) {

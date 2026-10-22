@@ -22,7 +22,7 @@ class GetCalendar implements Interactor
         WordPressGateway $wordPressGateway,
         NevoboGateway $nevoboGateway,
         TelFluitGateway $telFluitGateway,
-        BarcieGateway $barcieGateway
+        BarcieGateway $barcieGateway,
     ) {
         $this->zaalwachtGateway = $zaalwachtGateway;
         $this->wordPressGateway = $wordPressGateway;
@@ -50,50 +50,100 @@ class GetCalendar implements Interactor
         $uscLocatie = "Universitair SC, Einsteinweg 6, 2333CC LEIDEN";
 
         $allBardiensten = $this->barcieGateway->GetBardienstenForUser($user);
-        $telbeurten = $isTeller ? $this->telFluitGateway->GetTelbeurten($user) : [];
-        $fluitbeurten = $isScheidsrechter ? $this->telFluitGateway->GetFluitbeurten($user) : [];
+        $telbeurten = $isTeller
+            ? $this->telFluitGateway->GetTelbeurten($user)
+            : [];
+        $fluitbeurten = $isScheidsrechter
+            ? $this->telFluitGateway->GetFluitbeurten($user)
+            : [];
 
-        $wedstrijddagen = $this->nevoboGateway->GetWedstrijddagenForSporthal('LDNUN', 355);
+        $wedstrijddagen = $this->nevoboGateway->GetWedstrijddagenForSporthal(
+            "LDNUN",
+            355,
+        );
         foreach ($wedstrijddagen as $wedstrijddag) {
-            $zaalwacht = $this->zaalwachtGateway->GetZaalwacht($wedstrijddag->date);
+            $zaalwacht = $this->zaalwachtGateway->GetZaalwacht(
+                $wedstrijddag->date,
+            );
             if ($zaalwacht) {
-                if ($zaalwacht->eersteZaalwacht->Equals($user->team)) {
+                if (
+                    $zaalwacht->eersteZaalwacht !== null &&
+                    $zaalwacht->eersteZaalwacht->Equals($user->team)
+                ) {
                     $this->AddZaalwacht($calendar, $wedstrijddag, $uscLocatie);
                 }
 
-                if ($zaalwacht->tweedeZaalwacht->Equals($user->team)) {
+                if (
+                    $zaalwacht->tweedeZaalwacht !== null &&
+                    $zaalwacht->tweedeZaalwacht->Equals($user->team)
+                ) {
                     $this->AddZaalwacht($calendar, $wedstrijddag, $uscLocatie);
                 }
             }
 
-            $bardiensten = $this->GetBardienstenForDate($allBardiensten, $wedstrijddag->date);
+            $bardiensten = $this->GetBardienstenForDate(
+                $allBardiensten,
+                $wedstrijddag->date,
+            );
             foreach ($bardiensten as $bardienst) {
                 $start = $bardienst->GetStartTime();
                 $end = DateFunctions::AddMinutes($start, 4 * 60); // 4uur
-                $this->AddEvent($calendar, $start, $end, $uscLocatie, "Bardienst");
+                $this->AddEvent(
+                    $calendar,
+                    $start,
+                    $end,
+                    $uscLocatie,
+                    "Bardienst",
+                );
             }
 
             foreach ($wedstrijddag->speeltijden as $speeltijd) {
                 foreach ($speeltijd->wedstrijden as $wedstrijd) {
                     if ($isTeller) {
-                        $telWedstrijd = Wedstrijd::GetWedstrijdWithMatchId($telbeurten, $wedstrijd->matchId);
+                        $telWedstrijd = Wedstrijd::GetWedstrijdWithMatchId(
+                            $telbeurten,
+                            $wedstrijd->matchId,
+                        );
                         if ($telWedstrijd) {
                             $telWedstrijd->AppendInformation($wedstrijd);
                             $start = $telWedstrijd->timestamp;
                             $end = DateFunctions::AddMinutes($start, 120);
-                            $teams = $telWedstrijd->team1 . ' ' . $telWedstrijd->team2;
-                            $this->AddEvent($calendar, $start, $end, $uscLocatie, "Tellen", "Tellen: $teams");
+                            $teams =
+                                $telWedstrijd->team1->naam .
+                                " " .
+                                $telWedstrijd->team2->naam;
+                            $this->AddEvent(
+                                $calendar,
+                                $start,
+                                $end,
+                                $uscLocatie,
+                                "Tellen",
+                                "Tellen: $teams",
+                            );
                         }
                     }
 
                     if ($isScheidsrechter) {
-                        $fluitWedstrijd = Wedstrijd::GetWedstrijdWithMatchId($fluitbeurten, $wedstrijd->matchId);
+                        $fluitWedstrijd = Wedstrijd::GetWedstrijdWithMatchId(
+                            $fluitbeurten,
+                            $wedstrijd->matchId,
+                        );
                         if ($fluitWedstrijd) {
                             $fluitWedstrijd->AppendInformation($wedstrijd);
                             $start = $fluitWedstrijd->timestamp;
                             $end = DateFunctions::AddMinutes($start, 120);
-                            $teams = $fluitWedstrijd->team1->naam . ' ' . $fluitWedstrijd->team2->naam;
-                            $this->AddEvent($calendar, $start, $end, $uscLocatie, "Tellen", $teams);
+                            $teams =
+                                $fluitWedstrijd->team1->naam .
+                                " " .
+                                $fluitWedstrijd->team2->naam;
+                            $this->AddEvent(
+                                $calendar,
+                                $start,
+                                $end,
+                                $uscLocatie,
+                                "Tellen",
+                                $teams,
+                            );
                         }
                     }
                 }
@@ -112,8 +162,10 @@ class GetCalendar implements Interactor
         $this->AddEvent($calendar, $start, $end, $uscLocatie, "Zaalwacht");
     }
 
-    private function GetBardienstenForDate(array $allBardiensten, DateTime $date): array
-    {
+    private function GetBardienstenForDate(
+        array $allBardiensten,
+        DateTime $date,
+    ): array {
         $result = [];
         foreach ($allBardiensten as $bardienst) {
             if (DateFunctions::AreDatesEqual($bardienst->bardag->date, $date)) {
@@ -146,18 +198,30 @@ class GetCalendar implements Interactor
     private function CreateCalendar(Persoon $persoon, string $title): Vcalendar
     {
         $postfix = $persoon->team ? $persoon->team->GetSkcNaam() : "jou";
-        return Vcalendar::factory([Vcalendar::UNIQUE_ID => "https://www.skcvolleybal.nl/team-portal/"])
+        return Vcalendar::factory([
+            Vcalendar::UNIQUE_ID => "https://www.skcvolleybal.nl/team-portal/",
+        ])
             ->setMethod(Vcalendar::PUBLISH)
             ->setXprop(Vcalendar::X_WR_CALNAME, $title)
-            ->setXprop(Vcalendar::X_WR_CALDESC, "Alle Fluit-, telwedstrijden of zaalwachtendiensten van $postfix")
+            ->setXprop(
+                Vcalendar::X_WR_CALDESC,
+                "Alle Fluit-, telwedstrijden of zaalwachtendiensten van $postfix",
+            )
             ->setXprop(Vcalendar::X_WR_RELCALID, "")
             ->setXprop(Vcalendar::X_WR_TIMEZONE, "Europe/Amsterdam");
     }
 
-    private function AddEvent(Vcalendar $calendar, DateTime $start, DateTime $end, string $location, string $summary, string $description = null)
-    {
+    private function AddEvent(
+        Vcalendar $calendar,
+        DateTime $start,
+        DateTime $end,
+        string $location,
+        string $summary,
+        string $description = null,
+    ) {
         if ($start && $end) {
-            $event = $calendar->newVevent()
+            $event = $calendar
+                ->newVevent()
                 ->setDtstart($start)
                 ->setDtend($end)
                 ->setLocation($location)

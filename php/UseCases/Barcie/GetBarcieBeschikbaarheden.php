@@ -13,7 +13,7 @@ class GetBarcieBeschikbaarheden implements Interactor
 {
     public function __construct(
         BarcieGateway $barcieGateway,
-        WordPressGateway $wordPressGateway
+        WordPressGateway $wordPressGateway,
     ) {
         $this->barcieGateway = $barcieGateway;
         $this->wordPressGateway = $wordPressGateway;
@@ -27,7 +27,9 @@ class GetBarcieBeschikbaarheden implements Interactor
         }
 
         $barleden = $this->barcieGateway->GetBarleden();
-        $beschikbaarheden = $this->barcieGateway->GetBeschikbaarhedenForDate($date);
+        $beschikbaarheden = $this->barcieGateway->GetBeschikbaarhedenForDate(
+            $date,
+        );
 
         $result = new Beschikbaarheidssamenvatting();
         foreach ($beschikbaarheden as $beschikbaarheid) {
@@ -42,7 +44,9 @@ class GetBarcieBeschikbaarheden implements Interactor
                 $result->Nee[] = $barlid;
             }
 
-            $barleden = array_filter($barleden, function ($currentBarlid) use ($barlid) {
+            $barleden = array_filter($barleden, function ($currentBarlid) use (
+                $barlid,
+            ) {
                 return $barlid->id !== $currentBarlid->id;
             });
         }
@@ -50,7 +54,7 @@ class GetBarcieBeschikbaarheden implements Interactor
         $compareFunction = "Compare";
         usort($result->Ja, [Barlid::class, $compareFunction]);
         usort($result->Nee, [Barlid::class, $compareFunction]);
-        usort($result->Onbekend, [Barlid::class, $compareFunction]);
+        usort($barleden, [Barlid::class, $compareFunction]);
 
         $result->Onbekend = array_values($barleden);
 

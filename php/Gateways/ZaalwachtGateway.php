@@ -12,44 +12,46 @@ use TeamPortal\Gateways\WordPressGateway;
 
 class ZaalwachtGateway
 {
-    public function __construct(
-        Database $database
-    )
+    public function __construct(Database $database)
     {
         $this->database = $database;
     }
 
-    public function GetZaalwachtenOfUser(Persoon $user): array 
-    { 
+    public function GetZaalwachtenOfUser(Persoon $user): array
+    {
         $wordPressGateway = new WordPressGateway();
         $user->team = $wordPressGateway->GetTeam($user);
 
-        $query = "
-            SELECT 
+        $query =
+            "
+            SELECT
                 Z.id,
                 Z.date,
                 Z.team1_id as eersteZaalwachtId,
                 Z.team2_id as tweedeZaalwachtId,
                 WPP1.post_title as eersteZaalwacht,
                 WPP2.post_title as tweedeZaalwacht
-            FROM 
-                " . $_ENV['DBNAME'] . ".TeamPortal_zaalwacht Z
-            LEFT JOIN 
-                " . $_ENV['WPDBNAME'] . ".wp_posts WPP1 ON Z.team1_id = WPP1.ID AND WPP1.post_type = 'team'
-            LEFT JOIN 
-                " . $_ENV['WPDBNAME'] . ".wp_posts WPP2 ON Z.team2_id = WPP2.ID AND WPP2.post_type = 'team'
-            WHERE 
-                Z.date >= CURRENT_DATE() 
+            FROM
+                " .
+            $_ENV["DBNAME"] .
+            ".TeamPortal_zaalwacht Z
+            LEFT JOIN
+                " .
+            $_ENV["WPDBNAME"] .
+            ".wp_posts WPP1 ON Z.team1_id = WPP1.ID AND WPP1.post_type = 'team'
+            LEFT JOIN
+                " .
+            $_ENV["WPDBNAME"] .
+            ".wp_posts WPP2 ON Z.team2_id = WPP2.ID AND WPP2.post_type = 'team'
+            WHERE
+                Z.date >= CURRENT_DATE()
                 AND (Z.team1_id = ? OR Z.team2_id = ?)
-            GROUP BY 
+            GROUP BY
                 Z.id, Z.date, Z.team1_id, Z.team2_id, WPP1.post_title, WPP2.post_title
             ";
 
-
-
-
         // Oude Joomla query
-        // $query = 'SELECT 
+        // $query = 'SELECT
         //             Z.id,
         //             Z.date,
         //             team1_id AS eersteZaalwachtId,
@@ -76,33 +78,40 @@ class ZaalwachtGateway
         return $result;
     }
 
-    public function GetZaalwachtSamenvatting(): array 
+    public function GetZaalwachtSamenvatting(): array
     {
-        $query = "SELECT
+        $query =
+            "SELECT
         p.ID AS teamId,
         p.post_title AS teamnaam,
         count(Z.id) AS aantal
-        FROM 
-            " . $_ENV['WPDBNAME'] . ".wp_posts p
-            
+        FROM
+            " .
+            $_ENV["WPDBNAME"] .
+            ".wp_posts p
+
         LEFT JOIN (
             SELECT id, date, team1_id AS team_id
-            FROM " . $_ENV['DBNAME'] . ".TeamPortal_zaalwacht WHERE team1_id IS NOT NULL
+            FROM " .
+            $_ENV["DBNAME"] .
+            ".TeamPortal_zaalwacht WHERE team1_id IS NOT NULL
             UNION
             SELECT id, date, team2_id AS team_id
-            FROM " . $_ENV['DBNAME'] . ".TeamPortal_zaalwacht WHERE team2_id IS NOT NULL
+            FROM " .
+            $_ENV["DBNAME"] .
+            ".TeamPortal_zaalwacht WHERE team2_id IS NOT NULL
         ) Z ON Z.team_id = p.ID
-        
-        WHERE 
+
+        WHERE
             p.post_type = 'team'
-            
-        GROUP BY 
+
+        GROUP BY
             p.ID, p.post_title
-        
-        ORDER BY 
-            aantal, 
-            SUBSTRING(p.post_title, 1, 1), 
-            LENGTH(p.post_title), 
+
+        ORDER BY
+            aantal,
+            SUBSTRING(p.post_title, 1, 1),
+            LENGTH(p.post_title),
             p.post_title
         ";
         $rows = $this->database->Execute($query);
@@ -118,43 +127,61 @@ class ZaalwachtGateway
 
     public function GetZaalwachtIndeling(): array
     {
-        $query = 'SELECT
+        $query =
+            "SELECT
                     Z.date,
-                    team1_id AS eersteZaalwachtId,
-                    G1.title AS eersteZaalwacht,
-                    team2_id AS tweedeZaalwachtId,
-                    G2.title AS tweedeZaalwacht
-                  FROM TeamPortal_zaalwacht Z
-                  INNER JOIN J3_usergroups G ON Z.team_id = G.id
-                  INNER JOIN J3_usergroups G2 ON Z.team_id = G2.id';
+                    Z.team1_id AS eersteZaalwachtId,
+                    P1.post_title AS eersteZaalwacht,
+                    Z.team2_id AS tweedeZaalwachtId,
+                    P2.post_title AS tweedeZaalwacht
+                  FROM " .
+            $_ENV["DBNAME"] .
+            ".TeamPortal_zaalwacht Z
+                  LEFT JOIN " .
+            $_ENV["WPDBNAME"] .
+            ".wp_posts P1 ON P1.ID = Z.team1_id AND P1.post_type = 'team'
+                  LEFT JOIN " .
+            $_ENV["WPDBNAME"] .
+            ".wp_posts P2 ON P2.ID = Z.team2_id AND P2.post_type = 'team'";
         $rows = $this->database->Execute($query);
 
         $response = [];
         foreach ($rows as $row) {
-            $rows[$row->date] = new Team($row->team, $row->teamId);
+            $response[$row->date] = new Team(
+                $row->eersteZaalwacht ?? "",
+                $row->eersteZaalwachtId !== null
+                    ? (int) $row->eersteZaalwachtId
+                    : null,
+            );
         }
         return $response;
     }
 
     public function GetZaalwacht(DateTime $date): ?Zaalwacht
     {
-
-        $query = "
-            SELECT 
+        $query =
+            "
+            SELECT
             Z.id,
             date,
             team1_id AS eersteZaalwachtId,
             P1.post_title AS eersteZaalwacht,
             team2_id AS tweedeZaalwachtId,
             P2.post_title AS tweedeZaalwacht
-                
-            FROM 
-            " . $_ENV['DBNAME'] . ".TeamPortal_zaalwacht Z
-                
-            left join " . $_ENV['WPDBNAME'] . ".wp_posts P1 on Z.team1_id = P1.id
-            left join " . $_ENV['WPDBNAME'] . ".wp_posts P2 on Z.team2_id = P2.id
 
-            WHERE 
+            FROM
+            " .
+            $_ENV["DBNAME"] .
+            ".TeamPortal_zaalwacht Z
+
+            left join " .
+            $_ENV["WPDBNAME"] .
+            ".wp_posts P1 on Z.team1_id = P1.id
+            left join " .
+            $_ENV["WPDBNAME"] .
+            ".wp_posts P2 on Z.team2_id = P2.id
+
+            WHERE
                 date = ?";
 
         // Oude Joomla query
@@ -183,9 +210,13 @@ class ZaalwachtGateway
                   SET team1_id = ?, team2_id = ?
                   WHERE id = ?';
         $params = [
-            $zaalwacht->eersteZaalwacht ? $zaalwacht->eersteZaalwacht->id : null,
-            $zaalwacht->tweedeZaalwacht ? $zaalwacht->tweedeZaalwacht->id : null,
-            $zaalwacht->id
+            $zaalwacht->eersteZaalwacht
+                ? $zaalwacht->eersteZaalwacht->id
+                : null,
+            $zaalwacht->tweedeZaalwacht
+                ? $zaalwacht->tweedeZaalwacht->id
+                : null,
+            $zaalwacht->id,
         ];
         $this->database->Execute($query, $params);
     }
@@ -196,15 +227,19 @@ class ZaalwachtGateway
                   VALUES (?, ?, ?)';
         $params = [
             DateFunctions::GetYmdNotation($zaalwacht->date),
-            $zaalwacht->eersteZaalwacht ? $zaalwacht->eersteZaalwacht->id : null,
-            $zaalwacht->tweedeZaalwacht ? $zaalwacht->tweedeZaalwacht->id : null
+            $zaalwacht->eersteZaalwacht
+                ? $zaalwacht->eersteZaalwacht->id
+                : null,
+            $zaalwacht->tweedeZaalwacht
+                ? $zaalwacht->tweedeZaalwacht->id
+                : null,
         ];
         $this->database->Execute($query, $params);
     }
 
     public function Delete(Zaalwacht $zaalwacht): void
     {
-        $query = 'DELETE FROM TeamPortal_zaalwacht WHERE id = ?';
+        $query = "DELETE FROM TeamPortal_zaalwacht WHERE id = ?";
         $params = [$zaalwacht->id];
         $this->database->Execute($query, $params);
     }
@@ -214,8 +249,12 @@ class ZaalwachtGateway
         return new Zaalwacht(
             $row->id,
             DateFunctions::CreateDateTime($row->date),
-            $row->eersteZaalwachtId !== null ? new Team($row->eersteZaalwacht, $row->eersteZaalwachtId) : null,
-            $row->tweedeZaalwachtId !== null ? new Team($row->tweedeZaalwacht, $row->tweedeZaalwachtId) : null,
+            $row->eersteZaalwachtId !== null
+                ? new Team($row->eersteZaalwacht, $row->eersteZaalwachtId)
+                : null,
+            $row->tweedeZaalwachtId !== null
+                ? new Team($row->tweedeZaalwacht, $row->tweedeZaalwachtId)
+                : null,
         );
     }
 }

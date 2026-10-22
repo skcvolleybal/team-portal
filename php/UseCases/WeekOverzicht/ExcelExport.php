@@ -3,9 +3,7 @@
 namespace TeamPortal\UseCases;
 use TeamPortal\Entities\Scheidsrechter;
 
-require 'vendor/autoload.php'; // Include Composer's autoloader
-
-
+require "vendor/autoload.php"; // Include Composer's autoloader
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -20,21 +18,16 @@ use TeamPortal\Gateways;
 
 use datetime;
 
-
-
 class ExcelExport
 {
-
     public function __construct(
         $allMatches,
         $allBardienstenEnBHV,
         $allZaalwachten,
 
         $BarcieGateway,
-        $ZaalwachtGateway
-    ) 
-    
-    {
+        $ZaalwachtGateway,
+    ) {
         $this->allMatches = $allMatches;
         $this->allBardienstenEnBHV = $allBardienstenEnBHV;
         $this->allZaalwachten = $allZaalwachten;
@@ -58,14 +51,14 @@ class ExcelExport
     private $veldNummer;
     private $kleurNummer;
 
-    public function GetExcelExport() {
+    public function GetExcelExport()
+    {
         // Init the spreadsheet
         $this->currentRow = 1;
         $this->Spreadsheet = new Spreadsheet();
         $this->Spreadsheet->setActiveSheetIndex(0);
 
-
-        foreach($this->allMatches as $WedstrijdenOpDag) {
+        foreach ($this->allMatches as $WedstrijdenOpDag) {
             $this->WedstrijdenOpDag = $WedstrijdenOpDag;
             $this->BardienstenEnBHVOpDag = $this->GetBardienstenEnBHVOpDag();
             $this->ZaalwachtenOpDag = $this->GetZaalwachtenOpDag();
@@ -80,101 +73,149 @@ class ExcelExport
 
             $this->CreateBarEnBHVSchema($this->currentRow);
             if ($this->BardienstenEnBHVOpDag !== null) {
-                $this->currentRow += count($this->BardienstenEnBHVOpDag->shifts);
+                $this->currentRow += count(
+                    $this->BardienstenEnBHVOpDag->shifts,
+                );
             } else {
                 $this->currentRow += 2; // Leave some extra room for the board availability
             }
-
         }
-
     }
 
     // Creates the first row that is always the same: has Wedstrijd, Tijd, Team A, Team B, Niveau, Veldnummer, Scheidrechter en Tellers als text
-    private function CreateFirstRow() {
-        $headers = ['Wedstrijd', 'Tijd', 'Team A', 'Team B', 'Niveau', 'Veldnummer', 'Scheidsrechter', 'Tellers'];
+    private function CreateFirstRow()
+    {
+        $headers = [
+            "Wedstrijd",
+            "Tijd",
+            "Team A",
+            "Team B",
+            "Niveau",
+            "Veldnummer",
+            "Scheidsrechter",
+            "Tellers",
+        ];
         $widths = [20, 15, 15, 15, 15, 15, 20, 35];
-    
+
         foreach ($headers as $index => $header) {
             $col = chr(65 + $index) . $this->currentRow;
             $this->SetCell($col, $header);
-            $this->PaintCell($col, 'firstrow');
-            $this->Spreadsheet->getActiveSheet()->getColumnDimension(chr(65 + $index))->setWidth($widths[$index]);
+            $this->PaintCell($col, "firstrow");
+            $this->Spreadsheet
+                ->getActiveSheet()
+                ->getColumnDimension(chr(65 + $index))
+                ->setWidth($widths[$index]);
         }
     }
-    
 
-    private function SetCell($cell, $value) {
+    private function SetCell($cell, $value)
+    {
         $this->Spreadsheet->getActiveSheet()->setCellValue($cell, $value);
     }
 
-    private function CreateZaalwachtSchema() {
-
+    private function CreateZaalwachtSchema()
+    {
         $aantalWedstrijden = count($this->WedstrijdenOpDag);
-        
+
         if (is_null($this->ZaalwachtenOpDag)) {
             $bottomRow = $this->currentRow + $aantalWedstrijden + 1;
             $this->tweedeZaalwachtRow = $bottomRow;
             return;
         }
 
-        $this->SetCell('A' . $this->currentRow, "Zaalwacht 1e shift: " . $this->ZaalwachtenOpDag->eersteZaalwacht->naam);
-        $this->PaintCell('A' . $this->currentRow, 'zaalwacht');
-        $this->PaintCell('B' . $this->currentRow, 'zaalwacht');
-        $this->PaintCell('C' . $this->currentRow, 'zaalwacht');
-        $this->PaintCell('D' . $this->currentRow, 'zaalwacht');
-        $this->PaintCell('E' . $this->currentRow, 'zaalwacht');
-        $this->PaintCell('F' . $this->currentRow, 'zaalwacht');
-        $this->PaintCell('G' . $this->currentRow, 'zaalwacht');
-        $this->PaintCell('H' . $this->currentRow, 'zaalwacht');
+        $this->SetCell(
+            "A" . $this->currentRow,
+            "Zaalwacht 1e shift: " .
+                $this->ZaalwachtenOpDag->eersteZaalwacht->naam,
+        );
+        $this->PaintCell("A" . $this->currentRow, "zaalwacht");
+        $this->PaintCell("B" . $this->currentRow, "zaalwacht");
+        $this->PaintCell("C" . $this->currentRow, "zaalwacht");
+        $this->PaintCell("D" . $this->currentRow, "zaalwacht");
+        $this->PaintCell("E" . $this->currentRow, "zaalwacht");
+        $this->PaintCell("F" . $this->currentRow, "zaalwacht");
+        $this->PaintCell("G" . $this->currentRow, "zaalwacht");
+        $this->PaintCell("H" . $this->currentRow, "zaalwacht");
 
         $bottomRow = $this->currentRow + $aantalWedstrijden + 1;
 
-        $this->SetCell('A' . $bottomRow, "Zaalwacht 2e shift: " . $this->ZaalwachtenOpDag->tweedeZaalwacht->naam);
-        $this->PaintCell('A' . $bottomRow, 'zaalwacht');
-        $this->PaintCell('B' . $bottomRow, 'zaalwacht');
-        $this->PaintCell('C' . $bottomRow, 'zaalwacht');
-        $this->PaintCell('D' . $bottomRow, 'zaalwacht');
-        $this->PaintCell('E' . $bottomRow, 'zaalwacht');
-        $this->PaintCell('F' . $bottomRow, 'zaalwacht');
-        $this->PaintCell('G' . $bottomRow, 'zaalwacht');
-        $this->PaintCell('H' . $bottomRow, 'zaalwacht');
+        $this->SetCell(
+            "A" . $bottomRow,
+            "Zaalwacht 2e shift: " .
+                $this->ZaalwachtenOpDag->tweedeZaalwacht->naam,
+        );
+        $this->PaintCell("A" . $bottomRow, "zaalwacht");
+        $this->PaintCell("B" . $bottomRow, "zaalwacht");
+        $this->PaintCell("C" . $bottomRow, "zaalwacht");
+        $this->PaintCell("D" . $bottomRow, "zaalwacht");
+        $this->PaintCell("E" . $bottomRow, "zaalwacht");
+        $this->PaintCell("F" . $bottomRow, "zaalwacht");
+        $this->PaintCell("G" . $bottomRow, "zaalwacht");
+        $this->PaintCell("H" . $bottomRow, "zaalwacht");
 
         $this->tweedeZaalwachtRow = $bottomRow;
     }
- 
-    // Do you think God stays in heaven because he too lives in fear of what he has created? 
-    private function SetStandardStyle($cell) {
-        $this->Spreadsheet->getActiveSheet()->getRowDimension(substr($cell, 1))->setRowHeight(18);
+
+    // Do you think God stays in heaven because he too lives in fear of what he has created?
+    private function SetStandardStyle($cell)
+    {
+        $this->Spreadsheet
+            ->getActiveSheet()
+            ->getRowDimension(substr($cell, 1))
+            ->setRowHeight(18);
         $cellStyle = $this->Spreadsheet->getActiveSheet()->getStyle($cell);
         $cellStyle->getFont()->setSize(10);
-        $cellStyle->getFont()->setName('Arial');
-        $cellStyle->getFont()->setColor(new \PhpOffice\PhpSpreadsheet\Style\Color(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_BLACK));
-        $cellStyle->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('36751F');
+        $cellStyle->getFont()->setName("Arial");
+        $cellStyle
+            ->getFont()
+            ->setColor(
+                new \PhpOffice\PhpSpreadsheet\Style\Color(
+                    \PhpOffice\PhpSpreadsheet\Style\Color::COLOR_BLACK,
+                ),
+            );
+        $cellStyle
+            ->getFill()
+            ->setFillType(Fill::FILL_SOLID)
+            ->getStartColor()
+            ->setRGB("36751F");
         // $cellStyle->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
-        $cellStyle->getBorders()->getAllBorders()->getColor()->setRGB('000000');
-
+        $cellStyle->getBorders()->getAllBorders()->getColor()->setRGB("000000");
     }
 
     private function PaintCell($cell, $type)
     {
         // Dit is lelijk maar fuck it
-        if ($type == 'firstrow') {
+        if ($type == "firstrow") {
             $this->SetStandardStyle($cell);
             $cellStyle = $this->Spreadsheet->getActiveSheet()->getStyle($cell);
-            $this->Spreadsheet->getActiveSheet()->getColumnDimension($cell[0])->setWidth(strlen($this->Spreadsheet->getActiveSheet()->getCell($cell)->getValue()) + 3);
+            $this->Spreadsheet
+                ->getActiveSheet()
+                ->getColumnDimension($cell[0])
+                ->setWidth(
+                    strlen(
+                        $this->Spreadsheet
+                            ->getActiveSheet()
+                            ->getCell($cell)
+                            ->getValue(),
+                    ) + 3,
+                );
             $cellStyle->getFont()->setBold(true);
-            $cellStyle->getFont()->setColor(new \PhpOffice\PhpSpreadsheet\Style\Color(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_WHITE));
-
-        }
-
-        elseif ($type == 'zaalwacht') {
+            $cellStyle
+                ->getFont()
+                ->setColor(
+                    new \PhpOffice\PhpSpreadsheet\Style\Color(
+                        \PhpOffice\PhpSpreadsheet\Style\Color::COLOR_WHITE,
+                    ),
+                );
+        } elseif ($type == "zaalwacht") {
             $this->SetStandardStyle($cell);
             $cellStyle = $this->Spreadsheet->getActiveSheet()->getStyle($cell);
-            $cellStyle->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('98EF83');
-            
-        }
-
-        elseif ($type == 'wedstrijd') {
+            $cellStyle
+                ->getFill()
+                ->setFillType(Fill::FILL_SOLID)
+                ->getStartColor()
+                ->setRGB("98EF83");
+        } elseif ($type == "wedstrijd") {
             $this->SetStandardStyle($cell);
             // Get the style of the cell (A1)
             // $style = $this->Spreadsheet->getActiveSheet()->getStyle($cell);
@@ -187,61 +228,112 @@ class ExcelExport
             // $border->getRight()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_NONE);
 
             $this->chooseFieldColour($cell);
-        }
-
-        elseif ($type == 'wedstrijd-dag') {
+        } elseif ($type == "wedstrijd-dag") {
             $this->SetStandardStyle($cell);
             $cellStyle = $this->Spreadsheet->getActiveSheet()->getStyle($cell);
-            $cellStyle->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('B6D7A8');
-
+            $cellStyle
+                ->getFill()
+                ->setFillType(Fill::FILL_SOLID)
+                ->getStartColor()
+                ->setRGB("B6D7A8");
         }
-
     }
 
-    private function chooseFieldColour($cell) {
+    private function chooseFieldColour($cell)
+    {
         $cellStyle = $this->Spreadsheet->getActiveSheet()->getStyle($cell);
-        if ($this->kleurNummer % 6 < 3 ) {
-            $cellStyle->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('B6D7A8');
+        if ($this->kleurNummer % 6 < 3) {
+            $cellStyle
+                ->getFill()
+                ->setFillType(Fill::FILL_SOLID)
+                ->getStartColor()
+                ->setRGB("B6D7A8");
         } else {
-            $cellStyle->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('D9EAD3');
+            $cellStyle
+                ->getFill()
+                ->setFillType(Fill::FILL_SOLID)
+                ->getStartColor()
+                ->setRGB("D9EAD3");
         }
     }
 
-    private function CreateBarEnBHVSchema() {
-
+    private function CreateBarEnBHVSchema()
+    {
         if (is_null($this->BardienstenEnBHVOpDag)) {
             return;
         }
 
-        foreach($this->BardienstenEnBHVOpDag->shifts as $shifts) {
-            foreach($shifts->barleden as $barlid) {
+        foreach ($this->BardienstenEnBHVOpDag->shifts as $shifts) {
+            foreach ($shifts->barleden as $barlid) {
                 if ($barlid->isBhv) {
-                    $this->SetCell('C' . $this->tweedeZaalwachtRow + $shifts->shift - 1, "BHV: " . $barlid->naam);
-                    $this->PaintCell('C' . $this->tweedeZaalwachtRow, 'zaalwacht');
-                }
-                else {
-                    $currentData = substr($this->Spreadsheet->getActiveSheet()->getCell('E' . $this->tweedeZaalwachtRow + $barlid->shift - 1)->getValue(), 11);
-                    $currentData = $currentData ? " & " . $currentData : $currentData; // Super hacky maar als er nog geen shift is ingevuld in de cell dan blijft currentData leeg
-                    $this->SetCell('E' . $this->tweedeZaalwachtRow + $barlid->shift - 1, "Barshift " . $barlid->shift . ": " . $barlid->naam . $currentData);
-                    $this->PaintCell('E' . $this->tweedeZaalwachtRow + $barlid->shift - 1, 'zaalwacht');
+                    $this->SetCell(
+                        "C" . $this->tweedeZaalwachtRow + $shifts->shift - 1,
+                        "BHV: " . $barlid->naam,
+                    );
+                    $this->PaintCell(
+                        "C" . $this->tweedeZaalwachtRow + $shifts->shift - 1,
+                        "zaalwacht",
+                    );
+                } else {
+                    $currentData = substr(
+                        $this->Spreadsheet
+                            ->getActiveSheet()
+                            ->getCell(
+                                "E" .
+                                    $this->tweedeZaalwachtRow +
+                                    $barlid->shift -
+                                    1,
+                            )
+                            ->getValue(),
+                        11,
+                    );
+                    $currentData = $currentData
+                        ? " & " . $currentData
+                        : $currentData; // Super hacky maar als er nog geen shift is ingevuld in de cell dan blijft currentData leeg
+                    $this->SetCell(
+                        "E" . $this->tweedeZaalwachtRow + $barlid->shift - 1,
+                        "Barshift " .
+                            $barlid->shift .
+                            ": " .
+                            $barlid->naam .
+                            $currentData,
+                    );
+                    $this->PaintCell(
+                        "E" . $this->tweedeZaalwachtRow + $barlid->shift - 1,
+                        "zaalwacht",
+                    );
                 }
             }
         }
-
-        $this->tweedeZaalwachtRow += $barlid->shift - 1;
     }
 
-    private function CheckIfNevoboDataIsComplete($wedstrijd) {
-        if (is_null($wedstrijd)) return false;
-        if (is_null($wedstrijd->timestamp)) return false;
-        if (is_null($wedstrijd->team1)) return false;
-        if (is_null($wedstrijd->team1->naam)) return false;
-        if (is_null($wedstrijd->team2)) return false;
-        if (is_null($wedstrijd->team2->naam)) return false;
-        if (is_null($wedstrijd->team1->niveau)) return false;
+    private function CheckIfNevoboDataIsComplete($wedstrijd)
+    {
+        if (is_null($wedstrijd)) {
+            return false;
+        }
+        if (is_null($wedstrijd->timestamp)) {
+            return false;
+        }
+        if (is_null($wedstrijd->team1)) {
+            return false;
+        }
+        if (is_null($wedstrijd->team1->naam)) {
+            return false;
+        }
+        if (is_null($wedstrijd->team2)) {
+            return false;
+        }
+        if (is_null($wedstrijd->team2->naam)) {
+            return false;
+        }
+        if (is_null($wedstrijd->team1->niveau)) {
+            return false;
+        }
     }
 
-    private function CreateWedstrijdSchema() {
+    private function CreateWedstrijdSchema()
+    {
         $yeet = $this->WedstrijdenOpDag;
 
         # Make sure first matches come first in the schedule
@@ -251,10 +343,30 @@ class ExcelExport
 
         $this->veldNummer = 1;
         $this->kleurNummer = 0;
-        $dayNames = array("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday");
-        $monthNames = array("", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
-        
-
+        $dayNames = [
+            "Sunday",
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+        ];
+        $monthNames = [
+            "",
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December",
+        ];
 
         if (is_null($this->WedstrijdenOpDag)) {
             return;
@@ -264,39 +376,68 @@ class ExcelExport
 
         foreach ($this->WedstrijdenOpDag as $wedstrijd) {
             $timestamp = $wedstrijd->timestamp->getTimestamp();
-            $formattedTimestamp = $dayNames[date('w', $timestamp)] . " " . date('j', $timestamp) . " " . $monthNames[date('n', $timestamp)];
+            $formattedTimestamp =
+                $dayNames[date("w", $timestamp)] .
+                " " .
+                date("j", $timestamp) .
+                " " .
+                $monthNames[date("n", $timestamp)];
 
             if (strstr($wedstrijd->team1->naam, $needle) !== false) {
-                return;
+                continue;
             }
 
-            $this->SetCell('A' . $this->currentRow, $formattedTimestamp);
-            $this->PaintCell('A' . $this->currentRow, 'wedstrijd-dag');
+            $this->SetCell("A" . $this->currentRow, $formattedTimestamp);
+            $this->PaintCell("A" . $this->currentRow, "wedstrijd-dag");
 
-            $this->SetCell('B' . $this->currentRow, $wedstrijd->timestamp->format('H:i'));
-            $this->PaintCell('B' . $this->currentRow, 'wedstrijd');
+            $this->SetCell(
+                "B" . $this->currentRow,
+                $wedstrijd->timestamp->format("H:i"),
+            );
+            $this->PaintCell("B" . $this->currentRow, "wedstrijd");
 
-            $this->SetCell('C' . $this->currentRow, $wedstrijd->team1->naam);
-            $this->PaintCell('C' . $this->currentRow, 'wedstrijd');
+            $this->SetCell("C" . $this->currentRow, $wedstrijd->team1->naam);
+            $this->PaintCell("C" . $this->currentRow, "wedstrijd");
 
-            $this->SetCell('D' . $this->currentRow, $wedstrijd->team2->naam);
-            $this->PaintCell('D' . $this->currentRow, 'wedstrijd');
+            $this->SetCell("D" . $this->currentRow, $wedstrijd->team2->naam);
+            $this->PaintCell("D" . $this->currentRow, "wedstrijd");
 
-            
-            $this->SetCell('E' . $this->currentRow, $this->GetNiveau($wedstrijd->team1->niveau));
-            $this->PaintCell('E' . $this->currentRow, 'wedstrijd');
+            $this->SetCell(
+                "E" . $this->currentRow,
+                $this->GetNiveau($wedstrijd->team1->niveau),
+            );
+            $this->PaintCell("E" . $this->currentRow, "wedstrijd");
 
-            $this->SetCell('F' . $this->currentRow, 'Veld '. $this->veldNummer);
-            $this->PaintCell('F' . $this->currentRow, 'wedstrijd');
+            $this->SetCell(
+                "F" . $this->currentRow,
+                "Veld " . $this->veldNummer,
+            );
+            $this->PaintCell("F" . $this->currentRow, "wedstrijd");
 
-            
-            if ($wedstrijd->scheidsrechter !== null) $this->SetCell('G' . $this->currentRow, $wedstrijd->scheidsrechter->naam);
-            $this->PaintCell('G' . $this->currentRow, 'wedstrijd');
-            
+            if ($wedstrijd->scheidsrechter !== null) {
+                $this->SetCell(
+                    "G" . $this->currentRow,
+                    $wedstrijd->scheidsrechter->naam,
+                );
+            }
+            $this->PaintCell("G" . $this->currentRow, "wedstrijd");
+
             if (isset($wedstrijd->tellers)) {
-                if (($wedstrijd->tellers[0] !== null || $wedstrijd->tellers[1] !== null) && ($wedstrijd->tellers[0]->naam !== null || $wedstrijd->tellers[0]->naam !== null)) $this->SetCell('H' . $this->currentRow, $wedstrijd->tellers[0]->naam . ' & '. $wedstrijd->tellers[1]->naam);
+                if (
+                    ($wedstrijd->tellers[0] !== null ||
+                        $wedstrijd->tellers[1] !== null) &&
+                    ($wedstrijd->tellers[0]->naam !== null ||
+                        $wedstrijd->tellers[0]->naam !== null)
+                ) {
+                    $this->SetCell(
+                        "H" . $this->currentRow,
+                        $wedstrijd->tellers[0]->naam .
+                            " & " .
+                            $wedstrijd->tellers[1]->naam,
+                    );
+                }
             }
-            $this->PaintCell('H' . $this->currentRow, 'wedstrijd');
+            $this->PaintCell("H" . $this->currentRow, "wedstrijd");
 
             $this->veldNummer += 1; // max 3 velden
             $this->veldNummer = $this->veldNummer > 3 ? 1 : $this->veldNummer;
@@ -305,32 +446,42 @@ class ExcelExport
         }
     }
 
-    private function GetBardienstenEnBHVOpDag() {
-        $BarDagenOpDag = $this->BarcieGateway->GetBardag($this->WedstrijdenOpDag[0]->timestamp);
+    private function GetBardienstenEnBHVOpDag()
+    {
+        $BarDagenOpDag = $this->BarcieGateway->GetBardag(
+            $this->WedstrijdenOpDag[0]->timestamp,
+        );
         return $BarDagenOpDag->id != null ? $BarDagenOpDag : null;
     }
 
-    private function GetZaalWachtenOpDag() {
-        $ZaalWachtenOpDag = $this->ZaalwachtGateway->GetZaalwacht($this->WedstrijdenOpDag[0]->timestamp);
+    private function GetZaalWachtenOpDag()
+    {
+        $ZaalWachtenOpDag = $this->ZaalwachtGateway->GetZaalwacht(
+            $this->WedstrijdenOpDag[0]->timestamp,
+        );
         return $ZaalWachtenOpDag;
     }
-    
-    private function GetNiveau($niveau) {
+
+    private function GetNiveau($niveau)
+    {
+        if ($niveau === null) {
+            return "";
+        }
         switch ($niveau) {
             case 0:
                 return "Eredivisie"; // lol
             case 1:
-                return "Topdivisie"; 
+                return "Topdivisie";
             case 2:
                 return "1e Divisie";
             case 3:
                 return "2e Divisie";
             case 4:
-                return "3e Divisie"; 
+                return "3e Divisie";
             case 5:
-                return "Promotie klasse"; 
+                return "Promotie klasse";
             case 6:
-                return "1e klasse"; 
+                return "1e klasse";
             case 7:
                 return "2e klasse";
             case 8:
@@ -338,7 +489,6 @@ class ExcelExport
             case 9:
                 return "4e klasse";
 
-            
             default:
                 return "";
         }
@@ -346,21 +496,23 @@ class ExcelExport
 
     public function returnExcelExport()
     {
- 
-    //    $writer = new Xlsx($this->Spreadsheet);
-    //    $spreadsheet = new Spreadsheet();
-       $writer = IOFactory::createWriter($this->Spreadsheet, 'Xlsx');
+        //    $writer = new Xlsx($this->Spreadsheet);
+        //    $spreadsheet = new Spreadsheet();
+        $writer = IOFactory::createWriter($this->Spreadsheet, "Xlsx");
 
-       ob_end_clean();
-       header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-       header('Content-Disposition: attachment; filename="Teamtakenschema '  . date("d-m-Y") .   '.xlsx"');
-       header("Access-Control-Allow-Origin: ". $_ENV['ACCESSCONTROLALLOWORIGIN']);
-       header("Access-Control-Allow-Credentials: true");
-       error_log(print_r($this->Spreadsheet, true));
-       $writer->save('php://output');
- 
+        ob_end_clean();
+        header(
+            "Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        );
+        header(
+            'Content-Disposition: attachment; filename="Teamtakenschema ' .
+                date("d-m-Y") .
+                '.xlsx"',
+        );
+        header(
+            "Access-Control-Allow-Origin: " . $_ENV["ACCESSCONTROLALLOWORIGIN"],
+        );
+        header("Access-Control-Allow-Credentials: true");
+        $writer->save("php://output");
     }
-
- 
-
 }

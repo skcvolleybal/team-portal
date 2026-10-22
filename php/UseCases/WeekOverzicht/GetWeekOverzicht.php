@@ -2,7 +2,7 @@
 
 namespace TeamPortal\UseCases;
 
-require_once('ExcelExport.php'); // Had het eerst in de dir UseCases\ExcelExport maar dat pad werkt niet dus dan maar in deze dir
+require_once __DIR__ . "/ExcelExport.php"; // Had het eerst in de dir UseCases\ExcelExport maar dat pad werkt niet dus dan maar in deze dir
 
 use TeamPortal\Common\DateFunctions;
 use TeamPortal\Entities\Coach;
@@ -15,9 +15,9 @@ use TeamPortal\Entities\Wedstrijd;
 
 use UnexpectedValueException;
 
-use datetime;
+use DateTime;
 
-error_reporting(E_ALL ^ E_DEPRECATED); // Suppress warnings on PHP 8.0. Make sure to fix the usort() functions in this file for PHP 8.1. 
+error_reporting(E_ALL ^ E_DEPRECATED); // Suppress warnings on PHP 8.0. Make sure to fix the usort() functions in this file for PHP 8.1.
 
 // Niet heel lekker over dit verhaal nagedacht maar he je leert er wat van
 class GetWeekOverzicht implements Interactor
@@ -27,9 +27,8 @@ class GetWeekOverzicht implements Interactor
         Gateways\AanwezigheidGateway $aanwezigheidGateway,
         Gateways\NevoboGateway $nevoboGateway,
         Gateways\TelFluitGateway $TelFluitGateway,
-        GateWays\BarcieGateway $BarcieGateway,
-        GateWays\ZaalwachtGateway $ZaalwachtGateway,
-
+        Gateways\BarcieGateway $BarcieGateway,
+        Gateways\ZaalwachtGateway $ZaalwachtGateway,
     ) {
         $this->wordPressGateway = $wordPressGateway;
         $this->aanwezigheidGateway = $aanwezigheidGateway;
@@ -41,14 +40,24 @@ class GetWeekOverzicht implements Interactor
 
     public function Execute(object $data = null)
     {
-        $WedstrijdenOpDag = array();
-        if ($data->datum == "undefined" || $data == null) {
-            throw new \ValueError(sprintf('Argument #1 (date) must be a valid date'));
+        $WedstrijdenOpDag = [];
+        if ($data == null) {
+            throw new \ValueError(
+                sprintf("Argument #1 (date) must be a valid date"),
+            );
         }
-       
+        if ($data->datum == "undefined") {
+            throw new \ValueError(
+                sprintf("Argument #1 (date) must be a valid date"),
+            );
+        }
+
         $uscWedstrijden = $this->nevoboGateway->GetProgrammaForVereniging();
 
-        $allMatches = $this->GetWedstrijdenTotEnMetDag($data->datum, $uscWedstrijden);
+        $allMatches = $this->GetWedstrijdenTotEnMetDag(
+            $data->datum,
+            $uscWedstrijden,
+        );
 
         $allBardienstenEnBHV = $this->GetBardienstenTotEnMetDag($data->datum);
 
@@ -60,20 +69,27 @@ class GetWeekOverzicht implements Interactor
             $allZaalwachten,
 
             $this->BarcieGateway,
-            $this->ZaalwachtGateway
+            $this->ZaalwachtGateway,
         );
         $excelExport->GetExcelExport();
         $excelExport->returnExcelExport();
-
     }
 
-    private function GetWedstrijdenOpDag($datum, $wedstrijden) {
-        $WedstrijdenOpDag = array();
-        foreach($wedstrijden as $wedstrijd) {
+    private function GetWedstrijdenOpDag($datum, $wedstrijden)
+    {
+        $WedstrijdenOpDag = [];
+        foreach ($wedstrijden as $wedstrijd) {
             if ($wedstrijd->timestamp !== null) {
-                if (preg_match('/' . $datum . '/', $wedstrijd->timestamp->format('Y-m-d H:i:s')) && 
-                preg_match('/' . $wedstrijd->locatie . '/', "Universitair SC, Einsteinweg 6, 2333CC Leiden")) {
-                    
+                if (
+                    preg_match(
+                        "/" . $datum . "/",
+                        $wedstrijd->timestamp->format("Y-m-d H:i:s"),
+                    ) &&
+                    preg_match(
+                        "/" . $wedstrijd->locatie . "/",
+                        "Universitair SC, Einsteinweg 6, 2333CC Leiden",
+                    )
+                ) {
                     $WedstrijdenOpDag[] = $wedstrijd;
                 }
             }
@@ -81,71 +97,105 @@ class GetWeekOverzicht implements Interactor
         return $WedstrijdenOpDag ? $WedstrijdenOpDag : null;
     }
 
-    private function GetScheidsrechtersEnTellersOpDag($wedstrijd) {
-        $telfluit = array();
+    private function GetScheidsrechtersEnTellersOpDag($wedstrijd)
+    {
+        $telfluit = [];
         $telfluit[] = $this->TelFluitGateway->GetWedstrijd($wedstrijd->matchId);
         return $telfluit ? $telfluit : null;
     }
 
-    private function GetBardienstenOpDag($datum) {
+    private function GetBardienstenOpDag($datum)
+    {
         $dateTime = DateTime::createFromFormat("Y-m-d", $datum); //$datum is een string en GetBarDag verwacht een DateTime object
+        if ($dateTime === false) {
+            throw new \ValueError(
+                sprintf("Argument #1 (date) must be a valid date"),
+            );
+        }
         $BarDagenOpDag = $this->BarcieGateway->GetBardag($dateTime);
         return $BarDagenOpDag->id != null ? $BarDagenOpDag : null;
     }
 
-    private function GetZaalWachtenOpDag($datum) {
-        $dateTime = DateTime::createFromFormat("Y-m-d", $datum); //$datum is een string en GetZaalWacht verwacht een DateTime object
+    private function GetZaalWachtenOpDag($datum)
+    {
+        $dateTime = DateTime::createFromFormat("Y-m-d", $datum); //$datum is een string en GetZaalwacht verwacht een DateTime object
+        if ($dateTime === false) {
+            throw new \ValueError(
+                sprintf("Argument #1 (date) must be a valid date"),
+            );
+        }
         $ZaalWachtenOpDag = $this->ZaalwachtGateway->GetZaalwacht($dateTime);
         return $ZaalWachtenOpDag;
     }
 
-
-    private function GetWedstrijdenTotEnMetDag($datum, $uscWedstrijden) {
+    private function GetWedstrijdenTotEnMetDag($datum, $uscWedstrijden)
+    {
         // datum
-        $startDate = new DateTime();  // Initialize with the current date and time
-        $endDate = new DateTime($datum);  // Replace '2023-12-31' with your desired end date
-        $endDate = $endDate->modify('+1 day');
-        $allGames = array();
-        for ($date = clone $startDate; $date <= $endDate; $date->modify('+1 day')) {
-            $temp = $this->GetWedstrijdenOpDag($date->format('Y-m-d'), $uscWedstrijden);
-            if ($temp) { $allGames[] = $temp; }
+        $startDate = new DateTime(); // Initialize with the current date and time
+        $endDate = new DateTime($datum); // Replace '2023-12-31' with your desired end date
+        $endDate = $endDate->modify("+1 day");
+        $allGames = [];
+        for (
+            $date = clone $startDate;
+            $date <= $endDate;
+            $date = $date->modify("+1 day")
+        ) {
+            $temp = $this->GetWedstrijdenOpDag(
+                $date->format("Y-m-d"),
+                $uscWedstrijden,
+            );
+            if ($temp) {
+                $allGames[] = $temp;
+            }
         }
 
         // Zet scheidsrechters en tellers in de $allGames array
-        foreach($allGames as $WedstrijdenOpDag) {
-            foreach($WedstrijdenOpDag as $wedstrijd) {
+        foreach ($allGames as $WedstrijdenOpDag) {
+            foreach ($WedstrijdenOpDag as $wedstrijd) {
                 $telfluit = $this->GetScheidsrechtersEnTellersOpDag($wedstrijd);
                 $wedstrijd->tellers = $telfluit[0]->tellers;
                 $wedstrijd->scheidsrechter = $telfluit[0]->scheidsrechter;
             }
         }
 
-
         return $allGames;
     }
 
-    private function GetBardienstenTotEnMetDag($datum) {
-        $startDate = new DateTime();  // Initialize with the current date and time
-        $endDate = new DateTime($datum);  // Replace '2023-12-31' with your desired end date
-        $endDate = $endDate->modify('+1 day');
-        $allBardiensten = array();
-        for ($date = clone $startDate; $date <= $endDate; $date->modify('+1 day')) {
-            $temp = $this->GetBardienstenOpDag($date->format('Y-m-d'));
-            if ($temp) { $allBardiensten[] = $temp; }
+    private function GetBardienstenTotEnMetDag($datum)
+    {
+        $startDate = new DateTime(); // Initialize with the current date and time
+        $endDate = new DateTime($datum); // Replace '2023-12-31' with your desired end date
+        $endDate = $endDate->modify("+1 day");
+        $allBardiensten = [];
+        for (
+            $date = clone $startDate;
+            $date <= $endDate;
+            $date = $date->modify("+1 day")
+        ) {
+            $temp = $this->GetBardienstenOpDag($date->format("Y-m-d"));
+            if ($temp) {
+                $allBardiensten[] = $temp;
+            }
         }
         return $allBardiensten;
     }
 
-    private function GetZaalWachtenTotEnMetDag($datum) {
-        $startDate = new DateTime();  // Initialize with the current date and time
-        $endDate = new DateTime($datum);  // Replace '2023-12-31' with your desired end date
-        $endDate = $endDate->modify('+1 day');
-        $allZaalwachten = array();
-        for ($date = clone $startDate; $date <= $endDate; $date->modify('+1 day')) {
-            $temp = $this->GetZaalWachtenOpDag($date->format('Y-m-d'));
-            if ($temp) { $allZaalwachten[] = $temp; }
+    private function GetZaalWachtenTotEnMetDag($datum)
+    {
+        $startDate = new DateTime(); // Initialize with the current date and time
+        $endDate = new DateTime($datum); // Replace '2023-12-31' with your desired end date
+        $endDate = $endDate->modify("+1 day");
+        $allZaalwachten = [];
+        for (
+            $date = clone $startDate;
+            $date <= $endDate;
+            $date = $date->modify("+1 day")
+        ) {
+            $temp = $this->GetZaalWachtenOpDag($date->format("Y-m-d"));
+            if ($temp) {
+                $allZaalwachten[] = $temp;
+            }
         }
         return $allZaalwachten;
-
     }
 }

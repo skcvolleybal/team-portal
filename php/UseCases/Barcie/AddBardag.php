@@ -12,7 +12,7 @@ class AddBardag implements Interactor
 {
     public function __construct(
         Gateways\WordPressGateway $wordPressGateway,
-        Gateways\BarcieGateway $barcieGateway
+        Gateways\BarcieGateway $barcieGateway,
     ) {
         $this->wordPressGateway = $wordPressGateway;
         $this->barcieGateway = $barcieGateway;
@@ -21,11 +21,14 @@ class AddBardag implements Interactor
     public function Execute(object $data = null): void
     {
         $date = DateFunctions::CreateDateTime($data->date);
-        if ($date === false) {
-            throw new InvalidArgumentException("Incorrecte dag: $data->data");
+        if ($date === null) {
+            throw new InvalidArgumentException("Incorrecte dag: $data->date");
         }
 
-        if (DateFunctions::GetYmdNotation($date) < DateFunctions::GetYmdNotation(new DateTime())) {
+        if (
+            DateFunctions::GetYmdNotation($date) <
+            DateFunctions::GetYmdNotation(new DateTime())
+        ) {
             throw new UnexpectedValueException("Dag ligt in het verleden");
         }
 

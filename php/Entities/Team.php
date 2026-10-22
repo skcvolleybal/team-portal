@@ -11,21 +11,28 @@ class Team
     public string $naam; // Bv. SKC HS 2
     public string $poule;
     public array $teamgenoten = [];
-    public int $niveau;
+    public ?int $niveau = null;
     public static $alleSkcTeams = [];
     public ?string $facebook;
+    public ?string $trainingstijden = null;
     public int $aantalZaalwachten = 0;
     public int $aantalTelbeurten = 0;
 
-    public function __construct(string $naam, int $id = null, array $teamgenoten = [])
-    {
+    public function __construct(
+        string $naam,
+        ?int $id = null,
+        array $teamgenoten = [],
+    ) {
         $this->id = $id;
 
         if ($this->isSkcFormat($naam)) {
             $sequence = substr($naam, 6);
             $gender = strtolower(substr($naam, 0, 5));
-            $this->naam = $gender === 'dames' ? 'SKC DS ' . $sequence : 'SKC HS ' . $sequence;
-        } else if ($this->isNevoboFormat($naam)) {
+            $this->naam =
+                $gender === "dames"
+                    ? "SKC DS " . $sequence
+                    : "SKC HS " . $sequence;
+        } elseif ($this->isNevoboFormat($naam)) {
             $this->naam = strtoupper($naam);
         } else {
             $this->naam = $naam;
@@ -48,7 +55,8 @@ class Team
 
     function GetSkcNaam(): string
     {
-        return ($this->naam[4] === 'D' ? 'Dames ' : 'Heren ') . substr($this->naam, 7);
+        return ($this->naam[4] === "D" ? "Dames " : "Heren ") .
+            substr($this->naam, 7);
     }
 
     private function isNevoboFormat(string $naam): bool
@@ -111,7 +119,10 @@ class Team
     {
         foreach ($wedstrijden as $wedstrijd) {
             $teamnaam = $this->naam;
-            if ($wedstrijd->team1->naam == $teamnaam || $wedstrijd->team2->naam == $teamnaam) {
+            if (
+                $wedstrijd->team1->naam == $teamnaam ||
+                $wedstrijd->team2->naam == $teamnaam
+            ) {
                 return $wedstrijd;
             }
         }
@@ -121,18 +132,17 @@ class Team
 
     static function LoadAlleSkcTeams(): void
     {
-
         // $wordpressGateway = new WordPressGateway;
         // $string = $wordpressGateway->GetAllTeams(); Dit is een relic, ooit fixen dat we de teamniveaus uit DB halen
-        
-        $string = file_get_contents("skc-teams.json");
+
+        $string = file_get_contents(__DIR__ . "/../skc-teams.json");
         $teams = json_decode($string);
         foreach ($teams as $team) {
             $skcTeam = new Team($team->naam);
             $skcTeam->poule = $team->poule;
             $skcTeam->trainingstijden = $team->trainingstijden;
             $skcTeam->facebook = $team->facebook ?? null;
-            $skcTeam->niveau =  Niveau::GetNiveauByString($team->niveau);
+            $skcTeam->niveau = Niveau::GetNiveauByString($team->niveau);
             Team::$alleSkcTeams[] = $skcTeam;
         }
     }

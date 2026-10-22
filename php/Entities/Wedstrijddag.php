@@ -38,11 +38,13 @@ class Wedstrijddag
             }
         }
         $this->speeltijden[] = new Speeltijd($wedstrijd->timestamp);
-        $this->speeltijden[0]->wedstrijden[] = $wedstrijd;
+        $this->speeltijden[
+            count($this->speeltijden) - 1
+        ]->wedstrijden[] = $wedstrijd;
     }
 
-    public static function Compare(Wedstrijddag $dag1, Wedstrijddag $dag2): bool
+    public static function Compare(Wedstrijddag $dag1, Wedstrijddag $dag2): int
     {
-        return $dag1->date > $dag2->date;
+        return $dag1->date <=> $dag2->date;
     }
 }

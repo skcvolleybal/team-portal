@@ -10,7 +10,7 @@ class HttpResponse
     public function __construct(string $package)
     {
         if (strpos($package, "\r\n\r\n") !== false) {
-            list($headers, $body) = explode("\r\n\r\n", $package);
+            [$headers, $body] = explode("\r\n\r\n", $package, 2);
         } else {
             $headers = "";
             $body = $package;
@@ -18,14 +18,20 @@ class HttpResponse
 
         foreach (explode("\r\n", $headers) as $i => $line) {
             if ($i === 0) {
-                $this->headers['http_code'] = $line;
+                $this->headers["http_code"] = $line;
             } else {
-                list($key, $value) = explode(': ', $line);
+                if (strpos($line, ": ") === false) {
+                    continue;
+                }
+                [$key, $value] = explode(": ", $line, 2);
 
                 if (!isset($this->headers[$key])) {
                     $this->headers[$key] = $value;
                 } else {
-                    if ($key == 'Set-Cookie' && strpos($value, 'PHPSESSID') !== false) {
+                    if (
+                        $key == "Set-Cookie" &&
+                        strpos($value, "PHPSESSID") !== false
+                    ) {
                         $this->headers[$key] = $value;
                     }
                 }
@@ -47,12 +53,12 @@ class HttpResponse
 
     public function GetLocationHeader()
     {
-        return $this->GetHeader('Location');
+        return $this->GetHeader("Location");
     }
 
     public function GetSetCookieHeader()
     {
-        return $this->GetHeader('Set-Cookie');
+        return $this->GetHeader("Set-Cookie");
     }
 
     public function GetBody()

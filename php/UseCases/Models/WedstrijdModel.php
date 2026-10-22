@@ -27,16 +27,33 @@ class WedstrijdModel extends Overzichtsitem
     public function __construct(Wedstrijd $wedstrijd)
     {
         $this->matchId = $wedstrijd->matchId;
-        $this->tijd = $wedstrijd->timestamp !== null ? DateFunctions::GetTime($wedstrijd->timestamp) : "NA";
-        $this->datum_long = $wedstrijd->timestamp !== null ? DateFunctions::GetDutchDateLong($wedstrijd->timestamp) : "NA";
+        $this->tijd =
+            $wedstrijd->timestamp !== null
+                ? DateFunctions::GetTime($wedstrijd->timestamp)
+                : "NA";
+        $this->datum_long =
+            $wedstrijd->timestamp !== null
+                ? DateFunctions::GetDutchDateLong($wedstrijd->timestamp)
+                : "NA";
         $this->team1 = $wedstrijd->team1->naam;
         $this->team2 = $wedstrijd->team2->naam;
-        $this->teams = $wedstrijd->team1->naam . " - " . $wedstrijd->team2->naam;
-        $this->scheidsrechter = $wedstrijd->scheidsrechter !== null ? $wedstrijd->scheidsrechter->naam : null;
-        $this->scheidsrechterId = $wedstrijd->scheidsrechter !== null ? $wedstrijd->scheidsrechter->id : null;
+        $this->teams =
+            $wedstrijd->team1->naam . " - " . $wedstrijd->team2->naam;
+        $this->scheidsrechter =
+            $wedstrijd->scheidsrechter !== null
+                ? $wedstrijd->scheidsrechter->naam
+                : null;
+        $this->scheidsrechterId =
+            $wedstrijd->scheidsrechter !== null
+                ? $wedstrijd->scheidsrechter->id
+                : null;
         $this->tellers = [
-            $wedstrijd->tellers[0] !== null ? $wedstrijd->tellers[0]->naam : null,
-            $wedstrijd->tellers[1] !== null ? $wedstrijd->tellers[1]->naam : null
+            $wedstrijd->tellers[0] !== null
+                ? $wedstrijd->tellers[0]->naam
+                : null,
+            $wedstrijd->tellers[1] !== null
+                ? $wedstrijd->tellers[1]->naam
+                : null,
         ];
         $this->locatie = $wedstrijd->locatie;
         $this->uitslag = $wedstrijd->uitslag;
@@ -48,16 +65,23 @@ class WedstrijdModel extends Overzichtsitem
     public function SetPersonalInformation(Persoon $user)
     {
         if ($user->team) {
-            $this->isTeam1 = $this->team1 ===  $user->team->naam;
+            $this->isTeam1 = $this->team1 === $user->team->naam;
             $this->isTeam2 = $this->team2 === $user->team->naam;
-            $this->isTellers = $this->tellers === $user->team->GetShortNotation();
+            $this->isTellers = in_array(
+                $user->team->GetShortNotation(),
+                $this->tellers,
+            );
         }
 
         $this->isCoachTeam1 = false;
         $this->isCoachTeam2 = false;
         foreach ($user->coachteams as $team) {
-            if ($this->team1 === $team->naam) $this->isCoachTeam1 = true;
-            if ($this->team2 === $team->naam) $this->isCoachTeam2 = true;
+            if ($this->team1 === $team->naam) {
+                $this->isCoachTeam1 = true;
+            }
+            if ($this->team2 === $team->naam) {
+                $this->isCoachTeam2 = true;
+            }
         }
 
         $this->isScheidsrechter = $user->naam === $this->scheidsrechter;

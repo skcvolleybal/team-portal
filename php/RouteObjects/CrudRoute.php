@@ -3,7 +3,7 @@
 namespace TeamPortal\RouteObjects;
 
 use TeamPortal\Gateways\WordPressGateway;
-use GuzzleHttp\Psr7\Response;
+use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Routing\RouteCollectorProxy;
 use UnauthorizedException;
 use UnexpectedValueException;
@@ -12,11 +12,17 @@ abstract class CrudRoute
 {
     function FillBody(Response $response, $data)
     {
-        if (is_null($data)) return $response;
+        if (is_null($data)) {
+            return $response;
+        }
 
         $jsonData = json_encode($data);
-        if ($data === false) {
-            $response->getBody()->write($data);
+        if ($jsonData === false) {
+            $response
+                ->getBody()
+                ->write(
+                    "Er is een probleem opgetreden bij het verwerken van het antwoord.",
+                );
         } else {
             $response->getBody()->write($jsonData);
         }
@@ -40,7 +46,7 @@ abstract class CrudRoute
     {
         $user = $wordPressGateway->GetUser();
         switch ($role) {
-            case null;
+            case null:
             case 0:
                 $isAuthorized = true;
                 break;
@@ -51,13 +57,13 @@ abstract class CrudRoute
                 $isAuthorized = $wordPressGateway->IsBarcie($user);
                 break;
             case 3:
-                $isAuthorized =  $wordPressGateway->IsScheidsrechter($user);
+                $isAuthorized = $wordPressGateway->IsScheidsrechter($user);
                 break;
             case 4:
-                $isAuthorized =  $wordPressGateway->IsTeamcoordinator($user);
+                $isAuthorized = $wordPressGateway->IsTeamcoordinator($user);
                 break;
             case 5:
-                $isAuthorized =  $wordPressGateway->IsWebcie($user);
+                $isAuthorized = $wordPressGateway->IsWebcie($user);
                 break;
             default:
                 $isAuthorized = false;
@@ -65,7 +71,9 @@ abstract class CrudRoute
 
         if (!$isAuthorized) {
             if ($user !== null) {
-                throw new UnexpectedValueException("Je bent hier niet voor geautoriseerd");
+                throw new UnexpectedValueException(
+                    "Je bent hier niet voor geautoriseerd",
+                );
             } else {
                 throw new UnauthorizedException();
             }

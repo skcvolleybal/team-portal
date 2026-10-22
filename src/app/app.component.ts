@@ -1,122 +1,143 @@
-import { Component, OnInit } from '@angular/core';
-import { NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
-import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
+import { Component, OnInit } from "@angular/core";
+import { NgbModal, NgbModalConfig } from "@ng-bootstrap/ng-bootstrap";
+import { debounceTime, distinctUntilChanged, switchMap } from "rxjs/operators";
 
-import { ActivatedRoute } from '@angular/router';
-import { WordPressService } from './core/services/request.service';
-import { LoginModalComponent } from './login-modal/login-modal.component';
-import { Observable } from 'rxjs';
-import { StateService } from './core/services/state.service';
-import { appRoutes } from './route.config';
-import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
-import { environment } from '../environments/environment';
-import { version } from '../environments/version';
-
+import { ActivatedRoute } from "@angular/router";
+import { WordPressService } from "./core/services/request.service";
+import { LoginModalComponent } from "./login-modal/login-modal.component";
+import { Observable } from "rxjs";
+import { StateService } from "./core/services/state.service";
+import { appRoutes } from "./route.config";
+import { faAngleRight } from "@fortawesome/free-solid-svg-icons";
+import { environment } from "../environments/environment";
+import { version } from "../environments/version";
 
 @Component({
-  selector: 'teamportal-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css'],
+    selector: "teamportal-root",
+    templateUrl: "./app.component.html",
+    styleUrls: ["./app.component.css"],
 })
 export class AppComponent implements OnInit {
-  isWebcie = false;
-  isNavbarHidden = true;
-  rightIcon = faAngleRight;
-  loginModal = false;
-  impersonatedUser: any;
-  appRoutes: any;
-  searching = false;
-  searchFailed = false;
-  isProd = false;
-  gitVersion = version; // this will hold both branch and hash info
+    isWebcie = false;
+    isNavbarHidden = true;
+    rightIcon = faAngleRight;
+    loginModal = false;
+    impersonatedUser: any;
+    appRoutes: any;
+    searching = false;
+    searchFailed = false;
+    isProd = false;
+    gitVersion = version; // this will hold both branch and hash info
+    private isAuthenticatedSubscriptionSet = false;
+    private loginModalOpen = false;
 
+    constructor(
+        private activatedRoute: ActivatedRoute,
+        private modalService: NgbModal,
+        private stateService: StateService,
+        private wordPressService: WordPressService,
+        config: NgbModalConfig,
+    ) {
+        config.backdrop = "static";
+        config.keyboard = false;
 
-  constructor(
-    private activatedRoute: ActivatedRoute,
-    private modalService: NgbModal,
-    private stateService: StateService,
-    private wordPressService: WordPressService,
-    config: NgbModalConfig
-  ) {
-    config.backdrop = 'static';
-    config.keyboard = false;
+        this.appRoutes = appRoutes.filter((appRoute) => appRoute.path !== "");
 
-    this.appRoutes = appRoutes.filter((appRoute) => appRoute.path !== '');
-
-    if (environment.production) {
-      this.isProd = true;
-      }
-    }
-
-
-  onLinkClick() {
-    this.isNavbarHidden = true;
-  }
-
-  toggleNavbar() {
-    this.isNavbarHidden = !this.isNavbarHidden;
-  }
-
-  GetNavigationTitle() {
-    if (this.activatedRoute.firstChild) {
-      return this.activatedRoute.firstChild.snapshot.data.title;
-    }
-  }
-
-  ngOnInit() {
-    this.stateService.isAuthenticated.subscribe((value) => {
-      if (value) {
-        return;
-      }
-
-      this.modalService.open(LoginModalComponent, { centered: true });
-    });
-
-    this.wordPressService.GetGroupsOfUser().subscribe((response) => {
-      this.ShowMenuItems(response);
-      this.isWebcie = response.findIndex((group) => group === 'webcie') !== -1;
-      this.stateService.isWebcie = this.isWebcie;
-    });
-
-    this.stateService.isAuthenticated.subscribe((isAuthenticated) => {
-      if (isAuthenticated) {
-        this.ngOnInit();
-      }
-    });    
-  }
-
-
-  ShowMenuItems(groups) {
-    groups.forEach((subscription) => {
-      this.appRoutes.forEach((appRoute) => {
-        if (appRoute.data.groups) {
-          appRoute.data.groups.forEach((group) => {
-            if (group === subscription) {
-              appRoute.isHidden = false;
-            }
-          });
+        if (environment.production) {
+            this.isProd = true;
         }
-      });
-    });
-  }
-
-  setImpersonation() {
-    if (!this.impersonatedUser) {
-      this.stateService.impersonationId = null;
     }
-  }
 
-  searchUsers = (text: Observable<string>) =>
-    text.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-      switchMap((term) => this.wordPressService.GetUsers(term))
-      // tslint:disable-next-line:semicolon
-    );
+    onLinkClick() {
+        this.isNavbarHidden = true;
+    }
 
-  formatter = (gebruiker: { id: string; naam: string }) => {
-    this.stateService.impersonationId = gebruiker.id;
-    return gebruiker.naam;
-    // tslint:disable-next-line:semicolon
-  };
+    toggleNavbar() {
+        this.isNavbarHidden = !this.isNavbarHidden;
+    }
+
+    GetNavigationTitle() {
+        if (this.activatedRoute.firstChild) {
+            return this.activatedRoute.firstChild.snapshot.data.title;
+        }
+    }
+
+    ngOnInit() {
+        this.stateService.isAuthenticated.subscribe((value) => {
+            if (value) {
+                return;
+            }
+
+            if (this.loginModalOpen) {
+                return;
+            }
+
+            this.loginModalOpen = true;
+            const modalRef = this.modalService.open(LoginModalComponent, {
+                centered: true,
+            });
+            modalRef.result.then(
+                () => {
+                    this.loginModalOpen = false;
+                },
+                () => {
+                    this.loginModalOpen = false;
+                },
+            );
+        });
+
+        this.loadMenuItems();
+
+        if (!this.isAuthenticatedSubscriptionSet) {
+            this.isAuthenticatedSubscriptionSet = true;
+            this.stateService.isAuthenticated.subscribe((isAuthenticated) => {
+                if (isAuthenticated) {
+                    this.loadMenuItems();
+                }
+            });
+        }
+    }
+
+    loadMenuItems() {
+        this.wordPressService.GetGroupsOfUser().subscribe((response) => {
+            this.ShowMenuItems(response);
+            this.isWebcie =
+                response.findIndex((group) => group === "webcie") !== -1;
+            this.stateService.isWebcie = this.isWebcie;
+        });
+    }
+
+    ShowMenuItems(groups) {
+        groups.forEach((subscription) => {
+            this.appRoutes.forEach((appRoute) => {
+                if (appRoute.data.groups) {
+                    appRoute.data.groups.forEach((group) => {
+                        if (group === subscription) {
+                            appRoute.isHidden = false;
+                        }
+                    });
+                }
+            });
+        });
+    }
+
+    setImpersonation() {
+        if (!this.impersonatedUser) {
+            this.stateService.impersonationId = null;
+        }
+    }
+
+    searchUsers = (text: Observable<string>) =>
+        text.pipe(
+            debounceTime(300),
+            distinctUntilChanged(),
+            switchMap((term) => this.wordPressService.GetUsers(term)),
+            // tslint:disable-next-line:semicolon
+        );
+
+    formatter = (gebruiker: { id: string; naam: string }) => {
+        this.stateService.impersonationId = gebruiker.id;
+        return gebruiker.naam;
+        // tslint:disable-next-line:semicolon
+    };
 }

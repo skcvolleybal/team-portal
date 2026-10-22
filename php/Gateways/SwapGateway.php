@@ -14,7 +14,8 @@ class SwapGateway
 
     public function GetAllSwaps(): array
     {
-        $query = "SELECT 
+        $query =
+            "SELECT
                     W.taskToSwapId,
                     W.swapForTaskId,
                     W.userWhoProposedId,
@@ -22,14 +23,17 @@ class SwapGateway
                     W.date,
                     W.shift
                   FROM
-                    " . $_ENV['DBNAME'] . ".teamtaken_swaps W";
+                    " .
+            $_ENV["DBNAME"] .
+            ".teamtaken_swaps W";
         $rows = $this->database->Execute($query);
         return $this->MapToSwaps($rows);
     }
 
     public function GetProposedSwaps(): array
     {
-        $query = "SELECT
+        $query =
+            "SELECT
                 W.id,
                 W.taskToSwapId,
                 W.swapForTaskId,
@@ -39,34 +43,50 @@ class SwapGateway
                 B1.shift AS swapForShift,     -- Shift for taskToSwapId
                 BD2.date AS dateToSwap,     -- Date for swapForTaskId
                 B2.shift AS shiftToSwap     -- Shift for swapForTaskId
-            FROM " . $_ENV['DBNAME'] . ".teamtaken_swaps W
-            INNER JOIN " . $_ENV['DBNAME'] . ".barcie_schedule_map B1 ON W.taskToSwapId = B1.id
-            JOIN " . $_ENV['DBNAME'] . ".barcie_days BD1 ON B1.day_id = BD1.id
-            JOIN " . $_ENV['DBNAME'] . ".barcie_schedule_map B2 ON W.swapForTaskId = B2.id
-            JOIN " . $_ENV['DBNAME'] . ".barcie_days BD2 ON B2.day_id = BD2.id";
+            FROM " .
+            $_ENV["DBNAME"] .
+            ".teamtaken_swaps W
+            INNER JOIN " .
+            $_ENV["DBNAME"] .
+            ".barcie_schedule_map B1 ON W.taskToSwapId = B1.id
+            JOIN " .
+            $_ENV["DBNAME"] .
+            ".barcie_days BD1 ON B1.day_id = BD1.id
+            JOIN " .
+            $_ENV["DBNAME"] .
+            ".barcie_schedule_map B2 ON W.swapForTaskId = B2.id
+            JOIN " .
+            $_ENV["DBNAME"] .
+            ".barcie_days BD2 ON B2.day_id = BD2.id";
 
         $rows = $this->database->Execute($query);
         return $this->MapToSwaps($rows);
     }
 
-    public function GetSwapsById($data) {
-        $query = "SELECT 
-                    W.scheduleid,
-                    W.userid
+    public function GetSwapsById($data)
+    {
+        $query =
+            "SELECT
+                    W.id,
+                    W.taskToSwapId,
+                    W.swapForTaskId,
+                    W.userWhoProposedId,
+                    W.otherUserId,
+                    W.date,
+                    W.shift
                   FROM
-                    " . $_ENV['DBNAME'] . ".teamtaken_swaps W
-                  WHERE W.userid = (?)
+                    " .
+            $_ENV["DBNAME"] .
+            ".teamtaken_swaps W
+                  WHERE W.id = ?
                     ";
-        $params = [
-            $data->id,
-        ];
+        $params = [$data->id];
         $rows = $this->database->Execute($query, $params);
         return $this->MapToSwaps($rows);
     }
 
     public function UpdateSwaps(object $data)
     {
-
         $query = 'INSERT INTO teamtaken_swaps (taskToSwapId, swapForTaskId, userWhoProposedId, otherUserId, date, shift)
                   VALUES (?, ?, ?, ?, ?, ?)';
         $params = [
@@ -75,35 +95,50 @@ class SwapGateway
             $data->userWhoProposedId,
             $data->otherUserId,
             $data->date,
-            $data->shift
+            $data->shift,
         ];
         $this->database->Execute($query, $params);
     }
 
-    public function RemoveSwaps(object $data) {
-        $query = 'DELETE FROM ' . $_ENV['DBNAME'] . '.teamtaken_swaps
-                  WHERE scheduleid = ?';
-        $params = [$data->scheduleid];
-
-        $this->database->Execute($query, $params);
-    }
-
-    public function DeleteSwaps(object $data) {
-        $query = 'DELETE FROM ' . $_ENV['DBNAME'] . '.teamtaken_swaps
+    public function RemoveSwaps(object $data)
+    {
+        $query =
+            "DELETE FROM " .
+            $_ENV["DBNAME"] .
+            '.teamtaken_swaps
                   WHERE id = ?';
         $params = [$data->id];
 
         $this->database->Execute($query, $params);
     }
 
-    public function AcceptSwaps(object $data) {
-        $query = "UPDATE " . $_ENV['DBNAME'] . ".barcie_schedule_map
+    public function DeleteSwaps(object $data)
+    {
+        $query =
+            "DELETE FROM " .
+            $_ENV["DBNAME"] .
+            '.teamtaken_swaps
+                  WHERE id = ?';
+        $params = [$data->id];
+
+        $this->database->Execute($query, $params);
+    }
+
+    public function AcceptSwaps(object $data)
+    {
+        $query =
+            "UPDATE " .
+            $_ENV["DBNAME"] .
+            ".barcie_schedule_map
                     SET user_id = ?
                     WHERE id = ?";
         $params = [$data->otherUserId, $data->taskToSwapId];
         $this->database->Execute($query, $params);
 
-        $query = "UPDATE " . $_ENV['DBNAME'] . ".barcie_schedule_map
+        $query =
+            "UPDATE " .
+            $_ENV["DBNAME"] .
+            ".barcie_schedule_map
                     SET user_id = ?
                     WHERE id = ?";
 
@@ -111,7 +146,8 @@ class SwapGateway
         $this->database->Execute($query, $params);
     }
 
-    private function MapToSwaps($rows) {
+    private function MapToSwaps($rows)
+    {
         return $rows;
     }
 }

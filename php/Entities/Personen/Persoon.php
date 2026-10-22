@@ -12,7 +12,10 @@ class Persoon
     public ?string $positie = null;
     public ?int $rugnummer = null;
     public int $aantalKeerGeteld = 0;
-    public string $spelertijd;
+    public string $spelertijd = "";
+    public string $voornaam = "";
+    public string $afkorting = "";
+    public ?bool $isBeschikbaar = null;
 
     function __construct(int $id, string $naam, ?string $email)
     {
@@ -43,7 +46,7 @@ class Persoon
 
     function GetEersteNaam()
     {
-        return substr($this->naam, 0, strpos($this->naam, ' '));
+        return substr($this->naam, 0, strpos($this->naam, " "));
     }
 
     function IsSpelverdeler()

@@ -1,11 +1,21 @@
-<?xml version="1.0"?>
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
-  <coverage>
-    <include>
-      <directory suffix=".php">Common</directory>
-      <directory suffix=".php">Entities</directory>
-      <directory suffix=".php">UseCases</directory>
-      <directory suffix=".php">Gateways</directory>
-    </include>
-  </coverage>
+<?xml version="1.0" ?>
+<phpunit
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+    bootstrap="vendor/autoload.php"
+    colors="true"
+>
+    <testsuites>
+        <testsuite name="TeamPortal">
+            <directory>Tests</directory>
+        </testsuite>
+    </testsuites>
+    <source>
+        <include>
+            <directory suffix=".php">Common</directory>
+            <directory suffix=".php">Entities</directory>
+            <directory suffix=".php">UseCases</directory>
+            <directory suffix=".php">Gateways</directory>
+        </include>
+    </source>
 </phpunit>

@@ -5,7 +5,7 @@ namespace TeamPortal\Entities;
 class Barlid extends Persoon
 {
     public int $aantalDiensten;
-    public ?bool $isBhv;
+    public ?bool $isBhv = null;
 
     public function __construct(Persoon $persoon, int $aantalDiensten = 0)
     {
@@ -13,8 +13,8 @@ class Barlid extends Persoon
         parent::__construct($persoon->id, $persoon->naam, $persoon->email);
     }
 
-    public static function Compare(Barlid $barlid1, Barlid $barlid2)
+    public static function Compare(Barlid $barlid1, Barlid $barlid2): int
     {
-        return $barlid1->aantalDiensten > $barlid2->aantalDiensten;
+        return $barlid1->aantalDiensten <=> $barlid2->aantalDiensten;
     }
 }

@@ -14,36 +14,36 @@ class AanwezigheidGateway
         $this->database = $database;
     }
 
-    public function GetAanwezigheid(Persoon $user, string $matchId, string $rol): Aanwezigheid
-    {
-        $query = 'SELECT 
+    public function GetAanwezigheid(
+        Persoon $user,
+        string $matchId,
+        string $rol,
+    ): Aanwezigheid {
+        $query =
+            'SELECT
                     A.id,
                     A.match_id AS matchId,
                     A.rol,
                     A.is_aanwezig AS isAanwezig,
-                    U.id AS userId,
-                    U.name AS naam,
-                    U.email,
-                    T.teamId,
-                    T.teamnaam
-                  FROM TeamPortal_aanwezigheden A
-                  INNER JOIN J3_users U ON A.user_id = U.id
-                  LEFT JOIN (
-                    SELECT 
-                        M.user_id as userId, 
-                        G.id as teamId, 
-                        G.title as teamnaam
-                    FROM J3_user_usergroup_map M
-                    INNER JOIN J3_usergroups G ON G.id = M.group_id
-                    WHERE G.id = ?
-                  ) T ON U.id = T.userId
-                  WHERE A.user_id = ? AND match_id = ? AND rol = ?';
-        $params = [
-            $user->team ? $user->team->id : null,
-            $user->id,
-            $matchId,
-            $rol
-        ];
+                    U.ID AS userId,
+                    U.display_name AS naam,
+                    U.user_email AS email,
+                    P.ID AS teamId,
+                    P.post_title AS teamnaam
+                  FROM ' .
+            $_ENV["DBNAME"] .
+            '.TeamPortal_aanwezigheden A
+                  INNER JOIN ' .
+            $_ENV["WPDBNAME"] .
+            '.wp_users U ON A.user_id = U.ID
+                  LEFT JOIN ' .
+            $_ENV["WPDBNAME"] .
+            '.wp_usermeta UM ON UM.user_id = U.ID AND UM.meta_key = \'team\'
+                  LEFT JOIN ' .
+            $_ENV["WPDBNAME"] .
+            '.wp_posts P ON P.ID = UM.meta_value AND P.post_type = \'team\'
+                  WHERE A.user_id = ? AND A.match_id = ? AND A.rol = ?';
+        $params = [$user->id, $matchId, $rol];
         $rows = $this->database->Execute($query, $params);
         if (count($rows) == 0) {
             return new Aanwezigheid($matchId, $user, null, $rol);
@@ -57,43 +57,56 @@ class AanwezigheidGateway
             return [];
         }
 
-        $inClause  = join(',', array_fill(0, count($matchIds), '?'));
-        $query = "SELECT
+        $inClause = join(",", array_fill(0, count($matchIds), "?"));
+        $query =
+            "SELECT
                     A.id,
                     A.match_id AS matchId,
                     A.rol,
                     A.is_aanwezig AS isAanwezig,
-                    U.id AS userId,
-                    U.name AS naam,
-                    U.email,
-                    G.id AS teamId,
-                    G.title AS teamnaam
-                  FROM TeamPortal_aanwezigheden A
-                  INNER JOIN J3_users U ON A.user_id = U.id
-                  LEFT JOIN J3_user_usergroup_map M ON U.id = M.user_id
-                  LEFT JOIN J3_usergroups G ON M.group_id = G.id
+                    U.ID AS userId,
+                    U.display_name AS naam,
+                    U.user_email AS email,
+                    P.ID AS teamId,
+                    P.post_title AS teamnaam
+                  FROM " .
+            $_ENV["DBNAME"] .
+            ".TeamPortal_aanwezigheden A
+                  INNER JOIN " .
+            $_ENV["WPDBNAME"] .
+            ".wp_users U ON A.user_id = U.ID
+                  INNER JOIN " .
+            $_ENV["WPDBNAME"] .
+            ".wp_usermeta UM ON UM.user_id = U.ID AND UM.meta_key = 'team'
+                  INNER JOIN " .
+            $_ENV["WPDBNAME"] .
+            ".wp_posts P ON P.ID = UM.meta_value AND P.post_type = 'team'
                   WHERE
                     A.match_id IN ($inClause) AND
-                    (G.title LIKE 'Heren %' OR G.title LIKE 'Dames %') AND
+                    (P.post_title LIKE 'Heren %' OR P.post_title LIKE 'Dames %') AND
                     A.rol = 'speler'
-                  UNION 
+                  UNION
                   SELECT
                     A.id,
                     A.match_id AS matchId,
                     A.rol,
                     A.is_aanwezig AS isAanwezig,
-                    U.id AS userId,
-                    U.name AS naam,
-                    U.email,
+                    U.ID AS userId,
+                    U.display_name AS naam,
+                    U.user_email AS email,
                     null AS teamId,
                     null AS teamnaam
-                  FROM TeamPortal_aanwezigheden A
-                  INNER JOIN J3_users U ON A.user_id = U.id
-                  LEFT JOIN J3_user_usergroup_map M ON U.id = M.user_id
-                  LEFT JOIN J3_usergroups G ON M.group_id = G.id
+                  FROM " .
+            $_ENV["DBNAME"] .
+            ".TeamPortal_aanwezigheden A
+                  INNER JOIN " .
+            $_ENV["WPDBNAME"] .
+            ".wp_users U ON A.user_id = U.ID
+                  INNER JOIN " .
+            $_ENV["WPDBNAME"] .
+            ".wp_usermeta UM ON UM.user_id = U.ID AND UM.meta_key = 'coach_van'
                   WHERE
                     A.match_id IN ($inClause) AND
-                    G.title LIKE 'Coach %' AND
                     A.rol = 'coach'
                   ORDER BY naam";
         $params = array_merge($matchIds, $matchIds);
@@ -103,29 +116,49 @@ class AanwezigheidGateway
 
     public function Update(Aanwezigheid $aanwezigheid): void
     {
-        $query = 'UPDATE TeamPortal_aanwezigheden
+        $query =
+            "UPDATE " .
+            $_ENV["DBNAME"] .
+            '.TeamPortal_aanwezigheden
                   SET is_aanwezig = ?
                   WHERE id = ?';
-        $params = [$aanwezigheid->isAanwezig, $aanwezigheid->id];
+        $params = [
+            $aanwezigheid->isAanwezig === null
+                ? null
+                : ($aanwezigheid->isAanwezig
+                    ? "Ja"
+                    : "Nee"),
+            $aanwezigheid->id,
+        ];
         $this->database->Execute($query, $params);
     }
 
     public function Insert(Aanwezigheid $aanwezigheid): void
     {
-        $query = 'INSERT INTO TeamPortal_aanwezigheden (user_id, match_id, is_aanwezig, rol)
+        $query =
+            "INSERT INTO " .
+            $_ENV["DBNAME"] .
+            '.TeamPortal_aanwezigheden (user_id, match_id, is_aanwezig, rol)
                   VALUES (?, ?, ?, ?)';
         $params = [
             $aanwezigheid->persoon->id,
             $aanwezigheid->matchId,
-            $aanwezigheid->isAanwezig,
-            $aanwezigheid->rol
+            $aanwezigheid->isAanwezig === null
+                ? null
+                : ($aanwezigheid->isAanwezig
+                    ? "Ja"
+                    : "Nee"),
+            $aanwezigheid->rol,
         ];
         $this->database->Execute($query, $params);
     }
 
     public function Delete(Aanwezigheid $aanwezigheid): void
     {
-        $query = 'DELETE FROM TeamPortal_aanwezigheden WHERE id = ?';
+        $query =
+            "DELETE FROM " .
+            $_ENV["DBNAME"] .
+            ".TeamPortal_aanwezigheden WHERE id = ?";
         $params = [$aanwezigheid->id];
         $this->database->Execute($query, $params);
     }
@@ -134,11 +167,7 @@ class AanwezigheidGateway
     {
         $result = [];
         foreach ($rows as $row) {
-            $persoon = new Persoon(
-                $row->userId,
-                $row->naam,
-                $row->email
-            );
+            $persoon = new Persoon($row->userId, $row->naam, $row->email);
             if ($row->teamId) {
                 $persoon->team = new Team($row->teamnaam, $row->teamId);
             }
@@ -148,7 +177,7 @@ class AanwezigheidGateway
                 $persoon,
                 $row->isAanwezig === "Ja",
                 $row->rol,
-                $row->id
+                $row->id,
             );
         }
 

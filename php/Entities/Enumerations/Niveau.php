@@ -21,34 +21,34 @@ class Niveau
     {
         $niveau = strtolower($niveau);
         switch ($niveau) {
-            case "eredivisie";
+            case "eredivisie":
                 $niveau =  NIVEAU::EREDIVISIE;
                 break;
-            case "topdivisie";
+            case "topdivisie":
                 $niveau =  NIVEAU::TOPDIVISIE;
                 break;
-            case "1e divisie";
+            case "1e divisie":
                 $niveau =  NIVEAU::EERSTE_DIVISIE;
                 break;
-            case "2e divisie";
+            case "2e divisie":
                 $niveau =  NIVEAU::TWEEDE_DIVISIE;
                 break;
-            case "3e divisie";
+            case "3e divisie":
                 $niveau =  NIVEAU::DERDE_DIVISIE;
                 break;
-            case "promotieklasse";
+            case "promotieklasse":
                 $niveau =  NIVEAU::PROMOTIEKLASSE;
                 break;
-            case "1e klasse";
+            case "1e klasse":
                 $niveau = NIVEAU::EERSTE_KLASSE;
                 break;
-            case "2e klasse";
+            case "2e klasse":
                 $niveau = NIVEAU::TWEEDE_KLASSE;
                 break;
-            case "3e klasse";
+            case "3e klasse":
                 $niveau = NIVEAU::DERDE_KLASSE;
                 break;
-            case "4e klasse";
+            case "4e klasse":
                 $niveau = NIVEAU::VIERDE_KLASSE;
                 break;
             default:
@@ -61,34 +61,34 @@ class Niveau
     public static function GetNiveauString(int $niveau)
     {
         switch ($niveau) {
-            case 0;
+            case 0:
                 $niveauString =  "Eredivisie";
                 break;
-            case 1;
+            case 1:
                 $niveauString =  "Topdivisie";
                 break;
-            case 2;
+            case 2:
                 $niveauString =  '1e divisie';
                 break;
-            case 3;
+            case 3:
                 $niveauString =  "2e divisie";
                 break;
-            case 4;
+            case 4:
                 $niveauString =  "3e divisie";
                 break;
-            case 5;
+            case 5:
                 $niveauString =  "Promotieklasse";
                 break;
-            case 6;
+            case 6:
                 $niveauString = "1e klasse";
                 break;
-            case 7;
+            case 7:
                 $niveauString = "2e klasse";
                 break;
-            case 8;
+            case 8:
                 $niveauString = "3e klasse";
                 break;
-            case 9;
+            case 9:
                 $niveauString = "4e klasse";
                 break;
             default:

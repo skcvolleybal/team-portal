@@ -10,7 +10,7 @@ class AddBarcieAanwezigheid implements Interactor
 {
     public function __construct(
         IWordPressGateway $wordPressGateway,
-        IBarcieGateway $barcieGateway
+        IBarcieGateway $barcieGateway,
     ) {
         $this->barcieGateway = $barcieGateway;
         $this->wordPressGateway = $wordPressGateway;
@@ -36,9 +36,13 @@ class AddBarcieAanwezigheid implements Interactor
             throw new UnexpectedValueException("Er bestaat geen bardag $date");
         }
 
-        $bardienst = $this->barcieGateway->GetBardienst($bardag, $barlid, $data->shift);
+        $bardienst = $this->barcieGateway->GetBardienst(
+            $bardag,
+            $barlid,
+            $data->shift,
+        );
         if ($bardienst->id === null) {
-            $this->barcieGateway->InsertBardienst($bardienst, $bardag->id);
+            $this->barcieGateway->InsertBardienst($bardienst);
         }
     }
 }

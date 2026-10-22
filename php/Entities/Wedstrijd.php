@@ -26,7 +26,7 @@ class Wedstrijd
         $this->matchId = $matchId;
     }
 
-    static function Compare(Wedstrijd $wedstrijd1, Wedstrijd $wedstrijd2): bool
+    static function Compare(Wedstrijd $wedstrijd1, Wedstrijd $wedstrijd2): int
     {
         if (!$wedstrijd1->timestamp) {
             return -1;
@@ -34,7 +34,7 @@ class Wedstrijd
         if (!$wedstrijd2->timestamp) {
             return 1;
         }
-        return $wedstrijd1->timestamp > $wedstrijd2->timestamp;
+        return $wedstrijd1->timestamp <=> $wedstrijd2->timestamp;
     }
 
     static function CreateFromNevoboWedstrijd(
@@ -43,7 +43,7 @@ class Wedstrijd
         Team $team2,
         string $poule,
         ?DateTime $timestamp,
-        string $locatie
+        string $locatie,
     ): Wedstrijd {
         $newWedstrijd = new Wedstrijd($matchId);
         $newWedstrijd->team1 = $team1;
@@ -54,15 +54,15 @@ class Wedstrijd
         return $newWedstrijd;
     }
 
-    function GetShortLocatie(): string
+    function GetShortLocatie(): ?string
     {
         if (!$this->locatie) {
             return null;
         }
 
-        $firstPart = substr($this->locatie, 0, strpos($this->locatie, ','));
-        $lastPart = substr($this->locatie, strripos($this->locatie, ' ') + 1);
-        return $firstPart . ', ' . $lastPart;
+        $firstPart = substr($this->locatie, 0, strpos($this->locatie, ","));
+        $lastPart = substr($this->locatie, strripos($this->locatie, " ") + 1);
+        return $firstPart . ", " . $lastPart;
     }
 
     function IsMogelijk(?Wedstrijd $wedstrijd): bool
@@ -77,8 +77,11 @@ class Wedstrijd
         }
 
         $isMogelijk = null;
-        $hourDifference = $difference->h + ($difference->i / 60);
-        if ($this->IsThuis($this->locatie) && $this->IsThuis($wedstrijd->locatie)) {
+        $hourDifference = $difference->h + $difference->i / 60;
+        if (
+            $this->IsThuis() &&
+            Wedstrijd::IsLocatieThuis($wedstrijd->locatie)
+        ) {
             $isMogelijk = $hourDifference >= 2;
         } else {
             $isMogelijk = $hourDifference >= 4;
@@ -89,15 +92,21 @@ class Wedstrijd
 
     function IsThuis(): bool
     {
-        return strpos($this->locatie, 'Universitair SC') !== false;
+        return Wedstrijd::IsLocatieThuis($this->locatie);
+    }
+
+    static function IsLocatieThuis(?string $locatie): bool
+    {
+        return $locatie !== null &&
+            strpos($locatie, "Universitair SC") !== false;
     }
 
     function IsEigenWedstrijd(Persoon $user): bool
     {
-        return
-            $user !== null &&
+        return $user !== null &&
             $user->team !== null &&
-            ($this->team1->naam === $user->team->naam || $this->team2->naam === $user->team->naam);
+            ($this->team1->naam === $user->team->naam ||
+                $this->team2->naam === $user->team->naam);
     }
 
     public function GetTeams(): string
@@ -105,10 +114,16 @@ class Wedstrijd
         return $this->team1->naam . " - " . $this->team2->naam;
     }
 
-    static public function GetWedstrijdWithDate(array $programma, DateTime $date): ?Wedstrijd
-    {
+    public static function GetWedstrijdWithDate(
+        array $programma,
+        DateTime $date,
+    ): ?Wedstrijd {
         foreach ($programma as $wedstrijd) {
-            if ($wedstrijd->timestamp && DateFunctions::GetYmdNotation($wedstrijd->timestamp) === DateFunctions::GetYmdNotation($date)) {
+            if (
+                $wedstrijd->timestamp &&
+                DateFunctions::GetYmdNotation($wedstrijd->timestamp) ===
+                    DateFunctions::GetYmdNotation($date)
+            ) {
                 return $wedstrijd;
             }
         }
@@ -128,11 +143,14 @@ class Wedstrijd
         $this->team1 = $this->team1 ?? $wedstrijd->team1;
         $this->team2 = $this->team2 ?? $wedstrijd->team2;
         $this->tellers = $this->tellers ?? $wedstrijd->tellers;
-        $this->scheidsrechter = $this->scheidsrechter ?? $wedstrijd->scheidsrechter;
+        $this->scheidsrechter =
+            $this->scheidsrechter ?? $wedstrijd->scheidsrechter;
     }
 
-    public static function GetWedstrijdWithMatchId(array $wedstrijden, string $matchId): ?Wedstrijd
-    {
+    public static function GetWedstrijdWithMatchId(
+        array $wedstrijden,
+        string $matchId,
+    ): ?Wedstrijd {
         foreach ($wedstrijden as $wedstrijd) {
             if ($wedstrijd->matchId === $matchId) {
                 return $wedstrijd;
