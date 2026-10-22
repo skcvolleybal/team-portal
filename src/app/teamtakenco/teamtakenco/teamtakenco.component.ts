@@ -17,6 +17,8 @@ import { Speeldag } from "../../models/Speeldag";
 import { SpinnerComponent } from "../../shared/spinner/spinner.component";
 import { Wedstrijd } from "../../models/Wedstrijd";
 
+type Zaalwachttype = "eerste" | "tweede";
+
 @Component({
     selector: "teamportal-teamtakenco",
     standalone: true,
@@ -44,6 +46,7 @@ export class TeamtakencoComponent implements OnInit {
     scheidsrechters!: any[];
     speeldagen: Speeldag[] = [];
     taken = ["scheidsrechter", "tellers"];
+    zaalwachttypes: Zaalwachttype[] = ["eerste", "tweede"];
     overzichtLoading!: boolean;
     errorMessage: any;
     speeldagenEmpty: boolean = false;
@@ -75,7 +78,23 @@ export class TeamtakencoComponent implements OnInit {
         this.getTeamtakencoOverzicht();
     }
 
-    SelecteerZaalwacht(datum: string, date: string, zaalwachttype: string) {
+    getZaalwacht(speeldag: Speeldag, type: Zaalwachttype): string | null {
+        return type === "eerste"
+            ? (speeldag.eersteZaalwacht ?? null)
+            : (speeldag.tweedeZaalwacht ?? null);
+    }
+
+    getZaalwachtShortNotation(speeldag: Speeldag, type: Zaalwachttype): string {
+        return type === "eerste"
+            ? (speeldag.eersteZaalwachtShortNotation ?? "")
+            : (speeldag.tweedeZaalwachtShortNotation ?? "");
+    }
+
+    SelecteerZaalwacht(
+        datum: string,
+        date: string,
+        zaalwachttype: Zaalwachttype,
+    ) {
         const component = SelecteerZaalwachtComponent;
         component.date = date;
         component.datum = datum;
@@ -90,15 +109,16 @@ export class TeamtakencoComponent implements OnInit {
 
     getShortNotation(name: string): string {
         if (!name) {
-            return;
+            return "";
         }
         const gender = name.charAt(0);
         const teamnumber = name.substring(6);
         return `${gender}${teamnumber}`;
     }
 
-    SetZaalwacht(date: string, team: string, zaalwachttype: string) {
+    SetZaalwacht(date: string, team: string, zaalwachttype: Zaalwachttype) {
         const speeldag = this.speeldagen.find((dag) => dag.date === date);
+        if (!speeldag) return;
         if (zaalwachttype === "eerste") {
             speeldag.eersteZaalwacht = team;
             speeldag.eersteZaalwachtShortNotation = this.getShortNotation(team);
@@ -142,10 +162,10 @@ export class TeamtakencoComponent implements OnInit {
             .catch(() => {});
     }
 
-    SetScheidsrechter(matchId, scheidsrechter) {
+    SetScheidsrechter(matchId: any, scheidsrechter: any) {
         this.speeldagen.forEach((speeldag) => {
-            speeldag.speeltijden.forEach((speeltijd) => {
-                speeltijd.wedstrijden.forEach((wedstrijd) => {
+            speeldag.speeltijden.forEach((speeltijd: any) => {
+                speeltijd.wedstrijden.forEach((wedstrijd: any) => {
                     if (wedstrijd.matchId === matchId) {
                         wedstrijd.scheidsrechter = scheidsrechter;
                         return;
@@ -155,10 +175,10 @@ export class TeamtakencoComponent implements OnInit {
         });
     }
 
-    SetTeller(matchId, teller, tellerIndex) {
+    SetTeller(matchId: any, teller: any, tellerIndex: any) {
         this.speeldagen.forEach((speeldag) => {
-            speeldag.speeltijden.forEach((speeltijd) => {
-                speeltijd.wedstrijden.forEach((wedstrijd) => {
+            speeldag.speeltijden.forEach((speeltijd: any) => {
+                speeltijd.wedstrijden.forEach((wedstrijd: any) => {
                     if (wedstrijd.matchId === matchId) {
                         wedstrijd.tellers[tellerIndex] = teller;
                         return;
@@ -169,21 +189,23 @@ export class TeamtakencoComponent implements OnInit {
     }
 
     DeleteScheidsrechter(matchId: string) {
-        this.teamtakencoService.UpdateScheidsrechter(matchId, null).subscribe();
-        this.SetScheidsrechter(matchId, null);
+        this.teamtakencoService
+            .UpdateScheidsrechter(matchId, null as any)
+            .subscribe();
+        this.SetScheidsrechter(matchId, null as any);
     }
 
     DeleteTeller(matchId: string, tellerIndex: number) {
         this.teamtakencoService
-            .UpdateTellers(matchId, null, tellerIndex)
+            .UpdateTellers(matchId, null as any, tellerIndex)
             .subscribe();
-        this.SetTeller(matchId, null, tellerIndex);
+        this.SetTeller(matchId, null as any, tellerIndex);
     }
 
-    DeleteZaalwacht(date: string, zaalwachttype: string) {
+    DeleteZaalwacht(date: string, zaalwachttype: Zaalwachttype) {
         this.teamtakencoService
-            .UpdateZaalwacht(date, null, zaalwachttype)
+            .UpdateZaalwacht(date, null as any, zaalwachttype)
             .subscribe();
-        this.SetZaalwacht(date, null, zaalwachttype);
+        this.SetZaalwacht(date, null as any, zaalwachttype);
     }
 }

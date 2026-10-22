@@ -1,216 +1,23 @@
-<div style="display: flex; align-items: center; justify-content: space-between">
-    <p style="margin: 0">
-        Welkom
-        @if (user) {
-            <span> {{ user.voornaam }}</span>
-        }
-        ! Hier zie je welke dagen je zaalwacht hebt, wanneer je wedstrijden
-        zijn, wanneer je moet tellen, of je bardiensten hebt en wanneer je moet
-        scheidsen.
-    </p>
-    <!--   <button id="IcalenderExportLink" class="CalenderButton" style="border-radius: 5px; margin-left: 10px;" (click)="generateCalender()">
-  <fa-icon [icon]="calenderIcon"></fa-icon> Export my teamtasks
-</button>  -->
-</div>
-
-@if (dagenEmpty) {
-    <div></div>
-} @else {
-    <div class="d-flex justify-content-end mb-3">
-        <button
-            class="btn btn-primary d-flex align-items-center position-relative"
-            (click)="openModal()"
-        >
-            <fa-icon [icon]="swapIcon" class="me-2"></fa-icon>
-            Ruil barshifts
-            @if (pendingProposals > 0) {
-                <span
-                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger text-white"
-                    style="
-                        font-size: 0.75rem;
-                        transform: translate(-50%, -50%) !important;
-                    "
-                >
-                    {{ pendingProposals }}
-                </span>
+<div class="spelers-lijst" [class]="class">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0">{{ title }}</h5>
+        <span class="badge bg-primary">{{ numberOfPlayers }}</span>
+    </div>
+    @if (spelers && spelers.length > 0) {
+        <div class="list-group list-group-flush">
+            @for (speler of spelers; track speler) {
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>{{ speler.naam || speler.voornaam || speler }}</span>
+                    <button
+                        class="btn btn-sm btn-outline-danger"
+                        (click)="DeleteSpeler(speler)"
+                    >
+                        <fa-icon [icon]="verwijderIcon"></fa-icon>
+                    </button>
+                </div>
             }
-        </button>
-    </div>
-    @for (dag of dagen; track dag.datum_long) {
-        <table class="table table-sm mb-0">
-            <thead>
-                <tr>
-                    <th scope="col" colspan="4">{{ dag.datum_long }}</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (user && dag.eersteZaalwacht == user.team.naam) {
-                    <tr class="gray-background">
-                        <td></td>
-                        <td colspan="3">
-                            @if (dag.eersteZaalwacht) {
-                                <span
-                                    class="badge rounded-pill bg-primary"
-                                    style="
-                                        padding: 10px;
-                                        margin-top: auto;
-                                        margin-bottom: auto;
-                                    "
-                                    ><fa-icon [icon]="zaalwacht"></fa-icon> 1e
-                                    zaalwacht: {{ dag.eersteZaalwacht }}</span
-                                >
-                            }
-                        </td>
-                    </tr>
-                }
-
-                @if (dag.bardiensten.length > 0) {
-                    @for (bardienst of dag.bardiensten; track bardienst.shift) {
-                        <tr class="gray-background">
-                            <td></td>
-                            <td colspan="3">
-                                <!-- <span>
-              <button (click)="proposeSwap(bardienst)" [ngClass]="isPressed[bardienst.id] ? 'badge bg-success' : 'badge bg-danger'" style="padding: 10px">{{proposed[bardienst.id]}}</button>
-            </span> -->
-
-                                <span
-                                    class="badge rounded-pill bg-primary"
-                                    style="
-                                        padding: 10px;
-                                        margin-top: auto;
-                                        margin-bottom: auto;
-                                    "
-                                >
-                                    <fa-icon [icon]="taskIcon"></fa-icon>
-                                    Bardienst Shift {{ bardienst.shift }}
-                                    {{ bardienst.isBhv ? " (BHV)" : "" }}
-                                </span>
-                            </td>
-                        </tr>
-                    }
-                }
-
-                @for (speeltijd of dag.speeltijden; track speeltijd.tijd) {
-                    @for (wedstrijd of speeltijd.wedstrijden; track wedstrijd.matchId) {
-                        <tr>
-                            <td colspan="4">
-                                <div style="display: flex">
-                                    <div
-                                        style="
-                                            margin-top: auto;
-                                            margin-bottom: auto;
-                                            width: 45px;
-                                        "
-                                    >
-                                        {{ speeltijd.tijd }}
-                                    </div>
-                                    <div
-                                        style="
-                                            margin-top: auto;
-                                            margin-bottom: auto;
-                                        "
-                                    >
-                                        <!-- <teamportal-scheidsrechter
-                  *ngIf="wedstrijd.isScheidsrechter"
-                  [scheidsrechter]="wedstrijd.scheidsrechter"
-                  [isScheidsrechter]="wedstrijd.isScheidsrechter"
-                ></teamportal-scheidsrechter> -->
-                                        <teamportal-wedstrijd
-                                            [wedstrijd]="wedstrijd"
-                                        ></teamportal-wedstrijd>
-                                    </div>
-                                    @if (
-                                        user &&
-                                        wedstrijd.scheidsrechter == user.naam
-                                    ) {
-                                        <span
-                                            class="badge rounded-pill bg-primary"
-                                            style="
-                                                padding: 10px;
-                                                margin-top: auto;
-                                                margin-bottom: auto;
-                                            "
-                                            ><fa-icon
-                                                [icon]="taskIcon"
-                                            ></fa-icon>
-                                            Je bent scheidsrechter deze
-                                            wedstrijd</span
-                                        >
-                                    }
-                                    @if (
-                                        user &&
-                                        (wedstrijd.tellers[0] == user.naam ||
-                                            wedstrijd.tellers[1] == user.naam)
-                                    ) {
-                                        <span
-                                            class="badge rounded-pill bg-primary"
-                                            style="
-                                                padding: 10px;
-                                                margin-top: auto;
-                                                margin-bottom: auto;
-                                            "
-                                            ><fa-icon
-                                                [icon]="taskIcon"
-                                            ></fa-icon>
-                                            Je bent teller deze wedstrijd</span
-                                        >
-                                    }
-
-                                    @if (wedstrijd.isTellers) {
-                                        <div
-                                            style="
-                                                padding: 10px;
-                                                margin-top: auto;
-                                                margin-bottom: auto;
-                                            "
-                                        >
-                                            <teamportal-tellers
-                                                [tellers]="wedstrijd.tellers"
-                                                [isTellers]="
-                                                    wedstrijd.isTellers
-                                                "
-                                            >
-                                            </teamportal-tellers>
-                                        </div>
-                                    }
-                                </div>
-                            </td>
-                        </tr>
-                    }
-                }
-                @if (user && dag.tweedeZaalwacht == user.team.naam) {
-                    <tr class="gray-background">
-                        <td></td>
-                        <td colspan="3">
-                            @if (dag.tweedeZaalwacht) {
-                                <span
-                                    class="badge rounded-pill bg-primary"
-                                    style="
-                                        padding: 10px;
-                                        margin-top: auto;
-                                        margin-bottom: auto;
-                                    "
-                                    ><fa-icon [icon]="zaalwacht"></fa-icon> 2e
-                                    zaalwacht: {{ dag.tweedeZaalwacht }}</span
-                                >
-                            }
-                        </td>
-                    </tr>
-                }
-
-                <tr class="gray-background">
-                    <td colspan="4"></td>
-                </tr>
-            </tbody>
-        </table>
+        </div>
+    } @else {
+        <div class="text-muted">Geen spelers beschikbaar</div>
     }
-}
-
-@if (errorMessage) {
-    <div class="alert alert-danger" role="alert">
-        {{ errorMessage }}
-    </div>
-}
-@if (loading) {
-    <teamportal-spinner></teamportal-spinner>
-}
+</div>

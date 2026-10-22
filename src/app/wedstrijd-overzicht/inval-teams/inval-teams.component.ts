@@ -30,10 +30,10 @@ export class InvalTeamsComponent implements OnInit {
 
     isCollapsed = true;
     isTeamCollapsed!: boolean[];
-    class: string;
-    title: string;
-    numberOfPlayers: number;
-    spelers: any[];
+    class!: string;
+    title!: string;
+    numberOfPlayers!: number;
+    spelers!: any[];
     verwijderIcon = faTimesCircle;
     constructor() {}
 

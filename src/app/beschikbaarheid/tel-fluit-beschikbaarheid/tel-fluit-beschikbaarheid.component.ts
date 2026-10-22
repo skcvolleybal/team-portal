@@ -4,6 +4,7 @@ import { BeschikbaarheidService } from "../../core/services/beschikbaarheid.serv
 import { SpinnerComponent } from "../../shared/spinner/spinner.component";
 import { WedstrijdenCardComponent } from "../../shared/wedstrijden-card/wedstrijden-card.component";
 import { KeuzeComponent } from "../../shared/keuze/keuze.component";
+import { WedstrijdComponent } from "../../shared/wedstrijd/wedstrijd.component";
 
 @Component({
     selector: "teamportal-fluit-beschikbaarheid",
@@ -13,6 +14,7 @@ import { KeuzeComponent } from "../../shared/keuze/keuze.component";
         SpinnerComponent,
         WedstrijdenCardComponent,
         KeuzeComponent,
+        WedstrijdComponent,
     ],
     templateUrl: "./tel-fluit-beschikbaarheid.component.html",
     styleUrls: ["./tel-fluit-beschikbaarheid.component.scss"],

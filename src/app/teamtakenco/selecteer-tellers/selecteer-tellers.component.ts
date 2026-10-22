@@ -17,8 +17,8 @@ export class SelecteerTellersComponent implements OnInit {
     static tellerIndex: number = 0;
 
     tellersOptiesLoading!: boolean;
-    spelendeTeams = [];
-    overigeTeams = [];
+    spelendeTeams: any[] = [];
+    overigeTeams: any[] = [];
     errorMessage!: string;
     wedstrijd: any = {};
     teams: string = "";
@@ -39,16 +39,16 @@ export class SelecteerTellersComponent implements OnInit {
         this.getTelTeams(this.wedstrijd.matchId);
     }
 
-    getTelTeams(matchId) {
+    getTelTeams(matchId: any) {
         this.tellersOptiesLoading = true;
 
         this.teamtakencoService.GetTelTeams(matchId).subscribe(
-            (zaalwachtopties) => {
+            (zaalwachtopties: any) => {
                 this.spelendeTeams = zaalwachtopties.spelendeTeams;
                 this.overigeTeams = zaalwachtopties.overigeTeams;
                 this.tellersOptiesLoading = false;
             },
-            (error) => {
+            (error: any) => {
                 if (error.status === 500) {
                     this.errorMessage = error.error.message;
                     this.tellersOptiesLoading = false;
@@ -57,7 +57,7 @@ export class SelecteerTellersComponent implements OnInit {
         );
     }
 
-    UpdateTeller(teller) {
+    UpdateTeller(teller: any) {
         const $this = this;
         this.teamtakencoService
             .UpdateTellers(this.wedstrijd.matchId, teller.id, this.tellerIndex)

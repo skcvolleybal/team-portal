@@ -21,20 +21,17 @@
     }
 
     @if (scheidsrechterOptiesLoading == false) {
-        @for (type of scheidsrechters; let i = $index) {
+        @for (type of scheidsrechters; track type; let i = $index) {
             <div class="card mb-3">
                 <div class="card-header">
                     {{ GetRegularCasing(type.type) }}
                 </div>
-                @for (keuze of keuzes) {
+                @for (keuze of keuzes; track keuze) {
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item">{{ keuze }}</li>
                         <li class="list-group-item">
                             @for (
-                                scheidsrechter of getScheidsrechtersByKeuze(
-                                    i,
-                                    keuze
-                                )
+                                scheidsrechter of getScheidsrechtersByKeuze(i, keuze); track scheidsrechter
                             ) {
                                 <div class="input-group mb-3">
                                     <button

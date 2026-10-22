@@ -1,6 +1,6 @@
-import { Wedstrijd } from './Wedstrijd';
+import { Wedstrijd } from "./Wedstrijd";
 
 export class Speeltijd {
-  tijd: string;
-  wedstrijden: Wedstrijd[];
+    tijd!: string;
+    wedstrijden!: Wedstrijd[];
 }

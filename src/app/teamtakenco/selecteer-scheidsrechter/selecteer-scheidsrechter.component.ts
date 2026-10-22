@@ -3,7 +3,7 @@ import { CommonModule } from "@angular/common";
 import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 import { NgbActiveModal, NgbModule } from "@ng-bootstrap/ng-bootstrap";
 import { TeamtakencoService } from "./../../core/services/teamtakenco.service";
-import { Team } from "../../../models/Team";
+import { Team } from "../../models/Team";
 import { SpinnerComponent } from "../../shared/spinner/spinner.component";
 import { Wedstrijd } from "../../models/Wedstrijd";
 
@@ -26,8 +26,8 @@ export class SelecteerScheidsrechterComponent implements OnInit {
     keuzes = ["Ja", "Onbekend", "Nee"];
 
     wedstrijd: any;
-    teams: Team[];
-    tijd: string;
+    teams!: Team[];
+    tijd!: string;
 
     constructor(
         private teamtakencoService: TeamtakencoService,
@@ -62,7 +62,7 @@ export class SelecteerScheidsrechterComponent implements OnInit {
         return this.scheidsrechters[index][keuze];
     }
 
-    GetScheidsrechterText(scheidsrechter) {
+    GetScheidsrechterText(scheidsrechter: any) {
         const result = [];
         if (scheidsrechter.niveau) {
             result.push(scheidsrechter.niveau);
@@ -82,13 +82,13 @@ export class SelecteerScheidsrechterComponent implements OnInit {
         };
     }
 
-    GetRegularCasing(text) {
+    GetRegularCasing(text: any) {
         return text
             .replace(/([A-Z])/g, " $1")
             .replace(/^./, (str: string) => str.toUpperCase());
     }
 
-    UpdateScheidsrechter(scheidsrechter) {
+    UpdateScheidsrechter(scheidsrechter: any) {
         this.teamtakencoService
             .UpdateScheidsrechter(this.wedstrijd.matchId, scheidsrechter.id)
             .subscribe(() => {

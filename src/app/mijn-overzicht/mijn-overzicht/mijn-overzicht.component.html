@@ -7,7 +7,7 @@
     </div>
 
     <!-- Show spinner when loading -->
-    @if (isLoading) {
+    @if (loading) {
         <div class="d-flex justify-content-center my-5">
             <div class="spinner-border text-primary" role="status">
                 <span class="visually-hidden">Loading...</span>
@@ -16,7 +16,7 @@
     }
 
     <!-- Show content when data is loaded -->
-    @if (!isLoading) {
+    @if (!loading) {
         <mat-tab-group class="mb-4">
             <mat-tab label="Propose Swap">
                 <div class="swap-proposal-container p-3">
@@ -31,7 +31,7 @@
                                     class="list-group list-group-flush"
                                     style="max-height: 400px; overflow-y: auto"
                                 >
-                                    @for (task of myTasks; let i = $index) {
+                                    @for (task of myTasks; track task; let i = $index) {
                                         <button
                                             class="list-group-item list-group-item-action d-flex flex-column"
                                             [class.selected]="
@@ -99,7 +99,7 @@
                                     class="list-group list-group-flush"
                                     style="max-height: 400px; overflow-y: auto"
                                 >
-                                    @for (task of otherTasks; let i = $index) {
+                                    @for (task of otherTasks; track task; let i = $index) {
                                         <button
                                             class="list-group-item list-group-item-action d-flex flex-column"
                                             [class.selected]="
@@ -201,7 +201,7 @@
                                 <h5 class="mb-0">Your Proposals</h5>
                             </div>
                             <div class="list-group list-group-flush">
-                                @for (proposal of myProposedSwaps) {
+                                @for (proposal of myProposedSwaps; track proposal) {
                                     <div class="list-group-item">
                                         <div
                                             class="d-flex justify-content-between align-items-center"
@@ -310,7 +310,7 @@
                                 <h5 class="mb-0">Pending Proposals</h5>
                             </div>
                             <div class="list-group list-group-flush">
-                                @for (task of swapsProposedToMe) {
+                                @for (task of swapsProposedToMe; track task) {
                                     <div class="list-group-item">
                                         <div
                                             class="d-flex justify-content-between align-items-center"

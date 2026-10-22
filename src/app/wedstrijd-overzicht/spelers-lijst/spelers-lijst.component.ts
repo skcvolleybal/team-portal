@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
-import { SpinnerComponent } from "../../../shared/spinner/spinner.component";
+import { SpinnerComponent } from "../../shared/spinner/spinner.component";
 import {
     faMinusSquare,
     faPlusSquare,
@@ -17,8 +17,8 @@ import {
 })
 export class SpelersLijstComponent {
     @Input() spelers: any;
-    @Input() title: string;
-    @Input() class: string;
+    @Input() title!: string;
+    @Input() class!: string;
 
     @Output() deleteSpeler = new EventEmitter<any>();
 
@@ -28,7 +28,8 @@ export class SpelersLijstComponent {
     isCollapsed = true;
 
     get numberOfPlayers() {
-        return this.spelers.filter((speler) => speler.rol !== "coach").length;
+        return this.spelers.filter((speler: any) => speler.rol !== "coach")
+            .length;
     }
 
     constructor() {}

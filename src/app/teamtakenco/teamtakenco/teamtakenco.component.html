@@ -10,7 +10,7 @@
       <tp-exportascsv></tp-exportascsv>
     }
 
-    @for (speeldag of speeldagen) {
+    @for (speeldag of speeldagen; track speeldag.date) {
       <table class="table">
 
         <thead>
@@ -21,7 +21,7 @@
                   {{ speeldag.datum_long }}
                 </div>
                 <div class="col-auto row">
-                  @for (zaalwachttype of ['eerste', 'tweede']; let i = $index) {
+                  @for (zaalwachttype of zaalwachttypes; track zaalwachttype) {
                     <div class="input-group col col-md-auto">
                       <div class="input-group-prepend">
                         <label class="input-group-text">
@@ -31,13 +31,13 @@
                       <div class="input-group-append">
                         <button class="btn" (click)="SelecteerZaalwacht(speeldag.datum, speeldag.date, zaalwachttype)"
                           [ngClass]="{
-                            'btn-danger': speeldag[zaalwachttype + 'Zaalwacht'] === null,
-                            'btn-success': speeldag[zaalwachttype + 'Zaalwacht']
+                            'btn-danger': getZaalwacht(speeldag, zaalwachttype) === null,
+                            'btn-success': getZaalwacht(speeldag, zaalwachttype)
                           }" type="button">
-                          {{ speeldag[zaalwachttype + 'Zaalwacht'] === null ? '...' : speeldag[zaalwachttype + 'ZaalwachtShortNotation'] }}
+                          {{ getZaalwacht(speeldag, zaalwachttype) === null ? '...' : getZaalwachtShortNotation(speeldag, zaalwachttype) }}
                         </button>
                       </div>
-                      @if (speeldag[zaalwachttype + 'Zaalwacht']) {
+                      @if (getZaalwacht(speeldag, zaalwachttype)) {
                         <div class="input-group-append">
                           <label class="input-group-text" (click)="DeleteZaalwacht(speeldag.date, zaalwachttype)">
                             <fa-icon [icon]="icons.verwijderen"></fa-icon>
@@ -52,12 +52,12 @@
           </tr>
         </thead>
         <tbody>
-          @for (speeltijd of speeldag.speeltijden) {
+          @for (speeltijd of speeldag.speeltijden; track speeltijd.tijd) {
             <tr>
               <td class="align-middle">
                 {{ speeltijd.tijd }}
                 <ul class="list-group">
-                  @for (wedstrijd of speeltijd.wedstrijden) {
+                  @for (wedstrijd of speeltijd.wedstrijden; track wedstrijd.matchId) {
                     <li class="list-group-item">
                       <h5 class="card-title">{{ wedstrijd.teams }}</h5>
 
@@ -90,7 +90,7 @@
                       </div>
 
                       <div class="tellers">
-                        @for (teller of wedstrijd.tellers; let i = $index) {
+                        @for (teller of wedstrijd.tellers; track $index; let i = $index) {
                           <div class="input-group">
                             <div class="input-group-prepend">
                               <label class="input-group-text">
@@ -132,7 +132,7 @@
         </tbody>
       </table>
     }
-  }
+  </div>
 }
 
 @if (errorMessage) {

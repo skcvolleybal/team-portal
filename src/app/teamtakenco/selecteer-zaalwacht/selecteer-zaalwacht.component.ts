@@ -21,8 +21,8 @@ export class SelecteerZaalwachtComponent implements OnInit {
     static datum: string = "";
     static zaalwachttype: string = "";
 
-    spelendeTeams = [];
-    overigeTeams = [];
+    spelendeTeams: any[] = [];
+    overigeTeams: any[] = [];
 
     datum: string = "";
     date: string = "";
@@ -37,16 +37,16 @@ export class SelecteerZaalwachtComponent implements OnInit {
         this.getZaalwachtOpties(this.date);
     }
 
-    getZaalwachtOpties(date) {
+    getZaalwachtOpties(date: any) {
         this.zaalwachtoptiesLoading = true;
 
         this.teamtakencoService.GetZaalwachtOpties(date).subscribe(
-            (zaalwachtopties) => {
+            (zaalwachtopties: any) => {
                 this.spelendeTeams = zaalwachtopties.spelendeTeams;
                 this.overigeTeams = zaalwachtopties.overigeTeams;
                 this.zaalwachtoptiesLoading = false;
             },
-            (error) => {
+            (error: any) => {
                 if (error.status === 500) {
                     this.errorMessage = error.error.message;
                     this.zaalwachtoptiesLoading = false;
@@ -55,7 +55,7 @@ export class SelecteerZaalwachtComponent implements OnInit {
         );
     }
 
-    UpdateZaalwacht(team: string) {
+    UpdateZaalwacht(team: string | null) {
         this.teamtakencoService
             .UpdateZaalwacht(this.date, team, this.zaalwachttype)
             .subscribe(() => this.modal.close(team));

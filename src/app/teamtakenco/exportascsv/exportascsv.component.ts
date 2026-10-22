@@ -1,17 +1,20 @@
 import { Component, OnInit } from "@angular/core";
 import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
+import { WordPressService } from "../../core/services/request.service";
+import { environment } from "../../../environments/environment";
 
 @Component({
     selector: "tp-exportascsv",
     standalone: true,
-    imports: [CommonModule],
+    imports: [CommonModule, FormsModule],
     templateUrl: "./exportascsv.component.html",
     styleUrls: ["./exportascsv.component.scss"],
 })
 export class ExportascsvComponent implements OnInit {
-    private errorMessage;
-    private data;
-    selectedDate: string;
+    private errorMessage!: string;
+    private data!: any;
+    selectedDate!: string;
 
     constructor(private WordPressService: WordPressService) {}
 
@@ -20,7 +23,7 @@ export class ExportascsvComponent implements OnInit {
     onSubmit() {
         console.log("Selected Date:", this.selectedDate);
         this.WordPressService.GetWeekOverzicht(this.selectedDate).subscribe(
-            (response) => {
+            (response: any) => {
                 this.data = response;
                 const url =
                     environment.baseUrl +
@@ -36,7 +39,7 @@ export class ExportascsvComponent implements OnInit {
                 window.URL.revokeObjectURL(url);
                 document.body.removeChild(a);
             },
-            (error) => {
+            (error: any) => {
                 console.log("error");
                 console.log(error);
                 if (error.status === 500) {

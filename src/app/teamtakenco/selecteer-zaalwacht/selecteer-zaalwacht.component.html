@@ -25,7 +25,7 @@
             <div class="card mb-3">
                 <div class="card-header">Spelende Teams</div>
                 <div class="card-body">
-                    @for (team of spelendeTeams) {
+                    @for (team of spelendeTeams; track team) {
                         <div class="input-group mb-3">
                             <button
                                 type="button"
@@ -44,7 +44,7 @@
             <div class="card mb-3">
                 <div class="card-header">Overige Teams</div>
                 <div class="card-body">
-                    @for (team of overigeTeams) {
+                    @for (team of overigeTeams; track team) {
                         <div class="input-group mb-3">
                             <button
                                 type="button"

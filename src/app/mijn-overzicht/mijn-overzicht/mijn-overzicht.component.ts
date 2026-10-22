@@ -2,9 +2,10 @@ import { Component, OnInit } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 import { MatDialogModule } from "@angular/material/dialog";
+import { MatTabsModule } from "@angular/material/tabs";
 import { calenderGenerator } from "../../core/services/calenderGenerator";
 import { RuilLijstComponent } from "../ruil-lijst/ruil-lijst.component";
-import { faExchangeAlt } from "@fortawesome/free-solid-svg-icons";
+import { faExchangeAlt, faTimes } from "@fortawesome/free-solid-svg-icons";
 import {
     faCalendarCheck,
     faPlusSquare,
@@ -12,6 +13,7 @@ import {
     faInfoCircle,
     faPeopleCarry,
     faCalendar,
+    faCheckCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { WordPressService } from "../../core/services/request.service";
 import { StateService } from "../../core/services/state.service";
@@ -25,6 +27,7 @@ import { MatDialog } from "@angular/material/dialog";
         CommonModule,
         FontAwesomeModule,
         MatDialogModule,
+        MatTabsModule,
         RuilLijstComponent,
     ],
     templateUrl: "./mijn-overzicht.component.html",
@@ -38,8 +41,8 @@ export class MijnOverzichtComponent implements OnInit {
     tellersIcon = faCalendarCheck;
     calenderIcon = faCalendar;
     openIcon = faPlusSquare;
-    dagen: any[];
-    errorMessage: string;
+    dagen!: any[];
+    errorMessage!: string;
     dagenEmpty: boolean = false;
     user: any;
     zaalwacht = faPeopleCarry;
@@ -50,6 +53,19 @@ export class MijnOverzichtComponent implements OnInit {
     isPressed: { [key: number]: boolean } = {};
     infoIcon = faInfoCircle;
     swapIcon = faExchangeAlt;
+    closeIcon = faTimes;
+    myTasks!: any[];
+    selectedIndexStyle: number | null = null;
+    otherTasks!: any[];
+    selectedTasksStyle: boolean[] = [];
+    userIcon = faUser;
+    checkIcon = faCheckCircle;
+    timesIcon = faTimes;
+    myProposedSwaps: any[] = [];
+    swapsProposedToMe: any[] = [];
+    isAccepting: { [key: number]: boolean } = {};
+    isDeleting: { [key: number]: boolean } = {};
+    isRejecting: { [key: number]: boolean } = {};
 
     constructor(
         private wordPressService: WordPressService,
@@ -120,5 +136,52 @@ export class MijnOverzichtComponent implements OnInit {
         dialogRef.afterClosed().subscribe(() => {
             this.getPendingProposals();
         });
+    }
+
+    closeModal() {
+        this.showRuilLijst = false;
+    }
+
+    selectButton(i: number, task: any) {
+        this.selectedIndexStyle = i;
+    }
+
+    hasSelectedMyTask(): boolean {
+        return this.selectedIndexStyle !== null;
+    }
+
+    hasSelectedOtherTasks(): boolean {
+        return this.selectedTasksStyle.some((selected) => selected);
+    }
+
+    isShiftProposed(taskId: any): boolean {
+        return this.myProposedSwaps.some((p) => p.id === taskId);
+    }
+
+    selectTaskButton(i: number, task: any) {
+        this.selectedTasksStyle[i] = !this.selectedTasksStyle[i];
+    }
+
+    addProposals() {
+        // TODO: Implement swap proposal logic
+    }
+
+    canProposeSwap(): boolean {
+        return this.hasSelectedMyTask() && this.hasSelectedOtherTasks();
+    }
+
+    handleAcceptSwap(task: any) {
+        this.isAccepting[task.id] = true;
+        // TODO: Implement accept swap logic
+    }
+
+    handleDeleteProposal(proposal: any) {
+        this.isDeleting[proposal.id] = true;
+        // TODO: Implement delete proposal logic
+    }
+
+    handleRejectSwap(task: any) {
+        this.isRejecting[task.id] = true;
+        // TODO: Implement reject swap logic
     }
 }
