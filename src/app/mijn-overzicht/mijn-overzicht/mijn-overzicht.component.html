@@ -1,193 +1,454 @@
-<div style="display: flex; align-items: center; justify-content: space-between">
-    <p style="margin: 0">
-        Welkom<span *ngIf="user"> {{ user.voornaam }}</span
-        >! Hier zie je welke dagen je zaalwacht hebt, wanneer je wedstrijden
-        zijn, wanneer je moet tellen, of je bardiensten hebt en wanneer je moet
-        scheidsen.
-    </p>
-    <!--   <button id="IcalenderExportLink" class="CalenderButton" style="border-radius: 5px; margin-left: 10px;" (click)="generateCalender()">
-    <fa-icon [icon]="calenderIcon"></fa-icon> Export my teamtasks
-  </button>  -->
-</div>
-
-<div *ngIf="dagenEmpty; then showInfo; else showMijnOverzicht"></div>
-
-<ng-template #showInfo>
-    <br />
-    <p><em>Je hebt geen aankomende wedstrijden of diensten.</em></p>
-    <br />
-</ng-template>
-
-<ng-template #showMijnOverzicht>
-    <div class="d-flex justify-content-end mb-3">
-        <button
-            class="btn btn-primary d-flex align-items-center position-relative"
-            (click)="openModal()"
-        >
-            <fa-icon [icon]="swapIcon" class="me-2"></fa-icon>
-            Ruil barshifts
-            <span
-                *ngIf="pendingProposals > 0"
-                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger text-white"
-                style="
-                    font-size: 0.75rem;
-                    transform: translate(-50%, -50%) !important;
-                "
-            >
-                {{ pendingProposals }}
-            </span>
+<div class="swap-container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">Barshift Swap</h2>
+        <button class="btn btn-outline-secondary" (click)="closeModal()">
+            <fa-icon [icon]="closeIcon"></fa-icon>
         </button>
     </div>
-    <table class="table table-sm mb-0" *ngFor="let dag of dagen">
-        <thead>
-            <tr>
-                <th scope="col" colspan="4">{{ dag.datum_long }}</th>
-            </tr>
-        </thead>
-        <tbody>
-            <ng-container *ngIf="user && dag.eersteZaalwacht == user.team.naam">
-                <tr class="gray-background">
-                    <td></td>
-                    <td colspan="3">
-                        <span
-                            *ngIf="dag.eersteZaalwacht"
-                            class="badge rounded-pill bg-primary"
-                            style="
-                                padding: 10px;
-                                margin-top: auto;
-                                margin-bottom: auto;
-                            "
-                            ><fa-icon [icon]="zaalwacht"></fa-icon> 1e
-                            zaalwacht: {{ dag.eersteZaalwacht }}
-                        </span>
-                    </td>
-                </tr>
-            </ng-container>
 
-            <ng-container *ngIf="dag.bardiensten.length > 0">
-                <tr
-                    class="gray-background"
-                    *ngFor="let bardienst of dag.bardiensten"
-                >
-                    <td></td>
-                    <td colspan="3">
-                        <!-- <span>
-              <button (click)="proposeSwap(bardienst)" [ngClass]="isPressed[bardienst.id] ? 'badge bg-success' : 'badge bg-danger'" style="padding: 10px">{{proposed[bardienst.id]}}</button>
-            </span> -->
+    <!-- Show spinner when loading -->
+    @if (isLoading) {
+        <div class="d-flex justify-content-center my-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    }
 
-                        <span
-                            class="badge rounded-pill bg-primary"
-                            style="
-                                padding: 10px;
-                                margin-top: auto;
-                                margin-bottom: auto;
-                            "
-                        >
-                            <fa-icon [icon]="taskIcon"></fa-icon> Bardienst
-                            Shift {{ bardienst.shift }}
-                            {{ bardienst.isBhv ? " (BHV)" : "" }}
-                        </span>
-                    </td>
-                </tr>
-            </ng-container>
-
-            <ng-container *ngFor="let speeltijd of dag.speeltijden">
-                <tr *ngFor="let wedstrijd of speeltijd.wedstrijden">
-                    <td colspan="4">
-                        <div style="display: flex">
-                            <div
-                                style="
-                                    margin-top: auto;
-                                    margin-bottom: auto;
-                                    width: 45px;
-                                "
-                            >
-                                {{ speeltijd.tijd }}
-                            </div>
-                            <div style="margin-top: auto; margin-bottom: auto">
-                                <!-- <teamportal-scheidsrechter
-                  *ngIf="wedstrijd.isScheidsrechter"
-                  [scheidsrechter]="wedstrijd.scheidsrechter"
-                  [isScheidsrechter]="wedstrijd.isScheidsrechter"
-                ></teamportal-scheidsrechter> -->
-                                <teamportal-wedstrijd
-                                    [wedstrijd]="wedstrijd"
-                                ></teamportal-wedstrijd>
-                            </div>
-                            <span
-                                *ngIf="
-                                    user &&
-                                    wedstrijd.scheidsrechter == user.naam
-                                "
-                                class="badge rounded-pill bg-primary"
-                                style="
-                                    padding: 10px;
-                                    margin-top: auto;
-                                    margin-bottom: auto;
-                                "
-                                ><fa-icon [icon]="taskIcon"></fa-icon> Je bent
-                                scheidsrechter deze wedstrijd</span
-                            >
-                            <span
-                                *ngIf="
-                                    user &&
-                                    (wedstrijd.tellers[0] == user.naam ||
-                                        wedstrijd.tellers[1] == user.naam)
-                                "
-                                class="badge rounded-pill bg-primary"
-                                style="
-                                    padding: 10px;
-                                    margin-top: auto;
-                                    margin-bottom: auto;
-                                "
-                                ><fa-icon [icon]="taskIcon"></fa-icon> Je bent
-                                teller deze wedstrijd</span
-                            >
-
-                            <div
-                                style="
-                                    padding: 10px;
-                                    margin-top: auto;
-                                    margin-bottom: auto;
-                                "
-                                *ngIf="wedstrijd.isTellers"
-                            >
-                                <teamportal-tellers
-                                    [tellers]="wedstrijd.tellers"
-                                    [isTellers]="wedstrijd.isTellers"
+    <!-- Show content when data is loaded -->
+    @if (!isLoading) {
+        <mat-tab-group class="mb-4">
+            <mat-tab label="Propose Swap">
+                <div class="swap-proposal-container p-3">
+                    <div class="row">
+                        <!-- My Tasks Column -->
+                        <div class="col-md-5">
+                            <div class="card">
+                                <div class="card-header bg-primary text-white">
+                                    <h5 class="mb-0">My Shifts</h5>
+                                </div>
+                                <div
+                                    class="list-group list-group-flush"
+                                    style="max-height: 400px; overflow-y: auto"
                                 >
-                                </teamportal-tellers>
+                                    @for (task of myTasks; let i = $index) {
+                                        <button
+                                            class="list-group-item list-group-item-action d-flex flex-column"
+                                            [class.selected]="
+                                                selectedIndexStyle === i
+                                            "
+                                            [disabled]="
+                                                selectedIndexStyle !== null &&
+                                                selectedIndexStyle !== i
+                                            "
+                                            (click)="selectButton(i, task)"
+                                        >
+                                            <div
+                                                class="d-flex justify-content-between align-items-center"
+                                            >
+                                                <h6 class="mb-1">Bardienst</h6>
+                                                <span class="badge bg-primary"
+                                                    >Shift
+                                                    {{ task.shift }}</span
+                                                >
+                                            </div>
+                                            <small class="text-muted">
+                                                {{
+                                                    task.bardag.date.date
+                                                        | date
+                                                            : "EEEE, MMMM d, y"
+                                                }}
+                                            </small>
+                                        </button>
+                                    }
+                                    @if (
+                                        hasSelectedOtherTasks() &&
+                                        !hasSelectedMyTask()
+                                    ) {
+                                        <div class="alert alert-warning m-3">
+                                            <fa-icon
+                                                [icon]="infoIcon"
+                                                class="me-2"
+                                            ></fa-icon>
+                                            Select one of your shifts to
+                                            complete the swap
+                                        </div>
+                                    }
+                                </div>
                             </div>
                         </div>
-                    </td>
-                </tr>
-            </ng-container>
-            <ng-container *ngIf="user && dag.tweedeZaalwacht == user.team.naam">
-                <tr class="gray-background">
-                    <td></td>
-                    <td colspan="3">
-                        <span
-                            *ngIf="dag.tweedeZaalwacht"
-                            class="badge rounded-pill bg-primary"
-                            style="
-                                padding: 10px;
-                                margin-top: auto;
-                                margin-bottom: auto;
-                            "
-                            ><fa-icon [icon]="zaalwacht"></fa-icon> 2e
-                            zaalwacht: {{ dag.tweedeZaalwacht }}</span
-                        >
-                    </td>
-                </tr>
-            </ng-container>
 
-            <tr class="gray-background">
-                <td colspan="4"></td>
-            </tr>
-        </tbody>
-    </table>
-</ng-template>
-<div class="alert alert-danger" role="alert" *ngIf="errorMessage">
-    {{ errorMessage }}
+                        <!-- Swap Icon -->
+                        <div
+                            class="col-md-2 d-flex justify-content-center align-items-center"
+                        >
+                            <fa-icon
+                                [icon]="swapIcon"
+                                size="2x"
+                                class="text-primary"
+                            ></fa-icon>
+                        </div>
+
+                        <!-- Other Tasks Column -->
+                        <div class="col-md-5">
+                            <div class="card">
+                                <div class="card-header bg-success text-white">
+                                    <h5 class="mb-0">Available Shifts</h5>
+                                </div>
+                                <div
+                                    class="list-group list-group-flush"
+                                    style="max-height: 400px; overflow-y: auto"
+                                >
+                                    @for (task of otherTasks; let i = $index) {
+                                        <button
+                                            class="list-group-item list-group-item-action d-flex flex-column"
+                                            [class.selected]="
+                                                selectedTasksStyle[i]
+                                            "
+                                            [class.proposed]="
+                                                isShiftProposed(task.id)
+                                            "
+                                            (click)="selectTaskButton(i, task)"
+                                        >
+                                            <div
+                                                class="d-flex justify-content-between align-items-center"
+                                            >
+                                                <h6 class="mb-1">Bardienst</h6>
+                                                <div
+                                                    class="d-flex align-items-center"
+                                                >
+                                                    @if (
+                                                        isShiftProposed(task.id)
+                                                    ) {
+                                                        <span
+                                                            class="badge bg-info me-2"
+                                                        >
+                                                            <fa-icon
+                                                                [icon]="
+                                                                    infoIcon
+                                                                "
+                                                                class="me-1"
+                                                            ></fa-icon>
+                                                            Proposed
+                                                        </span>
+                                                    }
+                                                    <span
+                                                        class="badge bg-success"
+                                                        >Shift
+                                                        {{ task.shift }}</span
+                                                    >
+                                                </div>
+                                            </div>
+                                            <small class="text-muted">
+                                                {{
+                                                    task.bardag.date.date
+                                                        | date
+                                                            : "EEEE, MMMM d, y"
+                                                }}
+                                            </small>
+                                            <small class="text-primary mt-1">
+                                                <fa-icon
+                                                    [icon]="userIcon"
+                                                    class="me-1"
+                                                ></fa-icon>
+                                                {{ task.persoon.voornaam }}
+                                                {{ task.persoon.achternaam }}
+                                            </small>
+                                        </button>
+                                    }
+                                    @if (
+                                        hasSelectedMyTask() &&
+                                        !hasSelectedOtherTasks()
+                                    ) {
+                                        <div class="alert alert-warning m-3">
+                                            <fa-icon
+                                                [icon]="infoIcon"
+                                                class="me-2"
+                                            ></fa-icon>
+                                            Select one or more shifts to swap
+                                            with
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end mt-4">
+                        <button
+                            class="btn btn-primary"
+                            (click)="addProposals()"
+                            [disabled]="!canProposeSwap()"
+                        >
+                            <fa-icon [icon]="swapIcon" class="me-2"></fa-icon>
+                            Propose Swap
+                        </button>
+                    </div>
+                </div>
+            </mat-tab>
+
+            <mat-tab label="My Proposals">
+                <div class="proposals-container p-3">
+                    @if (myProposedSwaps.length === 0) {
+                        <div class="text-center my-5">
+                            <p class="text-muted">No active swap proposals</p>
+                        </div>
+                    }
+
+                    @if (myProposedSwaps.length > 0) {
+                        <div class="card">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0">Your Proposals</h5>
+                            </div>
+                            <div class="list-group list-group-flush">
+                                @for (proposal of myProposedSwaps) {
+                                    <div class="list-group-item">
+                                        <div
+                                            class="d-flex justify-content-between align-items-center"
+                                        >
+                                            <div
+                                                class="d-flex align-items-center"
+                                            >
+                                                <div class="me-4">
+                                                    <h6 class="mb-1">
+                                                        You get
+                                                    </h6>
+                                                    <p class="mb-0">
+                                                        {{
+                                                            proposal.swapForDate
+                                                                | date
+                                                                    : "EEEE, MMMM d"
+                                                        }}
+                                                    </p>
+                                                    <small class="text-muted"
+                                                        >Shift
+                                                        {{
+                                                            proposal.swapForShift
+                                                        }}</small
+                                                    >
+                                                </div>
+                                                <fa-icon
+                                                    [icon]="swapIcon"
+                                                    class="mx-4 text-primary"
+                                                ></fa-icon>
+                                                <div>
+                                                    <h6 class="mb-1">
+                                                        They get
+                                                    </h6>
+                                                    <p class="mb-0">
+                                                        {{
+                                                            proposal.dateToSwap
+                                                                | date
+                                                                    : "EEEE, MMMM d"
+                                                        }}
+                                                    </p>
+                                                    <small class="text-muted"
+                                                        >Shift
+                                                        {{
+                                                            proposal.shiftToSwap
+                                                        }}</small
+                                                    >
+                                                </div>
+                                            </div>
+                                            <button
+                                                class="btn btn-danger"
+                                                (click)="
+                                                    handleDeleteProposal(
+                                                        proposal
+                                                    )
+                                                "
+                                                [disabled]="
+                                                    isDeleting[proposal.id]
+                                                "
+                                            >
+                                                @if (!isDeleting[proposal.id]) {
+                                                    <span>
+                                                        <fa-icon
+                                                            [icon]="timesIcon"
+                                                            class="me-2"
+                                                        ></fa-icon>
+                                                        Delete
+                                                    </span>
+                                                }
+                                                @if (isDeleting[proposal.id]) {
+                                                    <span
+                                                        class="d-flex align-items-center"
+                                                    >
+                                                        <div
+                                                            class="spinner-border spinner-border-sm me-2"
+                                                            role="status"
+                                                        >
+                                                            <span
+                                                                class="visually-hidden"
+                                                                >Loading...</span
+                                                            >
+                                                        </div>
+                                                        Deleting...
+                                                    </span>
+                                                }
+                                            </button>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </mat-tab>
+
+            <mat-tab label="Proposed to Me">
+                <div class="proposals-container p-3">
+                    @if (swapsProposedToMe.length === 0) {
+                        <div class="text-center my-5">
+                            <p class="text-muted">No active swap proposals</p>
+                        </div>
+                    }
+
+                    @if (swapsProposedToMe.length > 0) {
+                        <div class="card">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="mb-0">Pending Proposals</h5>
+                            </div>
+                            <div class="list-group list-group-flush">
+                                @for (task of swapsProposedToMe) {
+                                    <div class="list-group-item">
+                                        <div
+                                            class="d-flex justify-content-between align-items-center"
+                                        >
+                                            <div
+                                                class="d-flex align-items-center"
+                                            >
+                                                <div class="me-4">
+                                                    <h6 class="mb-1">
+                                                        They get
+                                                    </h6>
+                                                    <p class="mb-0">
+                                                        {{
+                                                            task.dateToSwap
+                                                                | date
+                                                                    : "EEEE, MMMM d"
+                                                        }}
+                                                    </p>
+                                                    <small class="text-muted"
+                                                        >Shift
+                                                        {{
+                                                            task.shiftToSwap
+                                                        }}</small
+                                                    >
+                                                </div>
+                                                <fa-icon
+                                                    [icon]="swapIcon"
+                                                    class="mx-4 text-primary"
+                                                ></fa-icon>
+                                                <div>
+                                                    <h6 class="mb-1">
+                                                        You get
+                                                    </h6>
+                                                    <p class="mb-0">
+                                                        {{
+                                                            task.swapForDate
+                                                                | date
+                                                                    : "EEEE, MMMM d"
+                                                        }}
+                                                    </p>
+                                                    <small class="text-muted"
+                                                        >Shift
+                                                        {{
+                                                            task.swapForShift
+                                                        }}</small
+                                                    >
+                                                </div>
+                                            </div>
+                                            <div class="d-flex">
+                                                <button
+                                                    class="btn btn-success me-2"
+                                                    (click)="
+                                                        handleAcceptSwap(task)
+                                                    "
+                                                    [disabled]="
+                                                        isAccepting[task.id] ||
+                                                        isRejecting[task.id]
+                                                    "
+                                                >
+                                                    @if (
+                                                        !isAccepting[task.id]
+                                                    ) {
+                                                        <span>
+                                                            <fa-icon
+                                                                [icon]="
+                                                                    checkIcon
+                                                                "
+                                                                class="me-2"
+                                                            ></fa-icon>
+                                                            Accept
+                                                        </span>
+                                                    }
+                                                    @if (isAccepting[task.id]) {
+                                                        <span
+                                                            class="d-flex align-items-center"
+                                                        >
+                                                            <div
+                                                                class="spinner-border spinner-border-sm me-2"
+                                                                role="status"
+                                                            >
+                                                                <span
+                                                                    class="visually-hidden"
+                                                                    >Loading...</span
+                                                                >
+                                                            </div>
+                                                            Accepting...
+                                                        </span>
+                                                    }
+                                                </button>
+                                                <button
+                                                    class="btn btn-danger"
+                                                    (click)="
+                                                        handleRejectSwap(task)
+                                                    "
+                                                    [disabled]="
+                                                        isAccepting[task.id] ||
+                                                        isRejecting[task.id]
+                                                    "
+                                                >
+                                                    @if (
+                                                        !isRejecting[task.id]
+                                                    ) {
+                                                        <span>
+                                                            <fa-icon
+                                                                [icon]="
+                                                                    timesIcon
+                                                                "
+                                                                class="me-2"
+                                                            ></fa-icon>
+                                                            Reject
+                                                        </span>
+                                                    }
+                                                    @if (isRejecting[task.id]) {
+                                                        <span
+                                                            class="d-flex align-items-center"
+                                                        >
+                                                            <div
+                                                                class="spinner-border spinner-border-sm me-2"
+                                                                role="status"
+                                                            >
+                                                                <span
+                                                                    class="visually-hidden"
+                                                                    >Loading...</span
+                                                                >
+                                                            </div>
+                                                            Rejecting...
+                                                        </span>
+                                                    }
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </mat-tab>
+        </mat-tab-group>
+    }
 </div>
-<teamportal-spinner *ngIf="loading"></teamportal-spinner>

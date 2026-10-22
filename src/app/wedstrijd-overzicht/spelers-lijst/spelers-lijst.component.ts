@@ -1,34 +1,39 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
+import { SpinnerComponent } from "../../../shared/spinner/spinner.component";
 import {
-  faMinusSquare,
-  faPlusSquare,
-  faTimesCircle,
-} from '@fortawesome/free-solid-svg-icons';
+    faMinusSquare,
+    faPlusSquare,
+    faTimesCircle,
+} from "@fortawesome/free-solid-svg-icons";
 
 @Component({
-  selector: 'teamportal-spelers-lijst',
-  templateUrl: './spelers-lijst.component.html',
-  styleUrls: ['./spelers-lijst.component.scss'],
+    selector: "teamportal-spelers-lijst",
+    standalone: true,
+    imports: [CommonModule, FontAwesomeModule, SpinnerComponent],
+    templateUrl: "./spelers-lijst.component.html",
+    styleUrls: ["./spelers-lijst.component.scss"],
 })
 export class SpelersLijstComponent {
-  @Input() spelers;
-  @Input() title;
-  @Input() class;
+    @Input() spelers: any;
+    @Input() title: string;
+    @Input() class: string;
 
-  @Output() deleteSpeler = new EventEmitter();
+    @Output() deleteSpeler = new EventEmitter<any>();
 
-  inklappen = faMinusSquare;
-  uitklappen = faPlusSquare;
-  verwijderIcon = faTimesCircle;
-  isCollapsed = true;
+    inklappen = faMinusSquare;
+    uitklappen = faPlusSquare;
+    verwijderIcon = faTimesCircle;
+    isCollapsed = true;
 
-  get numberOfPlayers() {
-    return this.spelers.filter((speler) => speler.rol !== 'coach').length;
-  }
+    get numberOfPlayers() {
+        return this.spelers.filter((speler) => speler.rol !== "coach").length;
+    }
 
-  constructor() {}
+    constructor() {}
 
-  DeleteSpeler(speler) {
-    this.deleteSpeler.emit(speler);
-  }
+    DeleteSpeler(speler: any) {
+        this.deleteSpeler.emit(speler);
+    }
 }

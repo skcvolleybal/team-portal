@@ -2,7 +2,12 @@ import { Component, OnInit } from "@angular/core";
 import { NgbModal, NgbModalConfig } from "@ng-bootstrap/ng-bootstrap";
 import { debounceTime, distinctUntilChanged, switchMap } from "rxjs/operators";
 
-import { ActivatedRoute } from "@angular/router";
+import {
+    ActivatedRoute,
+    RouterLink,
+    RouterLinkActive,
+    RouterOutlet,
+} from "@angular/router";
 import { WordPressService } from "./core/services/request.service";
 import { LoginModalComponent } from "./login-modal/login-modal.component";
 import { Observable } from "rxjs";
@@ -11,9 +16,24 @@ import { appRoutes } from "./route.config";
 import { faAngleRight } from "@fortawesome/free-solid-svg-icons";
 import { environment } from "../environments/environment";
 import { version } from "../environments/version";
+import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
+import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
+import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 
 @Component({
     selector: "teamportal-root",
+    standalone: true,
+    imports: [
+        CommonModule,
+        FormsModule,
+        RouterLink,
+        RouterLinkActive,
+        RouterOutlet,
+        NgbModule,
+        FontAwesomeModule,
+        LoginModalComponent,
+    ],
     templateUrl: "./app.component.html",
     styleUrls: ["./app.component.css"],
 })
@@ -58,7 +78,7 @@ export class AppComponent implements OnInit {
 
     GetNavigationTitle() {
         if (this.activatedRoute.firstChild) {
-            return this.activatedRoute.firstChild.snapshot.data.title;
+            return this.activatedRoute.firstChild.snapshot.data["title"];
         }
     }
 
@@ -107,11 +127,11 @@ export class AppComponent implements OnInit {
         });
     }
 
-    ShowMenuItems(groups) {
-        groups.forEach((subscription) => {
-            this.appRoutes.forEach((appRoute) => {
+    ShowMenuItems(groups: string[]) {
+        groups.forEach((subscription: string) => {
+            this.appRoutes.forEach((appRoute: any) => {
                 if (appRoute.data.groups) {
-                    appRoute.data.groups.forEach((group) => {
+                    appRoute.data.groups.forEach((group: string) => {
                         if (group === subscription) {
                             appRoute.isHidden = false;
                         }
@@ -123,7 +143,7 @@ export class AppComponent implements OnInit {
 
     setImpersonation() {
         if (!this.impersonatedUser) {
-            this.stateService.impersonationId = null;
+            this.stateService.impersonationId = "";
         }
     }
 
@@ -131,13 +151,16 @@ export class AppComponent implements OnInit {
         text.pipe(
             debounceTime(300),
             distinctUntilChanged(),
-            switchMap((term) => this.wordPressService.GetUsers(term)),
-            // tslint:disable-next-line:semicolon
+            switchMap(
+                (term) =>
+                    this.wordPressService.GetUsers(term) as Observable<
+                        readonly any[]
+                    >,
+            ),
         );
 
     formatter = (gebruiker: { id: string; naam: string }) => {
         this.stateService.impersonationId = gebruiker.id;
         return gebruiker.naam;
-        // tslint:disable-next-line:semicolon
     };
 }

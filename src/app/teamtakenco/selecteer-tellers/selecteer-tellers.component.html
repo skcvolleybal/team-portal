@@ -1,89 +1,166 @@
 <div class="modal-header">
-  <h6>{{ teams }}, {{ tijd }}</h6>
-  <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
-    <span aria-hidden="true">&times;</span>
-  </button>
+    <h6>{{ teams }}, {{ tijd }}</h6>
+    <button
+        type="button"
+        class="close"
+        aria-label="Close"
+        (click)="modal.dismiss()"
+    >
+        <span aria-hidden="true">&times;</span>
+    </button>
 </div>
 
-<div class="modal-body" style="min-height: 500px;">
-  <div class="alert alert-danger" role="alert" *ngIf="errorMessage">
-    {{ errorMessage }}
-  </div>
-  <teamportal-spinner *ngIf="tellersOptiesLoading"></teamportal-spinner>
-
-  <div *ngIf="tellersOptiesLoading == false">
-    <div class="card mb-3" *ngIf="spelendeTeams.length > 0">
-      <div class="card-header">
-        Spelende Teams
-      </div>
-      <div class="card-body">
-        <div class="accordion" id="accordionExample">
-          <div class="card" *ngFor="let team of spelendeTeams">
-            <div class="card-header" id="headingOne">
-              <h2 class="mb-0">
-                <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse"
-                  data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                  {{ team.naam + " om " + team.eigenTijd }}
-                </button>
-              </h2>
-            </div>
-
-            <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
-              <div class="card-body">
-                <div class="input-group mb-3" *ngFor="let teller of team.teamgenoten">
-                  <button type="button" (click)="UpdateTeller(teller)" class="btn btn-block" [ngClass]="{
-                    'btn-danger': teller.isBeschikbaar === false,
-                    'btn-success': teller.isBeschikbaar,
-                    'btn-warning': teller.isBeschikbaar == null
-                  }">
-                    {{ teller.naam + " (" +  teller.aantalKeerGeteld +  ")" }}
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
+<div class="modal-body" style="min-height: 500px">
+    @if (errorMessage) {
+        <div class="alert alert-danger" role="alert">
+            {{ errorMessage }}
         </div>
-      </div>
-    </div>
+    }
+    @if (tellersOptiesLoading) {
+        <teamportal-spinner></teamportal-spinner>
+    }
 
-    <div class="card mb-3" *ngIf="overigeTeams.length > 0">
-      <div class="card-header">
-        Overige Teams
-      </div>
-      <div class="card-body">
-        <div class="accordion" id="accordionExample">
-          <div class="card" *ngFor="let team of overigeTeams">
-            <div class="card-header" id="headingOne">
-              <h2 class="mb-0">
-                <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse"
-                  data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                  {{ team.naam }}
-                </button>
-              </h2>
-            </div>
+    @if (tellersOptiesLoading == false) {
+        @if (spelendeTeams.length > 0) {
+            <div class="card mb-3">
+                <div class="card-header">Spelende Teams</div>
+                <div class="card-body">
+                    <div class="accordion" id="accordionExample">
+                        @for (team of spelendeTeams) {
+                            <div class="card">
+                                <div class="card-header" id="headingOne">
+                                    <h2 class="mb-0">
+                                        <button
+                                            class="btn btn-link btn-block text-left"
+                                            type="button"
+                                            data-toggle="collapse"
+                                            data-target="#collapseOne"
+                                            aria-expanded="true"
+                                            aria-controls="collapseOne"
+                                        >
+                                            {{
+                                                team.naam +
+                                                    " om " +
+                                                    team.eigenTijd
+                                            }}
+                                        </button>
+                                    </h2>
+                                </div>
 
-            <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
-              <div class="card-body">
-                <div class="input-group mb-3" *ngFor="let teller of team.teamgenoten">
-                  <button type="button" (click)="UpdateTeller(teller)" class="btn btn-block" [ngClass]="{
-                    'btn-danger': teller.isBeschikbaar === false,
-                    'btn-success': teller.isBeschikbaar,
-                    'btn-warning': teller.isBeschikbaar == null
-                  }">
-                    {{ teller.naam + " (" +  teller.aantalKeerGeteld +  ")" }}
-                  </button>
+                                <div
+                                    id="collapseOne"
+                                    class="collapse show"
+                                    aria-labelledby="headingOne"
+                                    data-parent="#accordionExample"
+                                >
+                                    <div class="card-body">
+                                        @for (teller of team.teamgenoten) {
+                                            <div class="input-group mb-3">
+                                                <button
+                                                    type="button"
+                                                    (click)="
+                                                        UpdateTeller(teller)
+                                                    "
+                                                    class="btn btn-block"
+                                                    [ngClass]="{
+                                                        'btn-danger':
+                                                            teller.isBeschikbaar ===
+                                                            false,
+                                                        'btn-success':
+                                                            teller.isBeschikbaar,
+                                                        'btn-warning':
+                                                            teller.isBeschikbaar ==
+                                                            null,
+                                                    }"
+                                                >
+                                                    {{
+                                                        teller.naam +
+                                                            " (" +
+                                                            teller.aantalKeerGeteld +
+                                                            ")"
+                                                    }}
+                                                </button>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
                 </div>
-              </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+        }
+
+        @if (overigeTeams.length > 0) {
+            <div class="card mb-3">
+                <div class="card-header">Overige Teams</div>
+                <div class="card-body">
+                    <div class="accordion" id="accordionExample">
+                        @for (team of overigeTeams) {
+                            <div class="card">
+                                <div class="card-header" id="headingOne">
+                                    <h2 class="mb-0">
+                                        <button
+                                            class="btn btn-link btn-block text-left"
+                                            type="button"
+                                            data-toggle="collapse"
+                                            data-target="#collapseOne"
+                                            aria-expanded="true"
+                                            aria-controls="collapseOne"
+                                        >
+                                            {{ team.naam }}
+                                        </button>
+                                    </h2>
+                                </div>
+
+                                <div
+                                    id="collapseOne"
+                                    class="collapse show"
+                                    aria-labelledby="headingOne"
+                                    data-parent="#accordionExample"
+                                >
+                                    <div class="card-body">
+                                        @for (teller of team.teamgenoten) {
+                                            <div class="input-group mb-3">
+                                                <button
+                                                    type="button"
+                                                    (click)="
+                                                        UpdateTeller(teller)
+                                                    "
+                                                    class="btn btn-block"
+                                                    [ngClass]="{
+                                                        'btn-danger':
+                                                            teller.isBeschikbaar ===
+                                                            false,
+                                                        'btn-success':
+                                                            teller.isBeschikbaar,
+                                                        'btn-warning':
+                                                            teller.isBeschikbaar ==
+                                                            null,
+                                                    }"
+                                                >
+                                                    {{
+                                                        teller.naam +
+                                                            " (" +
+                                                            teller.aantalKeerGeteld +
+                                                            ")"
+                                                    }}
+                                                </button>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    }
 </div>
 
 <div class="modal-footer">
-  <button type="button" class="btn btn-light" (click)="modal.close()">
-    Close
-  </button>
+    <button type="button" class="btn btn-light" (click)="modal.close()">
+        Close
+    </button>
 </div>

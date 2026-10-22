@@ -1,22 +1,21 @@
 {
-  "compileOnSave": false,
-  "compilerOptions": {
-    "baseUrl": "./",
-    "outDir": "./dist/out-tsc",
-    "sourceMap": true,
-    "declaration": false,
-    "module": "es2020",
-    "moduleResolution": "node",
-    "experimentalDecorators": true,
-    "target": "ES2022",
-    "typeRoots": [
-      "node_modules/@types"
-    ],
-    "lib": [
-      "es2017",
-      "dom",
-      "es2019" // Added to use flat()
-    ],
-    "useDefineForClassFields": false
-  }
+    "compileOnSave": false,
+    "compilerOptions": {
+        "outDir": "./dist/out-tsc",
+        "sourceMap": true,
+        "declaration": false,
+        "module": "ES2022",
+        "moduleResolution": "bundler",
+        "experimentalDecorators": true,
+        "target": "ES2022",
+        "typeRoots": ["node_modules/@types"],
+        "lib": ["es2017", "dom", "es2019"],
+        "strict": true,
+        "noImplicitOverride": true,
+        "noPropertyAccessFromIndexSignature": true,
+        "noFallthroughCasesInSwitch": true,
+        "useDefineForClassFields": false,
+        "ignoreDeprecations": "6.0",
+        "skipLibCheck": true
+    }
 }

@@ -1,10 +1,13 @@
 import { Component, OnInit } from "@angular/core";
+import { CommonModule } from "@angular/common";
 import {
+    FormsModule,
+    ReactiveFormsModule,
     UntypedFormControl,
     UntypedFormGroup,
     Validators,
 } from "@angular/forms";
-import { NgbDate, NgbModal } from "@ng-bootstrap/ng-bootstrap";
+import { NgbDate, NgbModal, NgbModule } from "@ng-bootstrap/ng-bootstrap";
 import {
     faUser,
     faTrash,
@@ -12,16 +15,27 @@ import {
     faTrashAlt,
     faHeart as heartSolid,
 } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 
 import { AanwezigheidService } from "../../core/services/aanwezigheid.service";
 import { BarcieService } from "../../core/services/barcie.service";
 import { SelecteerBarcielidComponent } from "../selecteer-barcie-lid/selecteer-barcie-lid.component";
-// import { faHeart as heartRegular } from '@fortawesome/free-regular-svg-icons';
+import { SpinnerComponent } from "../../shared/spinner/spinner.component";
 import { faAmbulance as BHV } from "@fortawesome/free-solid-svg-icons";
 import { faUser as noBHV } from "@fortawesome/free-solid-svg-icons";
 
 @Component({
     selector: "teamportal-barcie-indeling",
+    standalone: true,
+    imports: [
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        NgbModule,
+        FontAwesomeModule,
+        SelecteerBarcielidComponent,
+        SpinnerComponent,
+    ],
     templateUrl: "./barcie-indeling.component.html",
     styleUrls: ["./barcie-indeling.component.scss"],
 })
@@ -31,11 +45,11 @@ export class BarcieIndelingComponent implements OnInit {
     geenBhv = noBHV;
     bhv = BHV;
     delete = faTrashAlt;
-    newDate: UntypedFormGroup;
+    newDate!: UntypedFormGroup;
 
-    barciedagen = [];
-    isLoading: boolean;
-    errorMessage: string;
+    barciedagen: any[] = [];
+    isLoading!: boolean;
+    errorMessage!: string;
     bardiedagenEmpty: boolean = false;
 
     constructor(
@@ -51,8 +65,8 @@ export class BarcieIndelingComponent implements OnInit {
         this.GetBarcieRooster();
     }
 
-    onDateSelection(date: NgbDate) {
-        this.errorMessage = null;
+    onDateSelection(date: any) {
+        this.errorMessage = "";
         this.barcieService.AddBarcieDag(date).subscribe(
             () => {
                 this.GetBarcieRooster();
@@ -63,7 +77,7 @@ export class BarcieIndelingComponent implements OnInit {
         );
     }
 
-    DeleteBarcieDate(date) {
+    DeleteBarcieDate(date: string) {
         this.barcieService.DeleteBarcieDag(date).subscribe(
             () => {
                 this.GetBarcieRooster();
@@ -74,7 +88,7 @@ export class BarcieIndelingComponent implements OnInit {
         );
     }
 
-    ToggleBhv(selectedBarcieDag, selectedBarcielid, shift) {
+    ToggleBhv(selectedBarcieDag: any, selectedBarcielid: any, shift: any) {
         this.barcieService.ToggleBhv(
             selectedBarcieDag.date,
             shift,
@@ -84,12 +98,12 @@ export class BarcieIndelingComponent implements OnInit {
         this.barciedagen.forEach((barciedag) => {
             if (barciedag.date === selectedBarcieDag.date) {
                 const barshift = barciedag.shifts.find(
-                    (candidate) => candidate.shift === Number(shift),
+                    (candidate: any) => candidate.shift === Number(shift),
                 );
                 if (!barshift) {
                     return;
                 }
-                barshift.barleden.forEach((barcielid) => {
+                barshift.barleden.forEach((barcielid: any) => {
                     if (selectedBarcielid.id === barcielid.id) {
                         barcielid.isBhv = !barcielid.isBhv;
                     }
@@ -98,7 +112,11 @@ export class BarcieIndelingComponent implements OnInit {
         });
     }
 
-    DeleteAanwezigheid(selectedBarcieDag, selectedBarcielid, shiftNumber) {
+    DeleteAanwezigheid(
+        selectedBarcieDag: any,
+        selectedBarcielid: any,
+        shiftNumber: any,
+    ) {
         this.aanwezigheidService
             .DeleteBarcieAanwezigheid(
                 selectedBarcieDag.date,
@@ -108,8 +126,8 @@ export class BarcieIndelingComponent implements OnInit {
             .subscribe(() => {
                 this.barciedagen.forEach((barciedag) => {
                     if (barciedag.date === selectedBarcieDag.date) {
-                        barciedag.shifts.forEach((shift) => {
-                            shift.barleden.forEach((barlid, i) => {
+                        barciedag.shifts.forEach((shift: any) => {
+                            shift.barleden.forEach((barlid: any, i: number) => {
                                 if (
                                     selectedBarcielid.id === barlid.id &&
                                     shift.shift === shiftNumber
@@ -141,7 +159,7 @@ export class BarcieIndelingComponent implements OnInit {
         );
     }
 
-    AddShift(date) {
+    AddShift(date: string) {
         this.barciedagen.forEach((barciedag) => {
             if (barciedag.date === date) {
                 const lastShift =
@@ -163,7 +181,7 @@ export class BarcieIndelingComponent implements OnInit {
         return rows;
     }
 
-    SelecteerBarcieLid(geselecteerdeBarcieDag, shift: number) {
+    SelecteerBarcieLid(geselecteerdeBarcieDag: any, shift: number) {
         const component = SelecteerBarcielidComponent;
         component.date = geselecteerdeBarcieDag.date;
         component.datum = geselecteerdeBarcieDag.datum;

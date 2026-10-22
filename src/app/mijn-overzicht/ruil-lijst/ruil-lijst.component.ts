@@ -1,10 +1,15 @@
 import { Component, Inject, OnInit } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
+import { MatDialogModule } from "@angular/material/dialog";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
-import { StateService } from "src/app/core/services/state.service";
-import { WordPressService } from "src/app/core/services/request.service";
-import { SwapService } from "src/app/core/services/swap.service";
+import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
+import { StateService } from "../../core/services/state.service";
+import { WedstrijdComponent } from "../../shared/wedstrijd/wedstrijd.component";
+import { WordPressService } from "../../core/services/request.service";
+import { SwapService } from "../../core/services/swap.service";
 import { switchMap } from "rxjs/operators";
-import { NotificationService } from "src/app/core/services/notifications.service";
+import { NotificationService } from "../../core/services/notifications.service";
 
 import { Task } from "./Task";
 
@@ -15,17 +20,28 @@ import {
     faTimes as faClose,
     faUser,
     faInfoCircle,
+    faPlusSquare,
+    faMinusSquare,
+    faPlus,
 } from "@fortawesome/free-solid-svg-icons";
 
 @Component({
     selector: "teamportal-ruil-lijst",
+    standalone: true,
+    imports: [
+        CommonModule,
+        FontAwesomeModule,
+        MatDialogModule,
+        WedstrijdComponent,
+        NgbModule,
+    ],
     templateUrl: "./ruil-lijst.component.html",
     styleUrls: ["./ruil-lijst.component.scss"],
     providers: [],
 })
 export class RuilLijstComponent implements OnInit {
-    otherTasks: any[];
-    myTasks: any[];
+    otherTasks!: any[];
+    myTasks!: any[];
     isLoading: boolean = true;
     swapIcon = faExchangeAlt;
     timesIcon = faTimes;
@@ -33,17 +49,24 @@ export class RuilLijstComponent implements OnInit {
     closeIcon = faClose;
     userIcon = faUser;
     infoIcon = faInfoCircle;
+    isCollapsed = true;
+    uitklappen = faPlusSquare;
+    inklappen = faMinusSquare;
+    info = faInfoCircle;
+    spelerToevoegen = faPlus;
+    teams: any[] = [];
+    isTeamCollapsed: boolean[] = [];
 
     selectedIndexStyle: number | null = null;
     mySelectedTask: Task = {} as Task;
     otherSelectedTask: { [key: number]: object } = {};
-    selectedTasksStyle: { [key: number]: boolean } = {};
+    selectedTasksStyle: { [key: string]: boolean } = {};
     currentPage = "page1";
 
     tasks: Record<number, Task> = {};
 
-    swapsProposedToMe: any[] = []; // This element is used for rendering the second page
-    myProposedSwaps: any[] = []; // Track swaps proposed by the current user
+    swapsProposedToMe: any[] = [];
+    myProposedSwaps: any[] = [];
     isAccepting: { [key: string]: boolean } = {};
     isRejecting: { [key: string]: boolean } = {};
     isDeleting: { [key: string]: boolean } = {};
@@ -54,17 +77,17 @@ export class RuilLijstComponent implements OnInit {
         private swapService: SwapService,
         private dialogRef: MatDialogRef<RuilLijstComponent>,
         private notificationService: NotificationService,
-        @Inject(MAT_DIALOG_DATA) public data: any, // Receive data from parent
+        @Inject(MAT_DIALOG_DATA) public data: any,
     ) {}
 
     ngOnInit(): void {
         this.wordPressService.GetBarDienstenForUser(this.data.userid).subscribe(
-            (response) => {
+            (response: any) => {
                 this.myTasks = response.filter(
-                    (obj) => obj.persoon.id === this.data.userid,
+                    (obj: any) => obj.persoon.id === this.data.userid,
                 );
             },
-            (error) => {
+            (error: any) => {
                 console.log(error);
                 this.isLoading = false;
             },
@@ -91,7 +114,6 @@ export class RuilLijstComponent implements OnInit {
                 (obj) =>
                     Number(obj.userWhoProposedId) === Number(this.data.userid),
             );
-            // Initialize proposed shifts from existing proposals
             this.myProposedSwaps.forEach((swap) => {
                 this.proposedShifts.add(String(swap.swapForTaskId));
             });
@@ -99,7 +121,7 @@ export class RuilLijstComponent implements OnInit {
     }
 
     closeModal() {
-        this.dialogRef.close(); // Close the modal
+        this.dialogRef.close();
     }
 
     addProposals() {
@@ -131,7 +153,6 @@ export class RuilLijstComponent implements OnInit {
                     this.selectedIndexStyle = null;
                     this.notificationService.showSuccess("Proposal made");
                     this.mySelectedTask = {} as Task;
-                    // Add to proposed shifts
                     this.proposedShifts.add(String(value.id));
                 },
                 (error) => {
@@ -152,7 +173,6 @@ export class RuilLijstComponent implements OnInit {
     }
 
     selectButton(index: number, task: object): void {
-        // Set the selected button index
         this.selectedIndexStyle =
             this.selectedIndexStyle === index ? null : index;
         this.mySelectedTask = task as Task;
@@ -163,7 +183,7 @@ export class RuilLijstComponent implements OnInit {
         if (this.selectedTasksStyle[index]) {
             this.tasks[index] = task as Task;
         } else {
-            delete this.tasks[index]; // Proper way to delete
+            delete this.tasks[index];
         }
     }
 
@@ -171,9 +191,9 @@ export class RuilLijstComponent implements OnInit {
         this.isAccepting[taskToAccept.id] = true;
         const acceptSwap = {
             swapForTaskId: taskToAccept.swapForTaskId,
-            otherUserId: taskToAccept.otherUserId, // Current user's task
+            otherUserId: taskToAccept.otherUserId,
             userWhoProposedId: taskToAccept.userWhoProposedId,
-            taskToSwapId: taskToAccept.taskToSwapId, // User that wants to swap their task
+            taskToSwapId: taskToAccept.taskToSwapId,
         };
 
         this.swapService
@@ -235,6 +255,10 @@ export class RuilLijstComponent implements OnInit {
                 this.isDeleting[proposal.id] = false;
             },
         });
+    }
+
+    AddAanwezigheid(speler: any) {
+        // Stub - implement as needed
     }
 
     canProposeSwap(): boolean {
