@@ -18,7 +18,7 @@ class SynchronizeWedstrijden implements Interactor
         $this->nevoboGateway = $nevoboWedstrijd;
     }
 
-    public function Execute(object $data = null): array
+    public function Execute(?object $data = null): array
     {
         $result = [];
         $nevoboWedstrijden = $this->nevoboGateway->GetProgrammaForSporthal();

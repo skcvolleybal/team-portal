@@ -18,7 +18,7 @@ class GetTeamtakencoOverzicht implements Interactor
         $this->zaalwachtGateway = $zaalwachtGateway;
     }
 
-    public function Execute(object $data = null): array
+    public function Execute(?object $data = null): array
     {
         $result = [];
         $wedstrijddagen = $this->nevoboGateway->GetWedstrijddagenForSporthal('LDNUN', 365);

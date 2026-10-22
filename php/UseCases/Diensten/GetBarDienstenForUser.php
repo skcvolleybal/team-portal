@@ -20,7 +20,7 @@ class GetBarDienstenForUser implements Interactor
         $this->BarcieGateway = $BarcieGateway;
     }
 
-    public function Execute(object $data = null) {
+    public function Execute(?object $data = null) {
 
         $user = $this->wordPressGateway->GetUser($data->id);
         return $this->BarcieGateway->GetBardienstenForUser($user);

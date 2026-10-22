@@ -31,7 +31,7 @@ class GetCalendar implements Interactor
         $this->barcieGateway = $barcieGateway;
     }
 
-    public function Execute(object $data = null)
+    public function Execute(?object $data = null)
     {
         if (!$data->userid) {
             throw new InvalidArgumentException("userid is not set");
@@ -217,7 +217,7 @@ class GetCalendar implements Interactor
         DateTime $end,
         string $location,
         string $summary,
-        string $description = null,
+        ?string $description = null,
     ) {
         if ($start && $end) {
             $event = $calendar

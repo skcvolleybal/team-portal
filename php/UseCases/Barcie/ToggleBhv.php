@@ -17,7 +17,7 @@ class ToggleBhv implements Interactor
         $this->barcieGateway = $barcieGateway;
     }
 
-    public function Execute(object $data = null)
+    public function Execute(?object $data = null)
     {
         if ($data->barlidId === null) {
             throw new InvalidArgumentException("barlidId is leeg");

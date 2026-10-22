@@ -32,7 +32,7 @@ class QueueWeeklyEmails implements Interactor
         $this->wordPressGateway = $wordPressGateway;
     }
 
-    public function Execute(object $data = null)
+    public function Execute(?object $data = null)
     {
 
         $this->teamtakenco = $this->wordPressGateway->GetUserByEmail('skc.scheidsco@gmail.com'); // Scheidsco account

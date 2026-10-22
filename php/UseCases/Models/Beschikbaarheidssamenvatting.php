@@ -9,7 +9,7 @@ class Beschikbaarheidssamenvatting
     public array $Onbekend = [];
     public array $Nee = [];
 
-    public function __construct(string $type = null)
+    public function __construct(?string $type = null)
     {
         $this->type = $type;
     }

@@ -18,7 +18,7 @@ class AddBardag implements Interactor
         $this->barcieGateway = $barcieGateway;
     }
 
-    public function Execute(object $data = null): void
+    public function Execute(?object $data = null): void
     {
         $date = DateFunctions::CreateDateTime($data->date);
         if ($date === null) {

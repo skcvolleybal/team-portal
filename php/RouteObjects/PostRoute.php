@@ -16,7 +16,7 @@ class PostRoute extends CrudRoute
     public ?int $role;
 
     
-    public function __construct($route, $interactor, int $role = null)
+    public function __construct($route, $interactor, ?int $role = null)
     {
         $this->role = $role;
         $this->route = $route;

@@ -25,7 +25,7 @@ class GetScheidsrechters implements Interactor
         $this->beschikbaarheidGateway = $beschikbaarheidGateway;
     }
 
-    public function Execute(object $data = null): array
+    public function Execute(?object $data = null): array
     {
         if ($data->matchId === null) {
             throw new InvalidArgumentException("MatchId niet gezet");

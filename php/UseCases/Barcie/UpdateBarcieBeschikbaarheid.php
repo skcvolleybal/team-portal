@@ -17,7 +17,7 @@ class UpdateBarcieBeschikbaarheid implements Interactor
         $this->barcieGateway = $barcieGateway;
     }
 
-    public function Execute(object $data = null)
+    public function Execute(?object $data = null)
     {
         $date = DateFunctions::CreateDateTime($data->date);
         $user = $this->wordPressGateway->GetUser();

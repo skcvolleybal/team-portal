@@ -22,7 +22,7 @@ class GetBarcieBeschikbaarheid implements Interactor
         $this->wordPressGateway = $wordPressGateway;
     }
 
-    public function Execute(object $data = null): array
+    public function Execute(?object $data = null): array
     {
         $user = $this->wordPressGateway->GetUser();
 

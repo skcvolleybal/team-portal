@@ -17,7 +17,7 @@ class UpdateZaalwacht implements Interactor
         $this->wordPressGateway = $wordPressGateway;
     }
 
-    public function Execute(object $data = null)
+    public function Execute(?object $data = null)
     {
         $date = DateFunctions::CreateDateTime($data->date);
         if (!$date) {

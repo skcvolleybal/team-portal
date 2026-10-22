@@ -27,7 +27,7 @@ class GetTellers implements Interactor
         $this->beschikbaarheidGateway = $beschikbaarheidGateway;
     }
 
-    public function Execute(object $data = null)
+    public function Execute(?object $data = null)
     {
         if ($data->matchId === null) {
             throw new InvalidArgumentException("MatchId niet gezet");

@@ -14,7 +14,7 @@ class UpdateAanwezigheid implements Interactor
         $this->aanwezigheidGateway = $aanwezigheidGateway;
     }
 
-    public function Execute(object $data = null)
+    public function Execute(?object $data = null)
     {
         $spelerId = $data->spelerId;
         $user = $spelerId === null ? $this->wordPressGateway->GetUser() : $this->wordPressGateway->GetUser($spelerId);

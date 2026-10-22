@@ -17,8 +17,6 @@ use UnexpectedValueException;
 
 use DateTime;
 
-error_reporting(E_ALL ^ E_DEPRECATED); // Suppress warnings on PHP 8.0. Make sure to fix the usort() functions in this file for PHP 8.1.
-
 // Niet heel lekker over dit verhaal nagedacht maar he je leert er wat van
 class GetWeekOverzicht implements Interactor
 {
@@ -38,7 +36,7 @@ class GetWeekOverzicht implements Interactor
         $this->ZaalwachtGateway = $ZaalwachtGateway;
     }
 
-    public function Execute(object $data = null)
+    public function Execute(?object $data = null)
     {
         $WedstrijdenOpDag = [];
         if ($data == null) {

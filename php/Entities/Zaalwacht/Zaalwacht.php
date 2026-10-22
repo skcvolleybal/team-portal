@@ -11,7 +11,7 @@ class Zaalwacht
     public DateTime $date;
     public ?int $id;
 
-    public function __construct(?int $id, DateTime $date, Team $eersteZaalwacht = null, Team $tweedeZaalwacht = null)
+    public function __construct(?int $id, DateTime $date, ?Team $eersteZaalwacht = null, ?Team $tweedeZaalwacht = null)
     {
         $this->id = $id;
         $this->date = $date;

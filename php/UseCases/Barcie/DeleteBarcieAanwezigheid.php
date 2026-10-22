@@ -16,7 +16,7 @@ class DeleteBarcieAanwezigheid implements Interactor
         $this->wordPressGateway = $wordPressGateway;
     }
 
-    public function Execute(object $data = null): void
+    public function Execute(?object $data = null): void
     {
         if ($data->barlidId === null) {
             throw new InvalidArgumentException("barlidId is leeg");

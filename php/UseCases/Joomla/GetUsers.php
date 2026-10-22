@@ -11,7 +11,7 @@ class GetUsers implements Interactor
         $this->wordPressGateway = $wordPressGateway;
     }
 
-    public function Execute(object $data = null)
+    public function Execute(?object $data = null)
     {
         $name = $data->naam ?? "";
         $result = [];

@@ -11,7 +11,7 @@ class GetCurrentUser implements Interactor
         $this->wordPressGateway = $wordPressGateway;
     }
 
-    public function Execute(object $data = null)
+    public function Execute(?object $data = null)
     {
         return $this->wordPressGateway->GetUser();
     }

@@ -11,8 +11,6 @@ use TeamPortal\Entities\Wedstrijddag;
 use TeamPortal\Entities\Zaalwacht;
 use TeamPortal\Gateways;
 
-error_reporting(E_ALL ^ E_DEPRECATED); // Suppress warnings on PHP 8.0. Make sure to fix the usort() functions in this file for PHP 8.1. 
-
 class MijnOverzicht implements Interactor
 {
     public function __construct(
@@ -20,7 +18,7 @@ class MijnOverzicht implements Interactor
         Gateways\NevoboGateway $nevoboGateway,
         Gateways\TelFluitGateway $telFluitGateway,
         Gateways\ZaalwachtGateway $zaalwachtGateway,
-        Gateways\BarcieGateway $barcieGateway
+        Gateways\BarcieGateway $barcieGateway,
     ) {
         $this->wordPressGateway = $wordPressGateway;
         $this->nevoboGateway = $nevoboGateway;
@@ -29,7 +27,7 @@ class MijnOverzicht implements Interactor
         $this->barcieGateway = $barcieGateway;
     }
 
-    public function Execute(object $data = null)
+    public function Execute(?object $data = null)
     {
         $overzicht = [];
 
@@ -43,7 +41,10 @@ class MijnOverzicht implements Interactor
         $uscWedstrijden = $this->nevoboGateway->GetProgrammaForSporthal();
         $wedstrijden = $this->telFluitGateway->GetFluitEnTelbeurtenFor($user);
         foreach ($wedstrijden as $wedstrijd) {
-            $uscMatch = Wedstrijd::GetWedstrijdWithMatchId($uscWedstrijden, $wedstrijd->matchId);
+            $uscMatch = Wedstrijd::GetWedstrijdWithMatchId(
+                $uscWedstrijden,
+                $wedstrijd->matchId,
+            );
             $wedstrijd->AppendInformation($uscMatch);
             $this->AddWedstrijdToOverzicht($overzicht, $wedstrijd);
         }
@@ -59,7 +60,9 @@ class MijnOverzicht implements Interactor
             if ($wedstrijd->timestamp === null) {
                 continue;
             }
-            $fluitEnTelWedstrijd = $this->telFluitGateway->GetWedstrijd($wedstrijd->matchId);
+            $fluitEnTelWedstrijd = $this->telFluitGateway->GetWedstrijd(
+                $wedstrijd->matchId,
+            );
             $wedstrijd->AppendInformation($fluitEnTelWedstrijd);
 
             $this->AddWedstrijdToOverzicht($overzicht, $wedstrijd);
@@ -79,15 +82,15 @@ class MijnOverzicht implements Interactor
         // foreach ($overzicht as $dag) {
         //     usort($dag->speeltijden, [Speeltijd::class, "Compare"]);
         // }
-        // When enabled, speeltijd 17:30 comes before 15:30... So disabled for now. 
-
-
+        // When enabled, speeltijd 17:30 comes before 15:30... So disabled for now.
 
         return $this->MapToUseCaseModel($overzicht, $user);
     }
 
-    private function MapToUseCaseModel(array $wedstrijddagen, Persoon $persoon): array
-    {
+    private function MapToUseCaseModel(
+        array $wedstrijddagen,
+        Persoon $persoon,
+    ): array {
         $result = [];
         foreach ($wedstrijddagen as $wedstrijddag) {
             $newWedstrijddag = new WedstrijddagModel($wedstrijddag);
@@ -102,8 +105,10 @@ class MijnOverzicht implements Interactor
         return $result;
     }
 
-    private function AddZaalwachtToOverzicht(array &$dagen, Zaalwacht $zaalwacht): void
-    {
+    private function AddZaalwachtToOverzicht(
+        array &$dagen,
+        Zaalwacht $zaalwacht,
+    ): void {
         foreach ($dagen as $dag) {
             if (DateFunctions::AreDatesEqual($dag->date, $zaalwacht->date)) {
                 $dag->eersteZaalwacht = $zaalwacht->eersteZaalwacht;
@@ -117,10 +122,14 @@ class MijnOverzicht implements Interactor
         $dagen[] = $dag;
     }
 
-    private function AddWedstrijdToOverzicht(array &$dagen, Wedstrijd $wedstrijd): void
-    {
+    private function AddWedstrijdToOverzicht(
+        array &$dagen,
+        Wedstrijd $wedstrijd,
+    ): void {
         foreach ($dagen as $dag) {
-            if (DateFunctions::AreDatesEqual($dag->date, $wedstrijd->timestamp)) {
+            if (
+                DateFunctions::AreDatesEqual($dag->date, $wedstrijd->timestamp)
+            ) {
                 foreach ($dag->speeltijden as $speeltijd) {
                     if ($speeltijd->time == $wedstrijd->timestamp) {
                         $speeltijd->wedstrijden[] = $wedstrijd;
@@ -144,7 +153,9 @@ class MijnOverzicht implements Interactor
     private function AddBardienstToOverzicht(array &$dagen, Bardienst $dienst)
     {
         foreach ($dagen as $dag) {
-            if (DateFunctions::AreDatesEqual($dag->date, $dienst->bardag->date)) {
+            if (
+                DateFunctions::AreDatesEqual($dag->date, $dienst->bardag->date)
+            ) {
                 $dag->bardiensten[] = $dienst;
                 return;
             }

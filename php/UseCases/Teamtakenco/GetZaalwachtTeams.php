@@ -20,7 +20,7 @@ class GetZaalwachtTeams implements Interactor
         $this->nevoboGateway = $nevoboGateway;
     }
 
-    public function Execute(object $data = null): object
+    public function Execute(?object $data = null): object
     {
         $date = DateFunctions::CreateDateTime($data->date);
         if ($date === null) {

@@ -15,7 +15,7 @@ class GetBarcieRooster implements Interactor
         $this->barcieGateway = $barcieGateway;
     }
 
-    public function Execute(object $data = null)
+    public function Execute(?object $data = null)
     {
         $rooster = [];
         $dagen = $this->barcieGateway->GetBardagen();

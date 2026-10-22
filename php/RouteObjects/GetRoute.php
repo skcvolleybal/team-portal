@@ -15,7 +15,7 @@ class GetRoute extends CrudRoute
     public string $interactor;
     public ?int $role;
 
-    public function __construct(string $route, string $interactor, int $role = null)
+    public function __construct(string $route, string $interactor, ?int $role = null)
     {
         $this->route = $route;
         $this->interactor = $interactor;

@@ -13,7 +13,7 @@ class Inloggen implements Interactor
         $this->wordPressGateway = $wordPressGateway;
     }
 
-    public function Execute(object $data = null)
+    public function Execute(?object $data = null)
     {
         if (empty($data->username) || empty($data->password)) {
             throw new InvalidArgumentException("Vul alle gegevens in");

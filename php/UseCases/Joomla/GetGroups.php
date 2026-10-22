@@ -11,7 +11,7 @@ class GetGroups implements Interactor
         $this->wordPressGateway = $wordPressGateway;
     }
 
-    public function Execute(object $data = null): array
+    public function Execute(?object $data = null): array
     {
         $result = [];
 

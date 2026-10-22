@@ -16,7 +16,7 @@ class UpdateBeschikbaarheid implements Interactor
         $this->wordPressGateway = $wordPressGateway;
     }
 
-    public function Execute(object $data = null)
+    public function Execute(?object $data = null)
     {
         $datum = $data->datum;
         $tijd = $data->tijd;

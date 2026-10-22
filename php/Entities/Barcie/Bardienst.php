@@ -14,7 +14,7 @@ class Bardienst
     public ?int $shift;
     public ?bool $isBhv;
 
-    public function __construct(Bardag $bardag, ?Persoon $persoon, ?int $shift, ?bool $isBhv, int $id = null)
+    public function __construct(Bardag $bardag, ?Persoon $persoon, ?int $shift, ?bool $isBhv, ?int $id = null)
     {
         $this->id = $id;
         $this->bardag = $bardag;

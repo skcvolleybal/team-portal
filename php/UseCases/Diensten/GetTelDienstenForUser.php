@@ -20,7 +20,7 @@ class GetTelDienstenForUser implements Interactor
         $this->TelFluitGateway = $TelFluitGateway;
     }
 
-    public function Execute(object $data = null) {
+    public function Execute(?object $data = null) {
 
         $user = $this->wordPressGateway->GetUser();
 

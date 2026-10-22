@@ -18,7 +18,7 @@ class UpdateTellers implements Interactor
         $this->nevoboGateway = $nevoboGateway;
     }
 
-    public function Execute(object $data = null)
+    public function Execute(?object $data = null)
     {
         if ($data->matchId === null) {
             throw new InvalidArgumentException("matchId is null");

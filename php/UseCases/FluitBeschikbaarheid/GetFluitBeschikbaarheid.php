@@ -18,7 +18,7 @@ class GetBeschikbaarheid implements Interactor
         $this->beschikbaarheidGateway = $beschikbaarheidGateway;
     }
 
-    public function Execute(object $data = null): array
+    public function Execute(?object $data = null): array
     {
         $user = $this->wordPressGateway->GetUser();
         $beschikbaarheden = $this->beschikbaarheidGateway->GetBeschikbaarheden($user);

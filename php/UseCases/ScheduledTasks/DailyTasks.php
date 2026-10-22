@@ -22,7 +22,7 @@ class DailyTasks implements Interactor
         $this->telFluitGateway = $telFluitGateway;
     }
 
-    public function Execute(object $data = null): array
+    public function Execute(?object $data = null): array
     {
         $synchronizeWedstrijden = new SynchronizeWedstrijden(
             $this->database,

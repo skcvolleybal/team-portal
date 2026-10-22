@@ -12,8 +12,6 @@ use TeamPortal\Entities\Team;
 use TeamPortal\Entities\Wedstrijd;
 use UnexpectedValueException;
 
-error_reporting(E_ALL ^ E_DEPRECATED); // Suppress warnings on PHP 8.0. Make sure to fix the usort() functions in this file for PHP 8.1.
-
 class GetWedstrijdOverzicht implements Interactor
 {
     public function __construct(
@@ -26,7 +24,7 @@ class GetWedstrijdOverzicht implements Interactor
         $this->nevoboGateway = $nevoboGateway;
     }
 
-    public function Execute(object $data = null)
+    public function Execute(?object $data = null)
     {
         $overzicht = [];
         $user = $this->wordPressGateway->GetUser();

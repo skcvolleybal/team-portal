@@ -14,7 +14,7 @@ class GetEmailById implements Interactor
     }
 
 
-    public function Execute(object $data = null)
+    public function Execute(?object $data = null)
     {
 
 

@@ -11,7 +11,7 @@ class RouteGroup
     public array $routes;
     public ?int $role;
 
-    public function __construct(string $url, array $routes, int $role = null)
+    public function __construct(string $url, array $routes, ?int $role = null)
     {
         $this->role = $role;
         $this->url = $url;

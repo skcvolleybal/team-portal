@@ -19,7 +19,7 @@ class GetSkcRanking implements Interactor
         $this->beschikbaarheidGateway = $beschikbaarheidGateway;
     }
 
-    public function Execute(object $data = null): array
+    public function Execute(?object $data = null): array
     {
         $return_arrays = array();
 

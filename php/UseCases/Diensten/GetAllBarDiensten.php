@@ -20,7 +20,7 @@ class GetAllBarDiensten implements Interactor
         $this->BarcieGateway = $BarcieGateway;
     }
 
-    public function Execute(object $data = null) {
+    public function Execute(?object $data = null) {
 
         return $this->BarcieGateway->GetAllBardiensten();
     }
