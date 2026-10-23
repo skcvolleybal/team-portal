@@ -6,7 +6,7 @@ import {
     faQuestion,
     faTimes,
 } from "@fortawesome/free-solid-svg-icons";
-import { ToastrService } from "ngx-toastr";
+import { ToastService } from "ngx-yet-another-toast-library";
 
 @Component({
     selector: "teamportal-keuze",
@@ -16,7 +16,7 @@ import { ToastrService } from "ngx-toastr";
     styleUrls: ["./keuze.component.scss"],
 })
 export class KeuzeComponent {
-    constructor(private toastr: ToastrService) {}
+    constructor(private toast: ToastService) {}
 
     @Input()
     keuze!: any;
@@ -30,10 +30,9 @@ export class KeuzeComponent {
     onClick(keuze: any) {
         this.keuze = keuze;
         this.updateKeuze.emit(keuze);
-        this.toastr.success(" ", "Saving..", {
-            timeOut: 750,
+        this.toast.success(" ", "Saving..", {
+            duration: 750,
             progressBar: true,
-            progressAnimation: "increasing",
         });
     }
 }

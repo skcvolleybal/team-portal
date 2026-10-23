@@ -26,8 +26,7 @@
                         "styles": [
                             "src/styles.scss",
                             "@angular/material/prebuilt-themes/purple-green.css",
-                            "node_modules/bootstrap/dist/css/bootstrap.min.css",
-                            "node_modules/ngx-toastr/toastr.css"
+                            "node_modules/bootstrap/dist/css/bootstrap.min.css"
                         ],
                         "scripts": [],
                         "budgets": [
@@ -92,8 +91,7 @@
                         "styles": [
                             "@angular/material/prebuilt-themes/purple-green.css",
                             "src/styles.scss",
-                            "node_modules/bootstrap/dist/css/bootstrap.min.css",
-                            "node_modules/ngx-toastr/toastr.css"
+                            "node_modules/bootstrap/dist/css/bootstrap.min.css"
                         ],
                         "scripts": [],
                         "assets": ["src/favicon.ico", "src/assets"]

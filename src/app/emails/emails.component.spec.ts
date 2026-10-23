@@ -5,7 +5,7 @@ import { provideRouter } from "@angular/router";
 import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
 import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 import { MatDialogModule } from "@angular/material/dialog";
-import { ToastrModule } from "ngx-toastr";
+import { provideToastService } from "ngx-yet-another-toast-library";
 
 import { EmailsComponent } from "./emails.component";
 
@@ -20,6 +20,7 @@ describe("EmailsComponent", () => {
                 provideHttpClient(),
                 provideAnimations(),
                 provideRouter([]),
+                provideToastService(),
             ],
         }).compileComponents();
 
