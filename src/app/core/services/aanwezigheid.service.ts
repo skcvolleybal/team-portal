@@ -1,9 +1,9 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { environment } from '../../../environments/environment';
+import { HttpClient } from "@angular/common/http";
+import { Injectable } from "@angular/core";
+import { environment } from "../../../environments/environment";
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: "root",
 })
 export class AanwezigheidService {
   constructor(private httpClient: HttpClient) {}
@@ -15,7 +15,7 @@ export class AanwezigheidService {
     rol: string
   ) {
     this.httpClient
-      .post<any>(environment.baseUrl + 'wedstrijd-overzicht/aanwezigheid', {
+      .post<any>(environment.baseUrl + "wedstrijd-overzicht/aanwezigheid", {
         matchId,
         spelerId,
         isAanwezig,
@@ -25,7 +25,7 @@ export class AanwezigheidService {
   }
 
   DeleteBarcieAanwezigheid(date: string, shift: string, barlidId: string) {
-    return this.httpClient.delete<any>(environment.baseUrl + 'barcie/dienst', {
+    return this.httpClient.delete<any>(environment.baseUrl + "barcie/dienst", {
       params: {
         date,
         barlidId,
@@ -35,7 +35,7 @@ export class AanwezigheidService {
   }
 
   AddBarcieAanwezigheid(date: string, shift: number, barlidId: string) {
-    return this.httpClient.post<any>(environment.baseUrl + 'barcie/dienst', {
+    return this.httpClient.post<any>(environment.baseUrl + "barcie/dienst", {
       date,
       shift,
       barlidId,

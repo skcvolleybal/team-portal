@@ -1,21 +1,21 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { environment } from '../../../environments/environment';
+import { HttpClient } from "@angular/common/http";
+import { Injectable } from "@angular/core";
+import { environment } from "../../../environments/environment";
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: "root",
 })
 export class BarcieService {
   constructor(private httpClient: HttpClient) {}
 
   AddBarcieDag(date: any) {
-    return this.httpClient.post<any>(environment.baseUrl + 'barcie/dag', {
+    return this.httpClient.post<any>(environment.baseUrl + "barcie/dag", {
       date: `${date.year}-${date.month}-${date.day}`,
     });
   }
 
   DeleteBarcieDag(date: string) {
-    return this.httpClient.delete<any>(environment.baseUrl + 'barcie/dag', {
+    return this.httpClient.delete<any>(environment.baseUrl + "barcie/dag", {
       params: {
         date,
       },
@@ -24,7 +24,7 @@ export class BarcieService {
 
   ToggleBhv(date: string, shift: string, barlidId: number): void {
     this.httpClient
-      .post<any>(environment.baseUrl + 'barcie/toggle-bhv', {
+      .post<any>(environment.baseUrl + "barcie/toggle-bhv", {
         date,
         barlidId,
         shift,
@@ -34,7 +34,7 @@ export class BarcieService {
 
   GetBarcieBeschikbaarheden(date: string) {
     return this.httpClient.get<any>(
-      environment.baseUrl + 'barcie/beschikbaarheden',
+      environment.baseUrl + "barcie/beschikbaarheden",
       {
         params: {
           date,
@@ -44,6 +44,6 @@ export class BarcieService {
   }
 
   GetBarcieRooster() {
-    return this.httpClient.get<any>(environment.baseUrl + 'barcie/rooster');
+    return this.httpClient.get<any>(environment.baseUrl + "barcie/rooster");
   }
 }

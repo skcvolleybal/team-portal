@@ -42,7 +42,7 @@ export class SwapService {
 
     AcceptSwap(acceptSwap: any) {
         return this.httpClient.post<any>(
-            environment.baseUrl + `swaps/swaptaak`,
+            environment.baseUrl + "swaps/swaptaak",
             {
                 acceptSwap,
             },

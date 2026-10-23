@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 import { StatisticsService } from "../core/services/statistics.service";
@@ -11,7 +11,7 @@ import { SpinnerComponent } from "../shared/spinner/spinner.component";
     templateUrl: "./statistieken.component.html",
     styleUrls: ["./statistieken.component.scss"],
 })
-export class StatistiekenComponent {
+export class StatistiekenComponent implements OnInit {
     skcRankingData!: any;
     loading!: boolean;
     errorMessage!: string;

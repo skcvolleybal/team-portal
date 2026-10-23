@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 import { RouterLink } from "@angular/router";
@@ -19,7 +19,7 @@ import { formatDate } from "@angular/common";
     templateUrl: "./emails.component.html",
     styleUrls: ["./emails.component.scss"],
 })
-export class EmailsComponent {
+export class EmailsComponent implements OnInit {
     emails: any;
     errorMessage!: string;
 
@@ -44,7 +44,7 @@ export class EmailsComponent {
 
     prepareEmails(emails: any[]) {
         let previousDate = null;
-        for (let email of emails) {
+        for (const email of emails) {
             const currentDate = formatDate(
                 email.send_date,
                 "shortDate",
