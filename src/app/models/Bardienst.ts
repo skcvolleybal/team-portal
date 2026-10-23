@@ -1,3 +1,3 @@
 export class Bardienst {
-  time: Date;
+    time!: Date;
 }

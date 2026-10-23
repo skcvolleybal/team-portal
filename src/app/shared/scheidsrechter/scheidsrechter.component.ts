@@ -1,21 +1,24 @@
-import { Component, Input, OnInit } from '@angular/core';
-
-import { faUser } from '@fortawesome/free-solid-svg-icons';
+import { Component, Input, OnInit } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
+import { faUser } from "@fortawesome/free-solid-svg-icons";
 
 @Component({
-  selector: 'teamportal-scheidsrechter',
-  templateUrl: './scheidsrechter.component.html',
-  styleUrls: ['./scheidsrechter.component.scss'],
+    selector: "teamportal-scheidsrechter",
+    standalone: true,
+    imports: [CommonModule, FontAwesomeModule],
+    templateUrl: "./scheidsrechter.component.html",
+    styleUrls: ["./scheidsrechter.component.scss"],
 })
 export class ScheidsrechterComponent implements OnInit {
-  @Input()
-  isScheidsrechter;
-  @Input()
-  scheidsrechter;
+    @Input()
+    isScheidsrechter!: any;
+    @Input()
+    scheidsrechter!: any;
 
-  scheidsrechterIcon = faUser;
+    scheidsrechterIcon = faUser;
 
-  constructor() {}
+    constructor() {}
 
-  ngOnInit() {}
+    ngOnInit() {}
 }

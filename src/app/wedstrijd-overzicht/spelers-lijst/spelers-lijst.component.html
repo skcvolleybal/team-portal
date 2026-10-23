@@ -1,11 +1,23 @@
-<div class="alert" [ngClass]="class">
-  <div (click)="isCollapsed = !isCollapsed">
-    {{ title }} ({{ numberOfPlayers }})
-    <fa-icon class="float-right" [icon]="isCollapsed ? uitklappen : inklappen"></fa-icon>
-  </div>
-
-  <div *ngFor="let speler of spelers" [ngbCollapse]="isCollapsed">
-    - {{ speler.naam }} {{ speler.rol == "coach" ? "(coach)" : "" }}
-    <fa-icon *ngIf="speler.rol == 'invaller'" (click)="DeleteSpeler(speler)" [icon]="verwijderIcon"></fa-icon>
-  </div>
+<div class="spelers-lijst" [class]="class">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0">{{ title }}</h5>
+        <span class="badge bg-primary">{{ numberOfPlayers }}</span>
+    </div>
+    @if (spelers && spelers.length > 0) {
+        <div class="list-group list-group-flush">
+            @for (speler of spelers; track speler) {
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>{{ speler.naam || speler.voornaam || speler }}</span>
+                    <button
+                        class="btn btn-sm btn-outline-danger"
+                        (click)="DeleteSpeler(speler)"
+                    >
+                        <fa-icon [icon]="verwijderIcon"></fa-icon>
+                    </button>
+                </div>
+            }
+        </div>
+    } @else {
+        <div class="text-muted">Geen spelers beschikbaar</div>
+    }
 </div>

@@ -1,9 +1,11 @@
 import { Component, OnInit } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
+import { MatDialogModule } from "@angular/material/dialog";
+import { MatTabsModule } from "@angular/material/tabs";
 import { calenderGenerator } from "../../core/services/calenderGenerator";
 import { RuilLijstComponent } from "../ruil-lijst/ruil-lijst.component";
-import { MatDialog } from "@angular/material/dialog";
-import { faExchangeAlt } from "@fortawesome/free-solid-svg-icons";
-
+import { faExchangeAlt, faTimes } from "@fortawesome/free-solid-svg-icons";
 import {
     faCalendarCheck,
     faPlusSquare,
@@ -11,53 +13,69 @@ import {
     faInfoCircle,
     faPeopleCarry,
     faCalendar,
+    faCheckCircle,
 } from "@fortawesome/free-solid-svg-icons";
-
 import { WordPressService } from "../../core/services/request.service";
-import { StateService } from "src/app/core/services/state.service";
-import { SwapService } from "src/app/core/services/swap.service";
+import { StateService } from "../../core/services/state.service";
+import { SwapService } from "../../core/services/swap.service";
+import { MatDialog } from "@angular/material/dialog";
 
 @Component({
     selector: "teamportal-mijn-overzicht",
+    standalone: true,
+    imports: [
+        CommonModule,
+        FontAwesomeModule,
+        MatDialogModule,
+        MatTabsModule,
+        RuilLijstComponent,
+    ],
     templateUrl: "./mijn-overzicht.component.html",
     styleUrls: ["./mijn-overzicht.component.scss"],
     providers: [calenderGenerator],
 })
 export class MijnOverzichtComponent implements OnInit {
-    loading: boolean;
+    loading!: boolean;
     taskIcon = faUser;
     scheidsrechterIcon = faUser;
     tellersIcon = faCalendarCheck;
     calenderIcon = faCalendar;
     openIcon = faPlusSquare;
-    dagen: any[];
-    errorMessage: string;
+    dagen!: any[];
+    errorMessage!: string;
     dagenEmpty: boolean = false;
     user: any;
     zaalwacht = faPeopleCarry;
     pendingProposals: number = 0;
     private isAuthenticatedSubscriptionSet = false;
-
     showRuilLijst = false;
-
     proposed: { [key: number]: string } = {};
     isPressed: { [key: number]: boolean } = {};
-
     infoIcon = faInfoCircle;
-
     swapIcon = faExchangeAlt;
+    closeIcon = faTimes;
+    myTasks!: any[];
+    selectedIndexStyle: number | null = null;
+    otherTasks!: any[];
+    selectedTasksStyle: boolean[] = [];
+    userIcon = faUser;
+    checkIcon = faCheckCircle;
+    timesIcon = faTimes;
+    myProposedSwaps: any[] = [];
+    swapsProposedToMe: any[] = [];
+    isAccepting: { [key: number]: boolean } = {};
+    isDeleting: { [key: number]: boolean } = {};
+    isRejecting: { [key: number]: boolean } = {};
 
     constructor(
         private wordPressService: WordPressService,
         private stateService: StateService,
-        // private CalendarService: calenderGenerator,
         private SwapService: SwapService,
         private dialog: MatDialog,
     ) {}
 
     ngOnInit() {
         this.loadOverview();
-
         if (!this.isAuthenticatedSubscriptionSet) {
             this.isAuthenticatedSubscriptionSet = true;
             this.stateService.isAuthenticated.subscribe((isAuthenticated) => {
@@ -66,7 +84,6 @@ export class MijnOverzichtComponent implements OnInit {
                 }
             });
         }
-
         this.wordPressService.GetCurrentUser().subscribe(
             (data) => {
                 this.user = data;
@@ -111,68 +128,60 @@ export class MijnOverzichtComponent implements OnInit {
         if (!this.user) {
             return;
         }
-
         const dialogRef = this.dialog.open(RuilLijstComponent, {
             width: "900px",
             panelClass: "custom-modal",
             data: { userid: this.user.id },
         });
-
         dialogRef.afterClosed().subscribe(() => {
             this.getPendingProposals();
         });
     }
 
-    // setProposed() {
-    //   // When loading in the barshifts that a user has already selected to swap set these elements to the right properties.
-    //   const bardiensten = this.dagen.map(obj => obj.bardiensten).flat();
-    //   for (let dienst of bardiensten) {
-    //     this.proposed[dienst.id] = 'Propose';
-    //     this.isPressed[dienst.id] = false
-    //   }
-    //   this.SwapService.GetSwapsById(this.user.id).subscribe((response) => {
-    //     for (let swapdienst of response) {
-    //       this.proposed[swapdienst.scheduleid] = 'Proposed';
-    //       this.isPressed[swapdienst.scheduleid] = true;
-    //     }
-    //   }, (error) => {
-    //     console.log(error);
-    //   })
+    closeModal() {
+        this.showRuilLijst = false;
+    }
 
-    // }
+    selectButton(i: number, task: any) {
+        this.selectedIndexStyle = i;
+    }
 
-    // generateCalender() {
-    //   this.CalendarService.generateICalendar(this.user);
-    // }
+    hasSelectedMyTask(): boolean {
+        return this.selectedIndexStyle !== null;
+    }
 
-    // handleSwapClick(bardienst?) {
-    //   console.log(bardienst.date)
-    //   console.log(this.user)
-    //   this.SwapService.GetAllSwaps().subscribe(response => {
-    //     console.log(response)
-    //   }, (error => {
-    //     console.log(error)
-    //   }))
-    //   // console.log(bardienst)
-    // }
+    hasSelectedOtherTasks(): boolean {
+        return this.selectedTasksStyle.some((selected) => selected);
+    }
 
-    // proposeSwap(bardienst) {
-    //   const shiftId = bardienst.id;
-    //   this.isPressed[shiftId] = !this.isPressed[shiftId]; // Toggle state
+    isShiftProposed(taskId: any): boolean {
+        return this.myProposedSwaps.some((p) => p.id === taskId);
+    }
 
-    //   const newSwap = {
-    //     ...bardienst,
-    //     scheduleid: bardienst.id,
-    //     userid: this.user.id
-    //   }
-    //   this.SwapService.ProposeSwap(this.isPressed[shiftId], newSwap).subscribe((response) => {
-    //     this.proposed[shiftId] = this.isPressed[shiftId] ? "Proposed" : "Propose"
-    //   },
-    //   ((error) => {
-    //     console.log(error)
-    //     this.isPressed[shiftId] = !this.isPressed[shiftId]
-    //     alert('Er is iets fout gegaan en je teamtaak zit niet in de ruillijst')
-    //   })
-    // )
-    // }
+    selectTaskButton(i: number, task: any) {
+        this.selectedTasksStyle[i] = !this.selectedTasksStyle[i];
+    }
+
+    addProposals() {
+        // TODO: Implement swap proposal logic
+    }
+
+    canProposeSwap(): boolean {
+        return this.hasSelectedMyTask() && this.hasSelectedOtherTasks();
+    }
+
+    handleAcceptSwap(task: any) {
+        this.isAccepting[task.id] = true;
+        // TODO: Implement accept swap logic
+    }
+
+    handleDeleteProposal(proposal: any) {
+        this.isDeleting[proposal.id] = true;
+        // TODO: Implement delete proposal logic
+    }
+
+    handleRejectSwap(task: any) {
+        this.isRejecting[task.id] = true;
+        // TODO: Implement reject swap logic
+    }
 }

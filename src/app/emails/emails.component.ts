@@ -1,58 +1,73 @@
-import { Component } from '@angular/core';
-import { EmailsService } from '../core/services/emails.service';
-import { Router } from '@angular/router';
-import { faCheckCircle, faCogs, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
-import { formatDate } from '@angular/common';
-
+import { Component, OnInit } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
+import { RouterLink } from "@angular/router";
+import { EmailsService } from "../core/services/emails.service";
+import { SpinnerComponent } from "../shared/spinner/spinner.component";
+import { Router } from "@angular/router";
+import {
+    faCheckCircle,
+    faCogs,
+    faExclamationCircle,
+} from "@fortawesome/free-solid-svg-icons";
+import { formatDate } from "@angular/common";
 
 @Component({
-  selector: 'tp-emails',
-  templateUrl: './emails.component.html',
-  styleUrls: ['./emails.component.scss']
+    selector: "tp-emails",
+    standalone: true,
+    imports: [CommonModule, FontAwesomeModule, RouterLink, SpinnerComponent],
+    templateUrl: "./emails.component.html",
+    styleUrls: ["./emails.component.scss"],
 })
-export class EmailsComponent {
+export class EmailsComponent implements OnInit {
+    emails: any;
+    errorMessage!: string;
 
-  emails: any;
-  errorMessage: string;
+    check = faCheckCircle;
+    cogs = faCogs;
+    exclamation = faExclamationCircle;
 
-  check = faCheckCircle;
-  cogs = faCogs;
-  exclamation = faExclamationCircle;
+    loading = true;
 
-  loading = true;
+    constructor(
+        private emailsService: EmailsService,
+        private router: Router,
+    ) {}
 
-  constructor(private emailsService: EmailsService, private router: Router) {}
+    onEmailClick(emailId: number): void {
+        this.router.navigate(["/emails", emailId]);
+    }
 
-  onEmailClick(emailId: number): void {
-    this.router.navigate(['/emails' , emailId]);
-  }
+    async ngOnInit() {
+        this.getEmails();
+    }
 
+    prepareEmails(emails: any[]) {
+        let previousDate = null;
+        for (const email of emails) {
+            const currentDate = formatDate(
+                email.send_date,
+                "shortDate",
+                "en-US",
+            );
+            email.isNewDay = currentDate !== previousDate;
+            previousDate = currentDate;
+        }
+    }
 
-  async ngOnInit() {
-    this.getEmails();
-    
-  }
-
-  prepareEmails(emails) {
-    let previousDate = null;
-    for (let email of emails) {
-      const currentDate = formatDate(email.send_date, 'shortDate', 'en-US');
-      email.isNewDay = currentDate !== previousDate;
-      previousDate = currentDate;
-    }  
-  }
-  
-  async getEmails() {
-    this.emailsService.getEmails().subscribe(data => {
-      this.emails = data; //  
-      this.loading = false;
-      this.prepareEmails(this.emails);
-      return data;
-    }, error => {
-      this.errorMessage = error.error.message
-      console.error('error getting emails', error)
-      this.loading = false
-    })
-  }
-
+    async getEmails() {
+        this.emailsService.getEmails().subscribe(
+            (data) => {
+                this.emails = data;
+                this.loading = false;
+                this.prepareEmails(this.emails);
+                return data;
+            },
+            (error) => {
+                this.errorMessage = error.error.message;
+                console.error("error getting emails", error);
+                this.loading = false;
+            },
+        );
+    }
 }

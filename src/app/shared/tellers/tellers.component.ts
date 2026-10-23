@@ -1,21 +1,24 @@
-import { Component, Input, OnInit } from '@angular/core';
-
-import { faCalendarCheck } from '@fortawesome/free-solid-svg-icons';
+import { Component, Input, OnInit } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
+import { faCalendarCheck } from "@fortawesome/free-solid-svg-icons";
 
 @Component({
-  selector: 'teamportal-tellers',
-  templateUrl: './tellers.component.html',
-  styleUrls: ['./tellers.component.scss'],
+    selector: "teamportal-tellers",
+    standalone: true,
+    imports: [CommonModule, FontAwesomeModule],
+    templateUrl: "./tellers.component.html",
+    styleUrls: ["./tellers.component.scss"],
 })
 export class TellersComponent implements OnInit {
-  @Input()
-  isTellers;
-  @Input()
-  tellers;
+    @Input()
+    isTellers!: any;
+    @Input()
+    tellers!: any;
 
-  teamIcon = faCalendarCheck;
+    teamIcon = faCalendarCheck;
 
-  constructor() {}
+    constructor() {}
 
-  ngOnInit() {}
+    ngOnInit() {}
 }

@@ -1,25 +1,35 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { provideHttpClient } from "@angular/common/http";
+import { provideAnimations } from "@angular/platform-browser/animations";
+import { provideRouter } from "@angular/router";
+import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
+import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
+import { MatDialogModule } from "@angular/material/dialog";
+import { provideToastService } from "ngx-yet-another-toast-library";
 
-import { ExportascsvComponent } from './exportascsv.component';
+import { ExportascsvComponent } from "./exportascsv.component";
 
-describe('ExportascsvComponent', () => {
-  let component: ExportascsvComponent;
-  let fixture: ComponentFixture<ExportascsvComponent>;
+describe("ExportascsvComponent", () => {
+    let component: ExportascsvComponent;
+    let fixture: ComponentFixture<ExportascsvComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ ExportascsvComponent ]
-    })
-    .compileComponents();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            imports: [ExportascsvComponent],
+            providers: [
+                provideHttpClient(),
+                provideAnimations(),
+                provideRouter([]),
+                provideToastService(),
+            ],
+        }).compileComponents();
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ExportascsvComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+        fixture = TestBed.createComponent(ExportascsvComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it("should create", () => {
+        expect(component).toBeTruthy();
+    });
 });

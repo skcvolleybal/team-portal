@@ -1,76 +1,101 @@
-<p>Geef hier je beschikbaarheid door om te tellen of fluiten voor de komende periode. De teamtakencoördinator van dit seizoen zal hiermee rekening houden in de planning. </p>
-<p><b>Tip: </b> je hoeft niet alles in te vullen. Weiger bijvoorbeeld alleen de weekenden waarop je echt niet kan. Of vul juist de weekenden in wanneer je toch al op SKC bent. </p>
-<br>
+@if (speeldagenEmpty) {
+    <p><em>Je hebt geen aankomende wedstrijden of diensten.</em></p>
+    <br />
+} @else {
+    @for (speeldag of speeldagen; track speeldag.date) {
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th scope="col" colspan="3">{{ speeldag.datum_long }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="gray-background">
+                    <td colspan="3">
+                        <teamportal-wedstrijden-card
+                            [wedstrijden]="speeldag.eigenWedstrijden"
+                        ></teamportal-wedstrijden-card>
+                    </td>
+                </tr>
+                <tr>
+                    <ul class="list-group">
+                        @for (
+                            speeltijd of speeldag.speeltijden;
+                            track speeltijd.tijd
+                        ) {
+                            <li
+                                class="list-group-item"
+                                [ngClass]="{
+                                    'list-group-item-warning':
+                                        speeltijd.isMogelijk === null,
+                                    'list-group-item-danger':
+                                        speeltijd.isMogelijk === false,
+                                    'list-group-item-success':
+                                        speeltijd.isMogelijk === true,
+                                }"
+                            >
+                                <div class="form-row">
+                                    <div class="col" style="line-height: 38px">
+                                        {{ speeltijd.tijd }}
+                                    </div>
+                                </div>
+                                <div class="container">
+                                    <div class="row">
+                                        <div class="col-md-8 col-12">
+                                            <div class="d-flex flex-wrap">
+                                                @for (
+                                                    wedstrijd of speeltijd.wedstrijden;
+                                                    track wedstrijd.matchId
+                                                ) {
+                                                    <div
+                                                        class="bg-light d-inline-flex text-dark rounded m-1"
+                                                    >
+                                                        <teamportal-wedstrijd
+                                                            [wedstrijd]="
+                                                                wedstrijd
+                                                            "
+                                                        ></teamportal-wedstrijd>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
 
-<div *ngIf="speeldagenEmpty; then showInfo else showMijnOverzicht"></div>
+                                        <div
+                                            class="col-md-4 col-12 text-md-end"
+                                        >
+                                            <teamportal-keuze
+                                                (updateKeuze)="
+                                                    UpdateFluitBeschikbaarheid(
+                                                        $event,
+                                                        speeldag.date,
+                                                        speeltijd.tijd
+                                                    )
+                                                "
+                                                [keuze]="
+                                                    speeltijd.isBeschikbaar
+                                                "
+                                            ></teamportal-keuze>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </tr>
+                <tr class="gray-background">
+                    <td colspan="3"></td>
+                </tr>
+            </tbody>
+        </table>
+    }
 
-<ng-template #showInfo>
-<p><em>Je hebt geen aankomende wedstrijden of diensten.</em></p>
-<br>
-</ng-template>
+    @if (errorMessage) {
+        <div class="alert alert-danger" role="alert">
+            {{ errorMessage }}
+        </div>
+    }
 
-<ng-template #showMijnOverzicht>
-<table class="table table-sm" *ngFor="let speeldag of speeldagen">
-  <thead>
-    <tr>
-      <th scope="col" colspan="3">{{ speeldag.datum_long }}</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr class="gray-background">
-      <td colspan="3">
-        <teamportal-wedstrijden-card
-          [wedstrijden]="speeldag.eigenWedstrijden"
-        ></teamportal-wedstrijden-card>
-      </td>
-    </tr>
-    <tr>
-      <ul class="list-group">
-        <li
-          class="list-group-item"
-          [ngClass]="{
-            'list-group-item-warning': speeltijd.isMogelijk === null,
-            'list-group-item-danger': speeltijd.isMogelijk === false,
-            'list-group-item-success': speeltijd.isMogelijk === true
-          }"
-          *ngFor="let speeltijd of speeldag.speeltijden"
-        >
-
-          <div class="form-row">
-            <div class="col" style="line-height: 38px;">
-              {{ speeltijd.tijd }}
-            </div>
-          </div>
-          <div class="container">
-            <div class="row">
-              <!-- First Column for larger screens, takes full width on small screens -->
-              <div class="col-md-8 col-12">
-                <div class="d-flex flex-wrap">
-                  <div class="bg-light d-inline-flex text-dark rounded m-1" *ngFor="let wedstrijd of speeltijd.wedstrijden">
-                    <teamportal-wedstrijd [wedstrijd]="wedstrijd"></teamportal-wedstrijd>
-                  </div>
-                </div>
-              </div>
-          
-              <!-- Second Column, becomes centered text on small screens -->
-              <div class="col-md-4 col-12 text-md-end">
-                <teamportal-keuze
-                  (updateKeuze)="UpdateFluitBeschikbaarheid($event, speeldag.date, speeltijd.tijd)"
-                  [keuze]="speeltijd.isBeschikbaar"
-                ></teamportal-keuze>
-              </div>
-            </div>
-          </div>
-        </li>
-      </ul>
-      
-    </tr>
-    <tr class="gray-background">
-      <td colspan="3"></td>
-    </tr>
-  </tbody>
-</table>
-<div class="alert alert-danger" role="alert" *ngIf="errorMessage">
-  {{ errorMessage }}
-</div>
-<teamportal-spinner *ngIf="loading"></teamportal-spinner>
+    @if (loading) {
+        <teamportal-spinner></teamportal-spinner>
+    }
+}

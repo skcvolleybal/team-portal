@@ -12,32 +12,36 @@
 
 // // Apply the custom typography
 // @include angular-material-typography($custom-typography);
-@import '@angular/material/prebuilt-themes/purple-green.css';
-
+@import "@angular/material/prebuilt-themes/purple-green.css";
 
 .gray-background {
-  background-color: #fff;
+    background-color: #fff;
 }
 
 button.navbar-toggler {
-  padding: 2px!important;
-  font-size: 1rem!important;
+    padding: 2px !important;
+    font-size: 1rem !important;
 }
 
 body {
-  background-color: #ebebeb!important;
+    background-color: #ebebeb !important;
 }
 /* Importing Bootstrap SCSS file. */
 // @import 'bootstrap/scss/bootstrap';
 
-@import 'ngx-toastr/toastr';
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; font-weight: 100;}
-
-
-.custom-modal .mdc-dialog__surface {
-  background-color: #f5f5f5 !important;  // Change the background color
-  padding: 20px !important;  // Optional: Add some padding
-  border-radius: 8px !important;  // Optional: Add rounded corners
+// Toast styles are handled by ngx-yet-another-toast-library via CSS variables
+html,
+body {
+    height: 100%;
+}
+body {
+    margin: 0;
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+    font-weight: 100;
 }
 
+.custom-modal .mdc-dialog__surface {
+    background-color: #f5f5f5 !important; // Change the background color
+    padding: 20px !important; // Optional: Add some padding
+    border-radius: 8px !important; // Optional: Add rounded corners
+}

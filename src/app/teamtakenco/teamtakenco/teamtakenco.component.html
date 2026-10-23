@@ -2,126 +2,144 @@
 
 
 
-<div *ngIf="speeldagenEmpty; then showInfo else showMijnOverzicht"></div>
+@if (speeldagenEmpty) {
+  <div></div>
+} @else {
+  <div>
+    @if (overzichtLoading === false) {
+      <tp-exportascsv></tp-exportascsv>
+    }
 
-<ng-template #showInfo>
-  <p><em>Je hebt geen aankomende wedstrijden of diensten.</em></p>
-<br>
-</ng-template>
+    @for (speeldag of speeldagen; track speeldag.date) {
+      <table class="table">
 
-<ng-template #showMijnOverzicht>
-  <div *ngIf="overzichtLoading === false">
-    <tp-exportascsv></tp-exportascsv>
+        <thead>
+          <tr>
+            <th colspan="2">
+              <div class="column">
+                <div class="col-auto mr-auto" style="line-height: 38px;">
+                  {{ speeldag.datum_long }}
+                </div>
+                <div class="col-auto row">
+                  @for (zaalwachttype of zaalwachttypes; track zaalwachttype) {
+                    <div class="input-group col col-md-auto">
+                      <div class="input-group-prepend">
+                        <label class="input-group-text">
+                          <fa-icon [icon]="icons.zaalwacht"></fa-icon>
+                        </label>
+                      </div>
+                      <div class="input-group-append">
+                        <button class="btn" (click)="SelecteerZaalwacht(speeldag.datum, speeldag.date, zaalwachttype)"
+                          [ngClass]="{
+                            'btn-danger': getZaalwacht(speeldag, zaalwachttype) === null,
+                            'btn-success': getZaalwacht(speeldag, zaalwachttype)
+                          }" type="button">
+                          {{ getZaalwacht(speeldag, zaalwachttype) === null ? '...' : getZaalwachtShortNotation(speeldag, zaalwachttype) }}
+                        </button>
+                      </div>
+                      @if (getZaalwacht(speeldag, zaalwachttype)) {
+                        <div class="input-group-append">
+                          <label class="input-group-text" (click)="DeleteZaalwacht(speeldag.date, zaalwachttype)">
+                            <fa-icon [icon]="icons.verwijderen"></fa-icon>
+                          </label>
+                        </div>
+                      }
+                    </div>
+                  }
+                </div>
+              </div>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (speeltijd of speeldag.speeltijden; track speeltijd.tijd) {
+            <tr>
+              <td class="align-middle">
+                {{ speeltijd.tijd }}
+                <ul class="list-group">
+                  @for (wedstrijd of speeltijd.wedstrijden; track wedstrijd.matchId) {
+                    <li class="list-group-item">
+                      <h5 class="card-title">{{ wedstrijd.teams }}</h5>
+
+                    <div class="input-container">
+                      <div class="input-group scheidsrechters">
+                        <div class="input-group-prepend">
+                          <label class="input-group-text">
+                            <fa-icon [icon]="icons.scheidsrechter"></fa-icon>
+                          </label>
+                        </div>
+                        <div class="input-group-append">
+                          <button class="btn" (click)="
+                                SelecteerScheidsrechter(wedstrijd, speeltijd.tijd)
+                              " [ngClass]="{
+                                'btn-danger': wedstrijd.scheidsrechter === null,
+                                'btn-success': wedstrijd.scheidsrechter
+                              }" type="button">
+                            {{
+                                wedstrijd.scheidsrechter === null ? 'Kiezen...' : wedstrijd.scheidsrechter
+                              }}
+                          </button>
+                        </div>
+                        @if (wedstrijd.scheidsrechter) {
+                          <div class="input-group-append">
+                            <button class="btn input-group-text" (click)="DeleteScheidsrechter(wedstrijd.matchId)" type="button">
+                              <fa-icon [icon]="icons.verwijderen"></fa-icon>
+                            </button>
+                          </div>
+                        }
+                      </div>
+
+                      <div class="tellers">
+                        @for (teller of wedstrijd.tellers; track $index; let i = $index) {
+                          <div class="input-group">
+                            <div class="input-group-prepend">
+                              <label class="input-group-text">
+                                <fa-icon [icon]="icons.tellers"></fa-icon>
+                              </label>
+                            </div>
+                            <div class="input-group-append">
+                              <button class="btn" (click)="
+                                  SelecteerTeller(wedstrijd, speeltijd.tijd, i)
+                                " [ngClass]="{
+                                  'btn-danger': teller === null,
+                                  'btn-success': teller
+                                }" type="button">
+                                {{
+                                  teller === null ? 'Kiezen...' : teller
+                                }}
+                              </button>
+                            </div>
+                            @if (teller) {
+                              <div class="input-group-append">
+                                <button class="btn input-group-text" (click)="DeleteTeller(wedstrijd.matchId, i)"
+                                  type="button">
+                                  <fa-icon [icon]="icons.verwijderen"></fa-icon>
+                                </button>
+                              </div>
+                            }
+                          </div>
+                        }
+                      </div>
+
+                    </div>
+
+                    </li>
+                  }
+                </ul>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
   </div>
+}
 
-  <table class="table" *ngFor="let speeldag of speeldagen">
-    
-    <thead>
-      <tr>
-        <th colspan="2">
-          <div class="column">
-            <div class="col-auto mr-auto" style="line-height: 38px;">
-              {{ speeldag.datum_long }}
-            </div>
-            <div class="col-auto row">
-              <div class="input-group col col-md-auto" *ngFor="let zaalwachttype of ['eerste', 'tweede']; let i = index;">
-                <div class="input-group-prepend">
-                  <label class="input-group-text">
-                    <fa-icon [icon]="icons.zaalwacht"></fa-icon>
-                  </label>
-                </div>
-                <div class="input-group-append">
-                  <button class="btn" (click)="SelecteerZaalwacht(speeldag.datum, speeldag.date, zaalwachttype)"
-                    [ngClass]="{
-                      'btn-danger': speeldag[zaalwachttype + 'Zaalwacht'] === null,
-                      'btn-success': speeldag[zaalwachttype + 'Zaalwacht']
-                    }" type="button">
-                    {{ speeldag[zaalwachttype + 'Zaalwacht'] === null ? '...' : speeldag[zaalwachttype + 'ZaalwachtShortNotation'] }}
-                  </button>
-                </div>
-                <div class="input-group-append" *ngIf="speeldag[zaalwachttype + 'Zaalwacht']">
-                  <label class="input-group-text" (click)="DeleteZaalwacht(speeldag.date, zaalwachttype)">
-                    <fa-icon [icon]="icons.verwijderen"></fa-icon>
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let speeltijd of speeldag.speeltijden">
-        <td class="align-middle">
-          {{ speeltijd.tijd }}
-          <ul class="list-group">
-            <li class="list-group-item" *ngFor="let wedstrijd of speeltijd.wedstrijden">
-              <h5 class="card-title">{{ wedstrijd.teams }}</h5>
-
-            <div class="input-container">
-              <div class="input-group scheidsrechters">
-                <div class="input-group-prepend">
-                  <label class="input-group-text">
-                    <fa-icon [icon]="icons.scheidsrechter"></fa-icon>
-                  </label>
-                </div>
-                <div class="input-group-append">
-                  <button class="btn" (click)=" 
-                        SelecteerScheidsrechter(wedstrijd, speeltijd.tijd)
-                      " [ngClass]="{
-                        'btn-danger': wedstrijd.scheidsrechter === null,
-                        'btn-success': wedstrijd.scheidsrechter
-                      }" type="button">
-                    {{
-                        wedstrijd.scheidsrechter === null ? 'Kiezen...' : wedstrijd.scheidsrechter
-                      }}
-                  </button>
-                </div>
-                <div class="input-group-append" *ngIf="wedstrijd.scheidsrechter">
-                  <button class="btn input-group-text" (click)="DeleteScheidsrechter(wedstrijd.matchId)" type="button">
-                    <fa-icon [icon]="icons.verwijderen"></fa-icon>
-                  </button>
-                </div>
-              </div>
-
-              <div class="tellers">
-                <div class="input-group" *ngFor="let teller of wedstrijd.tellers; let i = index">
-                  <div class="input-group-prepend">
-                    <label class="input-group-text">
-                      <fa-icon [icon]="icons.tellers"></fa-icon>
-                    </label>
-                  </div>
-                  <div class="input-group-append">
-                    <button class="btn" (click)="
-                        SelecteerTeller(wedstrijd, speeltijd.tijd, i)
-                      " [ngClass]="{
-                        'btn-danger': teller === null,
-                        'btn-success': teller
-                      }" type="button">
-                      {{
-                        teller === null ? 'Kiezen...' : teller
-                      }}
-                    </button>
-                  </div>
-                  <div class="input-group-append" *ngIf="teller">
-                    <button class="btn input-group-text" (click)="DeleteTeller(wedstrijd.matchId, i)"
-                      type="button">
-                      <fa-icon [icon]="icons.verwijderen"></fa-icon>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            </li>
-          </ul>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</ng-template>
-
-<div class="alert alert-danger" role="alert" *ngIf="errorMessage">
-  {{ errorMessage }}
-</div>
-<teamportal-spinner *ngIf="overzichtLoading"></teamportal-spinner>
+@if (errorMessage) {
+  <div class="alert alert-danger" role="alert">
+    {{ errorMessage }}
+  </div>
+}
+@if (overzichtLoading) {
+  <teamportal-spinner></teamportal-spinner>
+}

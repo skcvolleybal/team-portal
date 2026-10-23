@@ -1,140 +1,140 @@
-<p>Hier vul je bardiensten, barkeepers en BHV'ers in.</p>
-<br />
-
-<div class="alert alert-danger" role="alert" *ngIf="errorMessage">
-    {{ errorMessage }}
-</div>
-<div class="form-row justify-content-center" style="margin: 10px">
-    <form class="form-inline" [formGroup]="newDate">
-        <div class="input-group">
-            <input
-                class="form-control"
-                placeholder="Nieuwe datum"
-                formControlName="date"
-                (dateChange)="onDateSelection($event)"
-                name="dp"
-                navigation="arrows"
-                ngbDatepicker
-                #d="ngbDatepicker"
-            />
-            <div class="input-group-append">
-                <button
-                    class="btn btn-outline-secondary calendar"
-                    (click)="d.toggle()"
-                    type="button"
-                >
-                    <fa-icon [icon]="calendar"></fa-icon>
-                </button>
-            </div>
+<div>
+    <h3>🍺SKC Fustcompetitie</h3>
+    <p>
+        Welke teams staan 1e in hun poule en winnen een fust aan het eind van
+        dit competitiejaar? 🍺
+    </p>
+    @if (errorMessage) {
+        <div class="alert alert-danger" role="alert">
+            {{ errorMessage }}
         </div>
-    </form>
-</div>
-<table class="table table-sm" style="margin-bottom: 0px">
-    <tr class="gray-background">
-        <td></td>
-    </tr>
-</table>
+    }
 
-<table
-    class="table table-sm shift-table"
-    *ngFor="let barciedag of barciedagen"
-    style="margin-bottom: 0px"
->
-    <thead>
-        <tr>
-            <th scope="col" colspan="3" style="border-bottom: 0px">
-                {{ barciedag.datum_long }}
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-        <ng-container *ngFor="let row of getShiftRows(barciedag.shifts)">
-            <tr>
-                <td
-                    *ngFor="let barshift of row"
-                    style="
-                        width: 33%;
-                        vertical-align: top;
-                        background-color: #d4edda;
-                        padding: 10px;
-                        margin-bottom: 10px;
-                    "
-                >
-                    <h5 class="card-title">Shift {{ barshift.shift }}</h5>
-                    <div
-                        class="row m-1"
-                        *ngFor="let barcielid of barshift.barleden"
-                    >
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <button
-                                    class="input-group-text"
-                                    (click)="
-                                        ToggleBhv(
-                                            barciedag,
-                                            barcielid,
-                                            barshift.shift
-                                        )
-                                    "
-                                >
-                                    <fa-icon
-                                        [icon]="barcielid.isBhv ? bhv : geenBhv"
-                                    ></fa-icon>
-                                </button>
-                            </div>
-                            <div class="input-group-append">
-                                <button class="btn btn-success" type="button">
-                                    {{ barcielid.naam }}
-                                </button>
-                            </div>
-                            <div class="input-group-append">
-                                <button
-                                    class="input-group-text"
-                                    (click)="
-                                        DeleteAanwezigheid(
-                                            barciedag,
-                                            barcielid,
-                                            barshift.shift
-                                        )
-                                    "
-                                >
-                                    <fa-icon [icon]="delete"></fa-icon>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+    <div class="table-responsive">
+        <form class="form-inline" [formGroup]="newDate">
+            <div class="input-group">
+                <input
+                    class="form-control"
+                    placeholder="Nieuwe datum"
+                    formControlName="date"
+                    (dateChange)="onDateSelection($event)"
+                    name="dp"
+                    navigation="arrows"
+                    ngbDatepicker
+                    #d="ngbDatepicker"
+                />
+                <div class="input-group-append">
                     <button
+                        class="btn btn-outline-secondary calendar"
+                        (click)="d.toggle()"
                         type="button"
-                        class="btn btn-primary btn-block"
-                        (click)="SelecteerBarcieLid(barciedag, barshift.shift)"
                     >
-                        <fa-icon [icon]="user"></fa-icon> Barcielid Toevoegen
+                        <fa-icon [icon]="calendar"></fa-icon>
                     </button>
-                </td>
-            </tr>
-        </ng-container>
-        <td colspan="3">
-            <div class="d-flex flex-wrap">
-                <button
-                    type="button"
-                    class="btn btn-primary btn-block m-2"
-                    (click)="AddShift(barciedag.date)"
-                >
-                    <fa-icon [icon]="calendar"></fa-icon> Shift toevoegen
-                </button>
-                <button
-                    type="button"
-                    class="btn btn-danger btn-block m-2"
-                    (click)="DeleteBarcieDate(barciedag.date)"
-                >
-                    <fa-icon [icon]="delete"></fa-icon> Dag verwijderen
-                </button>
+                </div>
             </div>
-        </td>
+        </form>
+    </div>
+    <table class="table table-sm" style="margin-bottom: 0px">
         <tr class="gray-background">
-            <td colspan="3"></td>
+            <td></td>
         </tr>
-    </tbody>
-</table>
+    </table>
 
-<teamportal-spinner *ngIf="isLoading"></teamportal-spinner>
+    @for (barciedag of barciedagen; track barciedag.date) {
+        <table
+            class="table table-sm shift-table"
+            style="margin-bottom: 0px"
+        >
+            <thead>
+                <tr>
+                    <th scope="col" colspan="3" style="border-bottom: 0px">
+                        {{ barciedag.datum_long }}
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (row of getShiftRows(barciedag.shifts); track row) {
+                    <tr>
+                        @for (barshift of row; track barshift.shift) {
+                            <td
+                                style="
+                                    width: 33%;
+                                    vertical-align: top;
+                                    background-color: #d4edda;
+                                    padding: 10px;
+                                    margin-bottom: 10px;
+                                "
+                            >
+                                <h5 class="card-title">Shift {{ barshift.shift }}</h5>
+                                @for (barcielid of barshift.barleden; track barcielid.id) {
+                                                                    <div class="row m-1">
+                                                                    <div class="input-group">
+                                                                        <div class="input-group-prepend">
+                                                                            <button
+                                                                                class="input-group-text"
+                                                                                (click)="ToggleBhv(barciedag, barcielid, barshift.shift)"
+                                                                            >
+                                                                                <fa-icon
+                                                                                    [icon]="barcielid.isBhv ? bhv : geenBhv"
+                                                                                ></fa-icon>
+                                                                            </button>
+                                                                        </div>
+                                                                        <div class="input-group-append">
+                                                                            <button class="btn btn-success" type="button">
+                                                                                {{ barcielid.naam }}
+                                                                            </button>
+                                                                        </div>
+                                                                        <div class="input-group-append">
+                                                                            <button
+                                                                                class="input-group-text"
+                                                                                (click)="DeleteAanwezigheid(barciedag, barcielid, barshift.shift)"
+                                                                            >
+                                                                                <fa-icon [icon]="delete"></fa-icon>
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                    </div>
+                                                                }
+                                </td>
+                            <td>
+                                <button
+                                    type="button"
+                                    class="btn btn-primary btn-block"
+                                    (click)="SelecteerBarcieLid(barciedag, barshift.shift)"
+                                >
+                                    <fa-icon [icon]="user"></fa-icon> Barcielid Toevoegen
+                                </button>
+                            </td>
+                        }
+                    </tr>
+                }
+                <td colspan="3">
+                    <div class="d-flex flex-wrap">
+                        <button
+                            type="button"
+                            class="btn btn-primary btn-block m-2"
+                            (click)="AddShift(barciedag.date)"
+                        >
+                            <fa-icon [icon]="calendar"></fa-icon> Shift toevoegen
+                        </button>
+                        <button
+                            type="button"
+                            class="btn btn-danger btn-block m-2"
+                            (click)="DeleteBarcieDate(barciedag.date)"
+                        >
+                            <fa-icon [icon]="delete"></fa-icon> Dag verwijderen
+                        </button>
+                    </div>
+                </td>
+                <tr class="gray-background">
+                    <td colspan="3"></td>
+                </tr>
+            </tbody>
+        </table>
+    }
+
+    @if (isLoading) {
+        <teamportal-spinner></teamportal-spinner>
+    }
+</div>

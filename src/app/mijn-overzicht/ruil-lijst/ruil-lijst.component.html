@@ -1,218 +1,121 @@
-<div class="swap-container">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="mb-0">Barshift Swap</h2>
-    <button class="btn btn-outline-secondary" (click)="closeModal()">
-      <fa-icon [icon]="closeIcon"></fa-icon>
-    </button>
-  </div>
+<table class="table mb-0">
+    <thead>
+        <tr (click)="isCollapsed = !isCollapsed">
+            <th style="border: 0px">
+                <fa-icon
+                    class="float-right"
+                    [icon]="isCollapsed ? uitklappen : inklappen"
+                ></fa-icon>
+                Invalteams
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="gray-background">
+                @for (team of teams; track team; let i = $index) {
+                    <div
+                        class="card"
+                        [ngClass]="{
+                            'border-success': team.isMogelijk === true,
+                            'border-danger': team.isMogelijk === false,
+                            'border-warning': team.isMogelijk === null,
+                        }"
+                        style="margin: 5px"
+                    >
+                        <div class="card-body" style="padding: 7px">
+                            @if (team.wedstrijd) {
+                                <div
+                                    (click)="
+                                        isTeamCollapsed[i] = !isTeamCollapsed[i]
+                                    "
+                                >
+                                    <fa-icon
+                                        class="float-right fw-1"
+                                        [icon]="
+                                            isTeamCollapsed[i]
+                                                ? uitklappen
+                                                : inklappen
+                                        "
+                                    ></fa-icon>
 
-  <!-- Show spinner when loading -->
-  <div *ngIf="isLoading" class="d-flex justify-content-center my-5">
-    <div class="spinner-border text-primary" role="status">
-      <span class="visually-hidden">Loading...</span>
-    </div>
-  </div>
+                                    <teamportal-wedstrijd
+                                        [wedstrijd]="team.wedstrijd"
+                                    ></teamportal-wedstrijd>
+                                </div>
 
-  <!-- Show content when data is loaded -->
-  <div *ngIf="!isLoading">
-    <mat-tab-group class="mb-4">
-      <mat-tab label="Propose Swap">
-        <div class="swap-proposal-container p-3">
-          <div class="row">
-            <!-- My Tasks Column -->
-            <div class="col-md-5">
-              <div class="card">
-                <div class="card-header bg-primary text-white">
-                  <h5 class="mb-0">My Shifts</h5>
-                </div>
-                <div class="list-group list-group-flush" style="max-height: 400px; overflow-y: auto;">
-                  <button 
-                    class="list-group-item list-group-item-action d-flex flex-column"
-                    *ngFor="let task of myTasks; let i = index"
-                    [class.selected]="selectedIndexStyle === i"
-                    [disabled]="selectedIndexStyle !== null && selectedIndexStyle !== i"
-                    (click)="selectButton(i, task)">
-                    <div class="d-flex justify-content-between align-items-center">
-                      <h6 class="mb-1">Bardienst</h6>
-                      <span class="badge bg-primary">Shift {{ task.shift }}</span>
-                    </div>
-                    <small class="text-muted">
-                      {{ task.bardag.date.date | date: 'EEEE, MMMM d, y' }}
-                    </small>
-                  </button>
-                </div>
-                <div *ngIf="hasSelectedOtherTasks() && !hasSelectedMyTask()" 
-                     class="alert alert-warning m-3">
-                  <fa-icon [icon]="infoIcon" class="me-2"></fa-icon>
-                  Select one of your shifts to complete the swap
-                </div>
-              </div>
-            </div>
+                                <div class="team-card-text">
+                                    @if (isTeamCollapsed[i] === false) {
+                                        <fa-icon
+                                            class="float-right"
+                                            [icon]="info"
+                                            placement="left"
+                                            ngbTooltip="Er mag maximaal 2x per maand en 11x per jaar worden ingevallen."
+                                        ></fa-icon>
+                                    }
+                                    {{ team.wedstrijd.tijd }},
+                                    {{ team.wedstrijd.locatie }}
+                                </div>
+                            }
 
-            <!-- Swap Icon -->
-            <div class="col-md-2 d-flex justify-content-center align-items-center">
-              <fa-icon [icon]="swapIcon" size="2x" class="text-primary"></fa-icon>
-            </div>
+                            @if (!team.wedstrijd) {
+                                <div class="card-title">
+                                    <fa-icon
+                                        class="float-right"
+                                        [icon]="
+                                            isTeamCollapsed[i]
+                                                ? uitklappen
+                                                : inklappen
+                                        "
+                                    ></fa-icon>
+                                    <div
+                                        (click)="
+                                            isTeamCollapsed[i] =
+                                                !isTeamCollapsed[i]
+                                        "
+                                        class="team-card-text big-font"
+                                    >
+                                        {{ team.naam }} heeft geen wedstrijd
+                                    </div>
+                                </div>
+                            }
 
-            <!-- Other Tasks Column -->
-            <div class="col-md-5">
-              <div class="card">
-                <div class="card-header bg-success text-white">
-                  <h5 class="mb-0">Available Shifts</h5>
-                </div>
-                <div class="list-group list-group-flush" style="max-height: 400px; overflow-y: auto;">
-                  <button 
-                    class="list-group-item list-group-item-action d-flex flex-column"
-                    *ngFor="let task of otherTasks; let i = index"
-                    [class.selected]="selectedTasksStyle[i]"
-                    [class.proposed]="isShiftProposed(task.id)"
-                    (click)="selectTaskButton(i, task)">
-                    <div class="d-flex justify-content-between align-items-center">
-                      <h6 class="mb-1">Bardienst</h6>
-                      <div class="d-flex align-items-center">
-                        <span *ngIf="isShiftProposed(task.id)" class="badge bg-info me-2">
-                          <fa-icon [icon]="infoIcon" class="me-1"></fa-icon>
-                          Proposed
-                        </span>
-                        <span class="badge bg-success">Shift {{ task.shift }}</span>
-                      </div>
-                    </div>
-                    <small class="text-muted">
-                      {{ task.bardag.date.date | date: 'EEEE, MMMM d, y' }}
-                    </small>
-                    <small class="text-primary mt-1">
-                      <fa-icon [icon]="userIcon" class="me-1"></fa-icon>
-                      {{ task.persoon.voornaam }} {{ task.persoon.achternaam }}
-                    </small>
-                  </button>
-                </div>
-                <div *ngIf="hasSelectedMyTask() && !hasSelectedOtherTasks()" 
-                     class="alert alert-warning m-3">
-                  <fa-icon [icon]="infoIcon" class="me-2"></fa-icon>
-                  Select one or more shifts to swap with
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="d-flex justify-content-end mt-4">
-            <button class="btn btn-primary" (click)="addProposals()" [disabled]="!canProposeSwap()">
-              <fa-icon [icon]="swapIcon" class="me-2"></fa-icon>
-              Propose Swap
-            </button>
-          </div>
-        </div>
-      </mat-tab>
-
-      <mat-tab label="My Proposals">
-        <div class="proposals-container p-3">
-          <div *ngIf="myProposedSwaps.length === 0" class="text-center my-5">
-            <p class="text-muted">No active swap proposals</p>
-          </div>
-
-          <div *ngIf="myProposedSwaps.length > 0" class="card">
-            <div class="card-header bg-primary text-white">
-              <h5 class="mb-0">Your Proposals</h5>
-            </div>
-            <div class="list-group list-group-flush">
-              <div *ngFor="let proposal of myProposedSwaps" class="list-group-item">
-                <div class="d-flex justify-content-between align-items-center">
-                  <div class="d-flex align-items-center">
-                    <div class="me-4">
-                      <h6 class="mb-1">You get</h6>
-                      <p class="mb-0">{{proposal.swapForDate | date: 'EEEE, MMMM d'}}</p>
-                      <small class="text-muted">Shift {{proposal.swapForShift}}</small>
-                    </div>
-                    <fa-icon [icon]="swapIcon" class="mx-4 text-primary"></fa-icon>
-                    <div>
-                      <h6 class="mb-1">They get</h6>
-                      <p class="mb-0">{{proposal.dateToSwap | date: 'EEEE, MMMM d'}}</p>
-                      <small class="text-muted">Shift {{proposal.shiftToSwap}}</small>
-                    </div>
-                  </div>
-                  <button class="btn btn-danger" 
-                          (click)="handleDeleteProposal(proposal)"
-                          [disabled]="isDeleting[proposal.id]">
-                    <span *ngIf="!isDeleting[proposal.id]">
-                      <fa-icon [icon]="timesIcon" class="me-2"></fa-icon>
-                      Delete
-                    </span>
-                    <span *ngIf="isDeleting[proposal.id]" class="d-flex align-items-center">
-                      <div class="spinner-border spinner-border-sm me-2" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                      </div>
-                      Deleting...
-                    </span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </mat-tab>
-
-      <mat-tab label="Proposed to Me">
-        <div class="proposals-container p-3">
-          <div *ngIf="swapsProposedToMe.length === 0" class="text-center my-5">
-            <p class="text-muted">No active swap proposals</p>
-          </div>
-
-          <div *ngIf="swapsProposedToMe.length > 0" class="card">
-            <div class="card-header bg-info text-white">
-              <h5 class="mb-0">Pending Proposals</h5>
-            </div>
-            <div class="list-group list-group-flush">
-              <div *ngFor="let task of swapsProposedToMe" class="list-group-item">
-                <div class="d-flex justify-content-between align-items-center">
-                  <div class="d-flex align-items-center">
-                    <div class="me-4">
-                      <h6 class="mb-1">They get</h6>
-                      <p class="mb-0">{{task.dateToSwap | date: 'EEEE, MMMM d'}}</p>
-                      <small class="text-muted">Shift {{task.shiftToSwap}}</small>
-                    </div>
-                    <fa-icon [icon]="swapIcon" class="mx-4 text-primary"></fa-icon>
-                    <div>
-                      <h6 class="mb-1">You get</h6>
-                      <p class="mb-0">{{task.swapForDate | date: 'EEEE, MMMM d'}}</p>
-                      <small class="text-muted">Shift {{task.swapForShift}}</small>
-                    </div>
-                  </div>
-                  <div class="d-flex">
-                    <button class="btn btn-success me-2" 
-                            (click)="handleAcceptSwap(task)"
-                            [disabled]="isAccepting[task.id] || isRejecting[task.id]">
-                      <span *ngIf="!isAccepting[task.id]">
-                        <fa-icon [icon]="checkIcon" class="me-2"></fa-icon>
-                        Accept
-                      </span>
-                      <span *ngIf="isAccepting[task.id]" class="d-flex align-items-center">
-                        <div class="spinner-border spinner-border-sm me-2" role="status">
-                          <span class="visually-hidden">Loading...</span>
+                            <div
+                                [ngbCollapse]="isTeamCollapsed[i]"
+                                [ngClass]="{
+                                    spelerslijst: !isTeamCollapsed[i],
+                                }"
+                            >
+                                @for (speler of team.teamgenoten; track speler.id) {
+                                    <div class="input-group input-group-sm">
+                                        <div
+                                            class="input-group-prepend"
+                                            (click)="AddAanwezigheid(speler)"
+                                        >
+                                            <button
+                                                class="btn btn-outline-success"
+                                                type="button"
+                                            >
+                                                <fa-icon
+                                                    [icon]="spelerToevoegen"
+                                                ></fa-icon>
+                                            </button>
+                                        </div>
+                                        <div class="input-group-append">
+                                            <label
+                                                class="input-group-text btn-sm"
+                                                style="background-color: white"
+                                            >
+                                                {{ speler.naam }}</label
+                                            >
+                                        </div>
+                                    </div>
+                                }
+                            </div>
                         </div>
-                        Accepting...
-                      </span>
-                    </button>
-                    <button class="btn btn-danger" 
-                            (click)="handleRejectSwap(task)"
-                            [disabled]="isAccepting[task.id] || isRejecting[task.id]">
-                      <span *ngIf="!isRejecting[task.id]">
-                        <fa-icon [icon]="timesIcon" class="me-2"></fa-icon>
-                        Reject
-                      </span>
-                      <span *ngIf="isRejecting[task.id]" class="d-flex align-items-center">
-                        <div class="spinner-border spinner-border-sm me-2" role="status">
-                          <span class="visually-hidden">Loading...</span>
-                        </div>
-                        Rejecting...
-                      </span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </mat-tab>
-    </mat-tab-group>
-  </div>
-</div>
+                    </div>
+                }
+            </td>
+        </tr>
+    </tbody>
+</table>

@@ -1,4 +1,4 @@
 export class Persoon {
-  naam: string;
-  userId: number;
+    naam!: string;
+    userId!: number;
 }

@@ -1,35 +1,40 @@
-import { Component } from '@angular/core';
-import { StatisticsService } from '../core/services/statistics.service';
+import { Component, OnInit } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
+import { StatisticsService } from "../core/services/statistics.service";
+import { SpinnerComponent } from "../shared/spinner/spinner.component";
 
 @Component({
-  selector: 'tp-statistieken',
-  templateUrl: './statistieken.component.html',
-  styleUrls: ['./statistieken.component.scss']
+    selector: "tp-statistieken",
+    standalone: true,
+    imports: [CommonModule, FontAwesomeModule, SpinnerComponent],
+    templateUrl: "./statistieken.component.html",
+    styleUrls: ["./statistieken.component.scss"],
 })
-export class StatistiekenComponent {
-  skcRankingData: any; // Assuming you will replace 'any' with a more specific type
-  loading: boolean;
-  errorMessage: string;
+export class StatistiekenComponent implements OnInit {
+    skcRankingData!: any;
+    loading!: boolean;
+    errorMessage!: string;
 
+    constructor(private statisticsService: StatisticsService) {}
 
-  constructor(private statisticsService: StatisticsService) {}
+    async ngOnInit() {
+        this.getSkcRankingData();
+    }
 
-  async ngOnInit() {
-    this.getSkcRankingData();
-  }
-  
-  async getSkcRankingData() {
-    this.loading = true;
-    this.statisticsService.getSkcRanking().subscribe(data => {
-      this.loading = false;
-      this.skcRankingData = data; // Store data in skcRankingData property
-      return data;
-    }, error => {
-      console.error('error getting stats data', error);
-      this.errorMessage = error.error.message;
-      this.loading = false;
-    })
-  }
-  
-  
+    async getSkcRankingData() {
+        this.loading = true;
+        this.statisticsService.getSkcRanking().subscribe(
+            (data) => {
+                this.loading = false;
+                this.skcRankingData = data;
+                return data;
+            },
+            (error) => {
+                console.error("error getting stats data", error);
+                this.errorMessage = error.error.message;
+                this.loading = false;
+            },
+        );
+    }
 }

@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  baseUrl: 'https://www.skcvolleybal.nl/team-portal/api/'
+  baseUrl: "https://www.skcvolleybal.nl/team-portal/api/"
 };

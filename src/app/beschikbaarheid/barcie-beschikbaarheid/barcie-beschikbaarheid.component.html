@@ -1,60 +1,72 @@
-
-
-<div *ngIf="speeldagenEmpty; then showInfo else showMijnOverzicht"></div>
-
-<ng-template #showInfo>
-<p><em>Er zijn nog geen barcie shifts om je beschikbaarheid voor op te geven.</em></p>
-<br>
-</ng-template>
-
-<ng-template #showMijnOverzicht>
-<p>Geef hier je beschikbaarheid op voor aankomende barcie shifts.</p>
-
-<table
-  class="table table-sm"
-  *ngFor="let dag of speeldagen"
-  style="margin-bottom: 0px;"
->
-  <thead>
-    <tr>
-      <th scope="col" colspan="3">{{ dag.datum }}</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr class="gray-background">
-      <td colspan="3">
-        <teamportal-wedstrijden-card
-          [wedstrijden]="dag.eigenWedstrijden"
-        ></teamportal-wedstrijden-card>
-      </td>
-    </tr>
-    <tr>
-      <ul class="list-group">
-        <li
-          class="list-group-item"
-          [ngClass]="{
-            'list-group-item-warning': dag.isMogelijk === null,
-            'list-group-item-danger': dag.isMogelijk === false,
-            'list-group-item-success': dag.isMogelijk === true
-          }"
+@if (speeldagenEmpty) {
+    <p>
+        <em
+            >Er zijn nog geen barcie shifts om je beschikbaarheid voor op te
+            geven.</em
         >
-          <form>
-            <div class="form-row justify-content-center">
-              <teamportal-keuze
-                [keuze]="dag.beschikbaarheid"
-                (updateKeuze)="UpdateBarcieBeschikbaarheid($event, dag.date)"
-              ></teamportal-keuze>
-            </div>
-          </form>
-        </li>
-      </ul>
-    </tr>
-    <tr class="gray-background">
-      <td colspan="3"></td>
-    </tr>
-  </tbody>
-</table>
-<div class="alert alert-danger" role="alert" *ngIf="errorMessage">
-  {{ errorMessage }}
-</div>
-<teamportal-spinner *ngIf="loading"></teamportal-spinner>
+    </p>
+    <br />
+} @else {
+    <p>Geef hier je beschikbaarheid op voor aankomende barcie shifts.</p>
+
+    @for (dag of speeldagen; track dag.date) {
+        <table class="table table-sm" style="margin-bottom: 0px">
+            <thead>
+                <tr>
+                    <th scope="col" colspan="3">{{ dag.datum }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="gray-background">
+                    <td colspan="3">
+                        <teamportal-wedstrijden-card
+                            [wedstrijden]="dag.eigenWedstrijden"
+                        ></teamportal-wedstrijden-card>
+                    </td>
+                </tr>
+                <tr>
+                    <ul class="list-group">
+                        <li
+                            class="list-group-item"
+                            [ngClass]="{
+                                'list-group-item-warning':
+                                    dag.isMogelijk === null,
+                                'list-group-item-danger':
+                                    dag.isMogelijk === false,
+                                'list-group-item-success':
+                                    dag.isMogelijk === true,
+                            }"
+                        >
+                            <form>
+                                <div class="form-row justify-content-center">
+                                    <teamportal-keuze
+                                        [keuze]="dag.beschikbaarheid"
+                                        (updateKeuze)="
+                                            UpdateBarcieBeschikbaarheid(
+                                                $event,
+                                                dag.date
+                                            )
+                                        "
+                                    ></teamportal-keuze>
+                                </div>
+                            </form>
+                        </li>
+                    </ul>
+                </tr>
+                <tr class="gray-background">
+                    <td colspan="3"></td>
+                </tr>
+            </tbody>
+        </table>
+    }
+
+    @if (errorMessage) {
+        <div class="alert alert-danger" role="alert">
+            {{ errorMessage }}
+        </div>
+    }
+
+    @if (loading) {
+        <teamportal-spinner></teamportal-spinner>
+    }
+}

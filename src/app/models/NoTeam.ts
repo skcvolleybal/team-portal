@@ -1,7 +1,7 @@
-import { Team } from './Team';
+import { Team } from "./Team";
 
 export class NoTeam extends Team {
   constructor() {
-    super('');
+    super("");
   }
 }

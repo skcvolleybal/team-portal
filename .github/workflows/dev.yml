@@ -15,7 +15,7 @@ jobs:
             - name: Setup node
               uses: actions/setup-node@v4
               with:
-                  node-version: 16
+                  node-version: 24
 
             - name: Extract branch name
               shell: bash
@@ -36,6 +36,8 @@ jobs:
 
             - name: 🏗️ Installing NPM dependencies
               run: npm i
+            - name: 🧪 Running tests
+              run: npm test
             - name: 🔨 Building Angular
               run: npm run test_deploy
             - name: 🏗️ Installing PHP dependencies
