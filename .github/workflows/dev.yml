@@ -36,6 +36,8 @@ jobs:
 
             - name: 🏗️ Installing NPM dependencies
               run: npm i
+            - name: 🧪 Running tests
+              run: npm test
             - name: 🔨 Building Angular
               run: npm run test_deploy
             - name: 🏗️ Installing PHP dependencies
