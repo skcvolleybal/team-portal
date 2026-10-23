@@ -1,8 +1,8 @@
-FROM node:16-alpine
+FROM node:24-alpine
 WORKDIR /app
 
 # Expose port for Angular dev server
 EXPOSE 4200
 
 # CMD to install dependencies and run Angular server
-CMD npm install --include=dev && npm install -g @angular/cli@15.2.9 && ng serve --host 0.0.0.0 --poll 2000
+CMD npm install --include=dev && npm install -g @angular/cli@22 && ng serve --host 0.0.0.0 --poll 2000
